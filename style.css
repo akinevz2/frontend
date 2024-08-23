@@ -12,12 +12,17 @@ body {
 	flex-direction: row;
 }
 
-.hasFlex>section {
-	padding-right: 5em;
+.hasSpread {
+	justify-content: space-between;
 }
 
-.hasFlex div {
-	padding-bottom: 2em;
+.hasFlex>section {
+	padding-right: 5em;
+	padding-bottom: 5em;
+}
+
+.hasFlex>section:last-child {
+	padding-bottom: 0;
 }
 
 ul li>h5 {
@@ -26,12 +31,11 @@ ul li>h5 {
 
 @media screen and (max-width:750px) {
 	body {
-		margin: 1em;
+		margin: 2.5em;
 	}
 
 	body>section {
 		width: 100%;
-		min-height: 100vh;
 		margin: 0 auto;
 		display: flex;
 		flex-direction: column;
@@ -42,7 +46,8 @@ ul li>h5 {
 
 	.hasFlex>section {
 		align-self: center;
-		padding-bottom: 5em;
+		padding-right: 0;
+		height: 100vh;
 	}
 
 	.hasFlex {
