@@ -25,7 +25,28 @@ ul li>h5 {
 }
 
 @media screen and (max-width:750px) {
+	body {
+		margin: 1em;
+	}
+
+	body>section {
+		width: 100%;
+		min-height: 25vh;
+		margin: 0 auto;
+		display: flex;
+		flex-direction: column;
+		align-content: center;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.hasFlex>section {
+		align-self: center;
+		padding-bottom: 5em;
+	}
+
 	.hasFlex {
+		flex-direction: column;
 		flex-wrap: wrap;
 	}
 
@@ -34,13 +55,6 @@ ul li>h5 {
 		flex-direction: column;
 	} */
 
-	.hasFlex>section>section {
-		align-self: center;
-	}
-
-	.hasFlex {
-		flex-direction: column;
-	}
 
 	/* .hasFlex:first-child { flex-basis: 100%; } */
 }
