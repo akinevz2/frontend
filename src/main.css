@@ -1,0 +1,57 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:root {
+  --background-color: #000;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --background-color: #fefefe;
+  }
+}
+
+* {
+  transition: all 1s linear;
+}
+
+.page {
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2em;
+  width: 66%;
+}
+
+body,
+#root,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+div,
+a {
+  color: var(--text-color);
+  background-color: var(--background-color);
+}
+
+section,
+button,
+input,
+select,
+textarea {
+  color: var(--text-color);
+  border: 0.25em solid var(--primary-color);
+}
