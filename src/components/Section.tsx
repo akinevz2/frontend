@@ -19,9 +19,7 @@ export const Section = (props: SectionProps) => {
 
     function renderContent(content: Content) {
         if (typeof content === "string")
-            return <div style={{
-                textAlign:"right"
-            }}>{content}</div>
+            return <ul><li>{content}</li></ul>
         return <ul>
             {
                 content.map((text, index) => (
