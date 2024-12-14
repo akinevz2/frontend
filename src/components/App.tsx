@@ -29,7 +29,7 @@ const sections = [
         ]
     },
     {
-        heading: "what is kine doing now",
+        heading: "what's kine busy with",
         content: [
             "rewriting this website",
             "finishing university",
@@ -37,7 +37,7 @@ const sections = [
         ]
     },
     {
-        heading: "what is kine interested in",
+        heading: "what's kine's interests",
         content: [
             {
                 heading: "programming",
@@ -66,11 +66,14 @@ const sections = [
                     "Programming",
                     "English Language"
                 ]
+            },
+            {
+                heading: "music"
             }
         ]
     },
     {
-        heading: "where has kine been",
+        heading: "where's kine been",
         content: [
             {
                 heading: "for studies",
