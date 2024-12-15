@@ -11,24 +11,8 @@
 
 :root {
   --background-color: #000;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    --background-color: #fefefe;
-  }
-}
-
-* {
-  transition: all 1s linear;
-}
-
-.page {
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2em;
-  width: 66%;
+  --border-size: 0.25em;
+  --gap-size: 0.5em;
 }
 
 body,
@@ -53,5 +37,65 @@ input,
 select,
 textarea {
   color: var(--text-color);
-  border: 0.25em solid var(--primary-color);
+  border: var(--border-size) solid var(--primary-color);
+}
+
+.page>ul {
+  padding: 0;
+  margin: 0;
+}
+
+section {
+  margin-bottom: var(--border-size);
+  padding: var(--gap-size);
+}
+
+section:last-child {
+  margin-bottom: 0;
+}
+
+.page {
+  margin: 0 auto;
+  padding:  var(--border-size);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--gap-size);
+  max-width: 768px;
+  width: 33%;
+  border: 0;
+}
+
+
+
+section h1 {
+  margin: var(--gap-size) 0;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --background-color: #fefefe;
+  }
+}
+
+@media screen and (max-width: 1920px) {
+  .page {
+    width: 66%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  :root {
+    --gap-size: 0.5em;
+  }
+
+  .page {
+    max-width: unset;
+    width: unset;
+    padding: var(--gap-size);
+  }
+
+}
+
+* {
+  transition: all 1s linear;
 }

@@ -1,15 +1,14 @@
-import "../section.css"
-
 export type Content = string | string[] | SectionProps[]
 
 export type Heading = string
 export type SectionProps = {
+    className?: string
     heading?: Heading
     content?: Content
 }
 
 export const Section = (props: SectionProps) => {
-    const { heading, content } = props
+    const { heading, content, className } = props
     const hasHeading = !!heading
     const hasContent = !!content
 
@@ -32,11 +31,9 @@ export const Section = (props: SectionProps) => {
     }
 
     return <>
-        <section>
+        <section className={className}>
             {hasHeading && renderHeading(heading)}
-            <div>
-                {hasContent && renderContent(content)}
-            </div>
+            {hasContent && renderContent(content)}
         </section>
     </>
 }
