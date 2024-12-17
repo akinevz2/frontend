@@ -24,7 +24,7 @@ export const Section = (props: SectionProps) => {
                 content.map((text, index) => (
                     typeof text == "string" ?
                         <li key={index}>{text}</li> :
-                        <Section key={index} heading={text.heading} content={text.content} />
+                        <Section key={index} {...text} />
                 ))
             }
         </ul>
