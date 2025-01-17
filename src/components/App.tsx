@@ -1,7 +1,7 @@
 import { useEffect } from "react"
-import { Page } from "./Page"
 import "../main.css"
-import sections from "../../sections.json"
+import sections from "../sections.json"
+import { Page } from "./Page"
 
 
 export type AppProps = {
