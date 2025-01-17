@@ -1,13 +1,28 @@
-<!DOCTYPE html>
-<html>
+---
+import HomePage from "../components/HomePage.astro";
+import NavBar from "../components/NavBar.astro";
+import "../styles/main.css";
+---
 
-<head>
-  <link rel="preload" href="loading.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="loading.css"></noscript>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Loading...</title>
-</head>
-<body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.tsx"></script>
-</body>
+<html>
+  <head>
+    <link
+      rel="preload"
+      href="loading.css"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <noscript><link rel="stylesheet" href="loading.css" /></noscript>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>home of kine</title>
+  </head>
+  <body>
+    <HomePage />
+    <NavBar
+      links={[
+        { label: "Home", href: "/" },
+        { label: "Contact Me", href: "/contact/" },
+      ]}
+    />
+  </body>
+</html>

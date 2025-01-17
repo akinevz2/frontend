@@ -1,0 +1,48 @@
+---
+import "../styles/main.css";
+---
+
+<main class="page">
+  <h1>Contact me</h1>
+  <section class="contact-container">
+    <form id="form">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" required />
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required />
+
+      <label for="message">Message:</label>
+      <textarea id="message" name="message" required></textarea>
+
+      <button type="submit">Send</button>
+    </form>
+  </section>
+</main>
+
+<style>
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+  label,
+  input,
+  textarea {
+    margin-bottom: 1em;
+  }
+</style>
+<script>
+  function modal(message: string) {
+    return (event: Event) => {
+      event.preventDefault();
+      alert(message);
+      return false;
+    };
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("form");
+    if (form) {
+      form.addEventListener("submit", modal("Not yet implemented!"));
+    }
+  });
+</script>

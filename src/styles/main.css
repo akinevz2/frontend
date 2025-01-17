@@ -16,7 +16,6 @@
 }
 
 body,
-#root,
 h1,
 h2,
 h3,
@@ -25,6 +24,11 @@ h5,
 h6,
 p,
 span,
+label,
+input,
+textarea,
+button,
+form,
 div,
 a {
   color: var(--text-color);
@@ -56,7 +60,7 @@ section:last-child {
 
 .page {
   margin: 0 auto;
-  padding:  var(--border-size);
+  padding: var(--border-size);
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--gap-size);
@@ -65,10 +69,11 @@ section:last-child {
   border: 0;
 }
 
-
-
-section h1 {
-  margin: var(--gap-size) 0;
+ul > section > h1 {
+  margin: 0 var(--gap-size);
+}
+section > ul {
+    margin-top: var(--gap-size);
 }
 
 @media (prefers-color-scheme: light) {

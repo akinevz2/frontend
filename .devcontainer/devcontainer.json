@@ -32,6 +32,9 @@
 		"ghcr.io/jungaretti/features/vim:1": {},
 		"ghcr.io/devcontainers-community/npm-features/typescript:1": {
 			"version": "latest"
+		},
+		"ghcr.io/devcontainers/features/docker-outside-of-docker": {
+			"version": "latest"
 		}
 	},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
@@ -42,12 +45,19 @@
 			"extensions": [
 				"ms-azuretools.vscode-docker",
 				"VisualStudioExptTeam.vscodeintellicode",
-				"sourcegraph.cody-ai"
+				"sourcegraph.cody-ai",
+				"astro-build.astro-vscode"
 			]
 		}
 	},
-	"forwardPorts": [4321],
+	"forwardPorts": [
+		4321
+	],
+	"runArgs": [
+		"--gpus", "all"
+	],
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	"remoteUser": "vscode"
+	"remoteUser": "vscode",
 	// "onCreateCommand": "sudo apt update && sudo apt install pandoc texlive-latex-extra"
+	"postStartCommand": "docker compose -f '.devcontainer/ollama-docker-compose.yaml' up"
 }

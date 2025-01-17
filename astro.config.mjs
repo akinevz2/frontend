@@ -4,10 +4,16 @@ import react from '@astrojs/react';
 
 // https://astro.build/config
 export default defineConfig({
-  server: {
-      host: true,
-      port: 8080
-  },
-
-  integrations: [react()]
+    server: {
+        port: 8080,
+        host: true
+    },
+    vite: {
+        server: {
+            watch: {
+                usePolling: true
+            }
+        }
+    },
+    integrations: [react()]
 });

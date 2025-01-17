@@ -1,0 +1,28 @@
+---
+import Form from "../components/Form.astro";
+import NavBar from "../components/NavBar.astro";
+import "../styles/main.css";
+---
+
+<html>
+    <head>
+        <link
+            rel="preload"
+            href="/loading.css"
+            as="style"
+            onload="this.onload=null;this.rel='stylesheet'"
+        />
+        <noscript><link rel="stylesheet" href="/loading.css" /></noscript>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Contact Me</title>
+    </head>
+    <body>
+        <Form />
+        <NavBar
+            links={[
+                { label: "Home", href: "/" },
+                { label: "Contact Me", href: "/contact" },
+            ]}
+        />
+    </body>
+</html>
