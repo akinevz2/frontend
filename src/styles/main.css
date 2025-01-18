@@ -7,9 +7,6 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-:root {
   --background-color: #000;
   --border-size: 0.25em;
   --gap-size: 0.5em;
@@ -69,11 +66,14 @@ section:last-child {
   border: 0;
 }
 
-ul > section > h1 {
+ul>section>h1 {
   margin: 0 var(--gap-size);
+  font-family: 'Courier New', Courier, monospace;
 }
-section > ul {
-    margin-top: var(--gap-size);
+
+section>ul {
+  margin-top: var(--gap-size);
+  font-family: 'Courier New', Courier, monospace;
 }
 
 @media (prefers-color-scheme: light) {
