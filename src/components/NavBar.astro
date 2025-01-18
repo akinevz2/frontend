@@ -37,8 +37,6 @@ const { links } = Astro.props;
 
   .header-container {
     display: flex;
-    justify-content: center;
-    align-items: center;
     max-width: 100vw;
     padding: 2em;
     margin: 0 auto;
@@ -62,5 +60,8 @@ const { links } = Astro.props;
 
   .menu-item {
     font-family: monospace;
+    font-size: large;
+    padding: var(--gap-size);
+    border: var(--primary-color) solid var(--border-size);
   }
 </style>
