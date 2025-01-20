@@ -21,12 +21,11 @@
 			"version": "latest"
 		},
 		"ghcr.io/devcontainers/features/common-utils": {
-			"username": "vscode",
 			"upgradePackages": true,
 			"installZsh": true,
 			"installOhMyZsh": true,
 			"configureZshAsDefaultShell": true,
-			"installOhMyZshConfig": "af-magic"
+			"installOhMyZshConfig": true
 		},
 		"ghcr.io/devcontainers-contrib/features/zsh-plugins:0": {
 			"omzPlugins": "https://github.com/zsh-users/zsh-autosuggestions https://github.com/zsh-users/zsh-syntax-highlighting"
