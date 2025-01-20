@@ -50,14 +50,10 @@
 			]
 		}
 	},
-	"forwardPorts": [
-		4321
-	],
 	"runArgs": [
 		"--gpus", "all"
 	],
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	"remoteUser": "vscode",
-	// "onCreateCommand": "sudo apt update && sudo apt install pandoc texlive-latex-extra"
-	"postStartCommand": "docker compose -f '.devcontainer/docker-compose.yaml' up -d"
+	"postAttachCommand": "docker compose -p ollama -f '.devcontainer/docker-compose.yaml' up -d"
 }
