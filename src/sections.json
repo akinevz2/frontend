@@ -86,6 +86,14 @@
                     ]
                 }
             ]
+        },
+        {
+            "heading": "contact information",
+            "content": [
+                "email: akinevz@outlook.com",
+                "linkedin: https://www.linkedin.com/akinevz/",
+                "github: https://github.com/akinevz0/"
+            ]
         }
     ]
 }
