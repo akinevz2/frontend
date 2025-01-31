@@ -1,0 +1,17 @@
+{
+    "heading": "Welcome to Rueg's Addons homepage",
+    "content": [
+        {
+            "heading": "Rueg Plater",
+            "content": "Custom profile for Plater with Blizzard-like nameplates.",
+            "status": "available",
+            "link": "/plater.txt"
+        },
+        {
+            "heading": "Rueg ElvUI",
+            "content": "Vertically aligned ElvUI with Blizzard-like nameplates.",
+            "status": "available", 
+            "link": "/profile.txt"
+        }
+    ]
+}
