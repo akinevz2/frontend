@@ -10,8 +10,14 @@
         {
             "heading": "Rueg ElvUI",
             "content": "Vertically aligned ElvUI with buff indicators.",
-            "status": "available", 
+            "status": "available",
             "link": "/profile.txt"
+        },
+        {
+            "heading": "Rueg WeakAura",
+            "content": "Weak Aura that displays the current ability to throw/stab",
+            "status": "available",
+            "link": "/rueg-wa-rogue.txt"
         }
     ]
 }
