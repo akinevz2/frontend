@@ -5,19 +5,19 @@
             "heading": "Rueg Plater",
             "content": "Custom profile for Plater with Blizzard-like nameplates.",
             "status": "available",
-            "link": "/plater.txt"
+            "link": "./plater.txt"
         },
         {
             "heading": "Rueg ElvUI",
             "content": "Vertically aligned ElvUI with buff indicators.",
             "status": "available",
-            "link": "/profile.txt"
+            "link": "./profile.txt"
         },
         {
             "heading": "Rueg WeakAura",
             "content": "Weak Aura that displays the current ability to throw/stab",
             "status": "available",
-            "link": "/rueg-wa-rogue.txt"
+            "link": "./rueg-wa-rogue.txt"
         }
     ]
 }
