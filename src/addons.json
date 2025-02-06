@@ -5,13 +5,13 @@
             "heading": "Rueg Plater",
             "content": "Custom profile for Plater with Blizzard-like nameplates.",
             "status": "available",
-            "link": "./plater.txt"
+            "link": "./rueg-plater.txt"
         },
         {
             "heading": "Rueg ElvUI",
             "content": "Vertically aligned ElvUI with buff indicators.",
             "status": "available",
-            "link": "./profile.txt"
+            "link": "./rueg-elvui-profile.txt"
         },
         {
             "heading": "Rueg WeakAura",
