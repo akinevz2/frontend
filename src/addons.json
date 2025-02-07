@@ -26,6 +26,11 @@
             "link": "/addons/rueg-wa-warrior.txt"
         },
         {
+            "heading": "Rueg Grid2 (v1.0)",
+            "content": "Grid2 preset with buff indicators.",
+            "status": "available",
+            "link": "/addons/rueg-grid2.txt"
+        }, {
             "heading": "Rueg ElvUI (v1.0)",
             "content": "Vertically aligned ElvUI with buff indicators.",
             "status": "temporarily unmaintained",
