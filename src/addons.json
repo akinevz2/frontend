@@ -2,7 +2,7 @@
     "heading": "Welcome to Rueg's UI homepage",
     "content": [
         {
-            "heading": "Rueg Plater (v1.8) LuckyOne derivative",
+            "heading": "Rueg Plater (v1.9) LuckyOne derivative",
             "content": "Large-screen profile for Plater with Blizzard-like nameplates.",
             "status": "available",
             "link": "/addons/rueg-plater.txt"
@@ -14,13 +14,13 @@
             "link": "/addons/rueg-plater-smol.txt"
         },
         {
-            "heading": "Rueg WeakAura Rogue (v1.6)",
+            "heading": "Rueg WeakAura Rogue (v1.7)",
             "content": "Weak Aura that displays the current ability to throw/stab",
             "status": "available",
             "link": "/addons/rueg-wa-rogue.txt"
         },
         {
-            "heading": "Rueg WeakAura Warrior (v1.8)",
+            "heading": "Rueg WeakAura Warrior (v1.9)",
             "content": "Weak Aura that displays the current ability to throw/strike",
             "status": "available",
             "link": "/addons/rueg-wa-warrior.txt"
