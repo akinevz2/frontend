@@ -18,6 +18,11 @@
             "content": "Weak Aura that displays the current ability to throw/stab",
             "status": "available",
             "link": "/addons/rueg-wa-rogue.txt"
+        },
+        {
+            "heading": "Rueg ElvUI (v1.0)",
+            "content": "Vertically aligned ElvUI with buff indicators.",
+            "status": "temporarily unavailable"
         }
     ],
     "discouraged": [
