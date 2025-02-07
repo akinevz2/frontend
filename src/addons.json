@@ -8,16 +8,18 @@
             "link": "/addons/rueg-plater.txt"
         },
         {
-            "heading": "Rueg ElvUI (v1.0)",
-            "content": "Vertically aligned ElvUI with buff indicators.",
-            "status": "available",
-            "link": "/addons/rueg-elvui-profile.txt"
-        },
-        {
             "heading": "Rueg WeakAura (v1.5.1)",
             "content": "Weak Aura that displays the current ability to throw/stab",
             "status": "available",
             "link": "/addons/rueg-wa-rogue.txt"
+        }
+    ],
+    "discouraged": [
+        {
+            "heading": "Rueg ElvUI (v1.0)",
+            "content": "Vertically aligned ElvUI with buff indicators.",
+            "status": "available",
+            "link": "/addons/rueg-elvui-profile.txt"
         }
     ]
 }
