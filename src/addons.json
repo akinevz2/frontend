@@ -2,14 +2,14 @@
     "heading": "Welcome to Rueg's UI homepage",
     "content": [
         {
-            "heading": "Rueg Plater (v1.10) LuckyOne derivative",
-            "content": "Large-screen profile for Plater with Blizzard-like nameplates.",
+            "heading": "Rueg Plater Full Size (v2.0)",
+            "content": "Profile for Plater with Blizzard-like nameplates. Large-format",
             "status": "available",
             "link": "/addons/rueg-plater.txt"
         },
         {
-            "heading": "Rueg Plater Smol (AzorinthTV quickfix) (v1.7)",
-            "content": "Adaptive profile for Plater with smaller Blizzard-like nameplates.",
+            "heading": "Rueg Plater (v2.0)",
+            "content": "Profile for Plater with smaller Blizzard-like nameplates.",
             "status": "available",
             "link": "/addons/rueg-plater-smol.txt"
         },
