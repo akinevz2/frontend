@@ -20,10 +20,16 @@
             "link": "/addons/rueg-wa-rogue.txt"
         },
         {
-            "heading": "Rueg WeakAura Warrior (v2.2)",
+            "heading": "Rueg WeakAura Warrior (v2.3)",
             "content": "Weak Aura tracker for GCD, rage starvation, and range",
             "status": "available",
             "link": "/addons/rueg-wa-warrior.txt"
+        },
+        {
+            "heading": "Rueg WeakAura Shaman (v2.3)",
+            "content": "Weak Aura tracker for swing, energy recharge, and range",
+            "status": "available",
+            "link": "/addons/rueg-wa-shaman.txt"
         },
         {
             "heading": "Rueg Grid2 (v1.0)",
