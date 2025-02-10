@@ -26,9 +26,9 @@
             "link": "/addons/rueg-wa-warrior.txt"
         },
         {
-            "heading": "Rueg WeakAura Shaman (v2.8)",
+            "heading": "Rueg WeakAura Shaman (testing only)",
             "content": "Weak Aura tracker for swing, energy recharge, and range",
-            "status": "available",
+            "status": "beta",
             "link": "/addons/rueg-wa-shaman.txt"
         },
         {
