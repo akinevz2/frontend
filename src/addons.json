@@ -38,8 +38,8 @@
             "link": "/addons/rueg-grid2.txt"
         }, {
             "heading": "Rueg ElvUI (v1.1)",
-            "content": "Vertically aligned ElvUI with buff indicators.",
-            "status": "under development",
+            "content": "Vertically aligned ElvUI with buff indicators for healing softcore dungeons only.",
+            "status": "(use of elvui results in loss of progress)",
             "link": "/addons/rueg-elvui-profile.txt"
         }
     ]
