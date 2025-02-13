@@ -36,6 +36,11 @@
             "content": "Grid2 preset with buff indicators.",
             "status": "available (stable release)",
             "link": "/addons/rueg-grid2.txt"
-        } 
+        },
+        {
+            "heading": "Rueg Repack (v0.1)",
+            "content": "Entire repack of Rueg UI for classic.",
+            "status": "in development"
+        }
     ]
 }
