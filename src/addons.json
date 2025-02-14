@@ -32,9 +32,15 @@
             "link": "/addons/rueg-wa-shaman.txt"
         },
         {
+            "heading": "Rueg Cell (v1.0)",
+            "content": "Cell preset with right-handed layout + stats in chat.",
+            "status": "available",
+            "link": "/addons/rueg-cell.txt"
+        },
+        {
             "heading": "Rueg Grid2 (v1.0)",
             "content": "Grid2 preset with buff indicators.",
-            "status": "available (stable release)",
+            "status": "available (unmaintained)",
             "link": "/addons/rueg-grid2.txt"
         },
         {
