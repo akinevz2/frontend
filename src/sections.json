@@ -4,9 +4,11 @@
         {
             "heading": "what is kine",
             "content": [
-                "my username",
-                "pronounced as <keeneh>",
-                "short for Kirill N."
+                "pronounced as kine!",
+                {
+                    "heading": "why is kine?",
+                    "content": "because its my name"
+                }
             ]
         },
         {
@@ -14,11 +16,11 @@
             "content": [
                 {
                     "heading": "current occupation",
-                    "content": "a student"
+                    "content": "a graduate!"
                 },
                 {
                     "heading": "current hobbies",
-                    "content": "computing"
+                    "content": "gaming, programming"
                 },
                 {
                     "heading": "current location",
@@ -30,13 +32,17 @@
             "heading": "what's kine busy with",
             "content": [
                 "rewriting this website",
-                "finishing university",
-                "looking for work"
+                "finding job",
+                "relaxing"
             ]
         },
         {
             "heading": "what's kine interested in",
             "content": [
+                {
+                    "heading": "secret",
+                    "content": "soon (tm)"
+                },
                 {
                     "heading": "programming",
                     "content": [
