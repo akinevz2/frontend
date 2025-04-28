@@ -14,22 +14,34 @@
             "link": "/addons/rueg-plater-smol.txt"
         },
         {
-            "heading": "Rueg WeakAura Rogue (v3.0.1)",
+            "heading": "Rueg WeakAura Rogue (v3.0.2)",
             "content": "Weak Aura tracker for GCD, energy tickrate, and range",
             "status": "available",
-            "link": "/addons/rueg-wa-rogue.txt"
+            "link": "/addons/energy-swing.txt"
         },
         {
-            "heading": "Rueg WeakAura Warrior (v2.8)",
+            "heading": "Rueg WeakAura Mage (v3.0.0)",
+            "content": "Weak Aura tracker for GCD, energy tickrate, and range",
+            "status": "available",
+            "link": "/addons/mana-blast.txt"
+        },
+        {
+            "heading": "Rueg WeakAura Priest (v2.3.0)",
+            "content": "Weak Aura tracker for GCD, mana tickrate, and range",
+            "status": "available",
+            "link": "/addons/priest-smite.txt"
+        },
+        {
+            "heading": "Rueg WeakAura Warrior (v2.3.1)",
             "content": "Weak Aura tracker for GCD, rage starvation, and range",
-            "status": "temporarily unmaintained",
-            "link": "/addons/rueg-wa-warrior.txt"
+            "status": "available",
+            "link": "/addons/rage-volley.txt"
         },
         {
-            "heading": "Rueg WeakAura Shaman (v3.0.3)",
+            "heading": "Rueg WeakAura Shaman (v4.0.0)",
             "content": "Weak Aura tracker for swing, energy recharge, and range",
-            "status": "beta",
-            "link": "/addons/rueg-wa-shaman.txt"
+            "status": "available",
+            "link": "/addons/spirit-smash.txt"
         },
         {
             "heading": "Rueg Cell (v1.0)",
@@ -46,7 +58,7 @@
         {
             "heading": "Rueg Repack (v0.1)",
             "content": "Entire repack of Rueg UI for classic.",
-            "status": "in development"
+            "status": "soon (tm)"
         }
     ]
 }
