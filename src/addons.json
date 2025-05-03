@@ -56,10 +56,16 @@
             "link": "/addons/rueg-grid2.txt"
         },
 	{
-            "heading": "Rueg Plater Repack (v2.2)",
+            "heading": "Rueg Plater Profile (v2.2)",
             "content": "Profile of Rueg UI with Blizzard-like nameplates. Entire repack.",
             "status": "available",
             "link": "/addons/rueg-plater-profile.txt"
         },
+	{
+	    "heading": "Rueg Plater Compatible Repack (v0.1)",
+	    "content": "Addon list for RP coming soon.",
+	    "status": "soon (tm)",
+	    
+	}
     ]
 }
