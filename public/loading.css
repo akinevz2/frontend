@@ -6,13 +6,22 @@
     --mid-color: color-mix(in srgb, #F5F5DC, #2F2F2F 50%);
 }
 
-@media (prefers-color-scheme: light) {
+.light-mode-switch {
+    border-radius: 2em;
+    border: 2px solid --var(--text-color);
+    font-family: 'Courier New', Courier, monospace;
+}
+
+/* @media (prefers-color-scheme: light) {
     :root {
         --text-color: #2F2F2F;
         --primary-color: #F5F5DC;
         --background-color: #F5F5DC;
     }
-}
+    .light-mode-switch {
+        display: unset;
+    }
+} */
 
 body, #root {
     background-color: var(--mid-color);
