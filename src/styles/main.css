@@ -74,7 +74,7 @@ section:last-child {
 
 ul>section>h1, ul>section>h4, form#form>label{
   margin: 0 calc(var(--gap-size) * 1.75);
-  font-family: bahnscrift, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: bahnscrift, system-ui, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 }
