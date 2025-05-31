@@ -12,16 +12,16 @@
     font-family: 'Courier New', Courier, monospace;
 }
 
-/* @media (prefers-color-scheme: light) {
+@media (prefers-color-scheme: light) {
     :root {
         --text-color: #2F2F2F;
         --primary-color: #F5F5DC;
         --background-color: #F5F5DC;
     }
     .light-mode-switch {
-        display: unset;
+        display: none;
     }
-} */
+}
 
 body, #root {
     background-color: var(--mid-color);
