@@ -1,55 +1,23 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/debian
 {
-	"name": "Resume and Website",
+	"name": "Debian",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "debian",
+	"image": "mcr.microsoft.com/devcontainers/base:bullseye",
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	"features": {
-		// userland
-		"ghcr.io/jungaretti/features/vim:1": {},
 		"ghcr.io/devcontainers/features/node:1": {
-			"nodeGypDependencies": true,
-			"installYarnUsingApt": true,
 			"version": "latest",
 			"nvmVersion": "latest"
 		},
 		"ghcr.io/devcontainers-community/npm-features/typescript:1": {
 			"version": "latest"
-		},
-		"ghcr.io/devcontainers/features/docker-outside-of-docker": {
-			"version": "latest"
-		},
-		"ghcr.io/devcontainers/features/common-utils": {
-			"upgradePackages": true,
-			"installZsh": true,
-			"installOhMyZsh": true,
-			"configureZshAsDefaultShell": true,
-			"installOhMyZshConfig": true
-		},
-		"ghcr.io/devcontainers-contrib/features/zsh-plugins:0": {
-			"omzPlugins": "https://github.com/zsh-users/zsh-autosuggestions https://github.com/zsh-users/zsh-syntax-highlighting"
-		},
-	},
+		}
+	}
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 	// Configure tool-specific properties.
-	"customizations": {
-		"vscode": {
-			"extensions": [
-				"ms-azuretools.vscode-docker",
-				"VisualStudioExptTeam.vscodeintellicode",
-				// "sourcegraph.cody-ai",
-				"astro-build.astro-vscode"
-			]
-		}
-	},
-	// avoid using nvidia unknown drivers
-	// "runArgs": [
-	// 	"--gpus",
-	// 	"all"
-	// ],
+	// "customizations": {},
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	"remoteUser": "vscode"
-	// "onCreateCommand": "npm i"
+	// "remoteUser": "root"
 }
