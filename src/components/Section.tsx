@@ -1,7 +1,6 @@
 import type React from "react"
 
 export type Content = string | string[] | SectionProps[]
-
 export type Heading = string
 export type SectionProps = {
     className?: string
