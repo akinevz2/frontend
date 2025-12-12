@@ -1,0 +1,23 @@
+{
+  "jwt_secret": "3a086b6e-7154-4efb-94a8-9ee82d6d7a5f",
+  "users": [],
+  "roles": {
+    "admin": {
+      "permissions": [
+        "filemanager",
+        "settings",
+        "subscriptions",
+        "sharing",
+        "advanced_download",
+        "downloads_manager"
+      ]
+    },
+    "user": {
+      "permissions": [
+        "filemanager",
+        "subscriptions",
+        "sharing"
+      ]
+    }
+  }
+}
