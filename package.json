@@ -13,10 +13,10 @@
     "@astrojs/check": "^0.9.4",
     "@astrojs/react": "^4.3.1",
     "astro": "^5.15.3",
+    "next": "15.5.9",
     "react": "^19.0.3",
     "react-dom": "^19.0.3",
-    "react-toastify": "^11.0.3",
-    "next": "15.0.5"
+    "react-toastify": "^11.0.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
