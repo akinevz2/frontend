@@ -1,123 +1,123 @@
 {
-    "heading": "Welcome to kine's website!",
-    "content": [
+  "heading": "Welcome to kine's website!",
+  "content": [
+    {
+      "heading": "what is kine",
+      "content": [
+        "kine is short for kirill nevzorov",
+        "see my socials in the tabs above",
         {
-            "heading": "what is kine",
-            "content": [
-                "kine is short for kirill nevzorov",
-                "see my socials in the tabs below",
-                {
-                    "heading": "why is kine?",
-                    "content": "because its my name"
-                }
-            ]
-        },
-        {
-            "heading": "who is kine",
-            "content": [
-                {
-                    "heading": "current occupation",
-                    "content": "to graduate University of Sussex!"
-                },
-                {
-                    "heading": "current hobbies",
-                    "content": "gaming, programming, music"
-                },
-                {
-                    "heading": "current location",
-                    "content": "brighton and hove, england"
-                }
-            ]
-        },
-        {
-            "heading": "what's kine busy with",
-            "content": [
-                "writing web apps",
-                "finding job",
-                "relaxing"
-            ]
-        },
-        {
-            "heading": "what's kine interested in",
-            "content": [
-                {
-                    "heading": "secret",
-                    "content": "soon (tm)"
-                },
-                {
-                    "heading": "programming",
-                    "content": [
-                        "java",
-                        "scala",
-                        "python",
-                        "rust",
-                        "typescript",
-                        "machine learning"
-                    ]
-                },
-                {
-                    "heading": "system administration",
-                    "content": [
-                        "docker",
-                        "hyper-v",
-                        "linux & windows scripting",
-                        "pandoc and vcs"
-                    ]
-                },
-                {
-                    "heading": "teaching and tutoring",
-                    "content": [
-                        "linux",
-                        "programming",
-                        "english language"
-                    ]
-                },
-                {
-                    "heading": "music"
-                }
-            ]
-        },
-        {
-            "heading": "where's kine been",
-            "content": [
-                {
-                    "heading": "for studies",
-                    "content": "currently at University of Sussex"
-                },
-                {
-                    "heading": "for work",
-                    "content": [
-                        "at Revolent Group (Salesforce)",
-                        "in the wild (freelance)",
-                        "at CMS (during merger w/ Nabarro+Olswang)"
-                    ]
-                }
-            ]
-        },
-        {
-            "heading": "what is a Rueg",
-            "content": [
-                {
-                    "heading": "name",
-                    "content": "Rueg is a character in world of warcraft"
-                },
-                {
-                    "heading": "appearance",
-                    "content": [
-                        "a short non-descript exhumed humanoid",
-                        "wearing a stylish hat over a bald head",
-                        "he is an unnamed creature of mystery"
-                    ]
-                },
-                {
-                    "heading": "significance",
-                    "content": "he is kine's main character in world of warcraft"
-                },
-                {
-                    "heading": "where to find",
-                    "content": "last seen stumbling around swamp of sorrows"
-                }
-            ]
+          "heading": "why is kine?",
+          "content": "because its my name"
         }
-    ]
+      ]
+    },
+    {
+      "heading": "who is kine",
+      "content": [
+        {
+          "heading": "current occupation",
+          "content": "to graduate University of Sussex!"
+        },
+        {
+          "heading": "current hobbies",
+          "content": "gaming, programming, music"
+        },
+        {
+          "heading": "current location",
+          "content": "brighton and hove, england"
+        }
+      ]
+    },
+    {
+      "heading": "what's kine busy with",
+      "content": ["writing web apps", "finding job", "relaxing"]
+    },
+    {
+      "heading": "what's kine interested in",
+      "content": [
+        {
+          "heading": "secret",
+          "content": "soon (tm)"
+        },
+        {
+          "heading": "programming",
+          "content": [
+            "java",
+            "scala",
+            "python",
+            "rust",
+            "typescript",
+            "machine learning"
+          ]
+        },
+        {
+          "heading": "system administration",
+          "content": [
+            "docker",
+            "hyper-v",
+            "linux & windows scripting",
+            "pandoc and vcs"
+          ]
+        },
+        {
+          "heading": "teaching and tutoring",
+          "content": ["linux", "programming", "english language"]
+        },
+        {
+          "heading": "music"
+        }
+      ]
+    },
+    {
+      "heading": "where's kine been",
+      "content": [
+        {
+          "heading": "for studies",
+          "content": "currently at University of Sussex"
+        },
+        {
+          "heading": "for work",
+          "content": [
+            "at Revolent Group (Salesforce)",
+            "in the wild (freelance)",
+            "at CMS (during merger w/ Nabarro+Olswang)"
+          ]
+        },
+        {
+          "heading": "for gaming",
+          "content": [
+            "playing on Thunderstrike as Rueg",
+            {
+              "heading": "what is a Rueg",
+              "content": [
+                {
+                  "heading": "why the name Rueg?",
+                  "content": "rueg is a skeleton"
+                },
+                {
+                  "heading": "what is the appearance of Rueg?",
+                  "content": [
+                    "he is an unnamed creature of mystery",
+                    "a short non-descript figure",
+                    "usually with a stylish hat over a bald head",
+                    "sometimes no eyes",
+                    "sometimes no jaw"
+                  ]
+                },
+                {
+                  "heading": "what is the significance of Rueg?",
+                  "content": "Rueg once survived to level 60 in classic wow"
+                },
+                {
+                  "heading": "where to find Rueg?",
+                  "content": "anywhere, really"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }

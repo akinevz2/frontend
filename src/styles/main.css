@@ -1,7 +1,7 @@
-@import '../../public/loading.css';
+@import "../../public/loading.css";
 
 :root {
-  font-family: 'Courier New', Courier, monospace;
+  font-family: "Courier New", Courier, monospace;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -12,10 +12,43 @@
 }
 
 @font-face {
-  font-family: 'bahnscrift';
-  src: url('/BAHNSCHRIFT.TTF');
+  font-family: "bahnscrift";
+  src: url("/BAHNSCHRIFT.TTF");
   font-weight: normal;
   font-style: normal;
+}
+
+/* Reset XP.css window styling overrides */
+.window {
+  margin-bottom: var(--gap-size);
+}
+
+.window:last-child {
+  margin-bottom: 0;
+}
+
+/* Hide border on first-level windows to avoid double border */
+.page > .window,
+main > .page {
+  border: none;
+}
+
+/* Force title bar text to dark gray for readability */
+.title-bar-text,
+.title-bar-text a {
+  color: #eee !important;
+}
+
+/* Add more vertical padding to title bars */
+.title-bar {
+  padding-top: 0.25em !important;
+  padding-bottom: 0.25em !important;
+}
+
+body {
+  margin-bottom: 0;
+  margin-top: 2.685em;
+  padding-top: 80px;
 }
 
 body,
@@ -33,54 +66,73 @@ textarea,
 button,
 form,
 div,
-a {
-  color: var(--text-color);
-  background-color: var(--background-color);
+a,
+li {
+  color: var(--text-color) !important;
+  opacity: 1 !important;
 }
 
-section,
-button,
-input,
-select,
-textarea {
-  color: var(--text-color);
-  border: var(--border-size) solid var(--primary-color);
-}
-
-.page>ul {
+.page > ul,
+li {
   padding: 0;
   margin: 0;
-}
-
-section {
-  margin-bottom: var(--border-size);
-  padding: var(--gap-size);
-}
-
-section:last-child {
-  margin-bottom: 0;
+  list-style: none;
+  margin-bottom: var(--gap-size);
 }
 
 .page {
   margin: 0 auto;
-  padding: var(--border-size);
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--gap-size);
   max-width: 768px;
   width: 33%;
   border: 0;
+  position: relative;
+  z-index: 100;
 }
 
-ul>section>h1, ul>section>h4, form#form>label{
+.menu-item {
+  margin: 0;
+  padding: calc(var(--gap-size) / 2) var(--gap-size);
+  background-color: beige;
+}
+
+ul > section > h1,
+ul > section > h4,
+form#form > label {
   margin: 0 calc(var(--gap-size) * 1.75);
   font-family: bahnscrift, system-ui, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 }
 
-section>ul {
-  margin-top: calc(var(--gap-size) - var(--border-size));
+.window-body ul {
+  margin: 0;
+  padding-left: 1.5em;
+}
+
+.window-body > ul:first-child {
+  margin-top: 0;
+}
+
+/* NavBar animation */
+nav {
+  position: fixed;
+  top: 10px;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  opacity: 0;
+  transform: translateY(-100%);
+  transition:
+    opacity 0.5s ease-in-out,
+    transform 0.5s ease-in-out;
+}
+
+/* Account for fixed navbar when scrolling */
+body.nav-visible {
+  padding-top: 3em;
 }
 
 @media (prefers-color-scheme: light) {
@@ -105,5 +157,4 @@ section>ul {
     width: unset;
     padding: var(--gap-size);
   }
-
 }

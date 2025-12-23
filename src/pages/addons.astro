@@ -6,12 +6,28 @@ import "../styles/main.css";
 
 <html>
   <head>
+    <link rel="stylesheet" href="/xp.css/dist/XP.css" id="xp-css" />
     <link rel="preload" href="/loading.css" as="style" />
     <noscript><link rel="stylesheet" href="/loading.css" /></noscript>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="look at my UI in wow!" />
     <meta property="og:image" content="/avatar.png" />
     <title>ui of kine</title>
+    <script>
+      // Wait for XP.css to load before revealing content
+      document.addEventListener('DOMContentLoaded', () => {
+        const xpCssLink = document.getElementById('xp-css');
+        if (xpCssLink) {
+          xpCssLink.addEventListener('load', () => {
+            document.body.classList.add('styles-loaded');
+          });
+          // In case it's already loaded
+          if (xpCssLink.sheet) {
+            document.body.classList.add('styles-loaded');
+          }
+        }
+      });
+    </script>
   </head>
   <body>
     <AddonsList />
