@@ -1,15 +1,15 @@
 import { CopyToClipboardButton } from "./CopyToClipboardButton.tsx";
-import type { Heading, SectionProps } from "./Section";
+import type { Heading, SectionProps } from "../windowing";
 import { useState } from "react";
-
-export type AddonContent = string | string[] | AddonProps[];
 
 export type AddonProps = SectionProps & {
   status?: string;
   text?: string;
   link?: string;
-  content: AddonContent;
+  content?: string | (string | AddonProps)[];
 };
+
+export type AddonContent = string | (string | AddonProps)[];
 
 function renderHeading(heading: Heading, props: AddonProps) {
   const { link } = props;

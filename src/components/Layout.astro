@@ -1,6 +1,5 @@
 ---
 import MenuBar from "./MenuBar.astro";
-import { SectionProvider } from "./SectionContext";
 import "../styles/main.css";
 
 interface Props {
@@ -17,26 +16,56 @@ const {
 <html>
   <head>
     <link rel="stylesheet" href="https://unpkg.com/xp.css@0.2.3/dist/XP.css" id="xp-css" />
-    <link rel="preload" href="/loading.css" as="style" />
     <noscript><link rel="stylesheet" href="/loading.css" /></noscript>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <meta property="og:image" content="/avatar.png" />
     <title>{title}</title>
-    <script>
-      // Wait for XP.css to load before revealing content
-      document.addEventListener('DOMContentLoaded', () => {
+    <script is:inline>
+      // Wait for DOM and xp.css to load before revealing content
+      const checkStylesLoaded = () => {
+        if (!document.body) return false;
         const xpCssLink = document.getElementById('xp-css');
-        if (xpCssLink) {
-          xpCssLink.addEventListener('load', () => {
-            document.body.classList.add('styles-loaded');
-          });
-          // In case it's already loaded
-          if (xpCssLink.sheet) {
-            document.body.classList.add('styles-loaded');
-          }
+        if (xpCssLink?.sheet) {
+          document.body.classList.add('styles-loaded');
+          return true;
         }
-      });
+        return false;
+      };
+
+      // Wait for DOM to be ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+          if (!checkStylesLoaded()) {
+            const xpCssLink = document.getElementById('xp-css');
+            if (xpCssLink) {
+              xpCssLink.addEventListener('load', () => {
+                document.body.classList.add('styles-loaded');
+              });
+            }
+            setTimeout(() => {
+              if (document.body && !document.body.classList.contains('styles-loaded')) {
+                document.body.classList.add('styles-loaded');
+              }
+            }, 100);
+          }
+        });
+      } else {
+        // DOM already loaded
+        if (!checkStylesLoaded()) {
+          const xpCssLink = document.getElementById('xp-css');
+          if (xpCssLink) {
+            xpCssLink.addEventListener('load', () => {
+              document.body.classList.add('styles-loaded');
+            });
+          }
+          setTimeout(() => {
+            if (document.body && !document.body.classList.contains('styles-loaded')) {
+              document.body.classList.add('styles-loaded');
+            }
+          }, 100);
+        }
+      }
     </script>
   </head>
   <body>

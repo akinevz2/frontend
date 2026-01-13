@@ -108,6 +108,10 @@ form#form > label {
 
 .window-body ul {
   margin: 0;
+  padding-left: 0;
+}
+
+.window-body ul li {
   padding-left: 1.5em;
 }
 
@@ -171,6 +175,23 @@ form#form > label {
   position: relative;
 }
 
+/* Minimized sections button container */
+.minimized-menu-container {
+  display: flex;
+  justify-content: center;
+  margin: 20px auto;
+  width: 100%;
+  max-width: 600px;
+  padding: 0 var(--gap-size);
+  position: relative;
+}
+
+.minimized-menu-button {
+  min-width: 200px;
+  padding: 8px 24px !important;
+  font-size: 13px !important;
+}
+
 .minimized-menu {
   position: relative;
   display: inline-block;
@@ -198,24 +219,27 @@ form#form > label {
   background-color: rgba(51, 153, 255, 0.4);
 }
 
-.minimized-menu .dropdown-menu {
+.minimized-menu-container .dropdown-menu {
   position: absolute;
   top: 100%;
-  right: 0;
+  left: 50%;
+  transform: translateX(-50%);
   background: #fff;
   border: 2px outset #dfdfdf;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-  min-width: 200px;
+  min-width: 250px;
   max-height: 400px;
   overflow-y: auto;
   z-index: 1001;
   padding: 2px;
+  display: flex;
+  flex-direction: column;
 }
 
-.minimized-menu .dropdown-item {
+.minimized-menu-container .dropdown-item {
   display: block;
   width: 100%;
-  padding: 4px 8px;
+  padding: 6px 12px;
   text-align: left;
   background: transparent;
   border: none;
@@ -228,7 +252,7 @@ form#form > label {
   text-overflow: ellipsis;
 }
 
-.minimized-menu .dropdown-item:hover {
+.minimized-menu-container .dropdown-item:hover {
   background-color: #0a246a;
   color: #fff !important;
 }
@@ -236,25 +260,6 @@ form#form > label {
 /* Account for fixed menu bar */
 body {
   padding-top: 24px;
-}
-
-/* NavBar animation - deprecated, keeping for backward compatibility */
-nav {
-  position: fixed;
-  top: 10px;
-  left: 0;
-  right: 0;
-  z-index: 50;
-  opacity: 0;
-  transform: translateY(-100%);
-  transition:
-    opacity 0.5s ease-in-out,
-    transform 0.5s ease-in-out;
-}
-
-/* Account for fixed navbar when scrolling */
-body.nav-visible {
-  padding-top: 3em;
 }
 
 @media (prefers-color-scheme: light) {

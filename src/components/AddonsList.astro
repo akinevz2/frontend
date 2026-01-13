@@ -1,8 +1,13 @@
 ---
 import addons from "../addons.json";
 import { PageWithAddons } from "./Page";
+import { processContent } from "../windowing/server";
+import type { AddonProps } from "./Addon";
+
+const { processed, metadata } = processContent(addons as AddonProps);
+const pageMetadata = { sections: metadata };
 ---
 
 <main>
-    <PageWithAddons client:only="react" addons={addons} />
+    <PageWithAddons client:only="react" addons={processed} pageMetadata={pageMetadata} />
 </main>
