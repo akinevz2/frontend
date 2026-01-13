@@ -1,5 +1,6 @@
 import type React from "react";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useSectionContext } from "./SectionContext";
 
 export type Content = string | string[] | SectionProps[];
@@ -49,7 +50,19 @@ export const Section = (props: SectionProps) => {
   const hasContent = !!content;
   const [isMaximized, setIsMaximized] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(true);
-  const { markAsExpanded } = useSectionContext();
+  const [isMinimized, setIsMinimized] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const windowRef = useRef<HTMLDivElement>(null);
+  const { markAsExpanded, minimizeSection, restoreSection } = useSectionContext();
+
+  const handleMinimize = () => {
+    if (heading && typeof heading === "string") {
+      setIsMinimized(true);
+      minimizeSection(heading, () => setIsMinimized(false));
+    }
+  };
 
   const handleMaximize = () => {
     setIsMaximized(!isMaximized);
@@ -70,13 +83,60 @@ export const Section = (props: SectionProps) => {
     }
   };
 
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('.title-bar-controls')) {
+      return; // Don't drag when clicking window controls
+    }
+    setIsDragging(true);
+    setDragOffset({
+      x: e.clientX - position.x,
+      y: e.clientY - position.y
+    });
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isDragging && isMaximized) {
+        setPosition({
+          x: e.clientX - dragOffset.x,
+          y: e.clientY - dragOffset.y
+        });
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, dragOffset, isMaximized]);
+
+  // Center the window when first maximized
+  useEffect(() => {
+    if (isMaximized && windowRef.current && position.x === 0 && position.y === 0) {
+      const rect = windowRef.current.getBoundingClientRect();
+      setPosition({
+        x: (window.innerWidth - rect.width) / 2,
+        y: (window.innerHeight - rect.height) / 2
+      });
+    }
+  }, [isMaximized]);
+
   const windowContent = (
     <div className={`window ${className || ""}`}>
       {hasHeading ? (
         <div className="title-bar">
           <div className="title-bar-text">{heading}</div>
           <div className="title-bar-controls">
-            <button aria-label="Minimize"></button>
+            <button aria-label="Minimize" onClick={handleMinimize}></button>
             {depth !== 0 && (
               <button aria-label="Maximize" onClick={handleMaximize}></button>
             )}
@@ -101,24 +161,75 @@ export const Section = (props: SectionProps) => {
 
   return (
     <>
-      <div style={{ visibility: isMaximized ? "hidden" : "visible" }}>
-        {windowContent}
-      </div>
-      {isMaximized && (
+      {!isMinimized && !isMaximized && windowContent}
+      {isMaximized && typeof document !== 'undefined' && createPortal(
         <div
           style={{
             position: "fixed",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            zIndex: 9999,
-            maxWidth: "90vw",
-            maxHeight: "90vh",
-            overflow: "auto",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0, 0, 0, 0.3)",
+            zIndex: 9998,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onClick={(e) => {
+            // Close when clicking backdrop
+            if (e.target === e.currentTarget) {
+              setIsMaximized(false);
+            }
           }}
         >
-          {windowContent}
-        </div>
+          <div
+            ref={windowRef}
+            style={{
+              position: "absolute",
+              left: `${position.x}px`,
+              top: `${position.y}px`,
+              zIndex: 9999,
+              maxWidth: "90vw",
+              maxHeight: "90vh",
+              overflow: "auto",
+              cursor: isDragging ? "grabbing" : "default",
+            }}
+          >
+            <div
+              className={`window ${className || ""}`}
+              style={{ cursor: "default" }}
+            >
+              {hasHeading ? (
+                <div 
+                  className="title-bar" 
+                  style={{ cursor: "grab" }}
+                  onMouseDown={handleMouseDown}
+                >
+                  <div className="title-bar-text">{heading}</div>
+                  <div className="title-bar-controls">
+                    <button aria-label="Minimize" onClick={handleMinimize}></button>
+                    <button aria-label="Maximize" onClick={handleMaximize}></button>
+                    <button aria-label="Close" onClick={handleClose}></button>
+                  </div>
+                </div>
+              ) : null}
+              <div className="window-body">
+                {isCollapsed ? (
+                  <div style={{ display: "flex", justifyContent: "flex-start" }}>
+                    <button onClick={handleExpand}>OK</button>
+                  </div>
+                ) : (
+                  <>
+                    {hasContent ? renderContent(content, depth) : null}
+                    {children}
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>,
+        document.body
       )}
     </>
   );
