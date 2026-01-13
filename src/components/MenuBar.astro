@@ -1,5 +1,6 @@
 ---
 import { generateMenuItems, type MenuItem } from "../utils/menuItems";
+import { MenuBarWithContext } from "./MenuBarWithContext";
 
 interface Props {
   links?: { label: string; href: string }[];
@@ -37,6 +38,9 @@ if (links) {
         </li>
       ))
     }
+    <li role="none" class="minimized-sections-item">
+      <MenuBarWithContext client:only="react" />
+    </li>
   </menu>
 </div>
 

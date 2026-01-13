@@ -15,14 +15,14 @@ export interface MenuItem {
  * @returns Sorted array of menu items
  */
 export function generateMenuItems(
-  pages: Array<{ url?: string } >,
+  pages: Array<{ url?: string} >,
   additionalLinks: MenuItem[] = []
 ): MenuItem[] {
   // Default label mapping for pages
   const labelMap: Record<string, { label: string; order: number }> = {
     '/': { label: 'home', order: 1 },
     '/index': { label: 'home', order: 1 },
-    '/addons/': { label: 'addons', order: 2 },
+    '/addons': { label: 'addons', order: 2 },
     '/contact': { label: 'contact', order: 3 },
   };
 
