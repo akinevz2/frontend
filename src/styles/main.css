@@ -47,8 +47,7 @@ main > .page {
 
 body {
   margin-bottom: 0;
-  margin-top: 2.685em;
-  padding-top: 80px;
+  margin-top: 0;
 }
 
 body,
@@ -116,7 +115,62 @@ form#form > label {
   margin-top: 0;
 }
 
-/* NavBar animation */
+/* Menu Bar - Windows XP style */
+.menu-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: linear-gradient(to bottom, #f0f0f0 0%, #e0e0e0 100%);
+  border-bottom: 1px solid #808080;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  padding: 0;
+  margin: 0;
+}
+
+.menu-bar menu {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+}
+
+.menu-bar menu li {
+  margin: 0;
+  padding: 0;
+}
+
+.menu-bar menu a {
+  display: block;
+  padding: 4px 8px;
+  text-decoration: none;
+  color: #000 !important;
+  font-size: 11px;
+  font-family: "Tahoma", "MS Sans Serif", sans-serif;
+  white-space: nowrap;
+  transition: background-color 0.1s ease;
+}
+
+.menu-bar menu a:hover {
+  background-color: rgba(51, 153, 255, 0.2);
+}
+
+.menu-bar menu a:active {
+  background-color: rgba(51, 153, 255, 0.4);
+}
+
+.menu-bar .menu-underline {
+  text-decoration: underline;
+}
+
+/* Account for fixed menu bar */
+body {
+  padding-top: 24px;
+}
+
+/* NavBar animation - deprecated, keeping for backward compatibility */
 nav {
   position: fixed;
   top: 10px;
@@ -156,5 +210,58 @@ body.nav-visible {
     max-width: unset;
     width: unset;
     padding: var(--gap-size);
+  }
+
+  /* Mobile-friendly menu bar */
+  .menu-bar {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f0f0f0;
+  }
+
+  /* Hide scrollbar for cleaner look but keep functionality */
+  .menu-bar::-webkit-scrollbar {
+    height: 3px;
+  }
+
+  .menu-bar::-webkit-scrollbar-track {
+    background: #f0f0f0;
+  }
+
+  .menu-bar::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 2px;
+  }
+
+  .menu-bar menu {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    min-width: min-content;
+  }
+
+  .menu-bar menu a {
+    padding: 6px 12px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  /* Increase touch target size for better mobile usability */
+  .menu-bar menu li {
+    display: flex;
+    align-items: center;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  /* Extra small screens - even more compact */
+  .menu-bar menu a {
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+
+  body {
+    padding-top: 28px;
   }
 }

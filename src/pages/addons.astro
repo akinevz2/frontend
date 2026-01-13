@@ -1,6 +1,6 @@
 ---
 import AddonsList from "../components/AddonsList.astro";
-import NavBar from "../components/NavBar.astro";
+import MenuBar from "../components/MenuBar.astro";
 import "../styles/main.css";
 ---
 
@@ -30,13 +30,7 @@ import "../styles/main.css";
     </script>
   </head>
   <body>
+    <MenuBar />
     <AddonsList />
-    <NavBar
-      links={[
-        { label: "home", href: "/" },
-        { label: "addons", href: "/addons/" },
-        { label: "contact", href: "/contact" },
-      ]}
-    />
   </body>
 </html>
