@@ -6,22 +6,23 @@
   --mid-color: color-mix(in srgb, #f5f5dc, #2f2f2f 50%);
 }
 
-/* Hide all text content until styles are loaded */
-body:not(.styles-loaded) *,
-body:not(.styles-loaded) h1,
-body:not(.styles-loaded) h2,
-body:not(.styles-loaded) h3,
-body:not(.styles-loaded) h4,
-body:not(.styles-loaded) h5,
-body:not(.styles-loaded) h6,
-body:not(.styles-loaded) p,
-body:not(.styles-loaded) span,
-body:not(.styles-loaded) label,
-body:not(.styles-loaded) li,
-body:not(.styles-loaded) a,
-body:not(.styles-loaded) button,
-body:not(.styles-loaded) input,
-body:not(.styles-loaded) textarea {
+/* Hide content until styles are loaded, but keep menu bar visible */
+body:not(.styles-loaded) main,
+body:not(.styles-loaded) main *,
+body:not(.styles-loaded) main h1,
+body:not(.styles-loaded) main h2,
+body:not(.styles-loaded) main h3,
+body:not(.styles-loaded) main h4,
+body:not(.styles-loaded) main h5,
+body:not(.styles-loaded) main h6,
+body:not(.styles-loaded) main p,
+body:not(.styles-loaded) main span,
+body:not(.styles-loaded) main label,
+body:not(.styles-loaded) main li,
+body:not(.styles-loaded) main a,
+body:not(.styles-loaded) main button,
+body:not(.styles-loaded) main input,
+body:not(.styles-loaded) main textarea {
   color: transparent !important;
   opacity: 0 !important;
 }

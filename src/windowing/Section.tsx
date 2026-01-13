@@ -1,35 +1,26 @@
 import type React from "react";
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { useSectionContext } from "./SectionContext";
-
-export type Content = string | string[] | SectionProps[];
-export type Heading = string;
-export type SectionProps = {
-  className?: string;
-  heading?: Heading;
-  content?: Content;
-  children?: React.ReactNode[];
-  depth?: number;
-};
-
-// function renderHeading(heading: Heading) {
-//   if (typeof heading === "string") return <h1>{heading}</h1>;
-//   return heading;
-// }
+import Markdown from "react-markdown";
+import { useSectionContext } from "./hooks";
+import type { Content, SectionProps } from "./types";
 
 function renderContent(content: Content, depth: number) {
   if (typeof content === "string")
     return (
       <ul>
-        <li>{content}</li>
+        <li>
+          <Markdown>{content}</Markdown>
+        </li>
       </ul>
     );
   return (
     <ul>
       {content.map((text, index) =>
         typeof text == "string" ? (
-          <li key={index}>{text}</li>
+          <li key={index}>
+            <Markdown>{text}</Markdown>
+          </li>
         ) : (
           <Section key={index} {...text} depth={depth + 1} />
         )
@@ -45,22 +36,42 @@ const playSound = () => {
 };
 
 export const Section = (props: SectionProps) => {
-  const { heading, content, className, children, depth = 0 } = props;
+  const { heading, content, className, children, depth = 0, uuid } = props;
   const hasHeading = !!heading;
   const hasContent = !!content;
   const [isMaximized, setIsMaximized] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(true);
-  const [isMinimized, setIsMinimized] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const windowRef = useRef<HTMLDivElement>(null);
-  const { markAsExpanded, minimizeSection, restoreSection } = useSectionContext();
+  const { markAsExpanded, minimizeSection, minimizedSections } = useSectionContext();
+  
+  // UUID must be provided from server-side processing
+  if (!uuid) {
+    console.error('Section missing UUID:', { heading, depth });
+  }
+  const sectionUUID = uuid || `fallback-${heading}-${depth}`;
+  const isMinimized = minimizedSections.has(sectionUUID);
+  
+  // Debug logging
+  console.log('Section render:', { 
+    heading, 
+    hasContent, 
+    isCollapsed, 
+    isMinimized, 
+    isMaximized,
+    uuid: sectionUUID,
+    depth 
+  });
 
   const handleMinimize = () => {
     if (heading && typeof heading === "string") {
-      setIsMinimized(true);
-      minimizeSection(heading, () => setIsMinimized(false));
+      // Close maximized window before minimizing
+      if (isMaximized) {
+        setIsMaximized(false);
+      }
+      minimizeSection(sectionUUID, heading);
     }
   };
 
@@ -128,7 +139,7 @@ export const Section = (props: SectionProps) => {
         y: (window.innerHeight - rect.height) / 2
       });
     }
-  }, [isMaximized]);
+  }, [isMaximized, position.x, position.y]);
 
   const windowContent = (
     <div className={`window ${className || ""}`}>
@@ -162,7 +173,7 @@ export const Section = (props: SectionProps) => {
   return (
     <>
       {!isMinimized && !isMaximized && windowContent}
-      {isMaximized && typeof document !== 'undefined' && createPortal(
+      {!isMinimized && isMaximized && typeof document !== 'undefined' && createPortal(
         <div
           style={{
             position: "fixed",

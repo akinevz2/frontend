@@ -1,10 +1,10 @@
 ---
-import sections from "../sections.json";
+import contacts from "../contacts.json";
 import { PageContent } from "./Page";
 import { processContent } from "../windowing/server";
 import type { SectionProps } from "../windowing";
 
-const { processed, metadata } = processContent(sections as SectionProps);
+const { processed, metadata } = processContent(contacts as SectionProps);
 const pageMetadata = { sections: metadata };
 ---
 

@@ -38,9 +38,6 @@ if (links) {
         </li>
       ))
     }
-    <li role="none" class="minimized-sections-item">
-      <MenuBarWithContext client:only="react" />
-    </li>
   </menu>
 </div>
 
@@ -53,7 +50,7 @@ if (links) {
       (activeElement.tagName === 'INPUT' ||
        activeElement.tagName === 'TEXTAREA' ||
        activeElement.tagName === 'SELECT' ||
-       activeElement.isContentEditable)
+       (activeElement instanceof HTMLElement && activeElement.isContentEditable))
     ) {
       return;
     }

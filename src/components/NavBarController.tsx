@@ -1,5 +1,7 @@
-import { useIsNavBarVisible } from "./SectionContext";
 import { useState, useEffect } from "react";
+
+// Temporary stub - navbar visibility logic
+const useIsNavBarVisible = () => true;
 
 export const NavBarController = () => {
   const isVisible = useIsNavBarVisible();
