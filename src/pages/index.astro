@@ -1,6 +1,6 @@
 ---
 import Home from "../components/Home.astro";
-import NavBar from "../components/NavBar.astro";
+import MenuBar from "../components/MenuBar.astro";
 import "../styles/main.css";
 ---
 
@@ -30,15 +30,7 @@ import "../styles/main.css";
     </script>
   </head>
   <body>
+    <MenuBar />
     <Home />
-    <NavBar
-      links={[
-        { label: "home", href: "/" },
-        { label: "addons", href: "/addons/" },
-        { label: "contact", href: "/contact" },
-        { label: "slides", href: "/Layered Network Security Model for Home Networks (slides).pdf" },
-        { label: "paper", href: "/5.html" },
-      ]}
-    />
   </body>
 </html>
