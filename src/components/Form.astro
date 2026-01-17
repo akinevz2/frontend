@@ -3,124 +3,10 @@ import "../styles/main.css";
 ---
 
 <main>
-    <section class="page">
-    <ul>
-      <div class="window">
-        <div class="title-bar">
-          <div class="title-bar-text">
-         Links 
-          </div>
-          <div class="title-bar-controls">
-            <button aria-label="Minimize"></button>
-            <button aria-label="Maximize"></button>
-            <button aria-label="Close"></button>
-          </div>
-        </div>
-        <div class="window-body">
-          Is this enough???
-        </div>
-      </div>
-      <div class="window">
-        <div class="title-bar">
-          <div class="title-bar-text">Email</div>
-          <div class="title-bar-controls">
-            <button aria-label="Minimize"></button>
-            <button aria-label="Maximize"></button>
-            <button aria-label="Close"></button>
-          </div>
-        </div>
-        <div class="window-body">
-          <ul>
-            <li>
-              <a href="mailto:akinevz@gmail.com">akinevz@gmail.com</a>
-            </li>
-            <li>
-              <a href="mailto:akinevz@outlook.com">akinevz@outlook.com</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div class="window">
-        <div class="title-bar">
-          <div class="title-bar-text">GitHub</div>
-          <div class="title-bar-controls">
-            <button aria-label="Minimize"></button>
-            <button aria-label="Maximize"></button>
-            <button aria-label="Close"></button>
-          </div>
-        </div>
-        <div class="window-body">
-          <ul>
-            <li>
-              <a href="https://github.com/akinevz">akinevz (archive)</a>
-            </li>
-            <li>
-              <a href="https://github.com/akinevz2">akinevz2</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div class="window">
-        <div class="title-bar">
-          <div class="title-bar-text">Instagram</div>
-          <div class="title-bar-controls">
-            <button aria-label="Minimize"></button>
-            <button aria-label="Maximize"></button>
-            <button aria-label="Close"></button>
-          </div>
-        </div>
-        <div class="window-body">
-          <ul>
-            <li>
-              <a href="https://www.instagram.com/akinevz">akinevz (archive)</a>
-            </li>
-            <li>
-              <a href="https://www.instagram.com/akinevz2">akinevz2</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div class="window">
-        <div class="title-bar">
-          <div class="title-bar-text">LinkedIn</div>
-          <div class="title-bar-controls">
-            <button aria-label="Minimize"></button>
-            <button aria-label="Maximize"></button>
-            <button aria-label="Close"></button>
-          </div>
-        </div>
-        <div class="window-body">
-          <ul>
-            <li>
-              <a href="https://www.linkedin.com/in/akinevz">akinevz</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div class="window">
-        <div class="title-bar">
-          <div class="title-bar-text">Soundcloud</div>
-          <div class="title-bar-controls">
-            <button aria-label="Minimize"></button>
-            <button aria-label="Maximize"></button>
-            <button aria-label="Close"></button>
-          </div>
-        </div>
-        <div class="window-body">
-          <ul>
-            <li>
-              <a href="https://soundcloud.com/akinevz">akinevz</a>
-            </li>
-            <li>
-              <a href="https://soundcloud.com/kinekinekinekine">and KINE!</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </ul>
+  <section class="page">
     <div class="window">
       <div class="title-bar">
-        <div class="title-bar-text">Contact me</div>
+        <div class="title-bar-text">Resume</div>
         <div class="title-bar-controls">
           <button aria-label="Minimize"></button>
           <button aria-label="Maximize"></button>
@@ -128,106 +14,91 @@ import "../styles/main.css";
         </div>
       </div>
       <div class="window-body">
-        <form id="form">
-          <label for="name">Name:</label>
-          <input type="text" id="name" name="name" required />
-
-          <label for="email">Email:</label>
-          <input type="email" id="email" name="email" required />
-
-          <label for="message">Message:</label>
-          <textarea id="message" name="message" required></textarea>
-
-          <button type="submit">Send</button>
-        </form>
+        <a href="/resume.html">
+          <button>View My Resume</button>
+        </a>
+        <button id="emailButton">Contact Emails</button>
       </div>
     </div>
   </section>
 </main>
 
-<!-- Modal for messages -->
-<div id="messageModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 9999; align-items: center; justify-content: center;">
+<!-- Email Modal -->
+<div id="emailModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 9999; align-items: center; justify-content: center;">
   <div class="window" style="max-width: 400px; margin: auto;">
     <div class="title-bar">
-      <div class="title-bar-text">Message</div>
+      <div class="title-bar-text">Contact Emails</div>
       <div class="title-bar-controls">
-        <button aria-label="Close" id="modalClose"></button>
+        <button aria-label="Close" id="emailModalClose"></button>
       </div>
     </div>
     <div class="window-body">
-      <p id="modalMessage"></p>
+      <ul>
+        <li><a href="mailto:akinevz@outlook.com">akinevz@outlook.com</a></li>
+        <li><a href="mailto:akinevz@gmail.com">akinevz@gmail.com</a></li>
+      </ul>
       <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
-        <button id="modalOk">OK</button>
+        <button id="emailModalOk">OK</button>
       </div>
     </div>
   </div>
 </div>
 
 <style>
-  form {
+  .window-body {
     display: flex;
     flex-direction: column;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
   }
-  label,
-  input,
-  textarea {
-    margin-bottom: 1em;
+  
+  a {
+    text-decoration: none;
+  }
+
+  #emailModal ul {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+  }
+
+  #emailModal li {
+    margin: 0.5rem 0;
   }
 </style>
+
 <script>
-  function showModal(message: string) {
-    const modal = document.getElementById("messageModal");
-    const modalMessage = document.getElementById("modalMessage");
-    if (modal && modalMessage) {
-      modalMessage.textContent = message;
+  function showEmailModal() {
+    const modal = document.getElementById("emailModal");
+    if (modal) {
       modal.style.display = "flex";
     }
   }
 
-  function hideModal() {
-    const modal = document.getElementById("messageModal");
+  function hideEmailModal() {
+    const modal = document.getElementById("emailModal");
     if (modal) {
       modal.style.display = "none";
     }
   }
 
-  function modal(message: string) {
-    return (event: Event) => {
-      event.preventDefault();
-      showModal(message);
-      return false;
-    };
-  }
-
-  function playSound() {
-    console.log("Close button clicked!");
-    const audio = new Audio("/crunchy_kick.ogg");
-    audio.play().catch((err) => showModal("Error playing sound: " + err));
-  }
-
   document.addEventListener("DOMContentLoaded", function () {
-    const form = document.getElementById("form");
-    if (form) {
-      form.addEventListener("submit", modal("Not yet implemented!"));
+    const emailButton = document.getElementById("emailButton");
+    const emailModalClose = document.getElementById("emailModalClose");
+    const emailModalOk = document.getElementById("emailModalOk");
+
+    if (emailButton) {
+      emailButton.addEventListener("click", showEmailModal);
     }
 
-    // Modal close handlers
-    const modalClose = document.getElementById("modalClose");
-    const modalOk = document.getElementById("modalOk");
-    if (modalClose) {
-      modalClose.addEventListener("click", hideModal);
-    }
-    if (modalOk) {
-      modalOk.addEventListener("click", hideModal);
+    if (emailModalClose) {
+      emailModalClose.addEventListener("click", hideEmailModal);
     }
 
-    // Add sound to all close buttons
-    const closeButtons = document.querySelectorAll(
-      'button[aria-label="Close"]'
-    );
-    closeButtons.forEach((button) => {
-      button.addEventListener("click", playSound);
-    });
+    if (emailModalOk) {
+      emailModalOk.addEventListener("click", hideEmailModal);
+    }
   });
 </script>
-</main>
