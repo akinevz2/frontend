@@ -31,7 +31,7 @@ function renderContent(content: AddonContent, props: AddonProps) {
           <li key={index}>{text}</li>
         ) : (
           <Addon key={index} {...text} />
-        )
+        ),
       )}
     </ul>
   );
@@ -67,7 +67,7 @@ function renderAddon(props: AddonProps) {
     elements.push(
       <span key="text">
         <CopyToClipboardButton content={text} />
-      </span>
+      </span>,
     );
   }
   return elements;
@@ -118,7 +118,10 @@ export const AddonList = (props: AddonProps) => {
 
   return (
     <>
-      <div style={{ visibility: isMaximized ? "hidden" : "visible" }}>
+      <div
+        className="addon-wrapper"
+        style={{ visibility: isMaximized ? "hidden" : "visible" }}
+      >
         {windowContent}
       </div>
       {isMaximized && (
@@ -180,7 +183,10 @@ export const Addon = (props: AddonProps) => {
 
   return (
     <>
-      <div style={{ visibility: isMaximized ? "hidden" : "visible" }}>
+      <div
+        className="addon-wrapper"
+        style={{ visibility: isMaximized ? "hidden" : "visible" }}
+      >
         {windowContent}
       </div>
       {isMaximized && (
