@@ -27,6 +27,28 @@
   margin-bottom: 0;
 }
 
+/* Add extra spacing for nested windows */
+.window-body .window {
+  margin-bottom: 1em;
+}
+
+.window-body .window:last-child {
+  margin-bottom: 0;
+}
+
+/* Spacing for windows inside lists (addon pages) */
+.window-body ul li .window,
+.window-body ul .window,
+.window-body .addon-wrapper {
+  margin-bottom: 1em;
+}
+
+.window-body ul li:last-child .window,
+.window-body ul .window:last-child,
+.window-body .addon-wrapper:last-child {
+  margin-bottom: 0;
+}
+
 /* Hide border on first-level windows to avoid double border */
 .page > .window,
 main > .page {
@@ -48,6 +70,17 @@ main > .page {
 body {
   margin-bottom: 0;
   margin-top: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 0;
 }
 
 body,
@@ -84,8 +117,8 @@ li {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--gap-size);
-  max-width: 768px;
-  width: 33%;
+  max-width: 600px;
+  width: 600px;
   border: 0;
   position: relative;
   z-index: 100;
@@ -104,6 +137,11 @@ form#form > label {
   font-family: bahnscrift, system-ui, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
+}
+
+/* Add padding to window bodies */
+.window-body {
+  padding: 1.25em !important;
 }
 
 .window-body ul {
@@ -270,7 +308,7 @@ body {
 
 @media screen and (max-width: 1920px) {
   .page {
-    width: 66%;
+    width: 600px;
   }
 }
 
@@ -281,7 +319,7 @@ body {
 
   .page {
     max-width: unset;
-    width: unset;
+    width: 100%;
     padding: var(--gap-size);
   }
 
