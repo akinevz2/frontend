@@ -29,7 +29,7 @@
 
 /* Add extra spacing for nested windows */
 .window-body .window {
-  margin-bottom: 1em;
+  margin-bottom: 0.5em;
 }
 
 .window-body .window:last-child {
@@ -40,7 +40,7 @@
 .window-body ul li .window,
 .window-body ul .window,
 .window-body .addon-wrapper {
-  margin-bottom: 1em;
+  margin-bottom: 0.5em;
 }
 
 .window-body ul li:last-child .window,
@@ -137,11 +137,6 @@ form#form > label {
   font-family: bahnscrift, system-ui, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-}
-
-/* Add padding to window bodies */
-.window-body {
-  padding: 1.25em !important;
 }
 
 .window-body ul {
