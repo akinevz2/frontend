@@ -9,6 +9,7 @@
   --background-color: #000;
   --border-size: 0.25em;
   --gap-size: 0.5em;
+  font-size: 16px;
 }
 
 @font-face {
@@ -184,7 +185,7 @@ form#form > label {
   padding: 4px 8px;
   text-decoration: none;
   color: #000 !important;
-  font-size: 11px;
+  font-size: 13px;
   font-family: "Tahoma", "MS Sans Serif", sans-serif;
   white-space: nowrap;
   transition: background-color 0.1s ease;
@@ -235,7 +236,7 @@ form#form > label {
   padding: 4px 8px;
   text-decoration: none;
   color: #000 !important;
-  font-size: 11px;
+  font-size: 13px;
   font-family: "Tahoma", "MS Sans Serif", sans-serif;
   white-space: nowrap;
   background: transparent;
@@ -277,7 +278,7 @@ form#form > label {
   background: transparent;
   border: none;
   color: #000 !important;
-  font-size: 11px;
+  font-size: 13px;
   font-family: "Tahoma", "MS Sans Serif", sans-serif;
   cursor: pointer;
   white-space: nowrap;
@@ -314,8 +315,20 @@ body {
 
   .page {
     max-width: unset;
-    width: 100%;
+    width: calc(100% - 2em);
+    margin: 0 auto;
     padding: var(--gap-size);
+  }
+
+  /* Constrain window width on mobile */
+  .window {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .window-body {
+    max-width: 100%;
+    overflow-x: auto;
   }
 
   /* Mobile-friendly menu bar */
