@@ -1,0 +1,17 @@
+{
+  "heading": "kine's blog posts",
+  "content": [
+    {
+      "heading": "first post",
+      "content": "this is a placeholder blog post. update src/posts.json with your real entries."
+    },
+    {
+      "heading": "how to add posts",
+      "content": [
+        "open src/posts.json",
+        "add new objects with heading/content",
+        "nested arrays and objects are supported"
+      ]
+    }
+  ]
+}
