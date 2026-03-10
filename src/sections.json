@@ -98,21 +98,17 @@
                 "playing on Thunderstrike as Rueg",
                 {
                   "heading": "why the name Rueg?",
-                  "content": "rueg is a skeleton"
+                  "content": "rueg is a rogue skeleton"
                 },
                 {
                   "heading": "what is the appearance of Rueg?",
                   "content": [
-                    "he is an unnamed creature of mystery",
-                    "a short non-descript figure",
-                    "usually with a stylish hat over a bald head",
+                    "he is an unnamed skeleton of mystery",
+                    "a short non-descript skeleton",
+                    "with various head accessories",
                     "sometimes no eyes",
-                    "sometimes no jaw"
+                    "sometimes no jaws"
                   ]
-                },
-                {
-                  "heading": "what is the significance of Rueg?",
-                  "content": "Rueg once survived to level 60 in classic wow"
                 },
                 {
                   "heading": "where to find Rueg?",
@@ -121,9 +117,9 @@
               ]
             },
             {
-              "heading": "who is Ateric the Gnome",
+              "heading": "who is Ateric",
               "content": [
-                "playing on Thunderstrike as Ateric",
+                "playing on Thunderstrike as Ateric the Gnome",
                 {
                   "heading": "what class is Ateric?",
                   "content": "a Mage"
@@ -133,30 +129,30 @@
             {
               "heading": "who is Equal",
               "content": [
-                "playing on Thunderstrike as Equal",
+                "playing on Thunderstrike as Equal the Human",
                 {
                   "heading": "what class is Equal?",
-                  "content": "a Human Priest"
+                  "content": "a Priest"
                 }
               ]
             },
             {
               "heading": "who is Jungie",
               "content": [
-                "playing on Spineshatter as Jungie",
+                "playing on Spineshatter as Jungie the Troll",
                 {
                   "heading": "what class is Jungie?",
-                  "content": "a Troll Shaman on Spineshatter"
+                  "content": "a Shaman"
                 }
               ]
             },
             {
-              "heading": "who is Kogg the Tauren",
+              "heading": "who is Kogg ",
               "content": [
-                "playing on Thunderstrike as Kogg",
+                "playing on Thunderstrike as Kogg the Tauren",
                 {
                   "heading": "what class is Kogg?",
-                  "content": "a Tauren Shaman"
+                  "content": "a Shaman"
                 }
               ]
             }
