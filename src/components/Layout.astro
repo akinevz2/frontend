@@ -15,18 +15,18 @@ const {
 
 <html>
   <head>
-    <link rel="stylesheet" href="https://unpkg.com/xp.css@0.2.3/dist/XP.css" id="xp-css" />
+    <link rel="stylesheet" href="https://unpkg.com/xp.css@0.2.3/dist/98.css" id="theme-css" />
     <noscript><link rel="stylesheet" href="/loading.css" /></noscript>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <meta property="og:image" content="/avatar.png" />
     <title>{title}</title>
     <script is:inline>
-      // Wait for DOM and xp.css to load before revealing content
+      // Wait for DOM and 98.css to load before revealing content
       const checkStylesLoaded = () => {
         if (!document.body) return false;
-        const xpCssLink = document.getElementById('xp-css');
-        if (xpCssLink?.sheet) {
+        const themeCssLink = document.getElementById('theme-css');
+        if (themeCssLink?.sheet) {
           document.body.classList.add('styles-loaded');
           return true;
         }
@@ -37,9 +37,9 @@ const {
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
           if (!checkStylesLoaded()) {
-            const xpCssLink = document.getElementById('xp-css');
-            if (xpCssLink) {
-              xpCssLink.addEventListener('load', () => {
+            const themeCssLink = document.getElementById('theme-css');
+            if (themeCssLink) {
+              themeCssLink.addEventListener('load', () => {
                 document.body.classList.add('styles-loaded');
               });
             }
@@ -53,9 +53,9 @@ const {
       } else {
         // DOM already loaded
         if (!checkStylesLoaded()) {
-          const xpCssLink = document.getElementById('xp-css');
-          if (xpCssLink) {
-            xpCssLink.addEventListener('load', () => {
+          const themeCssLink = document.getElementById('theme-css');
+          if (themeCssLink) {
+            themeCssLink.addEventListener('load', () => {
               document.body.classList.add('styles-loaded');
             });
           }
