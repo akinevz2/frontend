@@ -18,7 +18,11 @@
             "the model refused to terminate aggressively, running on consumer hardware, on a baseline ollama instance.",
             "a simple query of 'what are your patchnotes' resulted in a non-terminating process where the model was attempting to look up knowledge, but was getting distracted with the formatting of the output.",
             "the model refused to interpret the statement relating to its output shape as a hint, rather using it as an excuse to keep producing more output.",
-            "terminating the model, and adding a guidance interpreted from its partial output managed to produce a extremely lengthy response, but one that finished, with the clause of formatting being slightly misinterpreted"
+            "interrupting the model, and adding a guidance interpreted from its partial output managed to produce a extremely lengthy response, but one that finished with the clause of formatting being slightly misinterpreted.",
+            "what i found interesting was the fact that the model did manage to not only give an innacurate answer,",
+            "it also managed to 'think' itself into committing errors, such as reasoning that it shouldn't assume against the trained knowledge... which could indicate lack of attention-driven training?",
+            "it carried on making the assumption that its knowledge was concrete and immutable, then using that to reason against providing a more direct answer.",
+            "the guidance it was given to simplify the response was not interpreted, the implied freedom to respond without forced text formatting was sidestepped."
           ]
         },
         {
