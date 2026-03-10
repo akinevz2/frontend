@@ -26,6 +26,26 @@
           ]
         },
         {
+          "heading": "model output",
+          "content": [
+            "This looks correct. I will remove the numbers in the final output as they are not part of the lines themselves, just",
+            "counting them for me. The user said \"no markdown\", so numbers with dots `1.` might be considered markdown or formatting.",
+            "Better to just have raw text lines.",
+            "Final check on \"bullet points with no markdown\". Usually means just text separated by newlines.",
+            "Okay, ready to generate.",
+            "Wait, I need to make sure I don't accidentally add a title or intro text. Just the 5 lines.",
+            "One more thing: The user said \"The request for 'bullet points' was phrased in British English, to indicate 5 statements",
+            "separated by newlines\". This implies they want exactly 5 lines."
+          ]
+        },
+        {
+          "heading": "trip hazard",
+          "content": [
+            "Okay, proceeding.",
+            "Wait, I need to check if \"bullet points with no markdown\" means I should use..."
+          ]
+        },
+        {
           "heading": "post schedule",
           "content": "analysis and snippets will be discussed at a later date"
         }
