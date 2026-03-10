@@ -92,10 +92,10 @@
         {
           "heading": "for gaming",
           "content": [
-            "playing on Thunderstrike as Rueg",
             {
               "heading": "what is a Rueg",
               "content": [
+                "playing on Thunderstrike as Rueg",
                 {
                   "heading": "why the name Rueg?",
                   "content": "rueg is a skeleton"
@@ -117,6 +117,46 @@
                 {
                   "heading": "where to find Rueg?",
                   "content": "anywhere, really"
+                }
+              ]
+            },
+            {
+              "heading": "who is Ateric the Gnome",
+              "content": [
+                "playing on Thunderstrike as Ateric",
+                {
+                  "heading": "what class is Ateric?",
+                  "content": "a Mage"
+                }
+              ]
+            },
+            {
+              "heading": "who is Equal",
+              "content": [
+                "playing on Thunderstrike as Equal",
+                {
+                  "heading": "what class is Equal?",
+                  "content": "a Human Priest"
+                }
+              ]
+            },
+            {
+              "heading": "who is Jungie",
+              "content": [
+                "playing on Spineshatter as Jungie",
+                {
+                  "heading": "what class is Jungie?",
+                  "content": "a Troll Shaman on Spineshatter"
+                }
+              ]
+            },
+            {
+              "heading": "who is Kogg the Tauren",
+              "content": [
+                "playing on Thunderstrike as Kogg",
+                {
+                  "heading": "what class is Kogg?",
+                  "content": "a Tauren Shaman"
                 }
               ]
             }
