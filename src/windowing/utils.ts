@@ -1,5 +1,15 @@
-import { randomUUID } from 'node:crypto';
-import type { SectionProps, SectionMetadata, ContentWithUUID } from './types';
+import type { SectionProps, SectionMetadata, ContentWithUUID } from "./types";
+
+const createUUID = () => {
+  if (
+    typeof globalThis.crypto !== "undefined" &&
+    typeof globalThis.crypto.randomUUID === "function"
+  ) {
+    return globalThis.crypto.randomUUID();
+  }
+
+  return `uuid-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+};
 
 /**
  * Generic function to recursively assign UUIDs to content items
@@ -7,10 +17,10 @@ import type { SectionProps, SectionMetadata, ContentWithUUID } from './types';
 function assignUUIDs<T extends SectionProps>(
   item: T,
   depth: number = 0,
-  metadata: Map<string, SectionMetadata> = new Map()
+  metadata: Map<string, SectionMetadata> = new Map(),
 ): { result: ContentWithUUID<T>; metadata: Map<string, SectionMetadata> } {
-  const uuid = randomUUID();
-  const heading = item.heading || '';
+  const uuid = createUUID();
+  const heading = item.heading || "";
 
   // Store metadata
   if (heading) {
@@ -20,11 +30,11 @@ function assignUUIDs<T extends SectionProps>(
   // Handle content recursively
   let newContent: string | (string | ContentWithUUID<T>)[] | undefined;
   if (item.content) {
-    if (typeof item.content === 'string') {
+    if (typeof item.content === "string") {
       newContent = item.content;
     } else if (Array.isArray(item.content)) {
       const mapped = item.content.map((subItem: unknown) => {
-        if (typeof subItem === 'string') {
+        if (typeof subItem === "string") {
           return subItem;
         } else {
           const result = assignUUIDs(subItem as T, depth + 1, metadata);
@@ -39,7 +49,7 @@ function assignUUIDs<T extends SectionProps>(
     ...item,
     uuid,
     content: newContent,
-    depth
+    depth,
   } as ContentWithUUID<T>;
 
   return { result: resultWithUUID, metadata };
@@ -49,18 +59,24 @@ function assignUUIDs<T extends SectionProps>(
  * Process an array or single content item
  */
 export function processContent<T extends SectionProps>(
-  content: T | T[]
-): { processed: ContentWithUUID<T> | ContentWithUUID<T>[]; metadata: SectionMetadata[] } {
+  content: T | T[],
+): {
+  processed: ContentWithUUID<T> | ContentWithUUID<T>[];
+  metadata: SectionMetadata[];
+} {
   const metadata = new Map<string, SectionMetadata>();
 
   if (Array.isArray(content)) {
-    const processed = content.map(item => {
+    const processed = content.map((item) => {
       const result = assignUUIDs(item, 0, metadata);
       return result.result;
     });
     return { processed, metadata: Array.from(metadata.values()) };
   } else {
     const result = assignUUIDs(content, 0, metadata);
-    return { processed: result.result, metadata: Array.from(result.metadata.values()) };
+    return {
+      processed: result.result,
+      metadata: Array.from(result.metadata.values()),
+    };
   }
 }

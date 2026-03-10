@@ -22,9 +22,10 @@ export function generateMenuItems(
   const labelMap: Record<string, { label: string; order: number }> = {
     "/": { label: "home", order: 1 },
     "/index": { label: "home", order: 1 },
-    "/addons": { label: "addons", order: 2 },
-    "/wow": { label: "wow config", order: 3 },
-    "/contact": { label: "contact", order: 4 },
+    "/blog": { label: "blog", order: 2 },
+    "/addons": { label: "addons", order: 3 },
+    "/wow": { label: "wow config", order: 4 },
+    "/contact": { label: "contact", order: 5 },
   };
 
   // Generate menu items from discovered pages
