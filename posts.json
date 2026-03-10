@@ -11,10 +11,24 @@
         "open posts.json",
         "add new post",
         "nested arrays and objects are supported",
-        {
-          "heading": "curiosity",
-          "content": "i wanted to discuss my findings in qwen3.5, specifically how I managed to get it to produce useful output and terminate in one session, after 1 chat message, followed by an interrupt, followed by another request"
-        }
+        [
+          {
+            "heading": "curiosity",
+            "content": "i wanted to discuss my findings in qwen3.5, specifically how I managed to get it to produce useful output and terminate in one session, after 1 chat message, followed by an interrupt, followed by another request"
+          },
+          {
+            "heading": "ramble",
+            "content": [
+              "the model refused to terminate aggressively, running on consumer hardware, on a baseline ollama instance.",
+              "a simple query of 'what are your patchnotes' resulted in a non-terminating process where the model was attempting to look up knowledge, but was getting distracted with the formatting of the output.",
+              "the model refused to interpret the statement relating to its output shape as a hint, rather using it as an excuse to keep producing more output.",
+              "terminating the model, and adding a guidance interpreted from its partial output managed to produce a extremely lengthy response, but one that finished, with the clause of formatting being slightly misinterpreted"
+            ]
+          },
+          {
+            "content": "analysis and snippets will be discussed at a later date"
+          }
+        ]
       ]
     }
   ]
