@@ -46,8 +46,12 @@
           ]
         },
         {
-          "heading": "post schedule",
-          "content": "analysis and snippets will be discussed at a later date"
+          "heading": "original prompts and screenshots",
+          "content": [
+            "inadvertently, i had rebooted the host machine which the chat was running on from a terminal, and lost the precise wording that i had used",
+            "i will be attempting to run more experiments on the new model in the coming weeks",
+            "and i took some additional excerpts from the model's thinking output, which i will add in the next post"
+          ]
         }
       ]
     }
