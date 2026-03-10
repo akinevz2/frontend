@@ -3,14 +3,18 @@
   "content": [
     {
       "heading": "first post",
-      "content": "this is a placeholder blog post. update src/posts.json with your real entries."
+      "content": "this is a placeholder blog post. i suddenly got motivation to start writing text again."
     },
     {
-      "heading": "how to add posts",
+      "heading": "second post",
       "content": [
-        "open src/posts.json",
-        "add new objects with heading/content",
-        "nested arrays and objects are supported"
+        "open posts.json",
+        "add new post",
+        "nested arrays and objects are supported",
+        {
+          "heading": "curiosity",
+          "content": "i wanted to discuss my findings in qwen3.5, specifically how I managed to get it to produce useful output and terminate in one session, after 1 chat message, followed by an interrupt, followed by another request"
+        }
       ]
     }
   ]
