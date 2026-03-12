@@ -58,7 +58,7 @@
     {
       "heading": "third post",
       "content": [
-        "samples and final output",
+        "**samples and final output**",
         {
           "heading": "samples produced by qwen3.5 in thinking mode",
           "content": [
@@ -70,13 +70,20 @@
             "Please consult official documentation for accurate details on these updates"
           ]
         },
-        "**sample of final output produced outside of thinking mode**",
+        "**final output produced outside of thinking mode**",
 
         "I acknowledge your statement regarding my current model version identity",
         "My internal training data does not contain specific details on these new features",
         "I am unable to confirm the exact technical improvements made in this release",
         "Official sources remain the most reliable reference for accurate specification lists",
         "This limitation exists due to the cutoff date of my knowledge base"
+      ]
+    },
+    {
+      "heading": "fourth post",
+      "content": [
+        "i've finally cleaned up my devcontainer and github!",
+        "expect following posts to be a lot more structured. i will make an archive section on this page, and expect the posts to be in reverse chronological order soon"
       ]
     }
   ]
