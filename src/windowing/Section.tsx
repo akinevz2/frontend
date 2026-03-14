@@ -5,14 +5,87 @@ import Markdown from "react-markdown";
 import { useSectionContext } from "./hooks";
 import type { Content, SectionProps } from "./types";
 
-function renderPrintout(printout: string | string[]) {
-  const text = Array.isArray(printout) ? printout.join("\n") : printout;
+const BLOG_POSTS_HOST =
+  import.meta.env.PUBLIC_BLOG_POSTS_URL ||
+  "https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/";
+
+function normalizePrintoutText(printout: string | string[]): string {
+  return Array.isArray(printout) ? printout.join("\n") : printout;
+}
+
+function toFencedCodeBlock(content: string): string {
+  return `\`\`\`\n${content}\n\`\`\``;
+}
+
+function PrintoutContent({ printout }: { printout: string | string[] }) {
+  const [markdownContent, setMarkdownContent] = useState(() =>
+    toFencedCodeBlock(normalizePrintoutText(printout)),
+  );
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadPrintout = async () => {
+      if (typeof printout !== "string") {
+        if (!cancelled) {
+          setError(null);
+          setMarkdownContent(
+            toFencedCodeBlock(normalizePrintoutText(printout)),
+          );
+        }
+        return;
+      }
+
+      const printoutUrl = new URL(printout, BLOG_POSTS_HOST).toString();
+
+      try {
+        const response = await fetch(printoutUrl, {
+          method: "GET",
+          cache: "no-store",
+          headers: {
+            Accept: "text/plain, text/markdown, application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const fileContent = await response.text();
+        if (!cancelled) {
+          setError(null);
+          setMarkdownContent(toFencedCodeBlock(fileContent));
+        }
+      } catch (fetchError) {
+        const message =
+          fetchError instanceof Error ? fetchError.message : "Unknown error";
+        if (!cancelled) {
+          setError(
+            `Failed to fetch printout '${printout}' from BLOG_POSTS_HOST (${message}).`,
+          );
+          setMarkdownContent(toFencedCodeBlock(printout));
+        }
+      }
+    };
+
+    void loadPrintout();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [printout]);
 
   return (
     <div className="debug-printout-scroll" data-debug="printout-scroll">
-      <pre className="debug-printout-text">{text}</pre>
+      <Markdown>{markdownContent}</Markdown>
+      {error ? <p className="status-bar">{error}</p> : null}
     </div>
   );
+}
+
+function renderPrintout(printout: string | string[]) {
+  return <PrintoutContent printout={printout} />;
 }
 
 function renderContent(content: Content, depth: number) {
