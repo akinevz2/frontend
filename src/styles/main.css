@@ -123,6 +123,20 @@ li {
   border: 0;
   position: relative;
   z-index: 100;
+  transition:
+    width 220ms ease,
+    max-width 220ms ease,
+    margin 220ms ease,
+    padding 220ms ease,
+    transform 220ms ease;
+}
+
+.root-window {
+  transition:
+    width 220ms ease,
+    max-width 220ms ease,
+    margin 220ms ease,
+    transform 220ms ease;
 }
 
 .menu-item {
@@ -149,8 +163,48 @@ form#form > label {
   padding-left: 1.5em;
 }
 
+.window-body li p {
+  white-space: pre-wrap;
+}
+
 .window-body > ul:first-child {
   margin-top: 0;
+}
+
+/* Keep code blocks fully renderable while horizontally scrolling in post windows. */
+.window-body pre {
+  margin: 0 !important;
+  overflow: visible;
+}
+
+.window-body pre code {
+  display: inline-block;
+  min-width: max-content;
+  white-space: pre;
+}
+
+/* Debug printout container owns scrolling, not inner pre/code. */
+.debug-printout-scroll {
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+.debug-printout-text {
+  margin: 0;
+  white-space: pre-wrap;
+  font: inherit;
+}
+
+.debug-printout-scroll pre {
+  overflow: visible !important;
+  max-width: none;
+}
+
+.debug-printout-scroll pre code {
+  overflow: visible !important;
+  white-space: inherit;
+  display: inline-block;
+  min-width: max-content;
 }
 
 /* Menu Bar - Windows XP style */
@@ -302,6 +356,25 @@ body {
   }
 }
 
+@media screen and (min-width: 769px) {
+  .overfull-post-active .page {
+    width: 100vw;
+    max-width: 100vw;
+    margin: 0;
+    padding: 0 0.75rem;
+    transform: translateX(-0.5rem);
+  }
+
+  .overfull-post-active .page > .root-window {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .overfull-post-active .page > .root-overfull-window {
+    transform: translateX(-0.25rem);
+  }
+}
+
 @media screen and (max-width: 1920px) {
   .page {
     width: 600px;
@@ -311,6 +384,24 @@ body {
 @media screen and (max-width: 768px) {
   :root {
     --gap-size: 0.5em;
+  }
+
+  .mobile-printout-expanded .page {
+    width: 100vw;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .mobile-printout-expanded .page > .root-window {
+    width: 100vw;
+    max-width: none;
+    margin: 0;
+  }
+
+  .mobile-printout-expanded .page > .root-window .window-body {
+    margin: 0;
+    overflow-x: auto;
   }
 
   .page {

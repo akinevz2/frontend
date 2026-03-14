@@ -5,6 +5,16 @@ import Markdown from "react-markdown";
 import { useSectionContext } from "./hooks";
 import type { Content, SectionProps } from "./types";
 
+function renderPrintout(printout: string | string[]) {
+  const text = Array.isArray(printout) ? printout.join("\n") : printout;
+
+  return (
+    <div className="debug-printout-scroll" data-debug="printout-scroll">
+      <pre className="debug-printout-text">{text}</pre>
+    </div>
+  );
+}
+
 function renderContent(content: Content, depth: number) {
   if (typeof content === "string")
     return (
@@ -36,15 +46,44 @@ const playSound = () => {
 };
 
 export const Section = (props: SectionProps) => {
-  const { heading, content, className, children, depth = 0, uuid } = props;
+  const {
+    heading,
+    content,
+    printout,
+    className,
+    children,
+    depth = 0,
+    uuid,
+  } = props;
   const hasHeading = !!heading;
   const hasContent = !!content;
+  const hasPrintout =
+    printout !== undefined &&
+    ((typeof printout === "string" && printout.length > 0) ||
+      (Array.isArray(printout) && printout.length > 0));
+  const isRootSection = depth === 0;
   const [isMaximized, setIsMaximized] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isOverfullPost, setIsOverfullPost] = useState(false);
+  const isRootExpanded = isRootSection && !isCollapsed;
+  const rootWindowStyle: React.CSSProperties | undefined = isRootExpanded
+    ? {
+        width: "min(100vw - 2rem, 100%)",
+        maxWidth: "100%",
+        boxSizing: "border-box",
+      }
+    : undefined;
+  const rootWindowBodyStyle: React.CSSProperties | undefined = isRootExpanded
+    ? {
+        overflowX: "auto",
+      }
+    : undefined;
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const windowRef = useRef<HTMLDivElement>(null);
+  const inlineRootWindowRef = useRef<HTMLDivElement>(null);
+  const maximizedRootWindowRef = useRef<HTMLDivElement>(null);
   const { markAsExpanded, minimizeSection, minimizedSections } =
     useSectionContext();
 
@@ -54,11 +93,85 @@ export const Section = (props: SectionProps) => {
   }
   const sectionUUID = uuid || `fallback-${heading}-${depth}`;
   const isMinimized = minimizedSections.has(sectionUUID);
+  const rootModeActive = isRootExpanded && !isMinimized && isOverfullPost;
+  const rootMobilePrintoutActive =
+    isRootExpanded && !isMinimized && hasPrintout;
+
+  useEffect(() => {
+    if (!isRootSection) return;
+
+    const evaluateOverflow = () => {
+      if (!isRootExpanded || isMinimized) {
+        setIsOverfullPost(false);
+        return;
+      }
+
+      const rootWindow = isMaximized
+        ? maximizedRootWindowRef.current
+        : inlineRootWindowRef.current;
+
+      if (!rootWindow) {
+        setIsOverfullPost(false);
+        return;
+      }
+
+      const body = rootWindow.querySelector(
+        ".window-body",
+      ) as HTMLElement | null;
+      if (!body) {
+        setIsOverfullPost(false);
+        return;
+      }
+
+      let overfull = body.scrollWidth > body.clientWidth + 1;
+
+      if (!overfull) {
+        const scrollables = body.querySelectorAll(".debug-printout-scroll");
+        scrollables.forEach((node) => {
+          const el = node as HTMLElement;
+          if (el.scrollWidth > el.clientWidth + 1) {
+            overfull = true;
+          }
+        });
+      }
+
+      setIsOverfullPost(overfull);
+    };
+
+    const frame = requestAnimationFrame(evaluateOverflow);
+    window.addEventListener("resize", evaluateOverflow);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("resize", evaluateOverflow);
+    };
+  }, [
+    isRootSection,
+    isRootExpanded,
+    isMinimized,
+    isMaximized,
+    content,
+    printout,
+  ]);
+
+  useEffect(() => {
+    if (!isRootSection || typeof document === "undefined") return;
+
+    const root = document.documentElement;
+    root.classList.toggle("overfull-post-active", rootModeActive);
+    root.classList.toggle("mobile-printout-expanded", rootMobilePrintoutActive);
+
+    return () => {
+      root.classList.remove("overfull-post-active");
+      root.classList.remove("mobile-printout-expanded");
+    };
+  }, [isRootSection, rootModeActive, rootMobilePrintoutActive]);
 
   // Debug logging
   console.log("Section render:", {
     heading,
     hasContent,
+    hasPrintout,
     isCollapsed,
     isMinimized,
     isMaximized,
@@ -147,8 +260,21 @@ export const Section = (props: SectionProps) => {
     }
   }, [isMaximized, position.x, position.y]);
 
+  const rootWindowClassName = [
+    "window",
+    className || "",
+    isRootSection ? "root-window" : "",
+    rootModeActive ? "root-overfull-window" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   const windowContent = (
-    <div className={`window ${className || ""}`}>
+    <div
+      ref={isRootSection ? inlineRootWindowRef : undefined}
+      className={rootWindowClassName}
+      style={rootWindowStyle}
+    >
       {hasHeading ? (
         <div className="title-bar">
           <div className="title-bar-text">{heading}</div>
@@ -161,13 +287,14 @@ export const Section = (props: SectionProps) => {
           </div>
         </div>
       ) : null}
-      <div className="window-body">
+      <div className="window-body" style={rootWindowBodyStyle}>
         {isCollapsed ? (
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
             <button onClick={handleExpand}>OK</button>
           </div>
         ) : (
           <>
+            {hasPrintout ? renderPrintout(printout) : null}
             {hasContent ? renderContent(content, depth) : null}
             {children}
           </>
@@ -217,8 +344,12 @@ export const Section = (props: SectionProps) => {
               }}
             >
               <div
-                className={`window ${className || ""}`}
-                style={{ cursor: "default" }}
+                ref={isRootSection ? maximizedRootWindowRef : undefined}
+                className={rootWindowClassName}
+                style={{
+                  cursor: "default",
+                  ...rootWindowStyle,
+                }}
               >
                 {hasHeading ? (
                   <div
@@ -240,7 +371,7 @@ export const Section = (props: SectionProps) => {
                     </div>
                   </div>
                 ) : null}
-                <div className="window-body">
+                <div className="window-body" style={rootWindowBodyStyle}>
                   {isCollapsed ? (
                     <div
                       style={{ display: "flex", justifyContent: "flex-end" }}
@@ -249,6 +380,7 @@ export const Section = (props: SectionProps) => {
                     </div>
                   ) : (
                     <>
+                      {hasPrintout ? renderPrintout(printout) : null}
                       {hasContent ? renderContent(content, depth) : null}
                       {children}
                     </>
