@@ -7,8 +7,7 @@
         "previous posts have been rearranged, and I will be attaching data from a repeated run, that seems to have proceeded almost identical to the previous one.",
         "![gpu_usage](https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/gpu_usage_qwen3.5.png)",
         "still has spent an entirely unnecessary amount of time considering the output formatting like in the original run. my conclusion: **unsuitable for tool use**",
-        "you will find the post will resize automatically if you fullscreen/unfullscreen your browser window",
-        "find the entire output of the model in the thinking mode in the second post on this page below, attaching just the final output here:",
+        "> you will find the post will resize automatically if you fullscreen/unfullscreen your browser window **<<**",
         {
           "heading": "final output first part (prepare, its a very long read!)",
           "content": [
