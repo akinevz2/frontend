@@ -30,7 +30,11 @@
           ]
         },
         "**conclusion**",
-        "no useful output from this model on consumer hardware... qwen3.5:27b"
+        "no useful output from this model on consumer hardware... qwen3.5:27b",
+        {
+          "heading": "well that sucks!",
+          "content": "<a onclick=\"alert('i don\\'t know what to even say!')\"> the button that says that it sucks </a>"
+        }
       ]
     },
     {
