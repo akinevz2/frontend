@@ -5,6 +5,12 @@ import postsFallback from "../posts.json";
 import { processContent } from "../windowing/utils";
 import type { PageMetadata, SectionProps } from "../windowing";
 
+const BLOG_POSTS_HOST =
+  import.meta.env.PUBLIC_BLOG_POSTS_URL ||
+  "https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/";
+
+const BLOG_POSTS_URL = new URL("posts.json", BLOG_POSTS_HOST).toString();
+
 type BlogState = {
   sections?: SectionProps | SectionProps[];
   metadata: PageMetadata;
@@ -18,10 +24,6 @@ function isSectionPayload(
   if (Array.isArray(value)) return true;
   return "heading" in value || "content" in value;
 }
-
-const BLOG_POSTS_URL =
-  import.meta.env.PUBLIC_BLOG_POSTS_URL ||
-  "https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/posts.json";
 
 function buildBlogState(content: SectionProps | SectionProps[]): BlogState {
   const { processed, metadata } = processContent(content);
