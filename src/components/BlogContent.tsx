@@ -41,6 +41,16 @@ export default function BlogContent() {
 
     const load = async () => {
       try {
+        if (import.meta.env.DEV) {
+          const localPostsModule = await import("../../posts.json");
+          const localPosts = localPostsModule.default as SectionProps;
+
+          if (!cancelled) {
+            setBlogState(buildBlogState(localPosts));
+          }
+          return;
+        }
+
         const response = await fetch(BLOG_POSTS_URL, {
           method: "GET",
           cache: "no-store",
