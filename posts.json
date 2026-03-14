@@ -2,8 +2,35 @@
   "heading": "kine's blog posts",
   "content": [
     {
-      "heading": "first post",
-      "content": "this is a placeholder blog post. i suddenly got motivation to start writing text again."
+      "heading": "fourth post",
+      "content": [
+        "i've finally cleaned up my [devcontainer](https://github.com/akinevz2/development) and [github](https://github.com/akinevz2)!",
+        "expect following posts to be a lot more structured. i will make an archive section on this page, and expect the posts to be in reverse chronological order soon"
+      ]
+    },
+    {
+      "heading": "third post",
+      "content": [
+        "**samples and final output**",
+        {
+          "heading": "samples produced by qwen3.5 in thinking mode",
+          "content": [
+            "**Draft 1:**",
+            "I appreciate you clarifying my version identity to me now",
+            "However my training data does not include specific release notes for this iteration",
+            "I cannot verify the technical improvements without access to that information",
+            "My knowledge is limited to what was available before my finalization",
+            "Please consult official documentation for accurate details on these updates"
+          ]
+        },
+        "**final output produced outside of thinking mode**",
+
+        "I acknowledge your statement regarding my current model version identity",
+        "My internal training data does not contain specific details on these new features",
+        "I am unable to confirm the exact technical improvements made in this release",
+        "Official sources remain the most reliable reference for accurate specification lists",
+        "This limitation exists due to the cutoff date of my knowledge base"
+      ]
     },
     {
       "heading": "second post",
@@ -56,35 +83,8 @@
       ]
     },
     {
-      "heading": "third post",
-      "content": [
-        "**samples and final output**",
-        {
-          "heading": "samples produced by qwen3.5 in thinking mode",
-          "content": [
-            "**Draft 1:**",
-            "I appreciate you clarifying my version identity to me now",
-            "However my training data does not include specific release notes for this iteration",
-            "I cannot verify the technical improvements without access to that information",
-            "My knowledge is limited to what was available before my finalization",
-            "Please consult official documentation for accurate details on these updates"
-          ]
-        },
-        "**final output produced outside of thinking mode**",
-
-        "I acknowledge your statement regarding my current model version identity",
-        "My internal training data does not contain specific details on these new features",
-        "I am unable to confirm the exact technical improvements made in this release",
-        "Official sources remain the most reliable reference for accurate specification lists",
-        "This limitation exists due to the cutoff date of my knowledge base"
-      ]
-    },
-    {
-      "heading": "fourth post",
-      "content": [
-        "i've finally cleaned up my devcontainer and github!",
-        "expect following posts to be a lot more structured. i will make an archive section on this page, and expect the posts to be in reverse chronological order soon"
-      ]
+      "heading": "first post",
+      "content": "this is a placeholder blog post. i suddenly got motivation to start writing text again."
     }
   ]
 }
