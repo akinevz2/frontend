@@ -148,12 +148,20 @@
                 },
                 {
                   "heading": "will we ever see Ateric?",
-                  "content": {
-                    "heading": "reveal ateric",
-                    "content": [
-                      "<img src=\"https://akinevz.com/images/Ateric1.png\" alt=\"ateric image\" style=\"max-width: 100%; height: auto;\" />"
-                    ]
-                  }
+                  "content": [
+                    {
+                      "heading": "reveal ateric",
+                      "content": [
+                        "<img src=\"https://akinevz.com/images/Ateric1.png\" alt=\"ateric image 1\" style=\"max-width: 100%; height: auto;\" />"
+                      ]
+                    },
+                    {
+                      "heading": "reveal ateric",
+                      "content": [
+                        "<img src=\"https://akinevz.com/images/Ateric2.png\" alt=\"ateric image 2\" style=\"max-width: 100%; height: auto;\" />"
+                      ]
+                    }
+                  ]
                 }
               ]
             },
