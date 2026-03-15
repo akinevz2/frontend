@@ -1,5 +1,5 @@
 import type React from "react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import Markdown from "react-markdown";
 import { useSectionContext } from "./hooks";
@@ -8,6 +8,30 @@ import type { Content, SectionProps } from "./types";
 const BLOG_POSTS_HOST =
   import.meta.env.PUBLIC_BLOG_POSTS_URL ||
   "https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/";
+const SECTION_EXPANDED_EVENT = "section-expanded";
+type SectionActionCallback = () => void;
+
+function useCallbackRegistry() {
+  const callbacksRef = useRef<SectionActionCallback[]>([]);
+
+  const registerCallback = useCallback((callback: SectionActionCallback) => {
+    callbacksRef.current = [...callbacksRef.current, callback];
+
+    return () => {
+      callbacksRef.current = callbacksRef.current.filter(
+        (registeredCallback) => registeredCallback !== callback,
+      );
+    };
+  }, []);
+
+  const runCallbacks = useCallback(() => {
+    callbacksRef.current.forEach((callback) => {
+      callback();
+    });
+  }, []);
+
+  return { registerCallback, runCallbacks };
+}
 
 function normalizePrintoutText(printout: string | string[]): string {
   return Array.isArray(printout) ? printout.join("\n") : printout;
@@ -138,17 +162,21 @@ export const Section = (props: SectionProps) => {
   const [isMaximized, setIsMaximized] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isOverfullPost, setIsOverfullPost] = useState(false);
+  const [isDesktopPrintoutExpanded, setIsDesktopPrintoutExpanded] =
+    useState(false);
   const isRootExpanded = isRootSection && !isCollapsed;
   const rootWindowStyle: React.CSSProperties | undefined = isRootExpanded
     ? {
-        width: "min(100vw - 2rem, 100%)",
-        maxWidth: "100%",
+        width: "var(--root-window-width, min(100vw - 2rem, 100%))",
+        minWidth: "var(--root-window-min-width, auto)",
+        maxWidth: "var(--root-window-max-width, 100%)",
         boxSizing: "border-box",
       }
     : undefined;
   const rootWindowBodyStyle: React.CSSProperties | undefined = isRootExpanded
     ? {
-        overflowX: "auto",
+        overflowX:
+          "var(--root-window-body-overflow-x, auto)" as React.CSSProperties["overflowX"],
       }
     : undefined;
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -157,6 +185,14 @@ export const Section = (props: SectionProps) => {
   const windowRef = useRef<HTMLDivElement>(null);
   const inlineRootWindowRef = useRef<HTMLDivElement>(null);
   const maximizedRootWindowRef = useRef<HTMLDivElement>(null);
+  const {
+    registerCallback: registerExpandCallback,
+    runCallbacks: runExpandCallbacks,
+  } = useCallbackRegistry();
+  const {
+    registerCallback: registerMinimizeCallback,
+    runCallbacks: runMinimizeCallbacks,
+  } = useCallbackRegistry();
   const { markAsExpanded, minimizeSection, minimizedSections } =
     useSectionContext();
 
@@ -169,62 +205,132 @@ export const Section = (props: SectionProps) => {
   const rootModeActive = isRootExpanded && !isMinimized && isOverfullPost;
   const rootMobilePrintoutActive =
     isRootExpanded && !isMinimized && hasPrintout;
+  const rootDesktopPrintoutActive =
+    isRootExpanded && !isMinimized && hasPrintout && isDesktopPrintoutExpanded;
 
-  useEffect(() => {
+  const evaluateOverflow = useCallback(() => {
     if (!isRootSection) return;
 
-    const evaluateOverflow = () => {
-      if (!isRootExpanded || isMinimized) {
-        setIsOverfullPost(false);
-        return;
+    if (!isRootExpanded || isMinimized) {
+      setIsOverfullPost(false);
+      return;
+    }
+
+    const rootWindow = isMaximized
+      ? maximizedRootWindowRef.current
+      : inlineRootWindowRef.current;
+
+    if (!rootWindow) {
+      setIsOverfullPost(false);
+      return;
+    }
+
+    const body = rootWindow.querySelector(".window-body") as HTMLElement | null;
+    if (!body) {
+      setIsOverfullPost(false);
+      return;
+    }
+
+    let overfull = body.scrollWidth > window.innerWidth + 1;
+
+    if (!overfull) {
+      const scrollables = body.querySelectorAll(".debug-printout-scroll");
+      scrollables.forEach((node) => {
+        const el = node as HTMLElement;
+        if (el.scrollWidth > window.innerWidth + 1) {
+          overfull = true;
+        }
+      });
+    }
+
+    setIsOverfullPost(overfull);
+  }, [isMaximized, isMinimized, isRootExpanded, isRootSection]);
+
+  const scheduleOverflowEvaluation = useCallback(() => {
+    if (!isRootSection || typeof window === "undefined") return;
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        evaluateOverflow();
+      });
+    });
+  }, [evaluateOverflow, isRootSection]);
+
+  useEffect(
+    () => registerExpandCallback(() => setIsCollapsed(false)),
+    [registerExpandCallback],
+  );
+
+  useEffect(() => {
+    if (!heading || typeof heading !== "string") return;
+
+    return registerExpandCallback(() => {
+      markAsExpanded(heading);
+    });
+  }, [heading, markAsExpanded, registerExpandCallback]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    return registerExpandCallback(() => {
+      window.dispatchEvent(new Event(SECTION_EXPANDED_EVENT));
+    });
+  }, [registerExpandCallback]);
+
+  useEffect(() => {
+    if (!isRootSection || !hasPrintout) return;
+
+    return registerExpandCallback(() => {
+      setIsDesktopPrintoutExpanded(true);
+    });
+  }, [hasPrintout, isRootSection, registerExpandCallback]);
+
+  useEffect(() => {
+    return registerMinimizeCallback(() => {
+      setIsDesktopPrintoutExpanded(false);
+    });
+  }, [registerMinimizeCallback]);
+
+  useEffect(() => {
+    if (!heading || typeof heading !== "string") return;
+
+    return registerMinimizeCallback(() => {
+      if (isMaximized) {
+        setIsMaximized(false);
       }
 
-      const rootWindow = isMaximized
-        ? maximizedRootWindowRef.current
-        : inlineRootWindowRef.current;
+      minimizeSection(sectionUUID, heading);
+    });
+  }, [
+    heading,
+    isMaximized,
+    minimizeSection,
+    registerMinimizeCallback,
+    sectionUUID,
+  ]);
 
-      if (!rootWindow) {
-        setIsOverfullPost(false);
-        return;
-      }
+  useEffect(() => {
+    if (!isRootSection || typeof window === "undefined") return;
 
-      const body = rootWindow.querySelector(
-        ".window-body",
-      ) as HTMLElement | null;
-      if (!body) {
-        setIsOverfullPost(false);
-        return;
-      }
-
-      let overfull = body.scrollWidth > body.clientWidth + 1;
-
-      if (!overfull) {
-        const scrollables = body.querySelectorAll(".debug-printout-scroll");
-        scrollables.forEach((node) => {
-          const el = node as HTMLElement;
-          if (el.scrollWidth > el.clientWidth + 1) {
-            overfull = true;
-          }
-        });
-      }
-
-      setIsOverfullPost(overfull);
+    const handleSectionExpanded = () => {
+      scheduleOverflowEvaluation();
     };
 
     const frame = requestAnimationFrame(evaluateOverflow);
     window.addEventListener("resize", evaluateOverflow);
+    window.addEventListener(SECTION_EXPANDED_EVENT, handleSectionExpanded);
 
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener("resize", evaluateOverflow);
+      window.removeEventListener(SECTION_EXPANDED_EVENT, handleSectionExpanded);
     };
   }, [
+    evaluateOverflow,
     isRootSection,
-    isRootExpanded,
-    isMinimized,
-    isMaximized,
     content,
     printout,
+    scheduleOverflowEvaluation,
   ]);
 
   useEffect(() => {
@@ -233,12 +339,22 @@ export const Section = (props: SectionProps) => {
     const root = document.documentElement;
     root.classList.toggle("overfull-post-active", rootModeActive);
     root.classList.toggle("mobile-printout-expanded", rootMobilePrintoutActive);
+    root.classList.toggle(
+      "desktop-printout-expanded",
+      rootDesktopPrintoutActive,
+    );
 
     return () => {
       root.classList.remove("overfull-post-active");
       root.classList.remove("mobile-printout-expanded");
+      root.classList.remove("desktop-printout-expanded");
     };
-  }, [isRootSection, rootModeActive, rootMobilePrintoutActive]);
+  }, [
+    isRootSection,
+    rootDesktopPrintoutActive,
+    rootModeActive,
+    rootMobilePrintoutActive,
+  ]);
 
   // Debug logging
   console.log("Section render:", {
@@ -253,13 +369,7 @@ export const Section = (props: SectionProps) => {
   });
 
   const handleMinimize = () => {
-    if (heading && typeof heading === "string") {
-      // Close maximized window before minimizing
-      if (isMaximized) {
-        setIsMaximized(false);
-      }
-      minimizeSection(sectionUUID, heading);
-    }
+    runMinimizeCallbacks();
   };
 
   const handleMaximize = () => {
@@ -275,10 +385,7 @@ export const Section = (props: SectionProps) => {
   };
 
   const handleExpand = () => {
-    setIsCollapsed(false);
-    if (heading && typeof heading === "string") {
-      markAsExpanded(heading);
-    }
+    runExpandCallbacks();
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
