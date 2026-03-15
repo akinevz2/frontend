@@ -2,6 +2,7 @@ import type React from "react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import Markdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
 import { useSectionContext } from "./hooks";
 import type { Content, SectionProps } from "./types";
 
@@ -112,12 +113,28 @@ function renderPrintout(printout: string | string[]) {
   return <PrintoutContent printout={printout} />;
 }
 
+const markdownRehypePlugins = [rehypeRaw];
+
+const markdownComponents = {
+  img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
+    <img
+      {...props}
+      style={{ maxWidth: "100%", height: "auto", ...(props.style ?? {}) }}
+    />
+  ),
+};
+
 function renderContent(content: Content, depth: number) {
   if (typeof content === "string")
     return (
       <ul>
         <li>
-          <Markdown>{content}</Markdown>
+          <Markdown
+            rehypePlugins={markdownRehypePlugins}
+            components={markdownComponents}
+          >
+            {content}
+          </Markdown>
         </li>
       </ul>
     );
@@ -126,7 +143,12 @@ function renderContent(content: Content, depth: number) {
       {content.map((text, index) =>
         typeof text == "string" ? (
           <li key={index}>
-            <Markdown>{text}</Markdown>
+            <Markdown
+              rehypePlugins={markdownRehypePlugins}
+              components={markdownComponents}
+            >
+              {text}
+            </Markdown>
           </li>
         ) : (
           <Section key={index} {...text} depth={depth + 1} />
