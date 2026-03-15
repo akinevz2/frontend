@@ -148,7 +148,12 @@
                 },
                 {
                   "heading": "will we ever see Ateric?",
-                  "content": "soon! (tm)"
+                  "content": {
+                    "heading": "reveal ateric",
+                    "content": [
+                      "<img src=\"https://akinevz.com/images/Ateric1.png\" alt=\"ateric image\" style=\"max-width: 100%; height: auto;\" />"
+                    ]
+                  }
                 }
               ]
             },
