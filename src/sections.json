@@ -107,7 +107,19 @@
                     "a short non-descript skeleton",
                     "with various head accessories",
                     "sometimes no eyes",
-                    "sometimes no jaws"
+                    "sometimes no jaws",
+                    {
+                      "heading": "reveal rueg",
+                      "content": [
+                        "![rueg image 1](https://akinevz.com/images/rueg1.png)"
+                      ]
+                    },
+                    {
+                      "heading": "reveal rueg",
+                      "content": [
+                        "![rueg image 2](https://akinevz.com/images/rueg2.png)"
+                      ]
+                    }
                   ]
                 },
                 {
