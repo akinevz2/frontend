@@ -2,6 +2,16 @@
   "heading": "kine's blog posts",
   "content": [
     {
+      "heading": "sixth post (#ramble, #meta)",
+      "content": [
+        "I've decided that I am going to be ranking posts on my blog randomly",
+        "and by randomly I mean, somewhat obscurely and privately. Posts that",
+        "score highly on the interesting-recent scale that I will devise later",
+        "will appear closer to the top of the page.",
+        "a special 'archive' section will progressively consume every stale post i don't like"
+      ]
+    },
+    {
       "heading": "fifth post (#qwen3.5)",
       "content": [
         "previous posts have been rearranged, and I will be attaching data from a repeated run, that seems to have proceeded almost identical to the previous one.",
@@ -112,16 +122,7 @@
           "content": [
             "inadvertently, i had rebooted the host machine which the chat was running on from a terminal, and lost the precise wording that i had used",
             "i will be attempting to run more experiments on the new model in the coming weeks",
-            "and i took some additional excerpts from the model's thinking output, which i will add in the next post",
-            {
-              "heading": "replay of the original prompt",
-              "content": [
-                "*model was configured with /set nothinking in the previous run, then /save'd into a model file*",
-                "**system prompt**: None",
-                "**user**: please let me know what notable improvements are present in qwen3.5, as 5 lines without any markup, one bullet point per line, if they're known, otherwise return one sentence",
-                "**model**: "
-              ]
-            }
+            "and i took some additional excerpts from the model's thinking output, which i will add in the next post"
           ]
         }
       ]
