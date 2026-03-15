@@ -208,53 +208,74 @@ export const Section = (props: SectionProps) => {
   const rootDesktopPrintoutActive =
     isRootExpanded && !isMinimized && hasPrintout && isDesktopPrintoutExpanded;
 
-  const evaluateOverflow = useCallback(() => {
-    if (!isRootSection) return;
+  // Stores the cleanup function for the currently-active MutationObserver
+  // trap. Only one trap is active at a time; installing a new one cancels the
+  // previous one.
+  const overflowTrapRef = useRef<(() => void) | null>(null);
 
-    if (!isRootExpanded || isMinimized) {
-      setIsOverfullPost(false);
-      return;
-    }
+  // Installs a MutationObserver on the window-body that waits for any DOM
+  // change (e.g. react-markdown rendering fetched content into pre/code nodes)
+  // and checks whether the content is now wider than the page column. If it is,
+  // it activates the full-width slide and disconnects itself. A new call
+  // cancels the previous trap, so each OK press gets a fresh observer.
+  const installOverflowTrap = useCallback(() => {
+    overflowTrapRef.current?.();
+    overflowTrapRef.current = null;
 
-    const rootWindow = isMaximized
-      ? maximizedRootWindowRef.current
-      : inlineRootWindowRef.current;
-
-    if (!rootWindow) {
-      setIsOverfullPost(false);
-      return;
-    }
-
-    const body = rootWindow.querySelector(".window-body") as HTMLElement | null;
-    if (!body) {
-      setIsOverfullPost(false);
-      return;
-    }
-
-    let overfull = body.scrollWidth > window.innerWidth + 1;
-
-    if (!overfull) {
-      const scrollables = body.querySelectorAll(".debug-printout-scroll");
-      scrollables.forEach((node) => {
-        const el = node as HTMLElement;
-        if (el.scrollWidth > window.innerWidth + 1) {
-          overfull = true;
-        }
-      });
-    }
-
-    setIsOverfullPost(overfull);
-  }, [isMaximized, isMinimized, isRootExpanded, isRootSection]);
-
-  const scheduleOverflowEvaluation = useCallback(() => {
     if (!isRootSection || typeof window === "undefined") return;
 
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        evaluateOverflow();
+    const rootWindow = inlineRootWindowRef.current;
+    if (!rootWindow) return;
+
+    const body = rootWindow.querySelector(".window-body") as HTMLElement | null;
+    if (!body) return;
+
+    // check receives the observer so the MutationObserver can be declared
+    // as const while still being referenced inside the callback.
+    const check = (obs: MutationObserver) => {
+      // Reference width is the page column (600 px on desktop), not the
+      // viewport — content can be wider than the column but narrower than the
+      // screen, making window.innerWidth the wrong threshold.
+      const page = rootWindow.closest(".page") as HTMLElement | null;
+      const referenceWidth = (page ?? rootWindow).clientWidth;
+
+      // pre code.scrollWidth reports the true text width even when the element
+      // is visually clipped by overflow:hidden ancestors.
+      const codes = body.querySelectorAll<HTMLElement>(
+        ".debug-printout-scroll pre code",
+      );
+      let overfull = false;
+      codes.forEach((code) => {
+        if (code.scrollWidth > referenceWidth + 1) overfull = true;
       });
+
+      if (overfull) {
+        setIsOverfullPost(true);
+        obs.disconnect();
+        overflowTrapRef.current = null;
+      }
+    };
+
+    // Fire check on every DOM mutation inside the window-body so that
+    // asynchronously-fetched content (any timing) is caught.
+    // The MutationObserver callback receives the observer itself as its second
+    // argument, which we forward to check() to avoid a let/reassignment.
+    const observer = new MutationObserver((_, obs) => {
+      requestAnimationFrame(() => check(obs));
     });
-  }, [evaluateOverflow, isRootSection]);
+
+    observer.observe(body, {
+      subtree: true,
+      childList: true,
+      characterData: true,
+    });
+
+    // Also check immediately in case content was already rendered before
+    // the trap was installed.
+    requestAnimationFrame(() => requestAnimationFrame(() => check(observer)));
+
+    overflowTrapRef.current = () => observer.disconnect();
+  }, [isRootSection]);
 
   useEffect(
     () => registerExpandCallback(() => setIsCollapsed(false)),
@@ -287,6 +308,9 @@ export const Section = (props: SectionProps) => {
 
   useEffect(() => {
     return registerMinimizeCallback(() => {
+      overflowTrapRef.current?.();
+      overflowTrapRef.current = null;
+      setIsOverfullPost(false);
       setIsDesktopPrintoutExpanded(false);
     });
   }, [registerMinimizeCallback]);
@@ -312,26 +336,16 @@ export const Section = (props: SectionProps) => {
   useEffect(() => {
     if (!isRootSection || typeof window === "undefined") return;
 
-    const handleSectionExpanded = () => {
-      scheduleOverflowEvaluation();
-    };
-
-    const frame = requestAnimationFrame(evaluateOverflow);
-    window.addEventListener("resize", evaluateOverflow);
-    window.addEventListener(SECTION_EXPANDED_EVENT, handleSectionExpanded);
+    // Each OK press (from this section or any nested one) cancels the previous
+    // trap and starts a fresh observer.
+    window.addEventListener(SECTION_EXPANDED_EVENT, installOverflowTrap);
 
     return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("resize", evaluateOverflow);
-      window.removeEventListener(SECTION_EXPANDED_EVENT, handleSectionExpanded);
+      window.removeEventListener(SECTION_EXPANDED_EVENT, installOverflowTrap);
+      overflowTrapRef.current?.();
+      overflowTrapRef.current = null;
     };
-  }, [
-    evaluateOverflow,
-    isRootSection,
-    content,
-    printout,
-    scheduleOverflowEvaluation,
-  ]);
+  }, [installOverflowTrap, isRootSection]);
 
   useEffect(() => {
     if (!isRootSection || typeof document === "undefined") return;
