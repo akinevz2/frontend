@@ -2,6 +2,17 @@
   "heading": "kine's blog posts",
   "content": [
     {
+      "heading": "seventh post (#meta, #quarkus)",
+      "content": [
+        "well it seems there is no nice way to launch [quarkus](https://quarkus.io/) from [picocli](https://picocli.info/) with submenus. i've just spent the last 6 hours troubleshooting the submenu system built with [jline](https://jline.readthedocs.io/) and the reasons why it wouldn't launch the frontend due to missing CDI. the solution was letting it all go and just rewriting everything with manual CDI injection",
+        "![cdi](https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/cdi.png)",
+        {
+          "heading": "relevant",
+          "content": "![relevant](https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/relevant.jpg)"
+        }
+      ]
+    },
+    {
       "heading": "sixth post (#ramble, #meta)",
       "content": [
         "I've decided that I am going to be ranking posts on my blog randomly",
