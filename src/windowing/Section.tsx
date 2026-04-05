@@ -1,38 +1,62 @@
 import type React from "react";
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import { useSectionContext } from "./hooks";
 import type { Content, SectionProps } from "./types";
 
-const BLOG_POSTS_HOST =
-  import.meta.env.PUBLIC_BLOG_POSTS_URL ||
+const BLOG_PATH = "/blog";
+const env = import.meta.env as Record<string, string | undefined>;
+const BLOG_POSTS_CONFIGURED_URL =
+  env.VITE_BLOG_POSTS_URL ||
+  env.PUBLIC_BLOG_POSTS_URL ||
   "https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/";
-const SECTION_EXPANDED_EVENT = "section-expanded";
-type SectionActionCallback = () => void;
+const BLOG_POSTS_HOST = BLOG_POSTS_CONFIGURED_URL.endsWith(".json")
+  ? BLOG_POSTS_CONFIGURED_URL.replace(/[^/]+$/, "")
+  : BLOG_POSTS_CONFIGURED_URL;
 
-function useCallbackRegistry() {
-  const callbacksRef = useRef<SectionActionCallback[]>([]);
+const isBlogPath = (pathname: string) => pathname.replace(/\/+$/, "") === BLOG_PATH;
 
-  const registerCallback = useCallback((callback: SectionActionCallback) => {
-    callbacksRef.current = [...callbacksRef.current, callback];
+const toPostSlug = (heading: string) =>
+  heading
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
 
-    return () => {
-      callbacksRef.current = callbacksRef.current.filter(
-        (registeredCallback) => registeredCallback !== callback,
-      );
-    };
-  }, []);
+const contentContainsPostSlug = (
+  content: Content,
+  targetPostSlug: string,
+): boolean => {
+  if (typeof content === "string") {
+    return false;
+  }
 
-  const runCallbacks = useCallback(() => {
-    callbacksRef.current.forEach((callback) => {
-      callback();
-    });
-  }, []);
+  return content.some((item): boolean => {
+    if (typeof item === "string") {
+      return false;
+    }
 
-  return { registerCallback, runCallbacks };
-}
+    if (typeof item.heading === "string" && toPostSlug(item.heading) === targetPostSlug) {
+      return true;
+    }
+
+    return !!item.content && contentContainsPostSlug(item.content as Content, targetPostSlug);
+  });
+};
+
+const markdownRehypePlugins = [rehypeRaw];
+
+const markdownComponents = {
+  img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
+    <img
+      {...props}
+      style={{ maxWidth: "100%", height: "auto", ...(props.style ?? {}) }}
+    />
+  ),
+};
 
 function normalizePrintoutText(printout: string | string[]): string {
   return Array.isArray(printout) ? printout.join("\n") : printout;
@@ -55,9 +79,7 @@ function PrintoutContent({ printout }: { printout: string | string[] }) {
       if (typeof printout !== "string") {
         if (!cancelled) {
           setError(null);
-          setMarkdownContent(
-            toFencedCodeBlock(normalizePrintoutText(printout)),
-          );
+          setMarkdownContent(toFencedCodeBlock(normalizePrintoutText(printout)));
         }
         return;
       }
@@ -112,17 +134,6 @@ function PrintoutContent({ printout }: { printout: string | string[] }) {
 function renderPrintout(printout: string | string[]) {
   return <PrintoutContent printout={printout} />;
 }
-
-const markdownRehypePlugins = [rehypeRaw];
-
-const markdownComponents = {
-  img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
-    <img
-      {...props}
-      style={{ maxWidth: "100%", height: "auto", ...(props.style ?? {}) }}
-    />
-  ),
-};
 
 function renderContent(content: Content, depth: number) {
   if (typeof content === "string")
@@ -180,42 +191,38 @@ export const Section = (props: SectionProps) => {
     printout !== undefined &&
     ((typeof printout === "string" && printout.length > 0) ||
       (Array.isArray(printout) && printout.length > 0));
-  const isRootSection = depth === 0;
-  const [isMaximized, setIsMaximized] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(true);
-  const [isOverfullPost, setIsOverfullPost] = useState(false);
-  const [isDesktopPrintoutExpanded, setIsDesktopPrintoutExpanded] =
-    useState(false);
-  const isRootExpanded = isRootSection && !isCollapsed;
-  const rootWindowStyle: React.CSSProperties | undefined = isRootExpanded
-    ? {
-        width: "var(--root-window-width, min(100vw - 2rem, 100%))",
-        minWidth: "var(--root-window-min-width, auto)",
-        maxWidth: "var(--root-window-max-width, 100%)",
-        boxSizing: "border-box",
-      }
-    : undefined;
-  const rootWindowBodyStyle: React.CSSProperties | undefined = isRootExpanded
-    ? {
-        overflowX:
-          "var(--root-window-body-overflow-x, auto)" as React.CSSProperties["overflowX"],
-      }
-    : undefined;
+  const isOnBlogPage =
+    typeof window !== "undefined" && isBlogPath(window.location.pathname);
+  const rawTargetPostSlug =
+    typeof window !== "undefined" && isOnBlogPage
+      ? new URLSearchParams(window.location.search).get("post") || ""
+      : "";
+  const targetPostSlug = rawTargetPostSlug ? toPostSlug(rawTargetPostSlug) : "";
+  const isBlogPost = depth > 0 && typeof heading === "string";
+  const isLinkableBlogPost = isOnBlogPage && isBlogPost;
+  const postSlug = isLinkableBlogPost ? toPostSlug(heading) : "";
+  const permalink = isLinkableBlogPost
+    ? `${BLOG_PATH}/?post=${encodeURIComponent(postSlug)}`
+    : "";
+  const shouldOpenFromLink =
+    typeof window !== "undefined" &&
+    isLinkableBlogPost &&
+    targetPostSlug === postSlug;
+  const shouldRevealLinkedPost =
+    isOnBlogPage &&
+    !!targetPostSlug &&
+    !!content &&
+    contentContainsPostSlug(content as Content, targetPostSlug);
+  const isForcedExpanded = shouldOpenFromLink || shouldRevealLinkedPost || hasPrintout;
+
+  const [isMaximized, setIsMaximized] = useState(shouldOpenFromLink);
+  const [isCollapsed, setIsCollapsed] = useState(!isForcedExpanded);
+  const isCollapsedResolved = isForcedExpanded ? false : isCollapsed;
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const windowRef = useRef<HTMLDivElement>(null);
-  const inlineRootWindowRef = useRef<HTMLDivElement>(null);
-  const maximizedRootWindowRef = useRef<HTMLDivElement>(null);
-  const {
-    registerCallback: registerExpandCallback,
-    runCallbacks: runExpandCallbacks,
-  } = useCallbackRegistry();
-  const {
-    registerCallback: registerMinimizeCallback,
-    runCallbacks: runMinimizeCallbacks,
-  } = useCallbackRegistry();
-  const { markAsExpanded, minimizeSection, minimizedSections } =
+  const { markAsExpanded, minimizeSection, minimizedSections, restoreSection } =
     useSectionContext();
 
   // UUID must be provided from server-side processing
@@ -224,180 +231,43 @@ export const Section = (props: SectionProps) => {
   }
   const sectionUUID = uuid || `fallback-${heading}-${depth}`;
   const isMinimized = minimizedSections.has(sectionUUID);
-  const rootModeActive = isRootExpanded && !isMinimized && isOverfullPost;
-  const rootMobilePrintoutActive =
-    isRootExpanded && !isMinimized && hasPrintout;
-  const rootDesktopPrintoutActive =
-    isRootExpanded && !isMinimized && hasPrintout && isDesktopPrintoutExpanded;
 
-  // Stores the cleanup function for the currently-active MutationObserver
-  // trap. Only one trap is active at a time; installing a new one cancels the
-  // previous one.
-  const overflowTrapRef = useRef<(() => void) | null>(null);
+  const clearPostSlugFromUrl = () => {
+    if (typeof window === "undefined" || !isOnBlogPage || !isLinkableBlogPost) {
+      return;
+    }
 
-  // Installs a MutationObserver on the window-body that waits for any DOM
-  // change (e.g. react-markdown rendering fetched content into pre/code nodes)
-  // and checks whether the content is now wider than the page column. If it is,
-  // it activates the full-width slide and disconnects itself. A new call
-  // cancels the previous trap, so each OK press gets a fresh observer.
-  const installOverflowTrap = useCallback(() => {
-    overflowTrapRef.current?.();
-    overflowTrapRef.current = null;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("post") !== postSlug) {
+      return;
+    }
 
-    if (!isRootSection || typeof window === "undefined") return;
+    params.delete("post");
+    const search = params.toString();
+    const nextUrl = `${window.location.pathname}${search ? `?${search}` : ""}${window.location.hash}`;
+    window.history.replaceState({}, "", nextUrl);
+  };
 
-    const rootWindow = inlineRootWindowRef.current;
-    if (!rootWindow) return;
+  const minimizePoppedOutWindow = () => {
+    setIsMaximized(false);
 
-    const body = rootWindow.querySelector(".window-body") as HTMLElement | null;
-    if (!body) return;
-
-    // check receives the observer so the MutationObserver can be declared
-    // as const while still being referenced inside the callback.
-    const check = (obs: MutationObserver) => {
-      // Reference width is the page column (600 px on desktop), not the
-      // viewport — content can be wider than the column but narrower than the
-      // screen, making window.innerWidth the wrong threshold.
-      const page = rootWindow.closest(".page") as HTMLElement | null;
-      const referenceWidth = (page ?? rootWindow).clientWidth;
-
-      // pre code.scrollWidth reports the true text width even when the element
-      // is visually clipped by overflow:hidden ancestors.
-      const codes = body.querySelectorAll<HTMLElement>(
-        ".debug-printout-scroll pre code",
-      );
-      let overfull = false;
-      codes.forEach((code) => {
-        if (code.scrollWidth > referenceWidth + 1) overfull = true;
-      });
-
-      if (overfull) {
-        setIsOverfullPost(true);
-        obs.disconnect();
-        overflowTrapRef.current = null;
-      }
-    };
-
-    // Fire check on every DOM mutation inside the window-body so that
-    // asynchronously-fetched content (any timing) is caught.
-    // The MutationObserver callback receives the observer itself as its second
-    // argument, which we forward to check() to avoid a let/reassignment.
-    const observer = new MutationObserver((_, obs) => {
-      requestAnimationFrame(() => check(obs));
-    });
-
-    observer.observe(body, {
-      subtree: true,
-      childList: true,
-      characterData: true,
-    });
-
-    // Also check immediately in case content was already rendered before
-    // the trap was installed.
-    requestAnimationFrame(() => requestAnimationFrame(() => check(observer)));
-
-    overflowTrapRef.current = () => observer.disconnect();
-  }, [isRootSection]);
-
-  useEffect(
-    () => registerExpandCallback(() => setIsCollapsed(false)),
-    [registerExpandCallback],
-  );
-
-  useEffect(() => {
-    if (!heading || typeof heading !== "string") return;
-
-    return registerExpandCallback(() => {
-      markAsExpanded(heading);
-    });
-  }, [heading, markAsExpanded, registerExpandCallback]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    return registerExpandCallback(() => {
-      window.dispatchEvent(new Event(SECTION_EXPANDED_EVENT));
-    });
-  }, [registerExpandCallback]);
-
-  useEffect(() => {
-    if (!isRootSection || !hasPrintout) return;
-
-    return registerExpandCallback(() => {
-      setIsDesktopPrintoutExpanded(true);
-    });
-  }, [hasPrintout, isRootSection, registerExpandCallback]);
-
-  useEffect(() => {
-    return registerMinimizeCallback(() => {
-      overflowTrapRef.current?.();
-      overflowTrapRef.current = null;
-      setIsOverfullPost(false);
-      setIsDesktopPrintoutExpanded(false);
-    });
-  }, [registerMinimizeCallback]);
-
-  useEffect(() => {
-    if (!heading || typeof heading !== "string") return;
-
-    return registerMinimizeCallback(() => {
-      if (isMaximized) {
-        setIsMaximized(false);
-      }
-
+    if (heading && typeof heading === "string") {
       minimizeSection(sectionUUID, heading);
-    });
-  }, [
-    heading,
-    isMaximized,
-    minimizeSection,
-    registerMinimizeCallback,
-    sectionUUID,
-  ]);
+    }
+  };
 
-  useEffect(() => {
-    if (!isRootSection || typeof window === "undefined") return;
-
-    // Each OK press (from this section or any nested one) cancels the previous
-    // trap and starts a fresh observer.
-    window.addEventListener(SECTION_EXPANDED_EVENT, installOverflowTrap);
-
-    return () => {
-      window.removeEventListener(SECTION_EXPANDED_EVENT, installOverflowTrap);
-      overflowTrapRef.current?.();
-      overflowTrapRef.current = null;
-    };
-  }, [installOverflowTrap, isRootSection]);
-
-  useEffect(() => {
-    if (!isRootSection || typeof document === "undefined") return;
-
-    const root = document.documentElement;
-    root.classList.toggle("overfull-post-active", rootModeActive);
-    root.classList.toggle("mobile-printout-expanded", rootMobilePrintoutActive);
-    root.classList.toggle(
-      "desktop-printout-expanded",
-      rootDesktopPrintoutActive,
-    );
-
-    return () => {
-      root.classList.remove("overfull-post-active");
-      root.classList.remove("mobile-printout-expanded");
-      root.classList.remove("desktop-printout-expanded");
-    };
-  }, [
-    isRootSection,
-    rootDesktopPrintoutActive,
-    rootModeActive,
-    rootMobilePrintoutActive,
-  ]);
+  const closePoppedOutWindow = () => {
+    setIsMaximized(false);
+    clearPostSlugFromUrl();
+    // Closing should not leave an entry in the minimized windows menu.
+    restoreSection(sectionUUID);
+  };
 
   // Debug logging
   console.log("Section render:", {
     heading,
     hasContent,
-    hasPrintout,
-    isCollapsed,
+    isCollapsed: isCollapsedResolved,
     isMinimized,
     isMaximized,
     uuid: sectionUUID,
@@ -405,7 +275,15 @@ export const Section = (props: SectionProps) => {
   });
 
   const handleMinimize = () => {
-    runMinimizeCallbacks();
+    if (heading && typeof heading === "string") {
+      // Close maximized window before minimizing
+      if (isMaximized) {
+        minimizePoppedOutWindow();
+        return;
+      }
+
+      minimizeSection(sectionUUID, heading);
+    }
   };
 
   const handleMaximize = () => {
@@ -414,14 +292,17 @@ export const Section = (props: SectionProps) => {
 
   const handleClose = () => {
     if (isMaximized) {
-      setIsMaximized(false);
+      closePoppedOutWindow();
     } else {
       playSound();
     }
   };
 
   const handleExpand = () => {
-    runExpandCallbacks();
+    setIsCollapsed(false);
+    if (heading && typeof heading === "string") {
+      markAsExpanded(heading);
+    }
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -476,21 +357,8 @@ export const Section = (props: SectionProps) => {
     }
   }, [isMaximized, position.x, position.y]);
 
-  const rootWindowClassName = [
-    "window",
-    className || "",
-    isRootSection ? "root-window" : "",
-    rootModeActive ? "root-overfull-window" : "",
-  ]
-    .filter(Boolean)
-    .join(" ");
-
   const windowContent = (
-    <div
-      ref={isRootSection ? inlineRootWindowRef : undefined}
-      className={rootWindowClassName}
-      style={rootWindowStyle}
-    >
+    <div className={`window ${className || ""}`}>
       {hasHeading ? (
         <div className="title-bar">
           <div className="title-bar-text">{heading}</div>
@@ -503,8 +371,8 @@ export const Section = (props: SectionProps) => {
           </div>
         </div>
       ) : null}
-      <div className="window-body" style={rootWindowBodyStyle}>
-        {isCollapsed ? (
+      <div className="window-body">
+        {isCollapsedResolved ? (
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
             <button onClick={handleExpand}>OK</button>
           </div>
@@ -529,7 +397,7 @@ export const Section = (props: SectionProps) => {
           <div
             style={{
               position: "fixed",
-              top: 0,
+              top: "var(--menu-bar-height, 24px)",
               left: 0,
               right: 0,
               bottom: 0,
@@ -549,22 +417,22 @@ export const Section = (props: SectionProps) => {
             <div
               ref={windowRef}
               style={{
-                position: "absolute",
+                position: "fixed",
                 left: `${position.x}px`,
                 top: `${position.y}px`,
                 zIndex: 9999,
                 maxWidth: "90vw",
                 maxHeight: "90vh",
-                overflow: "auto",
                 cursor: isDragging ? "grabbing" : "default",
               }}
             >
               <div
-                ref={isRootSection ? maximizedRootWindowRef : undefined}
-                className={rootWindowClassName}
+                className={`window ${className || ""}`}
                 style={{
                   cursor: "default",
-                  ...rootWindowStyle,
+                  maxWidth: "100%",
+                  maxHeight: "100%",
+                  boxSizing: "border-box",
                 }}
               >
                 {hasHeading ? (
@@ -587,8 +455,15 @@ export const Section = (props: SectionProps) => {
                     </div>
                   </div>
                 ) : null}
-                <div className="window-body" style={rootWindowBodyStyle}>
-                  {isCollapsed ? (
+                <div className="window-body" style={{ overflow: "auto" }}>
+                  {isLinkableBlogPost ? (
+                    <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "8px" }}>
+                      <a href={permalink}>
+                        <button>Permalink</button>
+                      </a>
+                    </div>
+                  ) : null}
+                  {isCollapsedResolved ? (
                     <div
                       style={{ display: "flex", justifyContent: "flex-end" }}
                     >

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" role="img" aria-label="Loading">
+  <defs>
+    <linearGradient id="spinner-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0a246a" stop-opacity="1" />
+      <stop offset="100%" stop-color="#a6caf0" stop-opacity="0.2" />
+    </linearGradient>
+  </defs>
+  <circle cx="24" cy="24" r="18" fill="none" stroke="#d9d9d9" stroke-width="6" />
+  <path d="M24 6a18 18 0 0 1 18 18" fill="none" stroke="url(#spinner-gradient)" stroke-width="6" stroke-linecap="round">
+    <animateTransform attributeName="transform" type="rotate" from="0 24 24" to="360 24 24" dur="0.9s" repeatCount="indefinite" />
+  </path>
+</svg>
