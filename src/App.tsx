@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState, type JSX } from "react";
 import { ToastContainer } from "react-toastify";
 
 import MenuBar from "./components/MenuBar";
@@ -12,8 +12,16 @@ import type { AddonProps } from "./components/Addon";
 import { processContent } from "./windowing/utils";
 
 const normalizePath = (path: string) => {
-  if (path === "/") return path;
-  return path.replace(/\/+$/, "");
+  if (!path || path === "/") {
+    return "/";
+  }
+
+  const decodedPath = decodeURIComponent(path);
+  const withoutIndexHtml = decodedPath.replace(/\/index\.html$/i, "/");
+  const withoutHtml = withoutIndexHtml.replace(/\.html$/i, "");
+  const withoutTrailingSlash = withoutHtml.replace(/\/+$/, "");
+
+  return withoutTrailingSlash || "/";
 };
 
 const isInternalPath = (href: string) => href.startsWith("/");
