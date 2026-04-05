@@ -1,0 +1,38 @@
+[
+    {
+        "path": "/",
+        "menuLabel": "home",
+        "title": "home of kine",
+        "description": "my cozy little personal website"
+    },
+    {
+        "path": "/addons",
+        "menuLabel": "addons",
+        "title": "ui of kine",
+        "description": "look at my UI in wow!"
+    },
+    {
+        "path": "/wow",
+        "menuLabel": "wow config",
+        "title": "WoW Config - kine",
+        "description": "Download World of Warcraft configuration files"
+    },
+    {
+        "path": "/blog",
+        "menuLabel": "blog",
+        "title": "blog of kine",
+        "description": "posts and notes from kine"
+    },
+    {
+        "path": "/contact",
+        "menuLabel": "contact",
+        "title": "try contact kine",
+        "description": "contact me!"
+    },
+    {
+        "path": "/resume",
+        "menuLabel": "resume",
+        "title": "please hire kine",
+        "description": "hire me!"
+    }
+]
