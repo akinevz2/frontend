@@ -9,6 +9,7 @@
   --background-color: #000;
   --border-size: 0.25em;
   --gap-size: 0.5em;
+  --menu-bar-height: 24px;
   font-size: 16px;
 }
 
@@ -76,6 +77,13 @@ body {
   flex-direction: column;
 }
 
+#root {
+  min-height: 100%;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
 main {
   flex: 1;
   display: flex;
@@ -118,25 +126,9 @@ li {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--gap-size);
-  max-width: 600px;
-  width: 600px;
   border: 0;
   position: relative;
   z-index: 100;
-  transition:
-    width 220ms ease,
-    max-width 220ms ease,
-    margin 220ms ease,
-    padding 220ms ease,
-    transform 220ms ease;
-}
-
-.root-window {
-  transition:
-    width 220ms ease,
-    max-width 220ms ease,
-    margin 220ms ease,
-    transform 220ms ease;
 }
 
 .menu-item {
@@ -163,50 +155,8 @@ form#form > label {
   padding-left: 1.5em;
 }
 
-.window-body li p {
-  white-space: pre-wrap;
-}
-
 .window-body > ul:first-child {
   margin-top: 0;
-}
-
-/* Keep code blocks fully renderable while horizontally scrolling in post windows. */
-.window-body pre {
-  margin: 0 !important;
-  overflow: visible;
-}
-
-.window-body pre code {
-  display: inline-block;
-  min-width: max-content;
-  white-space: pre;
-}
-
-/* Debug printout code blocks should scroll within the rendered code element. */
-.debug-printout-scroll {
-  max-width: 100%;
-  overflow: hidden;
-}
-
-.debug-printout-text {
-  margin: 0;
-  white-space: pre-wrap;
-  font: inherit;
-}
-
-.debug-printout-scroll pre {
-  margin: 0;
-  overflow: hidden !important;
-  max-width: 100%;
-}
-
-.debug-printout-scroll pre code {
-  display: block;
-  max-width: 100%;
-  overflow: hidden !important;
-  box-sizing: border-box;
-  white-space: pre;
 }
 
 /* Menu Bar - Windows XP style */
@@ -349,7 +299,7 @@ form#form > label {
 
 /* Account for fixed menu bar */
 body {
-  padding-top: 24px;
+  padding-top: var(--menu-bar-height);
 }
 
 @media (prefers-color-scheme: light) {
@@ -359,51 +309,8 @@ body {
 }
 
 @media screen and (min-width: 769px) {
-  .overfull-post-active .page {
-    width: 100vw;
-    max-width: 100vw;
-    margin: 0;
-    padding: 0 0.75rem;
-    transform: translateX(-0.5rem);
-  }
-
-  .overfull-post-active .page > .root-window {
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .overfull-post-active .page > .root-overfull-window {
-    transform: translateX(-0.25rem);
-  }
-
-  .desktop-printout-expanded .page {
-    width: 100vw;
-    max-width: 100vw;
-    margin: 0;
-    padding: 0 0.75rem;
-    transform: translateX(-0.5rem);
-  }
-
-  .desktop-printout-expanded .page > .root-window {
-    --root-window-width: calc(100vw - 1.5rem);
-    --root-window-min-width: 0;
-    --root-window-max-width: calc(100vw - 1.5rem);
-    --root-window-body-overflow-x: hidden;
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .desktop-printout-expanded .page > .root-window .window-body {
-    width: 100%;
-    max-width: 100%;
-    margin: 0;
-    overflow: hidden;
-  }
-}
-
-@media screen and (max-width: 1920px) {
   .page {
-    width: 600px;
+    min-width: 600px;
   }
 }
 
@@ -412,65 +319,7 @@ body {
     --gap-size: 0.5em;
   }
 
-  .mobile-printout-expanded,
-  .mobile-printout-expanded body {
-    overflow-x: hidden;
-  }
-
-  .mobile-printout-expanded .page {
-    width: 100vw;
-    min-width: 0;
-    max-width: 100vw;
-    margin: 0;
-    padding: 0;
-  }
-
-  .mobile-printout-expanded .page > .root-window {
-    --root-window-width: 100vw;
-    --root-window-min-width: 0;
-    --root-window-max-width: 100vw;
-    --root-window-body-overflow-x: hidden;
-    width: 100vw;
-    min-width: 0;
-    max-width: 100vw;
-    margin: 0;
-  }
-
-  .mobile-printout-expanded .page > .root-window .window-body {
-    width: 100%;
-    min-width: 100%;
-    max-width: 100%;
-    margin: 0;
-    overflow: hidden;
-  }
-
-  .mobile-printout-expanded .page > .root-window .debug-printout-scroll,
-  .mobile-printout-expanded .page > .root-window .debug-printout-scroll pre,
-  .mobile-printout-expanded
-    .page
-    > .root-window
-    .debug-printout-scroll
-    pre
-    code {
-    width: 100%;
-    min-width: 100%;
-    max-width: 100%;
-  }
-
-  .mobile-printout-expanded .page > .root-window .debug-printout-scroll,
-  .mobile-printout-expanded .page > .root-window .debug-printout-scroll pre,
-  .mobile-printout-expanded
-    .page
-    > .root-window
-    .debug-printout-scroll
-    pre
-    code {
-    overflow: hidden !important;
-  }
-
   .page {
-    max-width: unset;
-    width: calc(100% - 2em);
     margin: 0 auto;
     padding: var(--gap-size);
   }
@@ -529,13 +378,13 @@ body {
 }
 
 @media screen and (max-width: 480px) {
+  :root {
+    --menu-bar-height: 28px;
+  }
+
   /* Extra small screens - even more compact */
   .menu-bar menu a {
     padding: 5px 10px;
     font-size: 11px;
-  }
-
-  body {
-    padding-top: 28px;
   }
 }
