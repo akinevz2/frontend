@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 
 import { PageContent } from "./Page";
-import postsFallback from "../posts.json";
 import { processContent } from "../windowing/utils";
 import type { PageMetadata, SectionProps } from "../windowing";
 
@@ -9,6 +8,11 @@ type BlogState = {
   sections?: SectionProps | SectionProps[];
   metadata: PageMetadata;
   error?: string;
+};
+
+const LOADING_SECTION: SectionProps = {
+  heading: "Loading...",
+  content: ["![Loading spinner](/spinner.svg)", "Fetching posts from raw.githubusercontent.com"],
 };
 
 function isSectionPayload(
@@ -19,9 +23,18 @@ function isSectionPayload(
   return "heading" in value || "content" in value;
 }
 
-const BLOG_POSTS_URL =
-  import.meta.env.PUBLIC_BLOG_POSTS_URL ||
-  "https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/posts.json";
+const env = import.meta.env as Record<string, string | undefined>;
+
+const BLOG_POSTS_CONFIGURED_URL =
+  env.VITE_BLOG_POSTS_URL ||
+  env.PUBLIC_BLOG_POSTS_URL ||
+  "https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/";
+
+const BLOG_POSTS_HOST = BLOG_POSTS_CONFIGURED_URL.endsWith(".json")
+  ? BLOG_POSTS_CONFIGURED_URL.replace(/[^/]+$/, "")
+  : BLOG_POSTS_CONFIGURED_URL;
+
+const BLOG_POSTS_URL = new URL("posts.json", BLOG_POSTS_HOST).toString();
 
 function buildBlogState(content: SectionProps | SectionProps[]): BlogState {
   const { processed, metadata } = processContent(content);
@@ -33,7 +46,7 @@ function buildBlogState(content: SectionProps | SectionProps[]): BlogState {
 
 export default function BlogContent() {
   const [blogState, setBlogState] = useState<BlogState>(() =>
-    buildBlogState(postsFallback as SectionProps),
+    buildBlogState(LOADING_SECTION),
   );
 
   useEffect(() => {
@@ -65,10 +78,11 @@ export default function BlogContent() {
         if (!cancelled) {
           const message =
             error instanceof Error ? error.message : "Unknown error";
-          setBlogState((previous) => ({
-            ...previous,
-            error: `Failed to fetch remote posts (${message}). Showing local fallback posts.`,
-          }));
+          setBlogState({
+            sections: undefined,
+            metadata: { sections: [] },
+            error: `Failed to fetch remote posts (${message}).`,
+          });
         }
       }
     };
