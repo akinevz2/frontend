@@ -7,9 +7,34 @@ import { PageContent, PageWithAddons } from "./components/Page";
 import sections from "./sections.json";
 import contacts from "./contacts.json";
 import addons from "./addons.json";
+import pages from "./pages.json";
 import type { SectionProps } from "./windowing";
 import type { AddonProps } from "./components/Addon";
 import { processContent } from "./windowing/utils";
+
+type RouteConfig = {
+  title: string;
+  description: string;
+};
+
+type PageRoute = RouteConfig & {
+  path: string;
+};
+
+const DEFAULT_ROUTE: RouteConfig = {
+  title: "home of kine",
+  description: "my cozy little personal website",
+};
+
+const PAGE_ROUTES = pages as PageRoute[];
+
+const TOP_LEVEL_ROUTES = new Set(
+  PAGE_ROUTES.map(({ path }) => path.split("/").filter(Boolean)[0]).filter(Boolean),
+);
+
+const ROUTE_CONFIG = Object.fromEntries(
+  PAGE_ROUTES.map(({ path, title, description }) => [path, { title, description }]),
+) as Record<string, RouteConfig>;
 
 const normalizePath = (path: string) => {
   if (!path || path === "/") {
@@ -20,43 +45,22 @@ const normalizePath = (path: string) => {
   const withoutIndexHtml = decodedPath.replace(/\/index\.html$/i, "/");
   const withoutHtml = withoutIndexHtml.replace(/\.html$/i, "");
   const withoutTrailingSlash = withoutHtml.replace(/\/+$/, "");
+  const segments = withoutTrailingSlash.split("/").filter(Boolean);
+
+  if (segments.length === 0) {
+    return "/";
+  }
+
+  const [firstSegment] = segments;
+
+  if (TOP_LEVEL_ROUTES.has(firstSegment.toLowerCase())) {
+    return `/${firstSegment.toLowerCase()}`;
+  }
 
   return withoutTrailingSlash || "/";
 };
 
 const isInternalPath = (href: string) => href.startsWith("/");
-
-type RouteConfig = {
-  title: string;
-  description: string;
-};
-
-const ROUTE_CONFIG: Record<string, RouteConfig> = {
-  "/": {
-    title: "home of kine",
-    description: "my cozy little personal website",
-  },
-  "/addons": {
-    title: "ui of kine",
-    description: "look at my UI in wow!",
-  },
-  "/blog": {
-    title: "blog of kine",
-    description: "posts and notes from kine",
-  },
-  "/contact": {
-    title: "try contact kine",
-    description: "contact me!",
-  },
-  "/resume": {
-    title: "please hire kine",
-    description: "hire me!",
-  },
-  "/wow": {
-    title: "WoW Config - kine",
-    description: "Download World of Warcraft configuration files",
-  },
-};
 
 const HomePage = () => {
   const { processed, metadata } = useMemo(
@@ -392,10 +396,7 @@ export default function App() {
     };
   }, []);
 
-  const route = ROUTE_CONFIG[path] ?? {
-    title: "home of kine",
-    description: "my cozy little personal website",
-  };
+  const route = ROUTE_CONFIG[path] ?? DEFAULT_ROUTE;
 
   useEffect(() => {
     document.title = route.title;

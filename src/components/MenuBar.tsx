@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { generateMenuItems, type MenuItem } from "../utils/menuItems";
+import pages from "../pages.json";
 
 type Link = {
   label: string;
@@ -12,17 +13,10 @@ type Props = {
   onNavigate?: (href: string) => void;
 };
 
-const DEFAULT_PAGES = [
-  { url: "/" },
-  { url: "/blog" },
-  { url: "/addons" },
-  { url: "/wow" },
-  { url: "/contact" },
-];
-
-const DEFAULT_ADDITIONAL_LINKS: MenuItem[] = [
-  { label: "resume", href: "/resume", order: 6 },
-];
+const PAGE_LINKS = (pages as Array<{ path: string }>).map((page) => ({
+  url: page.path,
+  label: (page as { menuLabel?: string }).menuLabel,
+}));
 
 const isTypingTarget = (target: EventTarget | null) => {
   if (!(target instanceof HTMLElement)) {
@@ -45,10 +39,7 @@ export default function MenuBar({ links, additionalLinks = [], onNavigate }: Pro
       return links.map((link) => ({ label: link.label, href: link.href }));
     }
 
-    return generateMenuItems(DEFAULT_PAGES, [
-      ...DEFAULT_ADDITIONAL_LINKS,
-      ...additionalLinks,
-    ]);
+    return generateMenuItems(PAGE_LINKS, additionalLinks);
   }, [links, additionalLinks]);
 
   useEffect(() => {
