@@ -6,12 +6,13 @@ export type SectionProps = {
   className?: string;
   heading?: Heading;
   content?: string | (string | SectionProps)[];
+  printout?: string | string[];
   children?: React.ReactNode[];
   depth?: number;
   uuid?: string;
 };
 
-export type Content = string | string[] | SectionProps[];
+export type Content = string | (string | SectionProps)[];
 
 export type SectionMetadata = {
   uuid: string;

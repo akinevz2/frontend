@@ -9,6 +9,7 @@
   --background-color: #000;
   --border-size: 0.25em;
   --gap-size: 0.5em;
+  --menu-bar-height: 24px;
   font-size: 16px;
 }
 
@@ -76,6 +77,13 @@ body {
   flex-direction: column;
 }
 
+#root {
+  min-height: 100%;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
 main {
   flex: 1;
   display: flex;
@@ -118,8 +126,6 @@ li {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--gap-size);
-  max-width: 600px;
-  width: 600px;
   border: 0;
   position: relative;
   z-index: 100;
@@ -293,7 +299,7 @@ form#form > label {
 
 /* Account for fixed menu bar */
 body {
-  padding-top: 24px;
+  padding-top: var(--menu-bar-height);
 }
 
 @media (prefers-color-scheme: light) {
@@ -302,9 +308,9 @@ body {
   }
 }
 
-@media screen and (max-width: 1920px) {
+@media screen and (min-width: 769px) {
   .page {
-    width: 600px;
+    min-width: 600px;
   }
 }
 
@@ -314,8 +320,6 @@ body {
   }
 
   .page {
-    max-width: unset;
-    width: calc(100% - 2em);
     margin: 0 auto;
     padding: var(--gap-size);
   }
@@ -374,13 +378,13 @@ body {
 }
 
 @media screen and (max-width: 480px) {
+  :root {
+    --menu-bar-height: 28px;
+  }
+
   /* Extra small screens - even more compact */
   .menu-bar menu a {
     padding: 5px 10px;
     font-size: 11px;
-  }
-
-  body {
-    padding-top: 28px;
   }
 }

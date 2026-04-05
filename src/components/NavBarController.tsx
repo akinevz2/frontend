@@ -1,32 +1,14 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 // Temporary stub - navbar visibility logic
 const useIsNavBarVisible = () => true;
 
 export const NavBarController = () => {
   const isVisible = useIsNavBarVisible();
-  const [shouldShow, setShouldShow] = useState(false);
-  const [isHomePage, setIsHomePage] = useState(false);
-
-  useEffect(() => {
-    // Check if we're on the home page
-    const isHome =
-      window.location.pathname === "/" ||
-      window.location.pathname === "/index.html";
-    setIsHomePage(isHome);
-
-    // If not home page, always show navbar
-    if (!isHome) {
-      setShouldShow(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    // On home page, only show if section has been expanded
-    if (isHomePage && isVisible && !shouldShow) {
-      setShouldShow(true);
-    }
-  }, [isVisible, shouldShow, isHomePage]);
+  const isHomePage =
+    window.location.pathname === "/" ||
+    window.location.pathname === "/index.html";
+  const shouldShow = !isHomePage || isVisible;
 
   useEffect(() => {
     const navbar = document.querySelector("nav");

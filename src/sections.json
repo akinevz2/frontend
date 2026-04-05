@@ -4,14 +4,18 @@
     {
       "heading": "what is kine",
       "content": [
-        "kine is short for kirill nevzorov",
-        "see contacts page in the tabs above",
+        "its my name",
         {
           "heading": "why is kine?",
-          "content": "because its my name"
+          "content": [
+            "because kine is short for kirill nevzorov",
+            "for meaning of kirill, see [here](https://en.wikipedia.org/wiki/Kirill)",
+            "for meaning of kine, see below or [here](https://akinevz.com/resume/)"
+          ]
         }
       ]
     },
+
     {
       "heading": "who is kine",
       "content": [
@@ -38,7 +42,13 @@
       "content": [
         {
           "heading": "secret",
-          "content": "soon (tm)"
+          "content": [
+            "soon (tm)",
+            {
+              "heading": "what does this mean?",
+              "content": "this is ancient Blizzard Studios terminology for something that is inevitably postponed"
+            }
+          ]
         },
         {
           "heading": "programming",
@@ -107,7 +117,19 @@
                     "a short non-descript skeleton",
                     "with various head accessories",
                     "sometimes no eyes",
-                    "sometimes no jaws"
+                    "sometimes no jaws",
+                    {
+                      "heading": "reveal rueg",
+                      "content": [
+                        "<img src=\"https://akinevz.com/images/rueg1.png\" alt=\"rueg image 1\" style=\"max-width: 100%; height: auto;\" />"
+                      ]
+                    },
+                    {
+                      "heading": "reveal rueg",
+                      "content": [
+                        "<img src=\"https://akinevz.com/images/rueg2.png\" alt=\"rueg image 2\" style=\"max-width: 100%; height: auto;\" />"
+                      ]
+                    }
                   ]
                 },
                 {
@@ -123,6 +145,23 @@
                 {
                   "heading": "what class is Ateric?",
                   "content": "a Mage"
+                },
+                {
+                  "heading": "will we ever see Ateric?",
+                  "content": [
+                    {
+                      "heading": "reveal ateric",
+                      "content": [
+                        "<img src=\"https://akinevz.com/images/Ateric1.png\" alt=\"ateric image 1\" style=\"max-width: 100%; height: auto;\" />"
+                      ]
+                    },
+                    {
+                      "heading": "reveal ateric",
+                      "content": [
+                        "<img src=\"https://akinevz.com/images/Ateric2.png\" alt=\"ateric image 2\" style=\"max-width: 100%; height: auto;\" />"
+                      ]
+                    }
+                  ]
                 }
               ]
             },
