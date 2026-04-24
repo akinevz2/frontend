@@ -2,6 +2,18 @@
   "heading": "kine's blog posts",
   "content": [
     {
+      "heading": "awareness about degraded perplexity observed in gemma4 models",
+      "content": [
+        "this is quite scary. planned thinking and plan execution was behaving just fine yesterday",
+        "today, i observed this scenario",
+        "the model attempted to completely sabotage the workspace, and behaved like it was trying to ignore the user's presence in the conversation",
+        {
+          "heading": "history scrollback",
+          "printout": "3rd.rd"
+        }
+      ]
+    },
+    {
       "heading": "quick post (#temporary-downtime)",
       "content": [
         "all systems normal",
