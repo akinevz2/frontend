@@ -198,7 +198,10 @@
                 "playing on Spineshatter as Jungie the Troll",
                 {
                   "heading": "what class is Jungie?",
-                  "content": "a Shaman"
+                  "content": [
+                    "a Shaman",
+                    "uhh... actually he's a Hunter, but there's also a Warrior..."
+                  ]
                 }
               ]
             },
