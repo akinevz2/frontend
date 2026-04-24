@@ -2,6 +2,13 @@
   "heading": "kine's blog posts",
   "content": [
     {
+      "heading": "quick post (#temporary-downtime)",
+      "content": [
+        "all systems normal",
+        "website might have been temporarily down for you, if you happened to cache the page! I had to resolve some security issues in the build system"
+      ]
+    },
+    {
       "heading": "seventh post (#meta, #quarkus)",
       "content": [
         "well it seems there is no nice way to launch [quarkus](https://quarkus.io/) from [picocli](https://picocli.info/) with submenus. i've just spent the last 6 hours troubleshooting the submenu system built with [jline](https://jline.readthedocs.io/) and the reasons why it wouldn't launch the frontend due to missing CDI. the solution was letting it all go and just rewriting everything with manual CDI injection",
@@ -9,6 +16,10 @@
         {
           "heading": "relevant",
           "content": "![relevant](https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/relevant.jpg)"
+        },
+        {
+          "heading": "resolution",
+          "content": "Quarkus application class is intended to be implemented when adding functionality that has to run before the quarkus application starts. I instructed CoPilot to refactor the app to show the menus and launch the app in the background so that CDI is resolved"
         }
       ]
     },
