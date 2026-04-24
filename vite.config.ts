@@ -146,6 +146,7 @@ function routeSkeletonPlugin() {
 }
 
 export default defineConfig({
+  publicDir: "public",
   plugins: [react(), routeSkeletonPlugin()],
   build: {
     rollupOptions: {
