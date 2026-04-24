@@ -29,11 +29,16 @@ const DEFAULT_ROUTE: RouteConfig = {
 const PAGE_ROUTES = pages as PageRoute[];
 
 const TOP_LEVEL_ROUTES = new Set(
-  PAGE_ROUTES.map(({ path }) => path.split("/").filter(Boolean)[0]).filter(Boolean),
+  PAGE_ROUTES.map(({ path }) => path.split("/").filter(Boolean)[0]).filter(
+    Boolean,
+  ),
 );
 
 const ROUTE_CONFIG = Object.fromEntries(
-  PAGE_ROUTES.map(({ path, title, description }) => [path, { title, description }]),
+  PAGE_ROUTES.map(({ path, title, description }) => [
+    path,
+    { title, description },
+  ]),
 ) as Record<string, RouteConfig>;
 
 const normalizePath = (path: string) => {
@@ -61,6 +66,34 @@ const normalizePath = (path: string) => {
 };
 
 const isInternalPath = (href: string) => href.startsWith("/");
+
+const upsertMeta = (selector: string, attributes: Record<string, string>) => {
+  let element = document.querySelector(selector) as HTMLMetaElement | null;
+
+  if (!element) {
+    element = document.createElement("meta");
+    Object.entries(attributes).forEach(([key, value]) => {
+      element?.setAttribute(key, value);
+    });
+    document.head.appendChild(element);
+  }
+
+  if ("content" in attributes) {
+    element.setAttribute("content", attributes.content);
+  }
+};
+
+const upsertCanonicalLink = (href: string) => {
+  let canonical = document.querySelector(
+    'link[rel="canonical"]',
+  ) as HTMLLinkElement | null;
+  if (!canonical) {
+    canonical = document.createElement("link");
+    canonical.setAttribute("rel", "canonical");
+    document.head.appendChild(canonical);
+  }
+  canonical.setAttribute("href", href);
+};
 
 const HomePage = () => {
   const { processed, metadata } = useMemo(
@@ -137,8 +170,12 @@ const ResumePage = () => {
               padding: "2rem",
             }}
           >
-            <button onClick={() => setShowResumeModal(true)}>View My Resume</button>
-            <button onClick={() => setShowEmailModal(true)}>Contact Emails</button>
+            <button onClick={() => setShowResumeModal(true)}>
+              View My Resume
+            </button>
+            <button onClick={() => setShowEmailModal(true)}>
+              Contact Emails
+            </button>
           </div>
         </div>
       </section>
@@ -163,7 +200,10 @@ const ResumePage = () => {
             }
           }}
         >
-          <div className="window" style={{ width: "90vw", height: "90vh", maxWidth: "1200px" }}>
+          <div
+            className="window"
+            style={{ width: "90vw", height: "90vh", maxWidth: "1200px" }}
+          >
             <div className="title-bar">
               <div className="title-bar-text">Resume</div>
               <div className="title-bar-controls">
@@ -175,7 +215,11 @@ const ResumePage = () => {
             </div>
             <div
               className="window-body"
-              style={{ padding: 0, height: "calc(100% - 2rem)", overflow: "hidden" }}
+              style={{
+                padding: 0,
+                height: "calc(100% - 2rem)",
+                overflow: "hidden",
+              }}
             >
               <iframe
                 src="/resume.html"
@@ -226,7 +270,13 @@ const ResumePage = () => {
                   <a href="mailto:akinevz@gmail.com">akinevz@gmail.com</a>
                 </li>
               </ul>
-              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  marginTop: "1rem",
+                }}
+              >
                 <button onClick={() => setShowEmailModal(false)}>OK</button>
               </div>
             </div>
@@ -291,21 +341,27 @@ const WowPage = () => {
   return (
     <main>
       <div style={{ maxWidth: "600px", margin: "2rem auto", padding: "1rem" }}>
-        <div className="window" style={{ background: "#ece9d8", border: "2px outset #dfdfdf" }}>
+        <div
+          className="window"
+          style={{ background: "#ece9d8", border: "2px outset #dfdfdf" }}
+        >
           <div className="title-bar">
             <span className="title-bar-text">WoW Configuration Download</span>
           </div>
 
           <div style={{ marginBottom: "1rem", lineHeight: 1.5 }}>
             <p>
-              To download the World of Warcraft configuration files, please enter
-              your username and verify today's date.
+              To download the World of Warcraft configuration files, please
+              enter your username and verify today's date.
             </p>
           </div>
 
           <form onSubmit={handleSubmit}>
             <div style={{ marginBottom: "1rem" }}>
-              <label htmlFor="usernameInput" style={{ display: "block", marginBottom: "0.5rem" }}>
+              <label
+                htmlFor="usernameInput"
+                style={{ display: "block", marginBottom: "0.5rem" }}
+              >
                 Username:
               </label>
               <input
@@ -315,12 +371,19 @@ const WowPage = () => {
                 onChange={(event) => setUsername(event.target.value)}
                 placeholder="Enter username"
                 required
-                style={{ width: "300px", padding: "0.5rem", border: "2px inset #808080" }}
+                style={{
+                  width: "300px",
+                  padding: "0.5rem",
+                  border: "2px inset #808080",
+                }}
               />
             </div>
 
             <div style={{ marginBottom: "1rem" }}>
-              <label htmlFor="dateInput" style={{ display: "block", marginBottom: "0.5rem" }}>
+              <label
+                htmlFor="dateInput"
+                style={{ display: "block", marginBottom: "0.5rem" }}
+              >
                 Enter today's date:
               </label>
               <input
@@ -330,11 +393,18 @@ const WowPage = () => {
                 onChange={(event) => setDate(event.target.value)}
                 max={today}
                 required
-                style={{ width: "300px", padding: "0.5rem", border: "2px inset #808080" }}
+                style={{
+                  width: "300px",
+                  padding: "0.5rem",
+                  border: "2px inset #808080",
+                }}
               />
             </div>
 
-            <button type="submit" style={{ padding: "0.5rem 1.5rem", marginRight: "0.5rem" }}>
+            <button
+              type="submit"
+              style={{ padding: "0.5rem 1.5rem", marginRight: "0.5rem" }}
+            >
               Verify & Download
             </button>
             <button
@@ -383,7 +453,9 @@ const NotFoundPage = () => (
 );
 
 export default function App() {
-  const [path, setPath] = useState(() => normalizePath(window.location.pathname));
+  const [path, setPath] = useState(() =>
+    normalizePath(window.location.pathname),
+  );
 
   useEffect(() => {
     const onPopState = () => {
@@ -401,15 +473,35 @@ export default function App() {
   useEffect(() => {
     document.title = route.title;
 
-    let description = document.querySelector('meta[name="description"]');
-    if (!description) {
-      description = document.createElement("meta");
-      description.setAttribute("name", "description");
-      document.head.appendChild(description);
-    }
+    const canonicalUrl = new URL(path, window.location.origin).toString();
 
-    description.setAttribute("content", route.description);
-  }, [route.title, route.description]);
+    upsertMeta('meta[name="description"]', {
+      name: "description",
+      content: route.description,
+    });
+    upsertCanonicalLink(canonicalUrl);
+
+    upsertMeta('meta[property="og:title"]', {
+      property: "og:title",
+      content: route.title,
+    });
+    upsertMeta('meta[property="og:description"]', {
+      property: "og:description",
+      content: route.description,
+    });
+    upsertMeta('meta[property="og:url"]', {
+      property: "og:url",
+      content: canonicalUrl,
+    });
+    upsertMeta('meta[name="twitter:title"]', {
+      name: "twitter:title",
+      content: route.title,
+    });
+    upsertMeta('meta[name="twitter:description"]', {
+      name: "twitter:description",
+      content: route.description,
+    });
+  }, [path, route.title, route.description]);
 
   const navigate = (href: string) => {
     if (!isInternalPath(href)) {
