@@ -15,7 +15,6 @@
         }
       ]
     },
-
     {
       "heading": "who is kine",
       "content": [
@@ -29,13 +28,17 @@
         },
         {
           "heading": "current location",
-          "content": "brighton and hove, england"
+          "content": "at this point, somewhere in East Sussex ![loud emoji](https://raw.githubusercontent.com/akinevz2/frontend/e506a15ca2df2a54245a571f474e56ae8dfc65d3/lol.jpg)"
         }
       ]
     },
     {
       "heading": "what's kine busy with",
-      "content": ["writing web apps", "finding job", "relaxing"]
+      "content": [
+        "writing web apps",
+        "finding job",
+        "relaxing"
+      ]
     },
     {
       "heading": "what's kine interested in",
@@ -72,7 +75,11 @@
         },
         {
           "heading": "teaching and tutoring",
-          "content": ["linux", "programming", "english language"]
+          "content": [
+            "linux",
+            "programming",
+            "english language"
+          ]
         },
         {
           "heading": "music",
