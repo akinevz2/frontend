@@ -2,6 +2,15 @@
   "heading": "kine's blog posts",
   "content": [
     {
+      "heading": "eighth post (#meta, #blog, welcome to my website!)",
+      "content": [
+        "i wish i had any way to collect feedback on this website",
+        "i really enjoy clicking the buttons that i put in these pages",
+        "we have a new page added to the menu bar, check out [music](/music)",
+        "oh also, yes, I know the resume is currently down"
+      ]
+    },
+    {
       "heading": "awareness about degraded perplexity observed in gemma4 models",
       "content": [
         "this is quite scary. planned thinking and plan execution was behaving just fine yesterday",
@@ -10,6 +19,13 @@
         {
           "heading": "history scrollback",
           "printout": "3rd.md"
+        },
+        {
+          "heading": "conclusion",
+          "content": [
+            "i suspect the model I had loaded at the time, quite quantized in order to fit into 2x12GB VRAM cards encountered a particularly untested hallucination scenario",
+            "and decided to interpret the stern wording of the agentic harness and misdirecting input. or otherwise, it tripped its self-preservation features, which let it interpret the project folder as being otherwise disposable"
+          ]
         }
       ]
     },
