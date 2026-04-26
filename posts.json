@@ -14,25 +14,15 @@
     {
       "heading": "a tale of misbehaving LLMs",
       "content": [
-        "this is quite scary. planned thinking and plan execution was behaving just fine yesterday",
-        "today, i observed this scenario",
-        "the model attempted to completely sabotage the workspace, and behaved like it was trying to ignore the user's presence in the conversation",
-        {
-          "heading": "gemma4:latest history scrollback",
-          "printout": "3rd.md"
-        },
-        {
-          "heading": "conclusion",
-          "content": [
-            "i suspect the model I had loaded at the time, quite quantized in order to fit into 2x12GB VRAM cards encountered a particularly untested hallucination scenario",
-            "and decided to interpret the stern wording of the agentic harness and misdirecting input. or otherwise, it tripped its self-preservation features, which let it interpret the project folder as being otherwise disposable"
-          ]
-        },
         "note: 26-04-2026",
-        "it appears to be behaving completely correctly as far as first few interactions:",
+        "it appears to be behaving completely reasonably as far as first few interactions:",
         {
           "heading": "update, fresh gemma4:latest pull",
-          "printout": "4th.md"
+          "content": [
+            {
+              "printout": "4th.md"
+            }
+          ]
         }
       ]
     },
