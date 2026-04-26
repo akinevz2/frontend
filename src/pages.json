@@ -24,6 +24,12 @@
         "description": "posts and notes from kine"
     },
     {
+        "path": "/music",
+        "menuLabel": "music",
+        "title": "glitchbox tracks",
+        "description": "my uploads from SoundCloud likes"
+    },
+    {
         "path": "/contact",
         "menuLabel": "links",
         "title": "try contact kine",
