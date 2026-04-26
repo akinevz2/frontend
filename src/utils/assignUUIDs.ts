@@ -1,6 +1,16 @@
-import { randomUUID } from 'node:crypto';
 import type { SectionProps } from '../windowing';
 import type { AddonProps } from '../components/Addon';
+
+const createUUID = () => {
+  if (
+    typeof globalThis.crypto !== 'undefined' &&
+    typeof globalThis.crypto.randomUUID === 'function'
+  ) {
+    return globalThis.crypto.randomUUID();
+  }
+
+  return `uuid-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+};
 
 export type SectionMetadata = {
   uuid: string;
@@ -31,7 +41,7 @@ export function assignUUIDsToSections(
   depth: number = 0,
   metadata: Map<string, SectionMetadata> = new Map()
 ): { section: SectionWithUUID; metadata: Map<string, SectionMetadata> } {
-  const uuid = randomUUID();
+  const uuid = createUUID();
   const heading = section.heading || '';
 
   // Store metadata
@@ -74,7 +84,7 @@ export function assignUUIDsToAddons(
   depth: number = 0,
   metadata: Map<string, SectionMetadata> = new Map()
 ): { addon: AddonWithUUID; metadata: Map<string, SectionMetadata> } {
-  const uuid = randomUUID();
+  const uuid = createUUID();
   const heading = addon.heading || '';
 
   // Store metadata

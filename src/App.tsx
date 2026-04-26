@@ -1,4 +1,10 @@
-import { FormEvent, useEffect, useMemo, useState, type JSX } from "react";
+import {
+  FormEvent,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactElement,
+} from "react";
 import { ToastContainer } from "react-toastify";
 
 import MenuBar from "./components/MenuBar";
@@ -537,7 +543,7 @@ export default function App() {
     setPath(next);
   };
 
-  let content: JSX.Element;
+  let content: ReactElement;
   switch (path) {
     case "/":
       content = <HomePage />;
