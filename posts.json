@@ -11,13 +11,13 @@
       ]
     },
     {
-      "heading": "awareness about degraded perplexity observed in gemma4 models",
+      "heading": "a tale of misbehaving LLMs",
       "content": [
         "this is quite scary. planned thinking and plan execution was behaving just fine yesterday",
         "today, i observed this scenario",
         "the model attempted to completely sabotage the workspace, and behaved like it was trying to ignore the user's presence in the conversation",
         {
-          "heading": "history scrollback",
+          "heading": "gemma4:latest history scrollback",
           "printout": "3rd.md"
         },
         {
@@ -27,13 +27,6 @@
             "and decided to interpret the stern wording of the agentic harness and misdirecting input. or otherwise, it tripped its self-preservation features, which let it interpret the project folder as being otherwise disposable"
           ]
         }
-      ]
-    },
-    {
-      "heading": "quick post (#temporary-downtime)",
-      "content": [
-        "all systems normal",
-        "website might have been temporarily down for you, if you happened to cache the page! I had to resolve some security issues in the build system"
       ]
     },
     {
