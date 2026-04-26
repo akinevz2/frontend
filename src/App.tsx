@@ -475,6 +475,10 @@ export default function App() {
     document.title = route.title;
 
     const canonicalUrl = new URL(path, window.location.origin).toString();
+    const socialImageUrl = new URL(
+      "/avatar.png",
+      window.location.origin,
+    ).toString();
 
     upsertMeta('meta[name="description"]', {
       name: "description",
@@ -493,6 +497,18 @@ export default function App() {
     upsertMeta('meta[property="og:url"]', {
       property: "og:url",
       content: canonicalUrl,
+    });
+    upsertMeta('meta[property="og:image"]', {
+      property: "og:image",
+      content: socialImageUrl,
+    });
+    upsertMeta('meta[name="twitter:card"]', {
+      name: "twitter:card",
+      content: "summary_large_image",
+    });
+    upsertMeta('meta[name="twitter:image"]', {
+      name: "twitter:image",
+      content: socialImageUrl,
     });
     upsertMeta('meta[name="twitter:title"]', {
       name: "twitter:title",
