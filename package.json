@@ -5,19 +5,20 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run generate:music && vite build",
     "preview": "vite preview --host --port 8086",
     "lint": "eslint .",
     "check:audit": "npm audit --audit-level=low",
     "prebuild": "node -e \"console.log('About to run npm audit in 5 seconds. Press Ctrl+C to abort.'); setTimeout(() => {}, 5000);\" && npm run check:audit",
-    "pagerts": "NPM_CONFIG_LOGLEVEL=error npx --yes pagerts"
+    "pagerts": "NPM_CONFIG_LOGLEVEL=error npx --yes pagerts",
+    "generate:music": "node ./scripts/generate-soundcloud-json.mjs"
   },
   "dependencies": {
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "rehype-raw": "^7.0.0",
     "react-markdown": "^10.1.0",
     "react-toastify": "^11.0.5",
+    "rehype-raw": "^7.0.0",
     "xp.css": "^0.2.6"
   },
   "devDependencies": {
@@ -30,9 +31,10 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
+    "pagerts": "^1.4.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.58.0",
-    "vite": "^8.0.3"
+    "vite": "^8.0.10"
   },
   "overrides": {
     "lodash": "^4.17.21"
