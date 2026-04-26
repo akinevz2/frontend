@@ -510,7 +510,7 @@ export default function App() {
     });
     upsertMeta('meta[name="twitter:card"]', {
       name: "twitter:card",
-      content: "summary_large_image",
+      content: "summary",
     });
     upsertMeta('meta[name="twitter:image"]', {
       name: "twitter:image",

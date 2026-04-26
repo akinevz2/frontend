@@ -94,7 +94,7 @@ function withRouteMeta(indexHtml: string, page: PageDefinition): string {
   nextHtml = replaceSelfClosingTagByDataMeta(
     nextHtml,
     "twitter:card",
-    '<meta name="twitter:card" content="summary_large_image" data-route-meta="twitter:card" />',
+    '<meta name="twitter:card" content="summary" data-route-meta="twitter:card" />',
   );
   nextHtml = replaceSelfClosingTagByDataMeta(
     nextHtml,
