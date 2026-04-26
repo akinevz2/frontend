@@ -57,6 +57,7 @@ function withRouteMeta(indexHtml: string, page: PageDefinition): string {
   const title = escapeHtml(page.title);
   const description = escapeHtml(page.description);
   const url = escapeHtml(getRouteUrl(page.path));
+  const socialImageUrl = escapeHtml(new URL("/avatar.png", SITE_ORIGIN).toString());
 
   let nextHtml = indexHtml;
   nextHtml = replaceTitleByDataMeta(nextHtml, title);
@@ -84,6 +85,21 @@ function withRouteMeta(indexHtml: string, page: PageDefinition): string {
     nextHtml,
     "og:url",
     `<meta property="og:url" content="${url}" data-route-meta="og:url" />`,
+  );
+  nextHtml = replaceSelfClosingTagByDataMeta(
+    nextHtml,
+    "og:image",
+    `<meta property="og:image" content="${socialImageUrl}" data-route-meta="og:image" />`,
+  );
+  nextHtml = replaceSelfClosingTagByDataMeta(
+    nextHtml,
+    "twitter:card",
+    '<meta name="twitter:card" content="summary_large_image" data-route-meta="twitter:card" />',
+  );
+  nextHtml = replaceSelfClosingTagByDataMeta(
+    nextHtml,
+    "twitter:image",
+    `<meta name="twitter:image" content="${socialImageUrl}" data-route-meta="twitter:image" />`,
   );
   nextHtml = replaceSelfClosingTagByDataMeta(
     nextHtml,
