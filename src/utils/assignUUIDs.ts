@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import type { SectionProps } from '../components/Section';
+import type { SectionProps } from '../windowing';
 import type { AddonProps } from '../components/Addon';
 
 export type SectionMetadata = {

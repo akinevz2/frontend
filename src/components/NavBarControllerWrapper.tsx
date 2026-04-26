@@ -3,7 +3,7 @@ import { NavBarController } from "./NavBarController";
 
 export const NavBarControllerWrapper = () => {
   // Create empty metadata for navbar context
-  const pageMetadata = { sections: new Map() };
+  const pageMetadata = { sections: [] };
   
   return (
     <SectionProvider pageMetadata={pageMetadata}>
