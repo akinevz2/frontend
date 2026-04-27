@@ -17,7 +17,7 @@
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-markdown": "^10.1.0",
-    "react-toastify": "^11.0.5",
+    "react-toastify": "^11.1.0",
     "rehype-raw": "^7.0.0",
     "xp.css": "^0.2.6"
   },
