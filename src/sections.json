@@ -212,6 +212,20 @@
                 {
                   "heading": "what class is Kogg?",
                   "content": "a Shaman"
+                },
+                {
+                  "heading": "where does Kogg come from?",
+                  "content": [
+                    "born in Northrend, he was raised by the Taunka people",
+                    "he was recruited into the Horde war effort by the Warsong"
+                  ]
+                },
+                {
+                  "heading": "does Kogg ever stand still?",
+                  "content": [
+                    "<img src=\"/images/kogg1.png\" alt=\"kogg image 1\" style=\"max-width: 100%; height: auto;\" />",
+                    "<img src=\"/images/kogg2.png\" alt=\"kogg image 2\" style=\"max-width: 100%; height: auto;\" />"
+                  ]
                 }
               ]
             }
