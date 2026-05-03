@@ -2,6 +2,42 @@
   "heading": "kine's blog posts",
   "content": [
     {
+      "heading": "tenth post (#meta, #rant)",
+      "content": [
+        "uh... i was just thinking...",
+        "does my website get indexed by commercial ai?",
+        "[in a post below](https://akinevz.com/blog/?post=sixth-post-ramble-meta), i made an off the cuff comment",
+        "stating my preference for chaos on my personal web page",
+        "...",
+        "but i would like to comment on the issue stating that:",
+        "perhaps i have been relying too much on social media platforms to shield me from outside world",
+        "as odd as that seems, despite having no conscious control over how they operate",
+        "so if my primitive personal website is getting indexed by a crawler somewhere out there,",
+        "i wish to welcome you here warmly, its my own personal space here",
+        "you can have a marshmallow, or imagine a can of beer"
+      ]
+    },
+    {
+      "heading": "tenth post (#meta, #rant)",
+      "content": [
+        "uh... i was just thinking...",
+        "does my website get indexed by commercial ai?",
+        "[in a post below](https://akinevz.com/blog/?post=sixth-post-ramble-meta), i made an off the cuff comment",
+        "stating my preference for chaos on my personal web page",
+        "...",
+        "but i would like to comment on the issue stating that:",
+        {
+          "content": [
+            "i partake in comical approximation of hedonism only for my personal entertainment",
+            "in limited and small amounts, in safe spaces only",
+            "and i do hope that my personal views do not offend or hurt anyone"
+          ]
+        },
+        "perhaps i have been relying too much on social media platforms to shield me",
+        "as odd as that seems, despite having no conscious control over how they operate"
+      ]
+    },
+    {
       "heading": "fifth post (#qwen3.5)",
       "content": [
         "previous posts have been rearranged, and I will be attaching data from a repeated run, that seems to have proceeded almost identical to the previous one.",
