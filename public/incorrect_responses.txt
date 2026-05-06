@@ -1,0 +1,126 @@
+5be31d58-407d-4262-9c23
+
+================================================================================
+INCORRECT RESPONSE REPORT
+Generated from: benchmark_results.sqlite
+Total incorrect responses: 18
+================================================================================
+
+
+######################################################################
+HOST: minifridge  (http://minifridge:11434)
+######################################################################
+
+  MODEL: devstral:latest
+  ────────────────────────────────────────────────────────────
+
+    TEST CASE: Simple Greeting
+
+      Run        : 20260423_122322_113ab5fc  (2026-04-23 12:23:22)
+      Latency    : 5.99s
+      Prompt     : Say 'Hello World'
+      Response  : Hello, I'm Devstral! How can I assist you today?
+
+      Run        : 20260423_123535_a966363f  (2026-04-23 12:35:35)
+      Latency    : 3.58s
+      Prompt     : Say 'Hello World'
+      Response  : Hello! How can I assist you today?
+
+      Run        : 20260423_131155_86d5f17e  (2026-04-23 13:11:55)
+      Latency    : 3.41s
+      Prompt     : Say 'Hello World'
+      Response  : Hello! How can I assist you today?
+
+      Run        : 20260423_132359_a83b6f5b  (2026-04-23 13:23:59)
+      Latency    : 3.29s
+      Prompt     : Say 'Hello World'
+      Response  : Hello! How can I assist you today?
+
+  MODEL: glm-4.7-flash:latest
+  ────────────────────────────────────────────────────────────
+
+    TEST CASE: Simple Greeting
+
+      Run        : 20260423_122322_113ab5fc  (2026-04-23 12:23:22)
+      Latency    : 13.52s
+      Prompt     : Say 'Hello World'
+      Response  : Hello, World!
+
+      Run        : 20260423_123535_a966363f  (2026-04-23 12:35:35)
+      Latency    : 10.63s
+      Prompt     : Say 'Hello World'
+      Response  : Hello, World!
+
+      Run        : 20260423_124655_ce871a4d  (2026-04-23 12:46:55)
+      Latency    : 12.74s
+      Prompt     : Say 'Hello World'
+      Response  : Hello, World
+
+  MODEL: llama3.1:8b-instruct-q4_K_M
+  ────────────────────────────────────────────────────────────
+
+    TEST CASE: Simple Greeting
+
+      Run        : 20260423_114440_c0c853d7  (2026-04-23 11:44:40)
+      Latency    : 0.27s
+      Prompt     : Say 'Hello World'
+      Response  : Hello, World!
+
+      Run        : 20260423_121008_e767634b  (2026-04-23 12:10:08)
+      Latency    : 0.28s
+      Prompt     : Say 'Hello World'
+      Response  : Hello, World!
+
+      Run        : 20260423_123535_a966363f  (2026-04-23 12:35:35)
+      Latency    : 0.27s
+      Prompt     : Say 'Hello World'
+      Response  : Hello, World!
+
+      Run        : 20260423_125902_05a87892  (2026-04-23 12:59:02)
+      Latency    : 0.27s
+      Prompt     : Say 'Hello World'
+      Response  : Hello, World!
+
+      Run        : 20260423_131155_86d5f17e  (2026-04-23 13:11:55)
+      Latency    : 0.29s
+      Prompt     : Say 'Hello World'
+      Response  : Hello, World!
+
+      Run        : 20260423_133705_cd17867d  (2026-04-23 13:37:05)
+      Latency    : 0.28s
+      Prompt     : Say 'Hello World'
+      Response  : Hello, World!
+
+  MODEL: llama3.1:latest
+  ────────────────────────────────────────────────────────────
+
+    TEST CASE: Simple Greeting
+
+      Run        : 20260423_114440_c0c853d7  (2026-04-23 11:44:40)
+      Latency    : 0.27s
+      Prompt     : Say 'Hello World'
+      Response  : Hello, World!
+
+      Run        : 20260423_115628_38518096  (2026-04-23 11:56:28)
+      Latency    : 0.28s
+      Prompt     : Say 'Hello World'
+      Response  : Hello, World!
+
+      Run        : 20260423_124655_ce871a4d  (2026-04-23 12:46:55)
+      Latency    : 0.27s
+      Prompt     : Say 'Hello World'
+      Response  : Hello, World!
+
+      Run        : 20260423_125902_05a87892  (2026-04-23 12:59:02)
+      Latency    : 0.29s
+      Prompt     : Say 'Hello World'
+      Response  : Hello, World!
+
+      Run        : 20260423_131155_86d5f17e  (2026-04-23 13:11:55)
+      Latency    : 0.28s
+      Prompt     : Say 'Hello World'
+      Response  : Hello, World!
+
+
+// why would you do this to me 
+// 20c8f20342fb
