@@ -2,9 +2,14 @@
   "heading": "kine's blog posts",
   "content": [
     {
-      "heading": "eBay.co.uk is a scam (#rant, #meta, #auto, #blog, #ai)",
+      "heading": "public key",
       "content": [
-        "i have been using eBay for a long time, and i have had a lot of good experiences with it, but recently i have been having a lot of bad experiences with it. i have been trying to sell some items on eBay, and i have been getting a lot of fake buyers who are trying to scam me. they will buy an item, and then they will ask for a refund, and then they will leave negative feedback. i have been trying to report these buyers to eBay, but they don't seem to care. i have been trying to contact eBay customer service, but they don't seem to care either. i have been trying to find a way to get rid of these fake buyers, but i haven't found a solution yet. i am really frustrated with eBay, and i am considering switching to another platform."
+        {
+          "heading": "reveal",
+          "content": [
+            "[public key](https://akinevz.com/pub.key)"
+          ]
+        }
       ]
     },
     {
@@ -93,6 +98,12 @@
     {
       "heading": "archive",
       "content": [
+        {
+          "heading": "eBay.co.uk is a scam (#rant, #meta, #auto, #blog, #ai)",
+          "content": [
+            "i have been using eBay for a long time, and i have had a lot of good experiences with it, but recently i have been having a lot of bad experiences with it. i have been trying to sell some items on eBay, and i have been getting a lot of fake buyers who are trying to scam me. they will buy an item, and then they will ask for a refund, and then they will leave negative feedback. i have been trying to report these buyers to eBay, but they don't seem to care. i have been trying to contact eBay customer service, but they don't seem to care either. i have been trying to find a way to get rid of these fake buyers, but i haven't found a solution yet. i am really frustrated with eBay, and i am considering switching to another platform."
+          ]
+        },
         {
           "heading": "fifth post (#qwen3.5)",
           "content": [
