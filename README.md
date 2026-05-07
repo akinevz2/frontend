@@ -8,3 +8,4 @@ The mechanism works by transforming JSON into HTML.
 Academic use only. Repository's home is at github.com/akinevz2/
 
 Please respect the author's choices.
+Don't use this code for harm.
