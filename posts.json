@@ -2,17 +2,6 @@
   "heading": "kine's blog posts",
   "content": [
     {
-      "heading": "public key",
-      "content": [
-        {
-          "heading": "reveal",
-          "content": [
-            "[public key](https://akinevz.com/pub.key)"
-          ]
-        }
-      ]
-    },
-    {
       "heading": "support me! (#meta, #blog)",
       "content": [
         "it would be cool if this, completely generic and adoptable website scaffold",
@@ -136,7 +125,19 @@
             "no useful output from this model on consumer hardware... qwen3.5:27b",
             {
               "heading": "well that sucks!",
-              "content": "<a onclick=\"alert('i don\\'t know what to even say!')\"> the button that says that it sucks </a>"
+              "content": [
+                {
+                  "heading": "public key",
+                  "content": [
+                    {
+                      "heading": "reveal",
+                      "content": [
+                        "[public key](https://akinevz.com/pub.key)"
+                      ]
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
