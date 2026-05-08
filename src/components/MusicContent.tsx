@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { PageContent } from "./Page";
+import favouriteLinks from "../music-links.json";
 import { processContent } from "../windowing/utils";
 import type { PageMetadata, SectionProps } from "../windowing";
 
@@ -15,6 +16,11 @@ type MusicPayload = {
   generatedAt: string;
   trackCount: number;
   tracks: MusicTrack[];
+};
+
+type FavouriteLink = {
+  title: string;
+  url: string;
 };
 
 type MusicState = {
@@ -39,9 +45,24 @@ const buildState = (content: SectionProps | SectionProps[]): MusicState => {
   };
 };
 
+const isFavouriteLink = (value: unknown): value is FavouriteLink => {
+  if (!value || typeof value !== "object") return false;
+
+  const candidate = value as Partial<FavouriteLink>;
+  return typeof candidate.title === "string" && typeof candidate.url === "string";
+};
+
+const configuredFavouriteLinks: FavouriteLink[] = Array.isArray(favouriteLinks)
+  ? (favouriteLinks as unknown[]).filter(isFavouriteLink)
+  : [];
+
 const toMusicSections = (payload: MusicPayload): SectionProps[] => {
   const trackList = payload.tracks.map(
     (track) => `- [${track.title}](${track.url})`,
+  );
+
+  const favouriteLinkList = configuredFavouriteLinks.map(
+    (link) => `- [${link.title}](${link.url})`,
   );
 
   return [
@@ -55,6 +76,13 @@ const toMusicSections = (payload: MusicPayload): SectionProps[] => {
               ...trackList,
             ]
           : ["No tracks found in this snapshot."],
+    },
+    {
+      heading: "Favourite Links",
+      content:
+        favouriteLinkList.length > 0
+          ? favouriteLinkList
+          : ["No favourite links configured yet."],
     },
     {
       heading: "Source",
