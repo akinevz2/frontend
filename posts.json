@@ -2,11 +2,20 @@
   "heading": "kine's blog posts",
   "content": [
     {
+      "heading": "oh my god i need so much more time",
+      "content": [
+        "there will be music on the music page soon. i just need some time to revisit it"
+      ]
+    },
+    {
       "heading": "support me! (#meta, #blog)",
       "content": [
-        {"heading": "clone this repo!!!!", "content": [
-          "[website code](https://github.com/akinevz2/frontend)"
-        ]},
+        {
+          "heading": "clone this repo!!!!",
+          "content": [
+            "[website code](https://github.com/akinevz2/frontend)"
+          ]
+        },
         "it would be cool if this, completely generic and adoptable website scaffold",
         "supported user interactions like comments and messages. what a wonderful feat",
         "for the blog page. unfortunately i don't know anyone who would be interested",
