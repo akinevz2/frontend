@@ -1,13 +1,13 @@
 {
   "name": "website",
   "private": true,
-  "version": "1.1.5",
+  "version": "1.1.6",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "npm run generate:music && vite build",
     "preview": "vite preview --host --port 8086",
-    "lint": "eslint .",
+    "lint": "eslint ./src --ext .ts,.tsx",
     "check:audit": "npm audit --audit-level=low",
     "prebuild": "node -e \"console.log('About to run npm audit in 5 seconds. Press Ctrl+C to abort.'); setTimeout(() => {}, 5000);\" && npm run check:audit",
     "pagerts": "NPM_CONFIG_LOGLEVEL=error npx --yes pagerts",
