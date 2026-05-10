@@ -3,9 +3,9 @@ import type { Heading, SectionProps } from "../windowing";
 import { useState } from "react";
 
 export type AddonProps = SectionProps & {
-  status?: string;
-  text?: string;
-  link?: string;
+  status?: string | undefined;
+  text: string | undefined;
+  link: string | undefined;
   content?: string | (string | AddonProps)[];
 };
 
@@ -45,7 +45,7 @@ function renderStatus(status: string) {
   );
 }
 
-function RenderLink(props: { link?: string; text: string }) {
+function RenderLink(props: { link: string | undefined; text: string }) {
   const { link, text } = props;
   if (link) {
     return (
@@ -79,8 +79,16 @@ const playSound = () => {
   audio.play().catch(() => alert("Error playing sound: crunchy_kick.ogg"));
 };
 
-export const AddonList = (props: AddonProps) => {
-  const { heading, content, className, children } = props;
+type WindowPanelProps = AddonProps & {
+  asList?: boolean;
+};
+
+const WindowPanel = ({
+  heading,
+  content,
+  className,
+  children,
+}: WindowPanelProps) => {
   const hasHeading = !!heading;
   const hasContent = !!content;
   const [isMaximized, setIsMaximized] = useState(false);
@@ -101,7 +109,13 @@ export const AddonList = (props: AddonProps) => {
     <div className={`window ${className || ""}`}>
       {hasHeading ? (
         <div className="title-bar">
-          <div className="title-bar-text">{renderHeading(heading, props)}</div>
+          <div className="title-bar-text">
+            {renderHeading(heading, {
+              heading, content, className, children,
+              text: undefined,
+              link: undefined,
+            })}
+          </div>
           <div className="title-bar-controls">
             <button aria-label="Minimize"></button>
             <button aria-label="Maximize" onClick={handleMaximize}></button>
@@ -110,7 +124,13 @@ export const AddonList = (props: AddonProps) => {
         </div>
       ) : null}
       <div className="window-body">
-        {hasContent ? renderContent(content, props) : null}
+        {hasContent
+          ? renderContent(content, {
+            heading, content, className, children,
+            text: undefined,
+            link: undefined
+          })
+          : null}
         {children}
       </div>
     </div>
@@ -144,67 +164,8 @@ export const AddonList = (props: AddonProps) => {
   );
 };
 
-export const Addon = (props: AddonProps) => {
-  const { heading, content, className, children } = props;
-  const hasHeading = !!heading;
-  const hasContent = !!content;
-  const [isMaximized, setIsMaximized] = useState(false);
+export const AddonList = (props: AddonProps) => (
+  <WindowPanel {...props} asList={true} />
+);
 
-  const handleMaximize = () => {
-    setIsMaximized(!isMaximized);
-  };
-
-  const handleClose = () => {
-    if (isMaximized) {
-      setIsMaximized(false);
-    } else {
-      playSound();
-    }
-  };
-
-  const windowContent = (
-    <div className={`window ${className || ""}`}>
-      {hasHeading ? (
-        <div className="title-bar">
-          <div className="title-bar-text">{renderHeading(heading, props)}</div>
-          <div className="title-bar-controls">
-            <button aria-label="Minimize"></button>
-            <button aria-label="Maximize" onClick={handleMaximize}></button>
-            <button aria-label="Close" onClick={handleClose}></button>
-          </div>
-        </div>
-      ) : null}
-      <div className="window-body">
-        {hasContent ? renderContent(content, props) : null}
-        {children}
-      </div>
-    </div>
-  );
-
-  return (
-    <>
-      <div
-        className="addon-wrapper"
-        style={{ visibility: isMaximized ? "hidden" : "visible" }}
-      >
-        {windowContent}
-      </div>
-      {isMaximized && (
-        <div
-          style={{
-            position: "fixed",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            zIndex: 9999,
-            maxWidth: "90vw",
-            maxHeight: "90vh",
-            overflow: "auto",
-          }}
-        >
-          {windowContent}
-        </div>
-      )}
-    </>
-  );
-};
+export const Addon = (props: AddonProps) => <WindowPanel {...props} />;
