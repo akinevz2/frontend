@@ -86,6 +86,7 @@ type WindowPanelProps = AddonProps & {
 const WindowPanel = ({
   heading,
   content,
+  link,
   className,
   children,
 }: WindowPanelProps) => {
@@ -113,7 +114,7 @@ const WindowPanel = ({
             {renderHeading(heading, {
               heading, content, className, children,
               text: undefined,
-              link: undefined,
+              link,
             })}
           </div>
           <div className="title-bar-controls">
