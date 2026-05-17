@@ -75,7 +75,7 @@ const renderTrackEmbed = (track: MusicTrack) => {
   const embedUrl = buildSoundCloudEmbedUrl(track.url);
 
   return [
-    `### [${track.title}](${track.url})`,
+    `<p class="music-track-title"><a href="${track.url}">${track.title}</a></p>`,
     `<iframe
       title="SoundCloud track: ${track.title}"
       width="100%"
@@ -91,12 +91,63 @@ const renderTrackEmbed = (track: MusicTrack) => {
   ].join("\n\n");
 };
 
+const getSpotifyEmbedUrl = (urlValue: string): string | null => {
+  try {
+    const parsed = new URL(urlValue);
+    if (parsed.hostname !== "open.spotify.com") {
+      return null;
+    }
+
+    const segments = parsed.pathname.split("/").filter(Boolean);
+    if (segments.length < 2) {
+      return null;
+    }
+
+    const resourceType = segments[0];
+    const resourceId = segments[1];
+    if (!resourceType || !resourceId) {
+      return null;
+    }
+
+    const allowedTypes = new Set(["track", "playlist", "album", "artist", "episode", "show"]);
+    if (!allowedTypes.has(resourceType)) {
+      return null;
+    }
+
+    return `https://open.spotify.com/embed/${resourceType}/${resourceId}`;
+  } catch {
+    return null;
+  }
+};
+
+const renderFavouriteLink = (link: FavouriteLink) => {
+  const embedUrl = getSpotifyEmbedUrl(link.url);
+  if (!embedUrl) {
+    return `- [${link.title}](${link.url})`;
+  }
+
+  return [
+    `<p class="music-track-title"><a href="${link.url}">${link.title}</a></p>`,
+    `<iframe
+      title="Spotify item: ${link.title}"
+      style="border-radius:12px"
+      src="${embedUrl}"
+      width="100%"
+      height="152"
+      frameborder="0"
+      allowfullscreen=""
+      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+      loading="lazy"
+      referrerpolicy="strict-origin-when-cross-origin"
+    ></iframe>`,
+    `[Open on Spotify](${link.url})`,
+  ].join("\n\n");
+};
+
 const toMusicSections = (payload: MusicPayload): SectionProps[] => {
   const trackEmbeds = payload.tracks.map((track) => renderTrackEmbed(track));
 
-  const favouriteLinkList = configuredFavouriteLinks.map(
-    (link) => `- [${link.title}](${link.url})`,
-  );
+  const favouriteLinkList = configuredFavouriteLinks.map((link) => renderFavouriteLink(link));
 
   return [
     {
