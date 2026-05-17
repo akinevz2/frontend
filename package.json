@@ -8,6 +8,8 @@
     "build": "npm run generate:music && vite build",
     "preview": "vite preview --host --port 8086",
     "lint": "eslint ./src --ext .ts,.tsx",
+    "test": "node --test",
+    "test:watch": "node --test --watch",
     "check:audit": "npm audit --audit-level=low",
     "pagerts": "NPM_CONFIG_LOGLEVEL=error npx --yes pagerts",
     "generate:music": "node ./scripts/generate-soundcloud-json.mjs"

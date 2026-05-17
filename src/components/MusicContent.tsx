@@ -24,12 +24,14 @@ type FavouriteLink = {
 };
 
 type MusicState = {
-  sections?: SectionProps | SectionProps[];
+  sections: SectionProps | SectionProps[] | undefined;
   metadata: PageMetadata;
   error?: string;
 };
 
 const LOADING_SECTION: SectionProps = {
+  className: "music-loading",
+  children: [],
   heading: "Loading...",
   content: [
     "![Loading spinner](/spinner.svg)",
@@ -40,7 +42,7 @@ const LOADING_SECTION: SectionProps = {
 const buildState = (content: SectionProps | SectionProps[]): MusicState => {
   const { processed, metadata } = processContent(content);
   return {
-    sections: processed,
+    sections: processed as SectionProps | SectionProps[],
     metadata: { sections: metadata },
   };
 };
@@ -56,10 +58,41 @@ const configuredFavouriteLinks: FavouriteLink[] = Array.isArray(favouriteLinks)
   ? (favouriteLinks as unknown[]).filter(isFavouriteLink)
   : [];
 
+const buildSoundCloudEmbedUrl = (trackUrl: string) => {
+  const embedUrl = new URL("https://w.soundcloud.com/player/");
+  embedUrl.searchParams.set("url", trackUrl);
+  embedUrl.searchParams.set("color", "ff5500");
+  embedUrl.searchParams.set("auto_play", "false");
+  embedUrl.searchParams.set("hide_related", "false");
+  embedUrl.searchParams.set("show_comments", "true");
+  embedUrl.searchParams.set("show_user", "true");
+  embedUrl.searchParams.set("show_reposts", "false");
+  embedUrl.searchParams.set("visual", "false");
+  return embedUrl.toString();
+};
+
+const renderTrackEmbed = (track: MusicTrack) => {
+  const embedUrl = buildSoundCloudEmbedUrl(track.url);
+
+  return [
+    `### [${track.title}](${track.url})`,
+    `<iframe
+      title="SoundCloud track: ${track.title}"
+      width="100%"
+      height="166"
+      scrolling="no"
+      frameBorder="no"
+      allow="autoplay"
+      loading="lazy"
+      referrerPolicy="strict-origin-when-cross-origin"
+      src="${embedUrl}"
+    ></iframe>`,
+    `[Open on SoundCloud](${track.url})`,
+  ].join("\n\n");
+};
+
 const toMusicSections = (payload: MusicPayload): SectionProps[] => {
-  const trackList = payload.tracks.map(
-    (track) => `- [${track.title}](${track.url})`,
-  );
+  const trackEmbeds = payload.tracks.map((track) => renderTrackEmbed(track));
 
   const favouriteLinkList = configuredFavouriteLinks.map(
     (link) => `- [${link.title}](${link.url})`,
@@ -67,17 +100,21 @@ const toMusicSections = (payload: MusicPayload): SectionProps[] => {
 
   return [
     {
+      className: "music-favorite-uploads",
+      children: [],
       heading: "Favorite Uploads",
       content:
-        trackList.length > 0
+        trackEmbeds.length > 0
           ? [
               `Generated: ${new Date(payload.generatedAt).toLocaleString()}`,
               `Track count: ${payload.trackCount}`,
-              ...trackList,
+              ...trackEmbeds,
             ]
           : ["No tracks found in this snapshot."],
     },
     {
+      className: "music-favourite-links",
+      children: [],
       heading: "Favourite Links",
       content:
         favouriteLinkList.length > 0
@@ -85,6 +122,8 @@ const toMusicSections = (payload: MusicPayload): SectionProps[] => {
           : ["No favourite links configured yet."],
     },
     {
+      className: "music-source",
+      children: [],
       heading: "Source",
       content: [`Likes page: [${payload.source}](${payload.source})`],
     },
@@ -158,10 +197,14 @@ export default function MusicContent() {
       {musicState.error ? (
         <p className="status-bar">{musicState.error}</p>
       ) : null}
-      <PageContent
-        sections={musicState.sections}
-        pageMetadata={musicState.metadata}
-      />
+      {musicState.sections ? (
+        <PageContent
+          sections={musicState.sections}
+          pageMetadata={musicState.metadata}
+        />
+      ) : (
+        <PageContent pageMetadata={musicState.metadata} />
+      )}
     </>
   );
 }
