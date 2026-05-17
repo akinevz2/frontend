@@ -11,7 +11,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const outputFile = resolve(__dirname, "../public/soundcloud.json");
 
-const parseOutput = (raw) => {
+export const parseOutput = (raw) => {
   const trimmed = raw.trim();
   const start = trimmed.indexOf("[");
 
@@ -27,16 +27,36 @@ const parseOutput = (raw) => {
   return payload;
 };
 
-const isTrackPath = (value) =>
+export const isTrackPath = (value) =>
   typeof value === "string" &&
   value.startsWith(USER_PATH_PREFIX) &&
   value !== "/akinevz" &&
   !value.startsWith("/akinevz/sets/") &&
   /^\/akinevz\/[^/]+$/.test(value);
 
-const titleFromPath = (value) => value.split("/").filter(Boolean).at(-1) ?? value;
+export const titleFromPath = (value) => value.split("/").filter(Boolean).at(-1) ?? value;
 
-const run = async () => {
+export const buildTracks = (resources) => {
+  const seen = new Set();
+
+  return resources
+    .filter((resource) => isTrackPath(resource?.link?.value))
+    .map((resource) => resource.link.value)
+    .filter((value) => {
+      if (seen.has(value)) {
+        return false;
+      }
+      seen.add(value);
+      return true;
+    })
+    .map((path) => ({
+      path,
+      title: titleFromPath(path),
+      url: `https://soundcloud.com${path}`,
+    }));
+};
+
+export const run = async () => {
   const args = ["--yes", "pagerts", SOURCE_URL];
   const child = spawn("npx", args, {
     cwd: resolve(__dirname, ".."),
@@ -70,22 +90,7 @@ const run = async () => {
     throw new Error("pagerts payload is missing resources");
   }
 
-  const seen = new Set();
-  const tracks = resources
-    .filter((resource) => isTrackPath(resource?.link?.value))
-    .map((resource) => resource.link.value)
-    .filter((value) => {
-      if (seen.has(value)) {
-        return false;
-      }
-      seen.add(value);
-      return true;
-    })
-    .map((path) => ({
-      path,
-      title: titleFromPath(path),
-      url: `https://soundcloud.com${path}`,
-    }));
+  const tracks = buildTracks(resources);
 
   const result = {
     source: SOURCE_URL,
@@ -98,7 +103,9 @@ const run = async () => {
   process.stdout.write(`Wrote ${tracks.length} tracks to ${outputFile}\n`);
 };
 
-run().catch((error) => {
-  process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
-  process.exit(1);
-});
+if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
+  run().catch((error) => {
+    process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
+    process.exit(1);
+  });
+}
