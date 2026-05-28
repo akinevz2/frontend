@@ -4,24 +4,23 @@ import { useState } from "react";
 
 export type AddonProps = SectionProps & {
   status?: string | undefined;
-  text: string | undefined;
-  link: string | undefined;
-  content?: string | (string | AddonProps)[];
+  text?: string | undefined;
+  link?: string | undefined;
+  content?: string | (string | AddonProps)[] | undefined;
 };
 
 export type AddonContent = string | (string | AddonProps)[];
 
-function renderHeading(heading: Heading, props: AddonProps) {
-  const { link } = props;
+function renderHeading(heading: Heading, link?: string) {
   return <RenderLink link={link} text={heading} />;
 }
 
-function renderContent(content: AddonContent, props: AddonProps) {
+function renderContent(content: AddonContent, status?: string, text?: string) {
   if (typeof content === "string")
     return (
       <ul>
         <li key={0}>{content}</li>
-        {renderAddon(props)}
+        {renderAddon(status, text)}
       </ul>
     );
   return (
@@ -57,8 +56,7 @@ function RenderLink(props: { link: string | undefined; text: string }) {
   return <>{text}</>;
 }
 
-function renderAddon(props: AddonProps) {
-  const { status, text } = props;
+function renderAddon(status?: string, text?: string) {
   const elements = [];
   if (status) {
     elements.push(<span key="status">{renderStatus(status)}</span>);
@@ -87,6 +85,8 @@ const WindowPanel = ({
   heading,
   content,
   link,
+  status,
+  text,
   className,
   children,
 }: WindowPanelProps) => {
@@ -111,11 +111,7 @@ const WindowPanel = ({
       {hasHeading ? (
         <div className="title-bar">
           <div className="title-bar-text">
-            {renderHeading(heading, {
-              heading, content, className, children,
-              text: undefined,
-              link,
-            })}
+            {renderHeading(heading, link)}
           </div>
           <div className="title-bar-controls">
             <button aria-label="Minimize"></button>
@@ -126,11 +122,7 @@ const WindowPanel = ({
       ) : null}
       <div className="window-body">
         {hasContent
-          ? renderContent(content, {
-            heading, content, className, children,
-            text: undefined,
-            link: undefined
-          })
+          ? renderContent(content, status, text)
           : null}
         {children}
       </div>

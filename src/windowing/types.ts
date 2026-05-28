@@ -1,18 +1,21 @@
 import type React from "react";
 
 export type Heading = string;
+export type HttpUrl = `http://${string}` | `https://${string}`;
+export type LinkUrl = HttpUrl | `/${string}`;
+
+export type Content = string | (string | SectionProps)[];
 
 export type SectionProps = {
-  className: string;
+  className?: string | undefined;
   heading?: Heading | undefined;
-  content: string | (string | SectionProps)[];
+  content?: Content | undefined;
+  link?: LinkUrl | undefined;
   printout?: string | string[] | undefined;
-  children: React.ReactNode[];
+  children?: React.ReactNode;
   depth?: number | undefined;
   uuid?: string | undefined;
 };
-
-export type Content = string | (string | SectionProps)[];
 
 export type SectionMetadata = {
   uuid: string;

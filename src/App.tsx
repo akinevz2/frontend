@@ -1,9 +1,9 @@
 import {
-  FormEvent,
   useEffect,
   useMemo,
   useState,
   type ReactElement,
+  type FormEvent,
 } from "react";
 import { ToastContainer } from "react-toastify";
 
@@ -15,8 +15,8 @@ import sections from "./sections.json";
 import contacts from "./contacts.json";
 import addons from "./addons.json";
 import pages from "./pages.json";
-import type { SectionProps } from "./windowing";
 import type { AddonProps } from "./components/Addon";
+import type { SectionProps } from "./windowing";
 import { processContent } from "./windowing/utils";
 
 type RouteConfig = {
@@ -65,7 +65,7 @@ const normalizePath = (path: string) => {
 
   const [firstSegment] = segments;
 
-  if (TOP_LEVEL_ROUTES.has(firstSegment.toLowerCase())) {
+  if (firstSegment && TOP_LEVEL_ROUTES.has(firstSegment.toLowerCase())) {
     return `/${firstSegment.toLowerCase()}`;
   }
 
@@ -111,7 +111,7 @@ const HomePage = () => {
   return (
     <main>
       <PageContent
-        sections={processed as SectionProps}
+        sections={processed}
         pageMetadata={{ sections: metadata }}
       />
     </main>
@@ -143,7 +143,7 @@ const ContactPage = () => {
   return (
     <main>
       <PageContent
-        sections={processed as SectionProps}
+        sections={processed}
         pageMetadata={{ sections: metadata }}
       />
     </main>

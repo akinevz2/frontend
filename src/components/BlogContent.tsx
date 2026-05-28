@@ -79,7 +79,6 @@ export default function BlogContent() {
           const message =
             error instanceof Error ? error.message : "Unknown error";
           setBlogState({
-            sections: undefined,
             metadata: { sections: [] },
             error: `Failed to fetch remote posts (${message}).`,
           });
@@ -98,7 +97,7 @@ export default function BlogContent() {
     <>
       {blogState.error ? <p className="status-bar">{blogState.error}</p> : null}
       <PageContent
-        sections={blogState.sections}
+        {...(blogState.sections ? { sections: blogState.sections } : {})}
         pageMetadata={blogState.metadata}
       />
     </>

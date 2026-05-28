@@ -4,7 +4,7 @@ import { createPortal } from "react-dom";
 import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import { useSectionContext } from "./hooks";
-import type { Content, SectionProps } from "./types";
+import type { Content, HttpUrl, SectionProps } from "./types";
 
 const BLOG_PATH = "/blog";
 const env = import.meta.env as Record<string, string | undefined>;
@@ -169,6 +169,15 @@ function renderContent(content: Content, depth: number) {
   );
 }
 
+function isValidHttpUrl(link: string): link is HttpUrl {
+  try {
+    const parsed = new URL(link);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 const playSound = () => {
   console.log("Close button clicked!");
   const audio = new Audio("/crunchy_kick.ogg");
@@ -179,6 +188,7 @@ export const Section = (props: SectionProps) => {
   const {
     heading,
     content,
+    link,
     printout,
     className,
     children,
@@ -187,6 +197,7 @@ export const Section = (props: SectionProps) => {
   } = props;
   const hasHeading = !!heading;
   const hasContent = !!content;
+  const hasLink = typeof link === "string" && link.length > 0;
   const hasPrintout =
     printout !== undefined &&
     ((typeof printout === "string" && printout.length > 0) ||
@@ -305,6 +316,15 @@ export const Section = (props: SectionProps) => {
     }
   };
 
+  const handlePrimaryAction = () => {
+    if (hasLink && isValidHttpUrl(link)) {
+      window.location.assign(link);
+      return;
+    }
+
+    handleExpand();
+  };
+
   const handleMouseDown = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest(".title-bar-controls")) {
       return; // Don't drag when clicking window controls
@@ -374,7 +394,7 @@ export const Section = (props: SectionProps) => {
       <div className="window-body">
         {isCollapsedResolved ? (
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            <button onClick={handleExpand}>OK</button>
+            <button onClick={handlePrimaryAction}>OK</button>
           </div>
         ) : (
           <>
@@ -467,7 +487,7 @@ export const Section = (props: SectionProps) => {
                     <div
                       style={{ display: "flex", justifyContent: "flex-end" }}
                     >
-                      <button onClick={handleExpand}>OK</button>
+                      <button onClick={handlePrimaryAction}>OK</button>
                     </div>
                   ) : (
                     <>

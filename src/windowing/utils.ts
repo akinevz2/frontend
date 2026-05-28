@@ -11,6 +11,57 @@ const createUUID = () => {
   return `uuid-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 };
 
+function ensureValidLinkUrl(link: string, heading?: string): void {
+  if (link.startsWith("/")) {
+    return;
+  }
+
+  let parsed: URL;
+
+  try {
+    parsed = new URL(link);
+  } catch {
+    throw new Error(
+      `Invalid section link URL${heading ? ` for '${heading}'` : ""}: '${link}'.`,
+    );
+  }
+
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+    throw new Error(
+      `Section link must use http/https or absolute local path${heading ? ` for '${heading}'` : ""}: '${link}'.`,
+    );
+  }
+}
+
+function validateSectionLinks(item: SectionProps): void {
+  if (typeof item.link === "string") {
+    ensureValidLinkUrl(item.link, item.heading);
+  }
+
+  if (!Array.isArray(item.content)) {
+    return;
+  }
+
+  for (const subItem of item.content) {
+    if (typeof subItem === "string") {
+      continue;
+    }
+
+    validateSectionLinks(subItem);
+  }
+}
+
+function validateContentLinks<T extends SectionProps>(content: T | T[]): void {
+  if (Array.isArray(content)) {
+    for (const item of content) {
+      validateSectionLinks(item);
+    }
+    return;
+  }
+
+  validateSectionLinks(content);
+}
+
 /**
  * Generic function to recursively assign UUIDs to content items
  */
@@ -64,6 +115,8 @@ export function processContent<T extends SectionProps>(
   processed: ContentWithUUID<T> | ContentWithUUID<T>[];
   metadata: SectionMetadata[];
 } {
+  validateContentLinks(content);
+
   const metadata = new Map<string, SectionMetadata>();
 
   if (Array.isArray(content)) {
