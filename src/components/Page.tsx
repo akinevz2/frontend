@@ -13,54 +13,6 @@ export type PageProps = {
   pageMetadata?: PageMetadata;
 };
 
-type RenderItemProps = {
-  item: SectionProps | AddonProps;
-  index: number;
-  ComponentType: typeof Section | typeof Addon;
-};
-
-const RenderItem = ({ item, index, ComponentType }: RenderItemProps) => (
-  <ComponentType key={item.uuid || index} {...item} />
-);
-
-type PageWrapperProps = {
-  items: SectionProps | SectionProps[] | AddonProps | AddonProps[] | undefined;
-  metadata: PageMetadata;
-  SingleComponent: typeof Section | typeof AddonList;
-  MultiComponent: typeof Section | typeof Addon;
-};
-
-const PageWrapper = ({
-  items,
-  metadata,
-  SingleComponent,
-  MultiComponent,
-}: PageWrapperProps) => {
-  if (!items) return null;
-
-  const isArray = Array.isArray(items);
-
-  return (
-    <SectionProvider pageMetadata={metadata}>
-      <section className="page">
-        {isArray ? (
-          items.map((item, index) => (
-            <RenderItem
-              key={item.uuid || index}
-              item={item}
-              index={index}
-              ComponentType={MultiComponent}
-            />
-          ))
-        ) : (
-          <SingleComponent {...items} />
-        )}
-      </section>
-      <MenuBarWithContext />
-    </SectionProvider>
-  );
-};
-
 export const PageContent = ({ sections, pageMetadata }: PageProps) => {
   const metadata = pageMetadata || { sections: [] };
 
@@ -70,25 +22,41 @@ export const PageContent = ({ sections, pageMetadata }: PageProps) => {
     isArray: Array.isArray(sections),
   });
 
+  if (!sections) {
+    return null;
+  }
+
   return (
-    <PageWrapper
-      items={sections}
-      metadata={metadata}
-      SingleComponent={Section}
-      MultiComponent={Section}
-    />
+    <SectionProvider pageMetadata={metadata}>
+      <section className="page">
+        {Array.isArray(sections)
+          ? sections.map((item, index) => (
+            <Section key={item.uuid || index} {...item} />
+          ))
+          : <Section {...sections} />}
+      </section>
+      <MenuBarWithContext />
+    </SectionProvider>
   );
 };
 
 export const PageWithAddons = ({ addons, pageMetadata }: PageProps) => {
   const metadata = pageMetadata || { sections: [] };
 
+  if (!addons) {
+    return null;
+  }
+
   return (
-    <PageWrapper
-      items={addons}
-      metadata={metadata}
-      SingleComponent={AddonList}
-      MultiComponent={Addon}
-    />
+    <SectionProvider pageMetadata={metadata}>
+      <section className="page">
+        {Array.isArray(addons)
+          ? addons.map((item, index) => (
+            <Addon key={item.uuid || index} {...item} />
+          ))
+          : <AddonList {...addons} />}
+      </section>
+      <MenuBarWithContext />
+    </SectionProvider>
   );
 };

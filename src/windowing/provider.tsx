@@ -17,12 +17,18 @@ const getAncestorSectionUuids = (
     return [];
   }
 
-  let expectedDepth = sectionMetadata[sectionIndex].depth - 1;
+  const currentSection = sectionMetadata[sectionIndex];
+  if (!currentSection) {
+    return [];
+  }
+
+  let expectedDepth = currentSection.depth - 1;
   const ancestors: string[] = [];
 
   for (let i = sectionIndex - 1; i >= 0 && expectedDepth >= 0; i--) {
-    if (sectionMetadata[i].depth === expectedDepth) {
-      ancestors.push(sectionMetadata[i].uuid);
+    const candidate = sectionMetadata[i];
+    if (candidate && candidate.depth === expectedDepth) {
+      ancestors.push(candidate.uuid);
       expectedDepth -= 1;
     }
   }

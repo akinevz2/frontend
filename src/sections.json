@@ -35,9 +35,19 @@
     {
       "heading": "what's kine busy with",
       "content": [
-        "writing web apps",
-        "finding job",
-        "relaxing"
+        {
+          "content": [
+            "**previously, currently, and likely for a long time**:",
+            "writing web apps",
+            "finding job",
+            "relaxing"
+          ]
+        },
+        "actively implementing loads of projects that have been waiting until graduation",
+        "commercial and non commercial software",
+        "writing experimental music",
+        "looking for graduate jobs",
+        "maintaining an esoteric online presence"
       ]
     },
     {
@@ -66,6 +76,16 @@
             "rust",
             "typescript",
             "machine learning"
+          ]
+        },
+        {
+          "heading": "open source",
+          "content": [
+            "**public live projects**:",
+            {
+              "heading": "pagerts, my first npm package",
+              "link": "https://www.npmjs.com/package/pagerts"
+            }
           ]
         },
         {

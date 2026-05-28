@@ -13,10 +13,12 @@ type Props = {
   onNavigate?: (href: string) => void;
 };
 
-const PAGE_LINKS = (pages as Array<{ path: string }>).map((page) => ({
-  url: page.path,
-  label: (page as { menuLabel?: string }).menuLabel,
-}));
+const PAGE_LINKS = (pages as Array<{ path: string; menuLabel?: string }>).map(
+  (page) => ({
+    url: page.path,
+    ...(page.menuLabel ? { label: page.menuLabel } : {}),
+  }),
+);
 
 const isTypingTarget = (target: EventTarget | null) => {
   if (!(target instanceof HTMLElement)) {
