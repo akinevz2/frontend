@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
@@ -10,6 +10,32 @@ const SOURCE_URL = "https://soundcloud.com/akinevz/likes";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const outputFile = resolve(__dirname, "../public/soundcloud.json");
+const cacheDir = resolve(__dirname, "../.cache");
+const cachedLikesPage = resolve(cacheDir, "soundcloud-likes.html");
+
+const runCommand = ({ command, args, cwd }) =>
+  new Promise((resolvePromise, reject) => {
+    const child = spawn(command, args, {
+      cwd,
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+
+    let stdout = "";
+    let stderr = "";
+
+    child.stdout.on("data", (chunk) => {
+      stdout += chunk.toString();
+    });
+
+    child.stderr.on("data", (chunk) => {
+      stderr += chunk.toString();
+    });
+
+    child.on("error", reject);
+    child.on("close", (exitCode) => {
+      resolvePromise({ exitCode, stdout, stderr });
+    });
+  });
 
 export const parseOutput = (raw) => {
   const trimmed = raw.trim();
@@ -19,7 +45,56 @@ export const parseOutput = (raw) => {
     throw new Error("pagerts output does not contain JSON payload");
   }
 
-  const payload = JSON.parse(trimmed.slice(start));
+  let inString = false;
+  let isEscaped = false;
+  let depth = 0;
+  let end = -1;
+
+  for (let i = start; i < trimmed.length; i += 1) {
+    const char = trimmed[i];
+
+    if (inString) {
+      if (isEscaped) {
+        isEscaped = false;
+        continue;
+      }
+
+      if (char === "\\") {
+        isEscaped = true;
+        continue;
+      }
+
+      if (char === '"') {
+        inString = false;
+      }
+
+      continue;
+    }
+
+    if (char === '"') {
+      inString = true;
+      continue;
+    }
+
+    if (char === "[") {
+      depth += 1;
+      continue;
+    }
+
+    if (char === "]") {
+      depth -= 1;
+      if (depth === 0) {
+        end = i;
+        break;
+      }
+    }
+  }
+
+  if (end === -1) {
+    throw new Error("pagerts output contains incomplete JSON payload");
+  }
+
+  const payload = JSON.parse(trimmed.slice(start, end + 1));
   if (!Array.isArray(payload) || payload.length === 0) {
     throw new Error("pagerts returned an empty payload");
   }
@@ -57,33 +132,34 @@ export const buildTracks = (resources) => {
 };
 
 export const run = async () => {
-  const args = ["--yes", "pagerts", SOURCE_URL];
-  const child = spawn("npx", args, {
-    cwd: resolve(__dirname, ".."),
-    stdio: ["ignore", "pipe", "pipe"],
+  const projectRoot = resolve(__dirname, "..");
+  await mkdir(cacheDir, { recursive: true });
+
+  const curlResult = await runCommand({
+    command: "curl",
+    args: ["-fLsS", SOURCE_URL, "-o", cachedLikesPage],
+    cwd: projectRoot,
   });
 
-  let stdout = "";
-  let stderr = "";
-
-  child.stdout.on("data", (chunk) => {
-    stdout += chunk.toString();
-  });
-
-  child.stderr.on("data", (chunk) => {
-    stderr += chunk.toString();
-  });
-
-  const exitCode = await new Promise((resolvePromise, reject) => {
-    child.on("error", reject);
-    child.on("close", resolvePromise);
-  });
-
-  if (exitCode !== 0) {
-    throw new Error(`pagerts failed with exit code ${exitCode}: ${stderr.trim()}`);
+  if (curlResult.exitCode !== 0) {
+    throw new Error(
+      `curl failed with exit code ${curlResult.exitCode}: ${curlResult.stderr.trim()}`,
+    );
   }
 
-  const payload = parseOutput(stdout);
+  const pagertsResult = await runCommand({
+    command: "npx",
+    args: ["--yes", "pagerts@latest", cachedLikesPage],
+    cwd: projectRoot,
+  });
+
+  if (pagertsResult.exitCode !== 0) {
+    throw new Error(
+      `pagerts failed with exit code ${pagertsResult.exitCode}: ${pagertsResult.stderr.trim()}`,
+    );
+  }
+
+  const payload = parseOutput(pagertsResult.stdout);
   const resources = payload[0]?.resources;
 
   if (!Array.isArray(resources)) {
@@ -100,7 +176,9 @@ export const run = async () => {
   };
 
   await writeFile(outputFile, `${JSON.stringify(result, null, 2)}\n`, "utf8");
-  process.stdout.write(`Wrote ${tracks.length} tracks to ${outputFile}\n`);
+  process.stdout.write(
+    `Fetched likes page to ${cachedLikesPage} and wrote ${tracks.length} tracks to ${outputFile}\n`,
+  );
 };
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {

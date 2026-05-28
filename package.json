@@ -11,7 +11,7 @@
     "test": "node --test",
     "test:watch": "node --test --watch",
     "check:audit": "npm audit --audit-level=low",
-    "pagerts": "NPM_CONFIG_LOGLEVEL=error npx --yes pagerts",
+    "pagerts": "NPM_CONFIG_LOGLEVEL=error npx --yes pagerts@latest",
     "generate:music": "node ./scripts/generate-soundcloud-json.mjs"
   },
   "dependencies": {
@@ -32,7 +32,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
-    "pagerts": "^1.4.1",
+    "pagerts": "^1.5.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.58.0",
     "vite": "^8.0.10"
