@@ -229,7 +229,7 @@ const ResumePage = () => {
               }}
             >
               <iframe
-                src="/resume.html"
+                src="/resume.pdf"
                 title="Resume"
                 style={{ width: "100%", height: "100%", border: "none" }}
               />
