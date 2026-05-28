@@ -54,3 +54,4 @@ docker
 1st.fmt.json
 2nd.fmt.json
 .cache/
+tsconfig.tsbuildinfo
