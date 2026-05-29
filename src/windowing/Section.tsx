@@ -3,18 +3,20 @@ import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { useSectionContext } from "./hooks";
 import type { Content, HttpUrl, SectionProps } from "./types";
+import {
+  getSafeBlogPostsHost,
+  resolveTrustedBlogAssetUrl,
+} from "../utils/blogSecurity";
 
 const BLOG_PATH = "/blog";
 const env = import.meta.env as Record<string, string | undefined>;
-const BLOG_POSTS_CONFIGURED_URL =
-  env.VITE_BLOG_POSTS_URL ||
-  env.PUBLIC_BLOG_POSTS_URL ||
-  "https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/";
-const BLOG_POSTS_HOST = BLOG_POSTS_CONFIGURED_URL.endsWith(".json")
-  ? BLOG_POSTS_CONFIGURED_URL.replace(/[^/]+$/, "")
-  : BLOG_POSTS_CONFIGURED_URL;
+const BLOG_POSTS_HOST = getSafeBlogPostsHost(
+  env.VITE_BLOG_POSTS_URL || env.PUBLIC_BLOG_POSTS_URL,
+  env.VITE_ALLOWED_BLOG_HOSTS || env.PUBLIC_ALLOWED_BLOG_HOSTS,
+);
 
 const isBlogPath = (pathname: string) => pathname.replace(/\/+$/, "") === BLOG_PATH;
 
@@ -47,7 +49,19 @@ const contentContainsPostSlug = (
   });
 };
 
-const markdownRehypePlugins = [rehypeRaw];
+const markdownSanitizeSchema: unknown = {
+  ...defaultSchema,
+  attributes: {
+    ...defaultSchema.attributes,
+    a: [...(defaultSchema.attributes?.a || []), ["target"], ["rel"]],
+    img: [...(defaultSchema.attributes?.img || []), ["loading"], ["decoding"]],
+  },
+};
+
+const markdownRehypePlugins: unknown = [
+  rehypeRaw,
+  [rehypeSanitize, markdownSanitizeSchema],
+];
 
 const markdownComponents = {
   img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
@@ -84,7 +98,18 @@ function PrintoutContent({ printout }: { printout: string | string[] }) {
         return;
       }
 
-      const printoutUrl = new URL(printout, BLOG_POSTS_HOST).toString();
+      let printoutUrl: string;
+      try {
+        printoutUrl = resolveTrustedBlogAssetUrl(printout, BLOG_POSTS_HOST);
+      } catch (urlError) {
+        const message =
+          urlError instanceof Error ? urlError.message : "Unknown error";
+        if (!cancelled) {
+          setError(message);
+          setMarkdownContent(toFencedCodeBlock(printout));
+        }
+        return;
+      }
 
       try {
         const response = await fetch(printoutUrl, {
@@ -109,7 +134,7 @@ function PrintoutContent({ printout }: { printout: string | string[] }) {
           fetchError instanceof Error ? fetchError.message : "Unknown error";
         if (!cancelled) {
           setError(
-            `Failed to fetch printout '${printout}' from BLOG_POSTS_HOST (${message}).`,
+            `Failed to fetch printout '${printout}' from trusted blog host (${message}).`,
           );
           setMarkdownContent(toFencedCodeBlock(printout));
         }
@@ -141,7 +166,7 @@ function renderContent(content: Content, depth: number) {
       <ul>
         <li>
           <Markdown
-            rehypePlugins={markdownRehypePlugins}
+            rehypePlugins={markdownRehypePlugins as any}
             components={markdownComponents}
           >
             {content}
@@ -155,7 +180,7 @@ function renderContent(content: Content, depth: number) {
         typeof text == "string" ? (
           <li key={index}>
             <Markdown
-              rehypePlugins={markdownRehypePlugins}
+              rehypePlugins={markdownRehypePlugins as any}
               components={markdownComponents}
             >
               {text}
