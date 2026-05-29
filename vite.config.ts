@@ -16,6 +16,14 @@ type PageDefinition = {
 
 const pages = JSON.parse(fs.readFileSync(pagesJsonPath, "utf-8")) as PageDefinition[];
 const SITE_ORIGIN = process.env.SITE_ORIGIN || "https://akinevz.com";
+const DEV_HOST = process.env.VITE_DEV_HOST || "127.0.0.1";
+const DEV_PORT = Number(process.env.VITE_DEV_PORT || "8086");
+
+const SECURITY_HEADERS = {
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "no-referrer",
+};
 
 function normalizeRoute(routePath: string): string {
   if (!routePath || routePath === "/") {
@@ -190,10 +198,19 @@ export default defineConfig({
     },
   },
   server: {
-    host: true,
-    port: 8086,
+    host: DEV_HOST,
+    port: DEV_PORT,
+    strictPort: true,
+    cors: false,
+    headers: SECURITY_HEADERS,
     watch: {
       usePolling: true,
     },
+  },
+  preview: {
+    host: DEV_HOST,
+    port: DEV_PORT,
+    strictPort: true,
+    headers: SECURITY_HEADERS,
   },
 });

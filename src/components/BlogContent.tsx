@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 
 import { PageContent } from "./Page";
 import { processContent } from "../windowing/utils";
+import {
+  getSafeBlogPostsHost,
+  resolveTrustedBlogAssetUrl,
+} from "../utils/blogSecurity";
 import type { PageMetadata, SectionProps } from "../windowing";
 
 type BlogState = {
@@ -25,16 +29,12 @@ function isSectionPayload(
 
 const env = import.meta.env as Record<string, string | undefined>;
 
-const BLOG_POSTS_CONFIGURED_URL =
-  env.VITE_BLOG_POSTS_URL ||
-  env.PUBLIC_BLOG_POSTS_URL ||
-  "https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/";
+const BLOG_POSTS_HOST = getSafeBlogPostsHost(
+  env.VITE_BLOG_POSTS_URL || env.PUBLIC_BLOG_POSTS_URL,
+  env.VITE_ALLOWED_BLOG_HOSTS || env.PUBLIC_ALLOWED_BLOG_HOSTS,
+);
 
-const BLOG_POSTS_HOST = BLOG_POSTS_CONFIGURED_URL.endsWith(".json")
-  ? BLOG_POSTS_CONFIGURED_URL.replace(/[^/]+$/, "")
-  : BLOG_POSTS_CONFIGURED_URL;
-
-const BLOG_POSTS_URL = new URL("posts.json", BLOG_POSTS_HOST).toString();
+const BLOG_POSTS_URL = resolveTrustedBlogAssetUrl("posts.json", BLOG_POSTS_HOST);
 
 function buildBlogState(content: SectionProps | SectionProps[]): BlogState {
   const { processed, metadata } = processContent(content);
