@@ -30,6 +30,9 @@ test("isTrackPath only accepts direct track paths", () => {
   assert.equal(isTrackPath("/akinevz/track-one"), true);
   assert.equal(isTrackPath("/akinevz"), false);
   assert.equal(isTrackPath("/akinevz/sets/mixtape"), false);
+  assert.equal(isTrackPath("/akinevz/likes"), false);
+  assert.equal(isTrackPath("/akinevz/tracks"), false);
+  assert.equal(isTrackPath("/akinevz/comments"), false);
   assert.equal(isTrackPath("/someone-else/track"), false);
 });
 

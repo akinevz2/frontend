@@ -5,13 +5,21 @@ import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 
 const USER_PATH_PREFIX = "/akinevz/";
-const SOURCE_URL = "https://soundcloud.com/akinevz/likes";
+const SOURCE_URL = "https://soundcloud.com/akinevz";
+const RESERVED_PROFILE_ROUTES = new Set([
+  "likes",
+  "sets",
+  "tracks",
+  "comments",
+  "reposts",
+  "popular-tracks",
+]);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const outputFile = resolve(__dirname, "../public/soundcloud.json");
 const cacheDir = resolve(__dirname, "../.cache");
-const cachedLikesPage = resolve(cacheDir, "soundcloud-likes.html");
+const cachedArtistPage = resolve(cacheDir, "soundcloud-artist.html");
 
 const runCommand = ({ command, args, cwd }) =>
   new Promise((resolvePromise, reject) => {
@@ -107,6 +115,7 @@ export const isTrackPath = (value) =>
   value.startsWith(USER_PATH_PREFIX) &&
   value !== "/akinevz" &&
   !value.startsWith("/akinevz/sets/") &&
+  !RESERVED_PROFILE_ROUTES.has(value.split("/").filter(Boolean).at(-1) ?? "") &&
   /^\/akinevz\/[^/]+$/.test(value);
 
 export const titleFromPath = (value) => value.split("/").filter(Boolean).at(-1) ?? value;
@@ -137,7 +146,7 @@ export const run = async () => {
 
   const curlResult = await runCommand({
     command: "curl",
-    args: ["-fLsS", SOURCE_URL, "-o", cachedLikesPage],
+    args: ["-fLsS", SOURCE_URL, "-o", cachedArtistPage],
     cwd: projectRoot,
   });
 
@@ -149,7 +158,7 @@ export const run = async () => {
 
   const pagertsResult = await runCommand({
     command: "npx",
-    args: ["--yes", "pagerts@latest", cachedLikesPage],
+    args: ["--yes", "pagerts@latest", cachedArtistPage],
     cwd: projectRoot,
   });
 
@@ -177,7 +186,7 @@ export const run = async () => {
 
   await writeFile(outputFile, `${JSON.stringify(result, null, 2)}\n`, "utf8");
   process.stdout.write(
-    `Fetched likes page to ${cachedLikesPage} and wrote ${tracks.length} tracks to ${outputFile}\n`,
+    `Fetched artist page to ${cachedArtistPage} and wrote ${tracks.length} tracks to ${outputFile}\n`,
   );
 };
 
