@@ -176,7 +176,7 @@ const toMusicSections = (payload: MusicPayload): SectionProps[] => {
       className: "music-source",
       children: [],
       heading: "Source",
-      content: [`Likes page: [${payload.source}](${payload.source})`],
+      content: [`Artist page: [${payload.source}](${payload.source})`],
     },
   ];
 };
