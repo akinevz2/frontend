@@ -1,7 +1,7 @@
 import type React from "react";
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
-import Markdown from "react-markdown";
+import Markdown, { type Options as ReactMarkdownOptions } from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { useSectionContext } from "./hooks";
@@ -51,17 +51,31 @@ const contentContainsPostSlug = (
 
 const markdownSanitizeSchema: unknown = {
   ...defaultSchema,
+  tagNames: [...(defaultSchema.tagNames || []), "iframe"],
   attributes: {
     ...defaultSchema.attributes,
     a: [...(defaultSchema.attributes?.a || []), ["target"], ["rel"]],
     img: [...(defaultSchema.attributes?.img || []), ["loading"], ["decoding"]],
+    iframe: [
+      ["title"],
+      ["src"],
+      ["width"],
+      ["height"],
+      ["style"],
+      ["scrolling"],
+      ["loading"],
+      ["allow"],
+      ["allowfullscreen"],
+      ["referrerpolicy"],
+      ["frameborder"],
+    ],
   },
 };
 
-const markdownRehypePlugins: unknown = [
+const markdownRehypePlugins = [
   rehypeRaw,
   [rehypeSanitize, markdownSanitizeSchema],
-];
+] as ReactMarkdownOptions["rehypePlugins"];
 
 const markdownComponents = {
   img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
@@ -166,7 +180,7 @@ function renderContent(content: Content, depth: number) {
       <ul>
         <li>
           <Markdown
-            rehypePlugins={markdownRehypePlugins as any}
+            rehypePlugins={markdownRehypePlugins}
             components={markdownComponents}
           >
             {content}
@@ -180,7 +194,7 @@ function renderContent(content: Content, depth: number) {
         typeof text == "string" ? (
           <li key={index}>
             <Markdown
-              rehypePlugins={markdownRehypePlugins as any}
+              rehypePlugins={markdownRehypePlugins}
               components={markdownComponents}
             >
               {text}
