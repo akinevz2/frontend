@@ -30,6 +30,12 @@
         "description": "my featured uploads from SoundCloud"
     },
     {
+        "path": "/sitemap",
+        "menuLabel": "sitemap",
+        "title": "sitemap of kine",
+        "description": "an immersive map of the site, assets, and crawlable surfaces"
+    },
+    {
         "path": "/contact",
         "menuLabel": "links",
         "title": "try contact kine",

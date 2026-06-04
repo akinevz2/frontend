@@ -10,6 +10,7 @@ import { ToastContainer } from "react-toastify";
 import MenuBar from "./components/MenuBar";
 import BlogContent from "./components/BlogContent";
 import MusicContent from "./components/MusicContent";
+import SitemapContent from "./components/SitemapContent";
 import { PageContent, PageWithAddons } from "./components/Page";
 import sections from "./sections.json";
 import contacts from "./contacts.json";
@@ -652,6 +653,13 @@ export default function App() {
       content = (
         <main>
           <MusicContent />
+        </main>
+      );
+      break;
+    case "/sitemap":
+      content = (
+        <main>
+          <SitemapContent />
         </main>
       );
       break;
