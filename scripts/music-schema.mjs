@@ -3,9 +3,9 @@ const MUSIC_GROUP_URL = "https://akinevz.com";
 const MUSIC_GROUP_DESCRIPTION =
     "Independent sound designer, music creator, and electronic music artist.";
 const MUSIC_GROUP_ALTERNATE_NAMES = [
+    "I lied my name isn't actually KINE",
     "KINE",
     "KALE",
-    "I lied my name isn't actually",
 ];
 const MUSIC_GROUP_GENRES = [
     "Electronic",
