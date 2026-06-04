@@ -12,7 +12,7 @@ test("buildMusicGroupSchema includes the requested profile fields", () => {
         "@context": "https://schema.org",
         "@type": "MusicGroup",
         name: "akinevz",
-        alternateName: ["KINE", "KALE", "I lied my name isn't actually"],
+        alternateName: ["I lied my name isn't actually KINE", "KINE", "KALE"],
         url: "https://akinevz.com",
         genre: ["Electronic", "Experimental", "Industrial", "Drone", "Glitch"],
         description:
