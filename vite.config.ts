@@ -47,6 +47,38 @@ function getRouteUrl(routePath: string): string {
   return new URL(normalizeRoute(routePath), SITE_ORIGIN).toString();
 }
 
+function getSitemapLastMod(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function getSitemapPriority(routePath: string): string {
+  switch (normalizeRoute(routePath)) {
+    case "/":
+      return "1.0";
+    case "/sitemap":
+      return "0.9";
+    case "/music":
+    case "/blog":
+      return "0.8";
+    default:
+      return "0.7";
+  }
+}
+
+function getSitemapChangeFreq(routePath: string): string {
+  switch (normalizeRoute(routePath)) {
+    case "/":
+    case "/music":
+      return "weekly";
+    case "/blog":
+      return "monthly";
+    case "/sitemap":
+      return "monthly";
+    default:
+      return "yearly";
+  }
+}
+
 function getSoundCloudTracks(): SoundCloudTrack[] {
   const soundcloudJsonPath = path.resolve(process.cwd(), "public/soundcloud.json");
 
@@ -158,7 +190,17 @@ function withRouteMeta(indexHtml: string, page: PageDefinition): string {
 
 function generateSitemapXml(): string {
   const urls = pages
-    .map((page) => `  <url><loc>${escapeHtml(getRouteUrl(page.path))}</loc></url>`)
+    .map(
+      (page) =>
+        [
+          "  <url>",
+          `    <loc>${escapeHtml(getRouteUrl(page.path))}</loc>`,
+          `    <lastmod>${getSitemapLastMod()}</lastmod>`,
+          `    <changefreq>${getSitemapChangeFreq(page.path)}</changefreq>`,
+          `    <priority>${getSitemapPriority(page.path)}</priority>`,
+          "  </url>",
+        ].join("\n"),
+    )
     .join("\n");
 
   return [
