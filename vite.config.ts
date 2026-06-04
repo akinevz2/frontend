@@ -5,6 +5,7 @@ import react from "@vitejs/plugin-react";
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
+import { buildMusicGroupSchema, serializeJsonLd } from "./scripts/music-schema.mjs";
 
 const pagesJsonPath = new URL("./src/pages.json", import.meta.url);
 
@@ -12,6 +13,15 @@ type PageDefinition = {
   path: string;
   title: string;
   description: string;
+};
+
+type SoundCloudTrack = {
+  title: string;
+  url: string;
+};
+
+type SoundCloudPayload = {
+  tracks?: SoundCloudTrack[];
 };
 
 const pages = JSON.parse(fs.readFileSync(pagesJsonPath, "utf-8")) as PageDefinition[];
@@ -35,6 +45,29 @@ function normalizeRoute(routePath: string): string {
 
 function getRouteUrl(routePath: string): string {
   return new URL(normalizeRoute(routePath), SITE_ORIGIN).toString();
+}
+
+function getSoundCloudTracks(): SoundCloudTrack[] {
+  const soundcloudJsonPath = path.resolve(process.cwd(), "public/soundcloud.json");
+
+  if (!fs.existsSync(soundcloudJsonPath)) {
+    return [];
+  }
+
+  try {
+    const payload = JSON.parse(fs.readFileSync(soundcloudJsonPath, "utf-8")) as SoundCloudPayload;
+    return Array.isArray(payload.tracks) ? payload.tracks : [];
+  } catch {
+    return [];
+  }
+}
+
+function withStructuredData(indexHtml: string, tracks: SoundCloudTrack[]): string {
+  const structuredData = `<script type="application/ld+json" id="homepage-music-structured-data">${serializeJsonLd(
+    buildMusicGroupSchema(tracks),
+  )}</script>`;
+
+  return indexHtml.replace("</head>", `${structuredData}\n  </head>`);
 }
 
 function escapeHtml(value: string): string {
@@ -148,10 +181,14 @@ function routeSkeletonPlugin() {
       }
 
       const indexHtml = fs.readFileSync(indexPath, "utf-8");
+      const soundCloudTracks = getSoundCloudTracks();
       fs.writeFileSync(path.join(outDir, "sitemap.xml"), generateSitemapXml(), "utf-8");
 
       for (const page of pages) {
-        const routeHtml = withRouteMeta(indexHtml, page);
+        const routeHtml =
+          normalizeRoute(page.path || "/") === "/"
+            ? withStructuredData(withRouteMeta(indexHtml, page), soundCloudTracks)
+            : withRouteMeta(indexHtml, page);
         const normalizedRoutePath = normalizeRoute(page.path || "/");
 
         if (normalizedRoutePath === "/") {

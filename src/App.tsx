@@ -18,10 +18,20 @@ import pages from "./pages.json";
 import type { AddonProps } from "./components/Addon";
 import type { SectionProps } from "./windowing";
 import { processContent } from "./windowing/utils";
+import { buildMusicGroupSchema, serializeJsonLd } from "../scripts/music-schema.mjs";
 
 type RouteConfig = {
   title: string;
   description: string;
+};
+
+type SoundCloudTrack = {
+  title: string;
+  url: string;
+};
+
+type SoundCloudPayload = {
+  tracks: SoundCloudTrack[];
 };
 
 type PageRoute = RouteConfig & {
@@ -74,6 +84,21 @@ const normalizePath = (path: string) => {
 
 const isInternalPath = (href: string) => href.startsWith("/");
 
+const STRUCTURED_DATA_SCRIPT_ID = "homepage-music-structured-data";
+
+const isSoundCloudPayload = (value: unknown): value is SoundCloudPayload => {
+  if (!value || typeof value !== "object") return false;
+
+  const candidate = value as Partial<SoundCloudPayload>;
+  return (
+    Array.isArray(candidate.tracks) &&
+    candidate.tracks.every(
+      (track) =>
+        track && typeof track.title === "string" && typeof track.url === "string",
+    )
+  );
+};
+
 const upsertMeta = (selector: string, attributes: Record<string, string>) => {
   let element = document.querySelector(selector) as HTMLMetaElement | null;
 
@@ -100,6 +125,25 @@ const upsertCanonicalLink = (href: string) => {
     document.head.appendChild(canonical);
   }
   canonical.setAttribute("href", href);
+};
+
+const removeStructuredDataScript = () => {
+  document.getElementById(STRUCTURED_DATA_SCRIPT_ID)?.remove();
+};
+
+const upsertStructuredDataScript = (schema: unknown) => {
+  let script = document.getElementById(
+    STRUCTURED_DATA_SCRIPT_ID,
+  ) as HTMLScriptElement | null;
+
+  if (!script) {
+    script = document.createElement("script");
+    script.id = STRUCTURED_DATA_SCRIPT_ID;
+    script.type = "application/ld+json";
+    document.head.appendChild(script);
+  }
+
+  script.textContent = serializeJsonLd(schema);
 };
 
 const HomePage = () => {
@@ -525,6 +569,52 @@ export default function App() {
       content: route.description,
     });
   }, [path, route.title, route.description]);
+
+  useEffect(() => {
+    if (path !== "/") {
+      removeStructuredDataScript();
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadStructuredData = async () => {
+      try {
+        const response = await fetch("/soundcloud.json", {
+          method: "GET",
+          cache: "no-store",
+          headers: {
+            Accept: "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const payload: unknown = await response.json();
+        if (!isSoundCloudPayload(payload)) {
+          throw new Error("Invalid SoundCloud payload schema");
+        }
+
+        if (!cancelled) {
+          upsertStructuredDataScript(
+            buildMusicGroupSchema(payload.tracks),
+          );
+        }
+      } catch {
+        if (!cancelled) {
+          removeStructuredDataScript();
+        }
+      }
+    };
+
+    void loadStructuredData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [path]);
 
   const navigate = (href: string) => {
     if (!isInternalPath(href)) {
