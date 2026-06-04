@@ -35,13 +35,31 @@ const isTypingTarget = (target: EventTarget | null) => {
 
 const isInternalPath = (href: string) => href.startsWith("/");
 
+const SITEMAP_HREF = "/sitemap";
+
+const hasAdminCookie = () =>
+  typeof document !== "undefined" &&
+  document.cookie
+    .split("; ")
+    .some((cookie) => cookie === "admin=akinevz");
+
+const filterHiddenMenuItems = (menuItems: MenuItem[]) => {
+  if (hasAdminCookie()) {
+    return menuItems;
+  }
+
+  return menuItems.filter((item) => item.href !== SITEMAP_HREF);
+};
+
 export default function MenuBar({ links, additionalLinks = [], onNavigate }: Props) {
   const menuItems = useMemo(() => {
     if (links) {
-      return links.map((link) => ({ label: link.label, href: link.href }));
+      return filterHiddenMenuItems(
+        links.map((link) => ({ label: link.label, href: link.href })),
+      );
     }
 
-    return generateMenuItems(PAGE_LINKS, additionalLinks);
+    return filterHiddenMenuItems(generateMenuItems(PAGE_LINKS, additionalLinks));
   }, [links, additionalLinks]);
 
   useEffect(() => {

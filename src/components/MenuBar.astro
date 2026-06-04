@@ -25,14 +25,14 @@ if (links) {
   });
   menuItems = generateMenuItems(pages, additionalLinks);
 }
+
+menuItems = shouldShowSitemap()
+  ? menuItems
+  : menuItems.filter((item) => item.href !== '/sitemap');
 ---
 
 <div class="menu-bar">
   <menu role="menubar">
-    {
-      menuItems.map((link) => (
-        <li role="none">
-          <a href={link.href} role="menuitem" data-key={link.label.charAt(0).toLowerCase()}>
             <span class="menu-underline">{link.label.charAt(0)}</span>{link.label.slice(1)}
           </a>
         </li>
@@ -42,6 +42,23 @@ if (links) {
 </div>
 
 <script>
+  const hasAdminCookie = () => document.cookie.split('; ').some((cookie) => cookie === 'admin=akinevz');
+
+  const hideSitemapLink = () => {
+    if (hasAdminCookie()) {
+      return;
+    }
+
+    document.querySelectorAll('a[href="/sitemap"]').forEach((link) => {
+      const menuItem = link.closest('li');
+      if (menuItem) {
+        menuItem.remove();
+      }
+    });
+  };
+
+  hideSitemapLink();
+
   document.addEventListener('keydown', (e) => {
     // Don't trigger navigation if user is typing in an input field
     const activeElement = document.activeElement;
