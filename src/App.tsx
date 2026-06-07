@@ -198,18 +198,26 @@ const ContactPage = () => {
 };
 
 const ResumePage = () => {
-  const RESUME_PREVIEW_FLAG = "resumePreviewAcknowledged";
+  const RESUME_ACCESS_MODE_KEY = "resumeAccessMode";
+  type ResumeAccessMode = "html" | "pdf";
   const [showResumeModal, setShowResumeModal] = useState(false);
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [interestEmail, setInterestEmail] = useState("");
   const [interestMessage, setInterestMessage] = useState("");
   const [isSubmittingInterest, setIsSubmittingInterest] = useState(false);
   const [printShortcutStep, setPrintShortcutStep] = useState(0);
-  const [hasResolvedInterestSubmission, setHasResolvedInterestSubmission] =
-    useState(() => window.localStorage.getItem(RESUME_PREVIEW_FLAG) === "true");
+  const [resumeAccessMode, setResumeAccessMode] =
+    useState<ResumeAccessMode | null>(() => {
+      const persistedMode = window.localStorage.getItem(RESUME_ACCESS_MODE_KEY);
+      return persistedMode === "html" || persistedMode === "pdf"
+        ? persistedMode
+        : null;
+    });
   const resumeIframeRef = useRef<HTMLIFrameElement | null>(null);
 
-  const resumeDocumentPath = "/documents/resume.html";
+  const resumeDocumentPath =
+    resumeAccessMode === "pdf" ? "/resume.pdf" : "/documents/resume.html";
+  const hasResolvedInterestSubmission = resumeAccessMode !== null;
   const shouldBlurResume = !hasResolvedInterestSubmission;
 
   useEffect(() => {
@@ -268,11 +276,9 @@ const ResumePage = () => {
       await submitResumeInterest(trimmedEmail);
       setInterestMessage("Thanks. Your interest has been recorded.");
       setInterestEmail("");
-      setHasResolvedInterestSubmission(true);
-      window.localStorage.setItem(RESUME_PREVIEW_FLAG, "true");
+      setResumeAccessMode("html");
+      window.localStorage.setItem(RESUME_ACCESS_MODE_KEY, "html");
     } catch {
-      setHasResolvedInterestSubmission(true);
-      window.localStorage.setItem(RESUME_PREVIEW_FLAG, "true");
       setInterestMessage(
         "Could not submit interest right now. Please try again shortly.",
       );
@@ -467,8 +473,10 @@ const ResumePage = () => {
               >
                 <button
                   onClick={() => {
-                    setHasResolvedInterestSubmission(true);
-                    window.localStorage.setItem(RESUME_PREVIEW_FLAG, "true");
+                    if (!hasResolvedInterestSubmission) {
+                      setResumeAccessMode("pdf");
+                      window.localStorage.setItem(RESUME_ACCESS_MODE_KEY, "pdf");
+                    }
                     setShowEmailModal(false);
                   }}
                 >
