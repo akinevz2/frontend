@@ -12,13 +12,19 @@ test("buildMusicGroupSchema includes the requested profile fields", () => {
         "@context": "https://schema.org",
         "@type": "MusicGroup",
         name: "akinevz",
-        alternateName: ["I lied my name isn't actually KINE", "KINE", "KALE"],
+        alternateName: [
+            "KINE",
+            "KALE",
+            "I lied my name isn't actually KINE",
+            "I lied my name isn't actually KALE",
+        ],
         url: "https://akinevz.com",
         genre: ["Electronic", "Experimental", "Industrial", "Drone", "Glitch"],
         description:
             "Independent sound designer, music creator, and electronic music artist.",
         sameAs: [
             "https://soundcloud.com/akinevz",
+            "https://youtube.com/@akinevz",
             "https://x.com/akinevz",
             "https://github.com/akinevz2",
         ],
@@ -27,6 +33,10 @@ test("buildMusicGroupSchema includes the requested profile fields", () => {
                 "@type": "MusicRecording",
                 name: "latest-track",
                 url: "https://soundcloud.com/akinevz/latest-track",
+                byArtist: {
+                    "@type": "MusicGroup",
+                    name: "KINE",
+                },
             },
         ],
     });

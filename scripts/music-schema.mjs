@@ -3,9 +3,10 @@ const MUSIC_GROUP_URL = "https://akinevz.com";
 const MUSIC_GROUP_DESCRIPTION =
     "Independent sound designer, music creator, and electronic music artist.";
 const MUSIC_GROUP_ALTERNATE_NAMES = [
-    "I lied my name isn't actually KINE",
     "KINE",
     "KALE",
+    "I lied my name isn't actually KINE",
+    "I lied my name isn't actually KALE",
 ];
 const MUSIC_GROUP_GENRES = [
     "Electronic",
@@ -16,9 +17,11 @@ const MUSIC_GROUP_GENRES = [
 ];
 const MUSIC_GROUP_SAME_AS = [
     "https://soundcloud.com/akinevz",
+    "https://youtube.com/@akinevz",
     "https://x.com/akinevz",
     "https://github.com/akinevz2",
 ];
+const MUSIC_GROUP_PRIMARY_ALIAS = MUSIC_GROUP_ALTERNATE_NAMES[0];
 
 export const serializeJsonLd = (value) =>
     JSON.stringify(value).replace(/</g, "\\u003c");
@@ -38,10 +41,16 @@ export const buildMusicGroupSchema = (tracks = []) => ({
                 (track) =>
                     track && typeof track.title === "string" && typeof track.url === "string",
             )
-            .map((track) => ({
-                "@type": "MusicRecording",
-                name: track.title,
-                url: track.url,
-            }))
+            .map((track) => {
+                return {
+                    "@type": "MusicRecording",
+                    name: track.title,
+                    url: track.url,
+                    byArtist: {
+                        "@type": "MusicGroup",
+                        name: MUSIC_GROUP_PRIMARY_ALIAS,
+                    },
+                };
+            })
         : [],
 });
