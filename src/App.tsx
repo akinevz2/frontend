@@ -20,7 +20,7 @@ import pages from "./pages.json";
 import type { AddonProps } from "./components/Addon";
 import type { SectionProps } from "./windowing";
 import { processContent } from "./windowing/utils";
-import { buildMusicGroupSchema, serializeJsonLd } from "../scripts/music-schema.mjs";
+import { buildMusicGroupSchema, serializeJsonLd } from "./lib/musicSchema.ts";
 import { submitResumeInterest, trackResumeEvent } from "./lib/resumeAnalytics";
 
 type RouteConfig = {
