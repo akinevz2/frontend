@@ -7,6 +7,13 @@ import {
   type FormEvent,
 } from "react";
 import { ToastContainer } from "react-toastify";
+import {
+  attachClippyListener,
+  detachClippyListener,
+  onClippyClick,
+  subscribeClippyBubble,
+  subscribeClippyVisibility,
+} from "./lib/keyboardInputUtils";
 
 import MenuBar from "./components/MenuBar";
 import BlogContent from "./components/BlogContent";
@@ -660,6 +667,19 @@ export default function App() {
   const [path, setPath] = useState(() =>
     normalizePath(window.location.pathname),
   );
+  const [showClippy, setShowClippy] = useState(false);
+  const [showClippyBubble, setShowClippyBubble] = useState(false);
+
+  useEffect(() => {
+    attachClippyListener();
+    const unsubscribeVisibility = subscribeClippyVisibility(setShowClippy);
+    const unsubscribeBubble = subscribeClippyBubble(setShowClippyBubble);
+    return () => {
+      unsubscribeVisibility();
+      unsubscribeBubble();
+      detachClippyListener();
+    };
+  }, []);
 
   useEffect(() => {
     const onPopState = () => {
@@ -833,6 +853,64 @@ export default function App() {
     <>
       <MenuBar onNavigate={navigate} />
       {content}
+      {showClippy ? (
+        <div
+          style={{
+            position: "fixed",
+            right: "1rem",
+            bottom: "1rem",
+            zIndex: 10000,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-end",
+            gap: "0.4rem",
+          }}
+        >
+          {showClippyBubble ? (
+            <div
+              style={{
+                background: "#fffde7",
+                border: "2px solid #aaa",
+                borderRadius: "8px",
+                padding: "0.5rem 0.75rem",
+                maxWidth: "180px",
+                fontSize: "0.8rem",
+                lineHeight: 1.4,
+                boxShadow: "2px 2px 6px rgba(0,0,0,0.25)",
+                position: "relative",
+              }}
+            >
+              It looks like you&apos;re trying to close something. Try clicking
+              one of the{" "}
+              <strong>✕ close buttons</strong> on the page!
+              <span
+                style={{
+                  position: "absolute",
+                  bottom: "-8px",
+                  right: "20px",
+                  width: 0,
+                  height: 0,
+                  borderLeft: "8px solid transparent",
+                  borderRight: "8px solid transparent",
+                  borderTop: "8px solid #aaa",
+                }}
+              />
+            </div>
+          ) : null}
+          <img
+            src="/Clippy.png"
+            alt=""
+            onClick={onClippyClick}
+            style={{
+              width: "120px",
+              maxWidth: "28vw",
+              height: "auto",
+              filter: "drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4))",
+              cursor: "pointer",
+            }}
+          />
+        </div>
+      ) : null}
       <ToastContainer />
     </>
   );

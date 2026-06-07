@@ -218,9 +218,8 @@ function isValidHttpUrl(link: string): link is HttpUrl {
 }
 
 const playSound = () => {
-  console.log("Close button clicked!");
   const audio = new Audio("/crunchy_kick.ogg");
-  audio.play().catch((err) => alert("Error playing sound: " + err));
+  audio.play().catch(() => {});
 };
 
 export const Section = (props: SectionProps) => {
@@ -277,7 +276,7 @@ export const Section = (props: SectionProps) => {
 
   // UUID must be provided from server-side processing
   if (!uuid) {
-    console.error("Section missing UUID:", { heading, depth });
+    // UUID must be provided from server-side processing; fall back silently.
   }
   const sectionUUID = uuid || `fallback-${heading}-${depth}`;
   const isMinimized = minimizedSections.has(sectionUUID);
@@ -313,16 +312,7 @@ export const Section = (props: SectionProps) => {
     restoreSection(sectionUUID);
   };
 
-  // Debug logging
-  console.log("Section render:", {
-    heading,
-    hasContent,
-    isCollapsed: isCollapsedResolved,
-    isMinimized,
-    isMaximized,
-    uuid: sectionUUID,
-    depth,
-  });
+
 
   const handleMinimize = () => {
     if (heading && typeof heading === "string") {

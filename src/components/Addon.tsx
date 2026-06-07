@@ -71,10 +71,15 @@ function renderAddon(status?: string, text?: string) {
   return elements;
 }
 
+let closeClickCount = 0;
+
 const playSound = () => {
-  console.log("Close button clicked!");
-  const audio = new Audio("/crunchy_kick.ogg");
-  audio.play().catch(() => alert("Error playing sound: crunchy_kick.ogg"));
+  closeClickCount += 1;
+  const probability = 1 / Math.log(closeClickCount + Math.E);
+  if (Math.random() < probability) {
+    const audio = new Audio("/crunchy_kick.ogg");
+    audio.play().catch(() => {});
+  }
 };
 
 type WindowPanelProps = AddonProps & {

@@ -1,6 +1,5 @@
 import { toast } from 'react-toastify';
 
-
 interface CopyToClipboardButtonProps {
     content: string;
     onClick?: () => void;
