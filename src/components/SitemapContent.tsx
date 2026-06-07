@@ -34,7 +34,7 @@ const SITE_ASSETS: SectionProps[] = [
     heading: "Common public files",
     content: [
       "[Resume PDF](/resume.pdf)",
-      "[Resume HTML](/resume.html)",
+      "[Resume HTML](/documents/resume.html)",
       "[Avatar](/avatar.png)",
       "[Favicon](/favicon.ico)",
       "[Loading stylesheet](/loading.css)",
