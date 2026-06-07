@@ -31,7 +31,8 @@ const DEV_PORT = Number(process.env.VITE_DEV_PORT || "8086");
 
 const SECURITY_HEADERS = {
   "X-Content-Type-Options": "nosniff",
-  "X-Frame-Options": "DENY",
+  "X-Frame-Options": "SAMEORIGIN",
+  "Content-Security-Policy": "frame-ancestors 'self'",
   "Referrer-Policy": "no-referrer",
 };
 

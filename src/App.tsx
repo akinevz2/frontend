@@ -1,6 +1,7 @@
 import {
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactElement,
   type FormEvent,
@@ -20,6 +21,7 @@ import type { AddonProps } from "./components/Addon";
 import type { SectionProps } from "./windowing";
 import { processContent } from "./windowing/utils";
 import { buildMusicGroupSchema, serializeJsonLd } from "../scripts/music-schema.mjs";
+import { submitResumeInterest, trackResumeEvent } from "./lib/resumeAnalytics";
 
 type RouteConfig = {
   title: string;
@@ -196,8 +198,88 @@ const ContactPage = () => {
 };
 
 const ResumePage = () => {
+  const RESUME_PREVIEW_FLAG = "resumePreviewAcknowledged";
   const [showResumeModal, setShowResumeModal] = useState(false);
   const [showEmailModal, setShowEmailModal] = useState(false);
+  const [interestEmail, setInterestEmail] = useState("");
+  const [interestMessage, setInterestMessage] = useState("");
+  const [isSubmittingInterest, setIsSubmittingInterest] = useState(false);
+  const [printShortcutStep, setPrintShortcutStep] = useState(0);
+  const [hasResolvedInterestSubmission, setHasResolvedInterestSubmission] =
+    useState(() => window.localStorage.getItem(RESUME_PREVIEW_FLAG) === "true");
+  const resumeIframeRef = useRef<HTMLIFrameElement | null>(null);
+
+  const resumeDocumentPath = "/documents/resume.html";
+  const shouldBlurResume = !hasResolvedInterestSubmission;
+
+  useEffect(() => {
+    void trackResumeEvent("resume_page_view");
+  }, []);
+
+  useEffect(() => {
+    if (!showResumeModal) {
+      return;
+    }
+
+    const handlePrintShortcut = (event: KeyboardEvent) => {
+      const isPrintShortcut =
+        (event.ctrlKey || event.metaKey) &&
+        event.key.toLowerCase() === "p";
+
+      if (!isPrintShortcut) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (printShortcutStep === 0) {
+        const iframeWindow = resumeIframeRef.current?.contentWindow;
+        if (iframeWindow) {
+          iframeWindow.focus();
+          iframeWindow.print();
+        }
+        setPrintShortcutStep(1);
+        return;
+      }
+
+      window.location.assign(resumeDocumentPath);
+    };
+
+    window.addEventListener("keydown", handlePrintShortcut, true);
+    return () => {
+      window.removeEventListener("keydown", handlePrintShortcut, true);
+    };
+  }, [printShortcutStep, resumeDocumentPath, showResumeModal]);
+
+  const handleInterestSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const trimmedEmail = interestEmail.trim();
+
+    if (!trimmedEmail) {
+      setInterestMessage("Please provide an email address.");
+      return;
+    }
+
+    setIsSubmittingInterest(true);
+    setInterestMessage("");
+
+    try {
+      await submitResumeInterest(trimmedEmail);
+      setInterestMessage("Thanks. Your interest has been recorded.");
+      setInterestEmail("");
+      setHasResolvedInterestSubmission(true);
+      window.localStorage.setItem(RESUME_PREVIEW_FLAG, "true");
+    } catch {
+      setHasResolvedInterestSubmission(true);
+      window.localStorage.setItem(RESUME_PREVIEW_FLAG, "true");
+      setInterestMessage(
+        "Could not submit interest right now. Please try again shortly.",
+      );
+    } finally {
+      setIsSubmittingInterest(false);
+    }
+  };
 
   return (
     <main>
@@ -222,11 +304,17 @@ const ResumePage = () => {
               padding: "2rem",
             }}
           >
-            <button onClick={() => setShowResumeModal(true)}>
+            <button
+              onClick={() => {
+                void trackResumeEvent("resume_open_click");
+                setPrintShortcutStep(0);
+                setShowResumeModal(true);
+              }}
+            >
               View My Resume
             </button>
             <button onClick={() => setShowEmailModal(true)}>
-              Contact Emails
+              Share Interest Email
             </button>
           </div>
         </div>
@@ -271,13 +359,45 @@ const ResumePage = () => {
                 padding: 0,
                 height: "calc(100% - 2rem)",
                 overflow: "hidden",
+                position: "relative",
               }}
             >
               <iframe
-                src="/resume.pdf"
+                ref={resumeIframeRef}
+                src={resumeDocumentPath}
                 title="Resume"
-                style={{ width: "100%", height: "100%", border: "none" }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  border: "none",
+                  filter: shouldBlurResume ? "blur(7px)" : "none",
+                  transition: "filter 180ms ease",
+                }}
               />
+              {shouldBlurResume ? (
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "0.75rem",
+                    background: "rgba(255, 255, 255, 0.2)",
+                    backdropFilter: "blur(1px)",
+                    padding: "1rem",
+                    textAlign: "center",
+                  }}
+                >
+                  <p style={{ margin: 0 }}>
+                    Submit your interest email to unblur this preview.
+                  </p>
+                  <button onClick={() => setShowEmailModal(true)}>
+                    Share Interest Email
+                  </button>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>
@@ -305,7 +425,7 @@ const ResumePage = () => {
         >
           <div className="window" style={{ maxWidth: "400px", margin: "auto" }}>
             <div className="title-bar">
-              <div className="title-bar-text">Contact Emails</div>
+              <div className="title-bar-text">Resume Interest</div>
               <div className="title-bar-controls">
                 <button
                   aria-label="Close"
@@ -314,14 +434,30 @@ const ResumePage = () => {
               </div>
             </div>
             <div className="window-body">
-              <ul style={{ listStyle: "none", padding: 0, margin: "1rem 0" }}>
-                <li style={{ margin: "0.5rem 0" }}>
-                  <a href="mailto:akinevz@outlook.com">akinevz@outlook.com</a>
-                </li>
-                <li style={{ margin: "0.5rem 0" }}>
-                  <a href="mailto:akinevz@gmail.com">akinevz@gmail.com</a>
-                </li>
-              </ul>
+              <form
+                onSubmit={handleInterestSubmit}
+                style={{ display: "grid", gap: "0.5rem", margin: "0.5rem 0" }}
+              >
+                <label htmlFor="resume-interest-email">
+                  Share your email if you are interested in this resume:
+                </label>
+                <input
+                  id="resume-interest-email"
+                  type="email"
+                  value={interestEmail}
+                  onChange={(event) => setInterestEmail(event.target.value)}
+                  placeholder="you@example.com"
+                  required
+                />
+                <button type="submit" disabled={isSubmittingInterest}>
+                  {isSubmittingInterest ? "Submitting..." : "Submit Interest"}
+                </button>
+              </form>
+              {interestMessage ? (
+                <p style={{ margin: "0.5rem 0", fontSize: "0.9rem" }}>
+                  {interestMessage}
+                </p>
+              ) : null}
               <div
                 style={{
                   display: "flex",
@@ -329,7 +465,15 @@ const ResumePage = () => {
                   marginTop: "1rem",
                 }}
               >
-                <button onClick={() => setShowEmailModal(false)}>OK</button>
+                <button
+                  onClick={() => {
+                    setHasResolvedInterestSubmission(true);
+                    window.localStorage.setItem(RESUME_PREVIEW_FLAG, "true");
+                    setShowEmailModal(false);
+                  }}
+                >
+                  OK
+                </button>
               </div>
             </div>
           </div>
