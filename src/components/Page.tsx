@@ -16,12 +16,6 @@ export type PageProps = {
 export const PageContent = ({ sections, pageMetadata }: PageProps) => {
   const metadata = pageMetadata || { sections: [] };
 
-  console.log("PageContent render:", {
-    sections,
-    metadata,
-    isArray: Array.isArray(sections),
-  });
-
   if (!sections) {
     return null;
   }
