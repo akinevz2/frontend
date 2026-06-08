@@ -3,9 +3,13 @@ import {
   useMemo,
   useRef,
   useState,
+  type ComponentProps,
   type ReactElement,
   type FormEvent,
 } from "react";
+import Markdown, { type Options as ReactMarkdownOptions } from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { ToastContainer } from "react-toastify";
 import {
   attachClippyListener,
@@ -14,6 +18,13 @@ import {
   subscribeClippyBubble,
   subscribeClippyVisibility,
 } from "./lib/keyboardInputUtils";
+import {
+  discoverAssistantModels,
+  loadAssistantConfig,
+  requestAssistantCompletion,
+  saveAssistantConfig,
+  type AssistantConfig,
+} from "./lib/naggingAssistantClient";
 
 import MenuBar from "./components/MenuBar";
 import BlogContent from "./components/BlogContent";
@@ -95,6 +106,43 @@ const normalizePath = (path: string) => {
 const isInternalPath = (href: string) => href.startsWith("/");
 
 const STRUCTURED_DATA_SCRIPT_ID = "homepage-music-structured-data";
+
+const markdownSanitizeSchema: unknown = {
+  ...defaultSchema,
+  tagNames: [...(defaultSchema.tagNames || []), "iframe"],
+  attributes: {
+    ...defaultSchema.attributes,
+    a: [...(defaultSchema.attributes?.a || []), ["target"], ["rel"]],
+    img: [...(defaultSchema.attributes?.img || []), ["loading"], ["decoding"]],
+    iframe: [
+      ["title"],
+      ["src"],
+      ["width"],
+      ["height"],
+      ["style"],
+      ["scrolling"],
+      ["loading"],
+      ["allow"],
+      ["allowfullscreen"],
+      ["referrerpolicy"],
+      ["frameborder"],
+    ],
+  },
+};
+
+const markdownRehypePlugins = [
+  rehypeRaw,
+  [rehypeSanitize, markdownSanitizeSchema],
+] as ReactMarkdownOptions["rehypePlugins"];
+
+const markdownComponents = {
+  img: (props: ComponentProps<"img">) => (
+    <img
+      {...props}
+      style={{ maxWidth: "100%", height: "auto", ...(props.style ?? {}) }}
+    />
+  ),
+};
 
 const isSoundCloudPayload = (value: unknown): value is SoundCloudPayload => {
   if (!value || typeof value !== "object") return false;
@@ -669,6 +717,30 @@ export default function App() {
   );
   const [showClippy, setShowClippy] = useState(false);
   const [showClippyBubble, setShowClippyBubble] = useState(false);
+  const [showAssistantConfigModal, setShowAssistantConfigModal] = useState(false);
+  const [assistantConfig, setAssistantConfig] = useState<AssistantConfig>(() =>
+    loadAssistantConfig(),
+  );
+  const [assistantModelOptions, setAssistantModelOptions] = useState<string[]>([]);
+  const [assistantConfigError, setAssistantConfigError] = useState("");
+  const [isDiscoveringAssistantModels, setIsDiscoveringAssistantModels] =
+    useState(false);
+  const [showConversationModal, setShowConversationModal] = useState(false);
+  const [conversationInput, setConversationInput] = useState("");
+  const [conversationError, setConversationError] = useState("");
+  const [assistantWindowText, setAssistantWindowText] = useState("");
+  const [assistantWindowVisible, setAssistantWindowVisible] = useState(false);
+  const [assistantWindowFading, setAssistantWindowFading] = useState(false);
+  const [assistantWindowMinimized, setAssistantWindowMinimized] =
+    useState(false);
+  const [isAssistantRequestPending, setIsAssistantRequestPending] =
+    useState(false);
+  const [isSubmitPulseActive, setIsSubmitPulseActive] = useState(false);
+  const [isClippyHovered, setIsClippyHovered] = useState(false);
+  const [assistantConnectionInterrupted, setAssistantConnectionInterrupted] =
+    useState(false);
+  const holdTimerRef = useRef<number | null>(null);
+  const holdTriggeredRef = useRef(false);
 
   useEffect(() => {
     attachClippyListener();
@@ -678,6 +750,32 @@ export default function App() {
       unsubscribeVisibility();
       unsubscribeBubble();
       detachClippyListener();
+    };
+  }, []);
+
+  useEffect(() => {
+    const markDisconnected = () => {
+      setAssistantConnectionInterrupted(true);
+    };
+
+    const markConnected = () => {
+      setAssistantConnectionInterrupted(false);
+    };
+
+    window.addEventListener("offline", markDisconnected);
+    window.addEventListener("online", markConnected);
+
+    return () => {
+      window.removeEventListener("offline", markDisconnected);
+      window.removeEventListener("online", markConnected);
+    };
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (holdTimerRef.current !== null) {
+        window.clearTimeout(holdTimerRef.current);
+      }
     };
   }, []);
 
@@ -806,6 +904,195 @@ export default function App() {
     setPath(next);
   };
 
+  const resolvedAssistantModels = useMemo(() => {
+    const options = new Set(assistantModelOptions);
+    if (assistantConfig.model.trim()) {
+      options.add(assistantConfig.model.trim());
+    }
+    return Array.from(options).sort((a, b) => a.localeCompare(b));
+  }, [assistantConfig.model, assistantModelOptions]);
+
+  const handleDiscoverAssistantModels = async () => {
+    setAssistantConfigError("");
+    setIsDiscoveringAssistantModels(true);
+
+    try {
+      const models = await discoverAssistantModels(
+        assistantConfig.endpoint,
+        assistantConfig.apiKey,
+      );
+      const ids = models.map((model) => model.id);
+      setAssistantModelOptions(ids);
+
+      if (!assistantConfig.model.trim() && ids.length > 0) {
+        setAssistantConfig((previous) => ({
+          ...previous,
+          model: ids[0] ?? "",
+        }));
+      }
+    } catch (error) {
+      setAssistantConfigError(
+        error instanceof Error
+          ? error.message
+          : "Failed to discover models from endpoint.",
+      );
+    } finally {
+      setIsDiscoveringAssistantModels(false);
+    }
+  };
+
+  const handleSaveAssistantConfig = () => {
+    saveAssistantConfig(assistantConfig);
+    setShowAssistantConfigModal(false);
+  };
+
+  const triggerSubmitPulse = () => {
+    setIsSubmitPulseActive(true);
+    window.setTimeout(() => setIsSubmitPulseActive(false), 700);
+  };
+
+  const submitAssistantPrompt = async (
+    prompt: string,
+    options?: { closeModalOnSubmit?: boolean },
+  ) => {
+    const trimmedPrompt = prompt.trim();
+    if (!trimmedPrompt) {
+      return;
+    }
+
+    if (assistantWindowVisible || assistantWindowText) {
+      setAssistantWindowFading(true);
+      await new Promise<void>((resolve) => {
+        window.setTimeout(() => resolve(), 220);
+      });
+      setAssistantWindowVisible(false);
+      setAssistantWindowText("");
+      setAssistantWindowFading(false);
+      setAssistantWindowMinimized(false);
+    }
+
+    if (options?.closeModalOnSubmit) {
+      setShowConversationModal(false);
+    }
+
+    setConversationError("");
+    setIsAssistantRequestPending(true);
+    triggerSubmitPulse();
+
+    try {
+      const result = await requestAssistantCompletion(
+        assistantConfig,
+        trimmedPrompt,
+        {
+          conversationPrompt: !!options?.closeModalOnSubmit,
+        },
+      );
+      setAssistantWindowText(result);
+      setAssistantWindowVisible(true);
+      setAssistantWindowMinimized(false);
+      setAssistantConnectionInterrupted(false);
+      const readyBeep = new Audio("/Beep.ogg");
+      void readyBeep.play().catch(() => {});
+    } catch (error) {
+      setConversationError(
+        error instanceof Error
+          ? error.message
+          : "Failed to reach configured assistant endpoint.",
+      );
+      setAssistantConnectionInterrupted(true);
+    } finally {
+      setIsAssistantRequestPending(false);
+    }
+  };
+
+  const openConversationModal = () => {
+    setShowConversationModal(true);
+    setConversationError("");
+  };
+
+  const handleClippyMouseDown = (event: React.MouseEvent<HTMLImageElement>) => {
+    if (event.button !== 0) {
+      return;
+    }
+
+    holdTriggeredRef.current = false;
+    if (holdTimerRef.current !== null) {
+      window.clearTimeout(holdTimerRef.current);
+    }
+
+    holdTimerRef.current = window.setTimeout(() => {
+      holdTriggeredRef.current = true;
+      openConversationModal();
+      holdTimerRef.current = null;
+    }, 450);
+  };
+
+  const clearClippyHoldTimer = () => {
+    if (holdTimerRef.current !== null) {
+      window.clearTimeout(holdTimerRef.current);
+      holdTimerRef.current = null;
+    }
+  };
+
+  const handleClippyClick = () => {
+    if (holdTriggeredRef.current) {
+      holdTriggeredRef.current = false;
+      return;
+    }
+
+    onClippyClick();
+  };
+
+  const handleClippyDoubleClick = () => {
+    if (isAssistantRequestPending) {
+      triggerSubmitPulse();
+      return;
+    }
+
+    const prompts = [
+      "Give me one oddly practical life tip.",
+      "Share one short piece of weird-but-useful wisdom.",
+      "Offer one concise line of advice for focus.",
+    ];
+    const fallbackPrompt = "Share one concise piece of practical advice.";
+    const randomPrompt =
+      prompts[Math.floor(Math.random() * prompts.length)] ?? fallbackPrompt;
+    void submitAssistantPrompt(randomPrompt);
+  };
+
+  const handleDismissAssistantWindow = () => {
+    setAssistantWindowVisible(false);
+    setAssistantWindowFading(false);
+    setAssistantWindowText("");
+    setAssistantWindowMinimized(false);
+  };
+
+  const clippyFilter = useMemo(() => {
+    if (isSubmitPulseActive) {
+      return "drop-shadow(0 0 8px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 18px rgba(255, 255, 255, 0.8))";
+    }
+
+    if (assistantConnectionInterrupted) {
+      return "drop-shadow(0 0 8px rgba(220, 30, 30, 0.95)) drop-shadow(0 0 16px rgba(220, 30, 30, 0.8))";
+    }
+
+    if (showConversationModal) {
+      return "drop-shadow(0 0 8px rgba(0, 190, 70, 0.95)) drop-shadow(0 0 16px rgba(0, 190, 70, 0.8))";
+    }
+
+    if (isAssistantRequestPending && isClippyHovered) {
+      return "drop-shadow(0 0 8px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 14px rgba(190, 220, 255, 0.8))";
+    }
+
+    return "drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4))";
+  }, [
+    assistantConnectionInterrupted,
+    isAssistantRequestPending,
+    isClippyHovered,
+    isSubmitPulseActive,
+    showConversationModal,
+  ]);
+
   let content: ReactElement;
   switch (path) {
     case "/":
@@ -853,6 +1140,232 @@ export default function App() {
     <>
       <MenuBar onNavigate={navigate} />
       {content}
+      {showAssistantConfigModal ? (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0, 0, 0, 0.5)",
+            zIndex: 11000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onClick={(event) => {
+            if (event.target === event.currentTarget) {
+              setShowAssistantConfigModal(false);
+            }
+          }}
+        >
+          <div className="window" style={{ width: "min(560px, 92vw)" }}>
+            <div className="title-bar">
+              <div className="title-bar-text">Assistant Endpoint Settings</div>
+              <div className="title-bar-controls">
+                <button
+                  aria-label="Close"
+                  onClick={() => setShowAssistantConfigModal(false)}
+                ></button>
+              </div>
+            </div>
+            <div className="window-body" style={{ display: "grid", gap: "0.6rem" }}>
+              <p style={{ margin: 0 }}>
+                Configure an OpenAI-compatible or Open WebUI-compatible endpoint.
+              </p>
+
+              <label htmlFor="assistant-endpoint-input">Endpoint URL</label>
+              <input
+                id="assistant-endpoint-input"
+                type="text"
+                value={assistantConfig.endpoint}
+                onChange={(event) => {
+                  const endpoint = event.target.value;
+                  setAssistantConfig((previous) => ({
+                    ...previous,
+                    endpoint,
+                  }));
+                }}
+                placeholder="https://example.com"
+              />
+
+              <label htmlFor="assistant-apikey-input">API Key (optional)</label>
+              <input
+                id="assistant-apikey-input"
+                type="password"
+                value={assistantConfig.apiKey}
+                onChange={(event) => {
+                  const apiKey = event.target.value;
+                  setAssistantConfig((previous) => ({
+                    ...previous,
+                    apiKey,
+                  }));
+                }}
+                placeholder="Bearer token"
+              />
+
+              <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    void handleDiscoverAssistantModels();
+                  }}
+                  disabled={isDiscoveringAssistantModels}
+                >
+                  {isDiscoveringAssistantModels ? "Querying..." : "Query Models"}
+                </button>
+                <span style={{ fontSize: "0.85rem" }}>
+                  {resolvedAssistantModels.length} model(s) available
+                </span>
+              </div>
+
+              <label htmlFor="assistant-model-select">Model</label>
+              <select
+                id="assistant-model-select"
+                value={assistantConfig.model}
+                onChange={(event) => {
+                  const model = event.target.value;
+                  setAssistantConfig((previous) => ({
+                    ...previous,
+                    model,
+                  }));
+                }}
+              >
+                <option value="">Select a model</option>
+                {resolvedAssistantModels.map((modelId) => (
+                  <option key={modelId} value={modelId}>
+                    {modelId}
+                  </option>
+                ))}
+              </select>
+
+              {assistantConfigError ? (
+                <p style={{ margin: 0, color: "#c00" }}>{assistantConfigError}</p>
+              ) : null}
+
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem" }}>
+                <button
+                  type="button"
+                  onClick={() => setShowAssistantConfigModal(false)}
+                >
+                  Cancel
+                </button>
+                <button type="button" onClick={handleSaveAssistantConfig}>
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+      {showConversationModal ? (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0, 0, 0, 0.5)",
+            zIndex: 11000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onClick={(event) => {
+            if (event.target === event.currentTarget) {
+              setShowConversationModal(false);
+            }
+          }}
+        >
+          <div className="window" style={{ width: "min(560px, 92vw)" }}>
+            <div className="title-bar">
+              <div className="title-bar-text">Assistant Conversation</div>
+              <div className="title-bar-controls">
+                <button
+                  aria-label="Close"
+                  onClick={() => setShowConversationModal(false)}
+                ></button>
+              </div>
+            </div>
+            <div className="window-body" style={{ display: "grid", gap: "0.6rem" }}>
+              <label htmlFor="assistant-prompt-input">Prompt (max 256 chars)</label>
+              <textarea
+                id="assistant-prompt-input"
+                value={conversationInput}
+                maxLength={256}
+                onChange={(event) => setConversationInput(event.target.value)}
+                rows={4}
+                placeholder="Ask for advice..."
+              />
+              <div style={{ fontSize: "0.85rem", textAlign: "right" }}>
+                {conversationInput.length}/256
+              </div>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem" }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    void submitAssistantPrompt(conversationInput, {
+                      closeModalOnSubmit: true,
+                    });
+                  }}
+                  disabled={isAssistantRequestPending || !conversationInput.trim()}
+                >
+                  {isAssistantRequestPending ? "Sending..." : "Send"}
+                </button>
+              </div>
+              {conversationError ? (
+                <p style={{ margin: 0, color: "#c00" }}>{conversationError}</p>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      ) : null}
+      {assistantWindowVisible || assistantWindowFading ? (
+        <div
+          className="window"
+          style={{
+            position: "fixed",
+            right: "1rem",
+            bottom: "9.6rem",
+            width: "min(420px, 92vw)",
+            zIndex: 10950,
+            opacity: assistantWindowFading ? 0 : 1,
+            transition: "opacity 220ms ease",
+            pointerEvents: "auto",
+          }}
+        >
+          <div className="title-bar">
+            <div className="title-bar-text">Assistant Response</div>
+            <div className="title-bar-controls">
+              <button
+                aria-label={assistantWindowMinimized ? "Maximize" : "Minimize"}
+                onClick={() =>
+                  setAssistantWindowMinimized((previous) => !previous)
+                }
+              ></button>
+              <button
+                aria-label="Close"
+                onClick={handleDismissAssistantWindow}
+              ></button>
+            </div>
+          </div>
+          {!assistantWindowMinimized ? (
+            <div
+              className="window-body"
+              style={{ whiteSpace: "pre-wrap" }}
+            >
+              <Markdown
+                rehypePlugins={markdownRehypePlugins}
+                components={markdownComponents}
+              >
+                {assistantWindowText}
+              </Markdown>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
       {showClippy ? (
         <div
           style={{
@@ -900,13 +1413,28 @@ export default function App() {
           <img
             src="/Clippy.png"
             alt=""
-            onClick={onClippyClick}
+            onClick={handleClippyClick}
+            onDoubleClick={handleClippyDoubleClick}
+            onMouseDown={handleClippyMouseDown}
+            onMouseUp={clearClippyHoldTimer}
+            onMouseLeave={() => {
+              clearClippyHoldTimer();
+              setIsClippyHovered(false);
+            }}
+            onMouseEnter={() => setIsClippyHovered(true)}
+            onContextMenu={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              setShowAssistantConfigModal(true);
+              setAssistantConfigError("");
+            }}
             style={{
               width: "120px",
               maxWidth: "28vw",
               height: "auto",
-              filter: "drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4))",
+              filter: clippyFilter,
               cursor: "pointer",
+              transition: "filter 160ms ease",
             }}
           />
         </div>

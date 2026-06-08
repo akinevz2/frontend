@@ -102,8 +102,25 @@ const onAudioEnded = () => {
     audio.volume = 0;
 };
 
+const isTypingTarget = (target: EventTarget | null) => {
+    if (!(target instanceof HTMLElement)) {
+        return false;
+    }
+
+    if (target.isContentEditable) {
+        return true;
+    }
+
+    const tag = target.tagName.toLowerCase();
+    return tag === 'input' || tag === 'textarea' || tag === 'select';
+};
+
 const handleKeyDown = (event: KeyboardEvent) => {
     if (event.ctrlKey || event.metaKey || event.altKey) {
+        return;
+    }
+
+    if (isTypingTarget(event.target)) {
         return;
     }
 
