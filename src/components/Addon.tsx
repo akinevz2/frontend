@@ -1,6 +1,7 @@
 import { CopyToClipboardButton } from "./CopyToClipboardButton.tsx";
 import type { Heading, SectionProps } from "../windowing";
 import { useState } from "react";
+import { playLayeredAudio } from "../lib/audioOverlap";
 
 export type AddonProps = SectionProps & {
   status?: string | undefined;
@@ -77,8 +78,7 @@ const playSound = () => {
   closeClickCount += 1;
   const probability = 1 / Math.log(closeClickCount + Math.E);
   if (Math.random() < probability) {
-    const audio = new Audio("/crunchy_kick.ogg");
-    audio.play().catch(() => {});
+    playLayeredAudio("/crunchy_kick.ogg");
   }
 };
 

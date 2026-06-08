@@ -4,6 +4,7 @@ import { createPortal } from "react-dom";
 import Markdown, { type Options as ReactMarkdownOptions } from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
+import { playLayeredAudio } from "../lib/audioOverlap";
 import { useSectionContext } from "./hooks";
 import type { Content, HttpUrl, SectionProps } from "./types";
 import {
@@ -218,8 +219,7 @@ function isValidHttpUrl(link: string): link is HttpUrl {
 }
 
 const playSound = () => {
-  const audio = new Audio("/crunchy_kick.ogg");
-  audio.play().catch(() => {});
+  playLayeredAudio("/crunchy_kick.ogg");
 };
 
 export const Section = (props: SectionProps) => {
