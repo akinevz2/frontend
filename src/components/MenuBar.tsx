@@ -11,6 +11,7 @@ type Props = {
   links?: Link[];
   additionalLinks?: MenuItem[];
   onNavigate?: (href: string) => void;
+  onMenuAction?: (href: string) => boolean;
 };
 
 const PAGE_LINKS = (pages as Array<{ path: string; menuLabel?: string }>).map(
@@ -51,7 +52,12 @@ const filterHiddenMenuItems = (menuItems: MenuItem[]) => {
   return menuItems.filter((item) => item.href !== SITEMAP_HREF);
 };
 
-export default function MenuBar({ links, additionalLinks = [], onNavigate }: Props) {
+export default function MenuBar({
+  links,
+  additionalLinks = [],
+  onNavigate,
+  onMenuAction,
+}: Props) {
   const menuItems = useMemo(() => {
     if (links) {
       return filterHiddenMenuItems(
@@ -85,6 +91,11 @@ export default function MenuBar({ links, additionalLinks = [], onNavigate }: Pro
         return;
       }
 
+      if (onMenuAction?.(item.href)) {
+        event.preventDefault();
+        return;
+      }
+
       if (onNavigate && isInternalPath(item.href)) {
         event.preventDefault();
         onNavigate(item.href);
@@ -95,7 +106,7 @@ export default function MenuBar({ links, additionalLinks = [], onNavigate }: Pro
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [menuItems, onNavigate]);
+  }, [menuItems, onMenuAction, onNavigate]);
 
   return (
     <div className="menu-bar">
@@ -107,10 +118,6 @@ export default function MenuBar({ links, additionalLinks = [], onNavigate }: Pro
               role="menuitem"
               data-key={item.label.charAt(0).toLowerCase()}
               onClick={(event) => {
-                if (!onNavigate || !isInternalPath(item.href)) {
-                  return;
-                }
-
                 if (
                   event.defaultPrevented ||
                   event.button !== 0 ||
@@ -122,8 +129,15 @@ export default function MenuBar({ links, additionalLinks = [], onNavigate }: Pro
                   return;
                 }
 
-                event.preventDefault();
-                onNavigate(item.href);
+                if (onMenuAction?.(item.href)) {
+                  event.preventDefault();
+                  return;
+                }
+
+                if (onNavigate && isInternalPath(item.href)) {
+                  event.preventDefault();
+                  onNavigate(item.href);
+                }
               }}
             >
               <span className="menu-underline">{item.label.charAt(0)}</span>

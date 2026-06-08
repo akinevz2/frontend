@@ -15,6 +15,7 @@ import {
   attachClippyListener,
   detachClippyListener,
   onClippyClick,
+  showClippyHint,
   subscribeClippyBubble,
   subscribeClippyVisibility,
 } from "./lib/keyboardInputUtils";
@@ -26,7 +27,7 @@ import {
   type AssistantConfig,
 } from "./lib/naggingAssistantClient";
 
-import MenuBar from "./components/MenuBar";
+import MenuBar from "./components/MenuBar.tsx";
 import BlogContent from "./components/BlogContent";
 import MusicContent from "./components/MusicContent";
 import SitemapContent from "./components/SitemapContent";
@@ -40,6 +41,7 @@ import type { SectionProps } from "./windowing";
 import { processContent } from "./windowing/utils";
 import { buildMusicGroupSchema, serializeJsonLd } from "./lib/musicSchema.ts";
 import { submitResumeInterest, trackResumeEvent } from "./lib/resumeAnalytics";
+import type { MenuItem } from "./utils/menuItems";
 
 type RouteConfig = {
   title: string;
@@ -106,6 +108,7 @@ const normalizePath = (path: string) => {
 const isInternalPath = (href: string) => href.startsWith("/");
 
 const STRUCTURED_DATA_SCRIPT_ID = "homepage-music-structured-data";
+const ASSISTANT_CONFIG_MENU_HREF = "#assistant-config";
 
 const markdownSanitizeSchema: unknown = {
   ...defaultSchema,
@@ -143,6 +146,12 @@ const markdownComponents = {
     />
   ),
 };
+
+const TOP_BAR_ADDITIONAL_LINKS: MenuItem[] = [
+  { label: "admin", href: ASSISTANT_CONFIG_MENU_HREF },
+];
+
+const SHADOW_PULSE_MS = 700;
 
 const isSoundCloudPayload = (value: unknown): value is SoundCloudPayload => {
   if (!value || typeof value !== "object") return false;
@@ -735,12 +744,17 @@ export default function App() {
     useState(false);
   const [isAssistantRequestPending, setIsAssistantRequestPending] =
     useState(false);
+  const [isWisdomRequestPending, setIsWisdomRequestPending] = useState(false);
   const [isSubmitPulseActive, setIsSubmitPulseActive] = useState(false);
+  const [wisdomPulsePhase, setWisdomPulsePhase] = useState(0);
   const [isClippyHovered, setIsClippyHovered] = useState(false);
   const [assistantConnectionInterrupted, setAssistantConnectionInterrupted] =
     useState(false);
+  const [isConnectionFlashActive, setIsConnectionFlashActive] = useState(false);
   const holdTimerRef = useRef<number | null>(null);
   const holdTriggeredRef = useRef(false);
+  const connectionFlashTimerRef = useRef<number | null>(null);
+  const rightClickFlashArmedRef = useRef(true);
 
   useEffect(() => {
     attachClippyListener();
@@ -772,12 +786,72 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    if (!assistantConnectionInterrupted) {
+      return;
+    }
+
+    setIsConnectionFlashActive(true);
+    if (connectionFlashTimerRef.current !== null) {
+      window.clearTimeout(connectionFlashTimerRef.current);
+    }
+
+    connectionFlashTimerRef.current = window.setTimeout(() => {
+      setIsConnectionFlashActive(false);
+      setAssistantConnectionInterrupted(false);
+      connectionFlashTimerRef.current = null;
+    }, SHADOW_PULSE_MS);
+  }, [assistantConnectionInterrupted]);
+
+  useEffect(() => {
+    if (!isWisdomRequestPending) {
+      setWisdomPulsePhase(0);
+      return;
+    }
+
+    const interval = window.setInterval(() => {
+      setWisdomPulsePhase((previous) => previous + 0.22);
+    }, 100);
+
+    return () => {
+      window.clearInterval(interval);
+    };
+  }, [isWisdomRequestPending]);
+
+  useEffect(() => {
     return () => {
       if (holdTimerRef.current !== null) {
         window.clearTimeout(holdTimerRef.current);
       }
+      if (connectionFlashTimerRef.current !== null) {
+        window.clearTimeout(connectionFlashTimerRef.current);
+      }
     };
   }, []);
+
+  useEffect(() => {
+    if (!showAssistantConfigModal && !showConversationModal) {
+      return;
+    }
+
+    const handleModalEscape = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") {
+        return;
+      }
+
+      if (showConversationModal) {
+        setShowConversationModal(false);
+      }
+
+      if (showAssistantConfigModal) {
+        setShowAssistantConfigModal(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleModalEscape);
+    return () => {
+      window.removeEventListener("keydown", handleModalEscape);
+    };
+  }, [showAssistantConfigModal, showConversationModal]);
 
   useEffect(() => {
     const onPopState = () => {
@@ -904,6 +978,16 @@ export default function App() {
     setPath(next);
   };
 
+  const handleTopMenuAction = (href: string) => {
+    if (href !== ASSISTANT_CONFIG_MENU_HREF) {
+      return false;
+    }
+
+    setAssistantConfigError("");
+    setShowAssistantConfigModal(true);
+    return true;
+  };
+
   const resolvedAssistantModels = useMemo(() => {
     const options = new Set(assistantModelOptions);
     if (assistantConfig.model.trim()) {
@@ -946,17 +1030,27 @@ export default function App() {
     setShowAssistantConfigModal(false);
   };
 
+  const hasAssistantEndpointAndModel = () =>
+    !!assistantConfig.endpoint.trim() && !!assistantConfig.model.trim();
+
   const triggerSubmitPulse = () => {
     setIsSubmitPulseActive(true);
-    window.setTimeout(() => setIsSubmitPulseActive(false), 700);
+    window.setTimeout(() => setIsSubmitPulseActive(false), SHADOW_PULSE_MS);
   };
 
   const submitAssistantPrompt = async (
     prompt: string,
-    options?: { closeModalOnSubmit?: boolean },
+    options?: { closeModalOnSubmit?: boolean; wisdomRequest?: boolean },
   ) => {
     const trimmedPrompt = prompt.trim();
     if (!trimmedPrompt) {
+      return;
+    }
+
+    if (!hasAssistantEndpointAndModel()) {
+      if (options?.closeModalOnSubmit) {
+        setConversationError("Please configure endpoint and model first.");
+      }
       return;
     }
 
@@ -975,8 +1069,14 @@ export default function App() {
       setShowConversationModal(false);
     }
 
+    const shouldShowInTransitPulse =
+      !!options?.wisdomRequest || !!options?.closeModalOnSubmit;
+
     setConversationError("");
     setIsAssistantRequestPending(true);
+    if (shouldShowInTransitPulse) {
+      setIsWisdomRequestPending(true);
+    }
     triggerSubmitPulse();
 
     try {
@@ -1002,10 +1102,18 @@ export default function App() {
       setAssistantConnectionInterrupted(true);
     } finally {
       setIsAssistantRequestPending(false);
+      if (shouldShowInTransitPulse) {
+        setIsWisdomRequestPending(false);
+      }
     }
   };
 
   const openConversationModal = () => {
+    if (!hasAssistantEndpointAndModel()) {
+      handleUnavailableAssistantConfig();
+      return;
+    }
+
     setShowConversationModal(true);
     setConversationError("");
   };
@@ -1045,7 +1153,6 @@ export default function App() {
 
   const handleClippyDoubleClick = () => {
     if (isAssistantRequestPending) {
-      triggerSubmitPulse();
       return;
     }
 
@@ -1057,8 +1164,19 @@ export default function App() {
     const fallbackPrompt = "Share one concise piece of practical advice.";
     const randomPrompt =
       prompts[Math.floor(Math.random() * prompts.length)] ?? fallbackPrompt;
-    void submitAssistantPrompt(randomPrompt);
+    void submitAssistantPrompt(randomPrompt, { wisdomRequest: true });
   };
+
+  useEffect(() => {
+    if (!showConversationModal) {
+      return;
+    }
+
+    if (!hasAssistantEndpointAndModel()) {
+      setShowConversationModal(false);
+      setConversationError("");
+    }
+  }, [assistantConfig.endpoint, assistantConfig.model, showConversationModal]);
 
   const handleDismissAssistantWindow = () => {
     setAssistantWindowVisible(false);
@@ -1067,17 +1185,56 @@ export default function App() {
     setAssistantWindowMinimized(false);
   };
 
+  const handleConversationSubmit = () => {
+    if (isAssistantRequestPending || !conversationInput.trim()) {
+      return;
+    }
+
+    void submitAssistantPrompt(conversationInput, {
+      closeModalOnSubmit: true,
+    });
+  };
+
+  const triggerConnectionFlashOnce = () => {
+    if (!rightClickFlashArmedRef.current) {
+      return;
+    }
+
+    rightClickFlashArmedRef.current = false;
+    setIsConnectionFlashActive(true);
+
+    if (connectionFlashTimerRef.current !== null) {
+      window.clearTimeout(connectionFlashTimerRef.current);
+    }
+
+    connectionFlashTimerRef.current = window.setTimeout(() => {
+      setIsConnectionFlashActive(false);
+      connectionFlashTimerRef.current = null;
+    }, SHADOW_PULSE_MS);
+  };
+
+  const handleUnavailableAssistantConfig = () => {
+    triggerConnectionFlashOnce();
+    onClippyClick();
+    showClippyHint();
+  };
+
   const clippyFilter = useMemo(() => {
     if (isSubmitPulseActive) {
       return "drop-shadow(0 0 8px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 18px rgba(255, 255, 255, 0.8))";
     }
 
-    if (assistantConnectionInterrupted) {
+    if (isConnectionFlashActive) {
       return "drop-shadow(0 0 8px rgba(220, 30, 30, 0.95)) drop-shadow(0 0 16px rgba(220, 30, 30, 0.8))";
     }
 
     if (showConversationModal) {
       return "drop-shadow(0 0 8px rgba(0, 190, 70, 0.95)) drop-shadow(0 0 16px rgba(0, 190, 70, 0.8))";
+    }
+
+    if (isWisdomRequestPending) {
+      const intensity = 0.28 + ((Math.sin(wisdomPulsePhase) + 1) / 2) * 0.28;
+      return `drop-shadow(0 0 7px rgba(255, 255, 255, ${intensity.toFixed(3)})) drop-shadow(0 0 14px rgba(255, 255, 255, ${(intensity * 0.8).toFixed(3)}))`;
     }
 
     if (isAssistantRequestPending && isClippyHovered) {
@@ -1086,11 +1243,13 @@ export default function App() {
 
     return "drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4))";
   }, [
-    assistantConnectionInterrupted,
+    isConnectionFlashActive,
     isAssistantRequestPending,
+    isWisdomRequestPending,
     isClippyHovered,
     isSubmitPulseActive,
     showConversationModal,
+    wisdomPulsePhase,
   ]);
 
   let content: ReactElement;
@@ -1138,7 +1297,11 @@ export default function App() {
 
   return (
     <>
-      <MenuBar onNavigate={navigate} />
+      <MenuBar
+        onNavigate={navigate}
+        additionalLinks={showClippy ? TOP_BAR_ADDITIONAL_LINKS : []}
+        onMenuAction={handleTopMenuAction}
+      />
       {content}
       {showAssistantConfigModal ? (
         <div
@@ -1170,7 +1333,14 @@ export default function App() {
                 ></button>
               </div>
             </div>
-            <div className="window-body" style={{ display: "grid", gap: "0.6rem" }}>
+            <form
+              className="window-body"
+              style={{ display: "grid", gap: "0.6rem" }}
+              onSubmit={(event) => {
+                event.preventDefault();
+                handleSaveAssistantConfig();
+              }}
+            >
               <p style={{ margin: 0 }}>
                 Configure an OpenAI-compatible or Open WebUI-compatible endpoint.
               </p>
@@ -1251,11 +1421,11 @@ export default function App() {
                 >
                   Cancel
                 </button>
-                <button type="button" onClick={handleSaveAssistantConfig}>
+                <button type="submit">
                   Save
                 </button>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       ) : null}
@@ -1296,6 +1466,14 @@ export default function App() {
                 value={conversationInput}
                 maxLength={256}
                 onChange={(event) => setConversationInput(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key !== "Enter") {
+                    return;
+                  }
+
+                  event.preventDefault();
+                  handleConversationSubmit();
+                }}
                 rows={4}
                 placeholder="Ask for advice..."
               />
@@ -1305,11 +1483,7 @@ export default function App() {
               <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem" }}>
                 <button
                   type="button"
-                  onClick={() => {
-                    void submitAssistantPrompt(conversationInput, {
-                      closeModalOnSubmit: true,
-                    });
-                  }}
+                  onClick={handleConversationSubmit}
                   disabled={isAssistantRequestPending || !conversationInput.trim()}
                 >
                   {isAssistantRequestPending ? "Sending..." : "Send"}
@@ -1425,8 +1599,9 @@ export default function App() {
             onContextMenu={(event) => {
               event.preventDefault();
               event.stopPropagation();
-              setShowAssistantConfigModal(true);
+              rightClickFlashArmedRef.current = true;
               setAssistantConfigError("");
+              handleUnavailableAssistantConfig();
             }}
             style={{
               width: "120px",

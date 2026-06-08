@@ -1,6 +1,6 @@
 import { CopyToClipboardButton } from "./CopyToClipboardButton.tsx";
 import type { Heading, SectionProps } from "../windowing";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { playLayeredAudio } from "../lib/audioOverlap";
 
 export type AddonProps = SectionProps & {
@@ -72,11 +72,8 @@ function renderAddon(status?: string, text?: string) {
   return elements;
 }
 
-let closeClickCount = 0;
-
-const playSound = () => {
-  closeClickCount += 1;
-  const probability = 1 / Math.log(closeClickCount + Math.E);
+const playSound = (clickCount: number) => {
+  const probability = 1 / Math.log(clickCount + Math.E);
   if (Math.random() < probability) {
     playLayeredAudio("/crunchy_kick.ogg");
   }
@@ -98,6 +95,7 @@ const WindowPanel = ({
   const hasHeading = !!heading;
   const hasContent = !!content;
   const [isMaximized, setIsMaximized] = useState(false);
+  const closeClickCountRef = useRef(0);
 
   const handleMaximize = () => {
     setIsMaximized(!isMaximized);
@@ -107,7 +105,8 @@ const WindowPanel = ({
     if (isMaximized) {
       setIsMaximized(false);
     } else {
-      playSound();
+      closeClickCountRef.current += 1;
+      playSound(closeClickCountRef.current);
     }
   };
 
