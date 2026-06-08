@@ -220,6 +220,7 @@ function isValidHttpUrl(link: string): link is HttpUrl {
 
 const playSound = () => {
   playLayeredAudio("/crunchy_kick.ogg");
+  window.dispatchEvent(new CustomEvent("crunchy-kick-played"));
 };
 
 export const Section = (props: SectionProps) => {

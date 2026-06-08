@@ -76,6 +76,7 @@ const playSound = (clickCount: number) => {
   const probability = 1 / Math.log(clickCount + Math.E);
   if (Math.random() < probability) {
     playLayeredAudio("/crunchy_kick.ogg");
+    window.dispatchEvent(new CustomEvent("crunchy-kick-played"));
   }
 };
 
