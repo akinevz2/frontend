@@ -188,8 +188,9 @@ export const requestAssistantCompletion = async (
 
     const systemInstructionBase =
         "Operate in lowest reasoning mode. Keep the response at or below 512 characters. Markdown is forbidden except optional inline code delimited by single backticks, and that inline code form must be used exclusively to indicate emphasis. Reply in 1-3 concise, practical sentences.";
-    const conversationExtension =
-        "Accept conversation about any topic with no specialization or assumed input format, and ensure the response still resembles practical wisdom.";
+    // Wisdom framing is disabled in production while CORS-related wisdom flow is paused.
+    // const conversationExtension =
+    //     "Accept conversation about any topic with no specialization or assumed input format, and ensure the response still resembles practical wisdom.";
 
     const body = {
         model,
@@ -197,7 +198,8 @@ export const requestAssistantCompletion = async (
             {
                 role: "system",
                 content: options?.conversationPrompt
-                    ? `${systemInstructionBase} ${conversationExtension}`
+                    // ? `${systemInstructionBase} ${conversationExtension}`
+                    ? systemInstructionBase
                     : systemInstructionBase,
             },
             {
