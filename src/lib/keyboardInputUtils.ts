@@ -35,6 +35,18 @@ export const subscribeClippyBubble = (
     return () => bubbleSubscribers.delete(callback);
 };
 
+export const showClippyHint = () => {
+    if (bubbleTimeout !== null) {
+        clearTimeout(bubbleTimeout);
+    }
+
+    setBubbleVisible(true);
+    bubbleTimeout = setTimeout(() => {
+        setBubbleVisible(false);
+        bubbleTimeout = null;
+    }, BUBBLE_DISMISS_MS);
+};
+
 export const onClippyClick = () => {
     allowFullVolumeTail = false;
     audio.pause();
