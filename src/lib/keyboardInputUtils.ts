@@ -1,3 +1,5 @@
+import { playLayeredAudio } from './audioOverlap';
+
 const CLIPPY_SEQUENCE = 'fuckingclippy';
 const CLIPPY_SEQUENCE_LENGTH = CLIPPY_SEQUENCE.length;
 
@@ -8,7 +10,6 @@ let allowFullVolumeTail = false;
 let listenerAttached = false;
 
 const audio = new Audio('/yooh.mp3');
-const tadaAudio = new Audio('/tada.wav');
 
 const visibilitySubscribers = new Set<(visible: boolean) => void>();
 const bubbleSubscribers = new Set<(visible: boolean) => void>();
@@ -39,8 +40,7 @@ export const onClippyClick = () => {
     audio.pause();
     audio.currentTime = 0;
     audio.volume = 0;
-    tadaAudio.currentTime = 0;
-    void tadaAudio.play().catch(() => {});
+    playLayeredAudio('/tada.wav');
 
     const now = Date.now();
     clippyClickTimestamps = clippyClickTimestamps.filter(
