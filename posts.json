@@ -14,36 +14,9 @@
       ]
     },
     {
-      "heading": "support me! (#meta, #blog)",
+      "heading": "twelfth post (#discussion, #security, #wow, #addons)",
       "content": [
-        {
-          "heading": "clone this repo!!!!",
-          "content": [
-            "[website code](https://github.com/akinevz2/frontend)"
-          ]
-        },
-        "it would be cool if this, completely generic and adoptable website scaffold",
-        "supported user interactions like comments and messages. what a wonderful feat",
-        "for the blog page. unfortunately i don't know anyone who would be interested",
-        "in adopting a website built like mine, but if *you* are interested, support",
-        "me on [ko-fi](https://ko-fi.com/akinevz) and i will make it happen. what a",
-        "wonderful time for Open Source Software developers!!!"
-      ]
-    },
-    {
-      "heading": "tenth post (#meta, #rant)",
-      "content": [
-        "uh... i was just thinking...",
-        "does my website get indexed by commercial ai?",
-        "[in a post below](https://akinevz.com/blog/?post=sixth-post-ramble-meta), i made an off the cuff comment",
-        "stating my preference for chaos on my personal web page",
-        "...",
-        "but i would like to comment on the issue stating that:",
-        "perhaps i have been relying too much on social media platforms to shield me from outside world",
-        "as odd as that seems, despite having no conscious control over how they operate",
-        "so if my primitive personal website is getting indexed by a crawler somewhere out there,",
-        "i wish to welcome you here warmly, its my own personal space here",
-        "you can have a marshmallow, or imagine a can of beer"
+        "Although no verified cases of official ElvUI performing malicious opaque bank transfers (gold+items) have ever been publicly confirmed by Blizzard or the developer, concerns about its security have circulated for years. While the 2014 ElvUI backdoor - a debug command that allowed the addon's developers to remotely execute arbitrary Lua code on users' clients - was widely documented across gaming forums, Reddit, and tech blogs at the time and subsequently removed from official releases, similar malicious behavior reportedly persisted years later. During the World of Warcraft Classic Hardcore rush, one player encountered what appeared to be surreptitious opaque bank transfer functionality (gold+items) while using an ElvUI installation, an incident captured on livestream that raised fresh questions about the risks of third-party UI modifications and unverified addon distributions"
       ]
     },
     {
@@ -53,59 +26,92 @@
       ]
     },
     {
-      "heading": "eighth post (#meta, #blog, welcome to my website!)",
-      "content": [
-        "i wish i had any way to collect feedback on this website",
-        "i really enjoy clicking the buttons that i put in these pages",
-        "we have a new page added to the menu bar, check out [music](/music)",
-        "also, here's [pagerts](https://www.npmjs.com/package/pagerts)",
-        "oh also, yes, I know the resume is currently down",
-        "its because i've been targetted offline"
-      ]
-    },
-    {
-      "heading": "a tale of misbehaving LLMs",
-      "content": [
-        "note: 26-04-2026",
-        "it appears to be behaving completely reasonably as far as first few interactions:",
-        {
-          "heading": "update, fresh gemma4:latest pull",
-          "content": [
-            {
-              "printout": "4th.md"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "heading": "seventh post (#meta, #quarkus)",
-      "content": [
-        "well it seems there is no nice way to launch [quarkus](https://quarkus.io/) from [picocli](https://picocli.info/) with submenus. i've just spent the last 6 hours troubleshooting the submenu system built with [jline](https://jline.readthedocs.io/) and the reasons why it wouldn't launch the frontend due to missing CDI. the solution was letting it all go and just rewriting everything with manual CDI injection",
-        "![cdi](https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/cdi.png)",
-        {
-          "heading": "relevant",
-          "content": "![relevant](https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/relevant.jpg)"
-        },
-        {
-          "heading": "resolution",
-          "content": "Quarkus application class is intended to be implemented when adding functionality that has to run before the quarkus application starts. I instructed CoPilot to refactor the app to show the menus and launch the app in the background so that CDI is resolved"
-        }
-      ]
-    },
-    {
-      "heading": "sixth post (#ramble, #meta)",
-      "content": [
-        "I've decided that I am going to be ranking posts on my blog randomly",
-        "and by randomly I mean, somewhat obscurely and privately. Posts that",
-        "score highly on the interesting-recent scale that I will devise later",
-        "will appear closer to the top of the page.",
-        "a special 'archive' section will progressively consume every stale post i don't like"
-      ]
-    },
-    {
       "heading": "archive",
       "content": [
+        {
+          "heading": "support me! (#meta, #blog)",
+          "content": [
+            {
+              "heading": "clone this repo!!!!",
+              "content": [
+                "[website code](https://github.com/akinevz2/frontend)"
+              ]
+            },
+            "it would be cool if this, completely generic and adoptable website scaffold",
+            "supported user interactions like comments and messages. what a wonderful feat",
+            "for the blog page. unfortunately i don't know anyone who would be interested",
+            "in adopting a website built like mine, but if *you* are interested, support",
+            "me on [ko-fi](https://ko-fi.com/akinevz) and i will make it happen. what a",
+            "wonderful time for Open Source Software developers!!!"
+          ]
+        },
+        {
+          "heading": "tenth post (#meta, #rant)",
+          "content": [
+            "uh... i was just thinking...",
+            "does my website get indexed by commercial ai?",
+            "[in a post below](https://akinevz.com/blog/?post=sixth-post-ramble-meta), i made an off the cuff comment",
+            "stating my preference for chaos on my personal web page",
+            "...",
+            "but i would like to comment on the issue stating that:",
+            "perhaps i have been relying too much on social media platforms to shield me from outside world",
+            "as odd as that seems, despite having no conscious control over how they operate",
+            "so if my primitive personal website is getting indexed by a crawler somewhere out there,",
+            "i wish to welcome you here warmly, its my own personal space here",
+            "you can have a marshmallow, or imagine a can of beer"
+          ]
+        },
+        {
+          "heading": "eighth post (#meta, #blog, welcome to my website!)",
+          "content": [
+            "i wish i had any way to collect feedback on this website",
+            "i really enjoy clicking the buttons that i put in these pages",
+            "we have a new page added to the menu bar, check out [music](/music)",
+            "also, here's [pagerts](https://www.npmjs.com/package/pagerts)",
+            "oh also, yes, I know the resume is currently down",
+            "its because i've been targetted offline"
+          ]
+        },
+        {
+          "heading": "a tale of misbehaving LLMs",
+          "content": [
+            "note: 26-04-2026",
+            "it appears to be behaving completely reasonably as far as first few interactions:",
+            {
+              "heading": "update, fresh gemma4:latest pull",
+              "content": [
+                {
+                  "printout": "4th.md"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "heading": "seventh post (#meta, #quarkus)",
+          "content": [
+            "well it seems there is no nice way to launch [quarkus](https://quarkus.io/) from [picocli](https://picocli.info/) with submenus. i've just spent the last 6 hours troubleshooting the submenu system built with [jline](https://jline.readthedocs.io/) and the reasons why it wouldn't launch the frontend due to missing CDI. the solution was letting it all go and just rewriting everything with manual CDI injection",
+            "![cdi](https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/cdi.png)",
+            {
+              "heading": "relevant",
+              "content": "![relevant](https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/relevant.jpg)"
+            },
+            {
+              "heading": "resolution",
+              "content": "Quarkus application class is intended to be implemented when adding functionality that has to run before the quarkus application starts. I instructed CoPilot to refactor the app to show the menus and launch the app in the background so that CDI is resolved"
+            }
+          ]
+        },
+        {
+          "heading": "sixth post (#ramble, #meta)",
+          "content": [
+            "I've decided that I am going to be ranking posts on my blog randomly",
+            "and by randomly I mean, somewhat obscurely and privately. Posts that",
+            "score highly on the interesting-recent scale that I will devise later",
+            "will appear closer to the top of the page.",
+            "a special 'archive' section will progressively consume every stale post i don't like"
+          ]
+        },
         {
           "heading": "eBay.co.uk is a scam (#rant, #meta, #auto, #blog, #ai)",
           "content": [
