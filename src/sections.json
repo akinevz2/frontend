@@ -28,7 +28,7 @@
         },
         {
           "heading": "current location",
-          "content": "at this point, somewhere in East Sussex ![loud emoji](https://raw.githubusercontent.com/akinevz2/frontend/e506a15ca2df2a54245a571f474e56ae8dfc65d3/lol.jpg)"
+          "content": "at this point, ~~redacted~~"
         }
       ]
     },
@@ -63,21 +63,8 @@
             }
           ]
         },
-        {
-          "heading": "academia",
-          "content": "[todo](/TODO.pdf)"
-        },
-        {
-          "heading": "programming",
-          "content": [
-            "java",
-            "scala",
-            "python",
-            "rust",
-            "typescript",
-            "machine learning"
-          ]
-        },
+        "programming and technology",
+        "[cats](https://akinevz.com/images/hyperawareofwhatacatis.png)",
         {
           "heading": "open source",
           "content": [
@@ -89,36 +76,8 @@
           ]
         },
         {
-          "heading": "system administration",
-          "content": [
-            "docker",
-            "hyper-v",
-            "linux & windows scripting",
-            "pandoc and vcs"
-          ]
-        },
-        {
-          "heading": "teaching and tutoring",
-          "content": [
-            "linux",
-            "programming",
-            "english language"
-          ]
-        },
-        {
           "heading": "music",
-          "content": [
-            "[SoundCloud on akinevz](https://akinevz.com/music)",
-            "[akinevz on SoundCloud](https://soundcloud.com/akinevz)"
-          ]
-        },
-        {
-          "heading": "blogging!",
-          "link": "https://akinevz.com/blog"
-        },
-        {
-          "heading": "escape",
-          "content": "[take me home, i'm scared](https://discord.com/channels/@me/)"
+          "link": "https://soundcloud.com/akinevz"
         }
       ]
     },
