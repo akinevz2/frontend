@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 
 import { PageContent } from "./Page";
-import favouriteLinks from "../music-links.json";
 import { processContent } from "../windowing/utils";
 import type { PageMetadata, SectionProps } from "../windowing";
+
+const MUSIC_LINKS_URL =
+  "https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/music-links.json";
 
 type MusicTrack = {
   path: string;
@@ -54,9 +56,17 @@ const isFavouriteLink = (value: unknown): value is FavouriteLink => {
   return typeof candidate.title === "string" && typeof candidate.url === "string";
 };
 
-const configuredFavouriteLinks: FavouriteLink[] = Array.isArray(favouriteLinks)
-  ? (favouriteLinks as unknown[]).filter(isFavouriteLink)
-  : [];
+const fetchFavouriteLinks = async (): Promise<FavouriteLink[]> => {
+  const response = await fetch(MUSIC_LINKS_URL, {
+    method: "GET",
+    cache: "no-store",
+    headers: { Accept: "application/json" },
+  });
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  const payload: unknown = await response.json();
+  if (!Array.isArray(payload)) throw new Error("Invalid music-links schema");
+  return payload.filter(isFavouriteLink);
+};
 
 const buildSoundCloudEmbedUrl = (trackUrl: string) => {
   const embedUrl = new URL("https://w.soundcloud.com/player/");
@@ -144,10 +154,10 @@ const renderFavouriteLink = (link: FavouriteLink) => {
   ].join("\n\n");
 };
 
-const toMusicSections = (payload: MusicPayload): SectionProps[] => {
+const toMusicSections = (payload: MusicPayload, favouriteLinks: FavouriteLink[]): SectionProps[] => {
   const trackEmbeds = payload.tracks.map((track) => renderTrackEmbed(track));
 
-  const favouriteLinkList = configuredFavouriteLinks.map((link) => renderFavouriteLink(link));
+  const favouriteLinkList = favouriteLinks.map((link) => renderFavouriteLink(link));
 
   return [
     {
@@ -203,25 +213,26 @@ export default function MusicContent() {
 
     const load = async () => {
       try {
-        const response = await fetch("/soundcloud.json", {
-          method: "GET",
-          cache: "no-store",
-          headers: {
-            Accept: "application/json",
-          },
-        });
+        const [scResponse, favouriteLinks] = await Promise.all([
+          fetch("/soundcloud.json", {
+            method: "GET",
+            cache: "no-store",
+            headers: { Accept: "application/json" },
+          }),
+          fetchFavouriteLinks().catch(() => [] as FavouriteLink[]),
+        ]);
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
+        if (!scResponse.ok) {
+          throw new Error(`HTTP ${scResponse.status}`);
         }
 
-        const payload: unknown = await response.json();
+        const payload: unknown = await scResponse.json();
         if (!isMusicPayload(payload)) {
           throw new Error("Invalid music payload schema");
         }
 
         if (!cancelled) {
-          setMusicState(buildState(toMusicSections(payload)));
+          setMusicState(buildState(toMusicSections(payload, favouriteLinks)));
         }
       } catch (error) {
         if (!cancelled) {
