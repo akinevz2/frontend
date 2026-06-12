@@ -2,6 +2,9 @@ import { CopyToClipboardButton } from "./CopyToClipboardButton.tsx";
 import type { Heading, SectionProps } from "../windowing";
 import { useRef, useState } from "react";
 import { playLayeredAudio } from "../lib/audioOverlap";
+import Markdown, { type Options as ReactMarkdownOptions } from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 
 export type AddonProps = SectionProps & {
   status?: string | undefined;
@@ -12,6 +15,43 @@ export type AddonProps = SectionProps & {
 
 export type AddonContent = string | (string | AddonProps)[];
 
+const markdownSanitizeSchema: unknown = {
+  ...defaultSchema,
+  tagNames: [...(defaultSchema.tagNames || []), "iframe"],
+  attributes: {
+    ...defaultSchema.attributes,
+    a: [...(defaultSchema.attributes?.a || []), ["target"], ["rel"]],
+    img: [...(defaultSchema.attributes?.img || []), ["loading"], ["decoding"]],
+    iframe: [
+      ["title"],
+      ["src"],
+      ["width"],
+      ["height"],
+      ["style"],
+      ["scrolling"],
+      ["loading"],
+      ["allow"],
+      ["allowfullscreen"],
+      ["referrerpolicy"],
+      ["frameborder"],
+    ],
+  },
+};
+
+const markdownRehypePlugins = [
+  rehypeRaw,
+  [rehypeSanitize, markdownSanitizeSchema],
+] as ReactMarkdownOptions["rehypePlugins"];
+
+const markdownComponents = {
+  img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
+    <img
+      {...props}
+      style={{ maxWidth: "100%", height: "auto", ...(props.style ?? {}) }}
+    />
+  ),
+};
+
 function renderHeading(heading: Heading, link?: string) {
   return <RenderLink link={link} text={heading} />;
 }
@@ -20,7 +60,14 @@ function renderContent(content: AddonContent, status?: string, text?: string) {
   if (typeof content === "string")
     return (
       <ul>
-        <li key={0}>{content}</li>
+        <li key={0}>
+          <Markdown
+            rehypePlugins={markdownRehypePlugins}
+            components={markdownComponents}
+          >
+            {content}
+          </Markdown>
+        </li>
         {renderAddon(status, text)}
       </ul>
     );
@@ -28,7 +75,14 @@ function renderContent(content: AddonContent, status?: string, text?: string) {
     <ul>
       {content.map((text, index) =>
         typeof text == "string" ? (
-          <li key={index}>{text}</li>
+          <li key={index}>
+            <Markdown
+              rehypePlugins={markdownRehypePlugins}
+              components={markdownComponents}
+            >
+              {text}
+            </Markdown>
+          </li>
         ) : (
           <Addon key={index} {...text} />
         ),
