@@ -3,8 +3,9 @@
   "content": [
     {
       "heading": "On ElvUI and Malware hidden within game addons",
-      "content": "Do not use ElvUI. [read me](https://akinevz.com/blog/?post=twelfth-post-discussion-security-wow-addons)",
-      "status": "notice"
+      "content": "Do not use ElvUI. Read more...",
+      "status": "notice",
+      "link": "https://akinevz.com/blog/?post=twelfth-post-discussion-security-wow-addons"
     },
     {
       "heading": "Rueg WeakAura Rogue (v3.0.2)",
