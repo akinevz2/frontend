@@ -27,6 +27,8 @@ type FavouriteLink = {
   url: string;
 };
 
+type FavouriteLinkContent = FavouriteLink | SectionProps;
+
 type MusicState = {
   sections: SectionProps | SectionProps[] | undefined;
   metadata: PageMetadata;
@@ -50,15 +52,22 @@ const buildState = (content: SectionProps | SectionProps[]): MusicState => {
     metadata: { sections: metadata },
   };
 };
-
+const isSectionProps = (value: unknown): value is SectionProps => {
+  const candidate = value as Partial<SectionProps>;
+  return typeof candidate.heading === "string" && Array.isArray(candidate.content);
+}
 const isFavouriteLink = (value: unknown): value is FavouriteLink => {
-  if (!value || typeof value !== "object") return false;
-
   const candidate = value as Partial<FavouriteLink>;
   return typeof candidate.title === "string" && typeof candidate.url === "string";
+}
+
+const isValidContentFavLink = (value: unknown): value is FavouriteLink | SectionProps => {
+  if (!value || typeof value !== "object") return false;
+  console.dir("Validating favourite link content:", value);
+  return isSectionProps(value) || isFavouriteLink(value);
 };
 
-const fetchFavouriteLinks = async (): Promise<FavouriteLink[]> => {
+const fetchFavouriteLinks = async (): Promise<FavouriteLinkContent[]> => {
   const response = await fetch(MUSIC_LINKS_URL, {
     method: "GET",
     cache: "no-store",
@@ -67,7 +76,7 @@ const fetchFavouriteLinks = async (): Promise<FavouriteLink[]> => {
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   const payload: unknown = await response.json();
   if (!Array.isArray(payload)) throw new Error("Invalid music-links schema");
-  return payload.filter(isFavouriteLink);
+  return payload.filter(isValidContentFavLink);
 };
 
 const buildSoundCloudEmbedUrl = (trackUrl: string) => {
@@ -133,6 +142,8 @@ const getSpotifyEmbedUrl = (urlValue: string): string | null => {
 };
 
 const renderFavouriteLink = (link: FavouriteLink) => {
+
+
   const embedUrl = getSpotifyEmbedUrl(link.url);
   if (!embedUrl) {
     return `- [${link.title}](${link.url})`;
@@ -156,10 +167,17 @@ const renderFavouriteLink = (link: FavouriteLink) => {
   ].join("\n\n");
 };
 
-const toMusicSections = (payload: MusicPayload, favouriteLinks: FavouriteLink[]): SectionProps[] => {
+const toMusicSections = (payload: MusicPayload, favouriteLinks: FavouriteLinkContent[]): SectionProps[] => {
   const trackEmbeds = payload.tracks.map((track) => renderTrackEmbed(track));
 
-  const favouriteLinkList = favouriteLinks.map((link) => renderFavouriteLink(link));
+  const favouriteLinkList = favouriteLinks.map((link) => (isFavouriteLink(link)) ? renderFavouriteLink(link) : link);
+
+  // print all non-string to log
+  for (const link of favouriteLinkList) {
+    if (typeof link !== "string") {
+      console.dir("Non-string favourite link content:", link);
+    }
+  }
 
   return [
     {
