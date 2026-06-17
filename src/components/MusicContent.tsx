@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { PageContent } from "./Page";
 import { processContent } from "../windowing/utils";
-import type { PageMetadata, SectionProps } from "../windowing";
+import { Section, type PageMetadata, type SectionProps } from "../windowing";
 
 const SOUNDCLOUD_JSON_URL =
   "https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/soundcloud.json";
@@ -142,17 +142,25 @@ const getSpotifyEmbedUrl = (urlValue: string): string | null => {
 };
 
 const renderFavouriteLink = (link: FavouriteLink) => {
+  // If it's already a SectionProps, return it as-is
+  if ("content" in link) {
+    // Convert SectionProps to string representation
+    const section = link as SectionProps;
+    return section;
+  }
 
+  // Otherwise, it's a simple link
+  const favouriteLink = link as { title: string; url: string };
 
-  const embedUrl = getSpotifyEmbedUrl(link.url);
+  const embedUrl = getSpotifyEmbedUrl(favouriteLink.url);
   if (!embedUrl) {
-    return `- [${link.title}](${link.url})`;
+    return `- [${favouriteLink.title}](${favouriteLink.url})`;
   }
 
   return [
-    `<p class="music-track-title"><a href="${link.url}">${link.title}</a></p>`,
+    `<p class="music-track-title"><a href="${favouriteLink.url}">${favouriteLink.title}</a></p>`,
     `<iframe
-      title="Spotify item: ${link.title}"
+      title="Spotify item: ${favouriteLink.title}"
       style="border-radius:12px"
       src="${embedUrl}"
       width="100%"
@@ -163,7 +171,7 @@ const renderFavouriteLink = (link: FavouriteLink) => {
       loading="lazy"
       referrerpolicy="strict-origin-when-cross-origin"
     ></iframe>`,
-    `[Open on Spotify](${link.url})`,
+    `[Open on Spotify](${favouriteLink.url})`,
   ].join("\n\n");
 };
 
