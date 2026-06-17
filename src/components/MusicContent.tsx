@@ -5,9 +5,9 @@ import { processContent } from "../windowing/utils";
 import { Section, type PageMetadata, type SectionProps } from "../windowing";
 
 const SOUNDCLOUD_JSON_URL =
-  "https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/soundcloud.json";
+  "https://raw.githubusercontent.com/akinevz2/frontend/refs/heads/blog-posts/soundcloud.json";
 const MUSIC_LINKS_URL =
-  "https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/music-links.json";
+  "https://raw.githubusercontent.com/akinevz2/frontend/refs/heads/blog-posts/music-links.json";
 
 type MusicTrack = {
   path: string;
