@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run generate:music && vite build",
+    "build": "vite build",
+    "build:local": "npm run generate:music && npm run publish:music && vite build",
     "preview": "vite preview --host 127.0.0.1 --port 8086",
     "lint": "eslint ./src --ext .ts,.tsx",
     "test": "node --test",
@@ -13,7 +14,8 @@
     "check:audit": "npm audit --audit-level=low",
     "security:check": "npm run lint && npm run test && npm run check:audit",
     "pagerts": "NPM_CONFIG_LOGLEVEL=error npx --yes pagerts@latest",
-    "generate:music": "node ./scripts/generate-soundcloud-json.mjs"
+    "generate:music": "node ./scripts/generate-soundcloud-json.mjs",
+    "publish:music": "node ./scripts/publish-soundcloud-json.mjs"
   },
   "dependencies": {
     "firebase": "^12.14.0",
