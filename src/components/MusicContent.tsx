@@ -4,6 +4,8 @@ import { PageContent } from "./Page";
 import { processContent } from "../windowing/utils";
 import type { PageMetadata, SectionProps } from "../windowing";
 
+const SOUNDCLOUD_JSON_URL =
+  "https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/soundcloud.json";
 const MUSIC_LINKS_URL =
   "https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/music-links.json";
 
@@ -167,10 +169,10 @@ const toMusicSections = (payload: MusicPayload, favouriteLinks: FavouriteLink[])
       content:
         trackEmbeds.length > 0
           ? [
-              `Generated: ${new Date(payload.generatedAt).toLocaleString()}`,
-              `Track count: ${payload.trackCount}`,
-              ...trackEmbeds,
-            ]
+            `Generated: ${new Date(payload.generatedAt).toLocaleString()}`,
+            `Track count: ${payload.trackCount}`,
+            ...trackEmbeds,
+          ]
           : ["No tracks found in this snapshot."],
     },
     {
@@ -214,10 +216,16 @@ export default function MusicContent() {
     const load = async () => {
       try {
         const [scResponse, favouriteLinks] = await Promise.all([
-          fetch("/soundcloud.json", {
+          fetch(SOUNDCLOUD_JSON_URL, {
             method: "GET",
             cache: "no-store",
             headers: { Accept: "application/json" },
+          }).catch((_error) => {
+            return fetch("/soundcloud.json", {
+              method: "GET",
+              cache: "no-store",
+              headers: { Accept: "application/json" },
+            })
           }),
           fetchFavouriteLinks().catch(() => [] as FavouriteLink[]),
         ]);
