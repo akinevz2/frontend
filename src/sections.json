@@ -35,48 +35,64 @@
     {
       "heading": "what's kine busy with",
       "content": [
-        "actively implementing loads of projects that have been waiting until graduation",
-        "commercial and non commercial software",
-        "writing experimental music",
+        "preparing to:",
         {
           "content": [
-            "**previously, currently, and likely for a long time**:",
-            "writing web apps",
-            "finding job",
-            "relaxing"
+            "graduate University of Sussex",
+            "apply for a very prestige job in the IT sector",
+            "meet new people",
+            "travel to new exotic places"
           ]
         },
-        "maintaining an esoteric online presence"
+        "actively implementing:",
+        {
+          "content": [
+            "blogging platform",
+            "audio compression/filtering algorithms",
+            "python rapid development framework",
+            "fluent web app admin panel",
+            "bulletproof security"
+          ]
+        }
       ]
     },
     {
-      "heading": "what's kine interested in",
+      "heading": "what's kine fascinations",
       "content": [
         {
-          "heading": "secret",
+          "heading": "the concept of:",
           "content": [
-            "soon (tm)",
+            "programming and technology",
+            "and cats [\\[?\\]](https://akinevz.com/images/hyperawareofwhatacatis.png)",
             {
-              "heading": "what does this mean?",
-              "content": "this is ancient Blizzard Studios terminology for something that is inevitably postponed"
+              "heading": "open source",
+              "content": [
+                "**public live projects**:",
+                {
+                  "heading": "pagerts, my first npm package",
+                  "link": "https://www.npmjs.com/package/pagerts"
+                }
+              ]
+            },
+            {
+              "heading": "secret",
+              "content": [
+                "soon (tm)",
+                {
+                  "heading": "what does this mean?",
+                  "content": "this is ancient Blizzard Studios terminology for something that is inevitably postponed"
+                }
+              ]
+            },
+            {
+              "heading": "music",
+              "link": "https://soundcloud.com/akinevz"
+            },
+            {
+              "heading": "abstract and surreal",
+              "content": []
             }
           ]
-        },
-        "programming and technology",
-        "[cats](https://akinevz.com/images/hyperawareofwhatacatis.png)",
-        {
-          "heading": "open source",
-          "content": [
-            "**public live projects**:",
-            {
-              "heading": "pagerts, my first npm package",
-              "link": "https://www.npmjs.com/package/pagerts"
-            }
-          ]
-        },
-        {
-          "heading": "music",
-          "link": "https://soundcloud.com/akinevz"
         }
       ]
     },
@@ -94,124 +110,124 @@
             "in the wild (freelance)",
             "at CMS (during merger w/ Nabarro+Olswang)"
           ]
+        }
+      ]
+    },
+    {
+      "heading": "what's kine favourite games",
+      "content": [
+        {
+          "heading": "what is a Rueg",
+          "content": [
+            "playing on Thunderstrike as Rueg",
+            {
+              "heading": "why the name Rueg?",
+              "content": "rueg is a rogue skeleton"
+            },
+            {
+              "heading": "what is the appearance of Rueg?",
+              "content": [
+                "he is an unnamed skeleton of mystery",
+                "a short non-descript skeleton",
+                "with various head accessories",
+                "sometimes no eyes",
+                "sometimes no jaws",
+                {
+                  "heading": "reveal rueg",
+                  "content": [
+                    "<img src=\"https://akinevz.com/images/rueg1.png\" alt=\"rueg image 1\" style=\"max-width: 100%; height: auto;\" />"
+                  ]
+                },
+                {
+                  "heading": "reveal rueg",
+                  "content": [
+                    "<img src=\"https://akinevz.com/images/rueg2.png\" alt=\"rueg image 2\" style=\"max-width: 100%; height: auto;\" />"
+                  ]
+                }
+              ]
+            },
+            {
+              "heading": "where to find Rueg?",
+              "content": "anywhere, really"
+            }
+          ]
         },
         {
-          "heading": "for gaming",
+          "heading": "who is Ateric",
           "content": [
+            "playing on Thunderstrike as Ateric the Gnome",
             {
-              "heading": "what is a Rueg",
+              "heading": "what class is Ateric?",
+              "content": "a Mage"
+            },
+            {
+              "heading": "will we ever see Ateric?",
               "content": [
-                "playing on Thunderstrike as Rueg",
                 {
-                  "heading": "why the name Rueg?",
-                  "content": "rueg is a rogue skeleton"
-                },
-                {
-                  "heading": "what is the appearance of Rueg?",
+                  "heading": "reveal ateric",
                   "content": [
-                    "he is an unnamed skeleton of mystery",
-                    "a short non-descript skeleton",
-                    "with various head accessories",
-                    "sometimes no eyes",
-                    "sometimes no jaws",
-                    {
-                      "heading": "reveal rueg",
-                      "content": [
-                        "<img src=\"https://akinevz.com/images/rueg1.png\" alt=\"rueg image 1\" style=\"max-width: 100%; height: auto;\" />"
-                      ]
-                    },
-                    {
-                      "heading": "reveal rueg",
-                      "content": [
-                        "<img src=\"https://akinevz.com/images/rueg2.png\" alt=\"rueg image 2\" style=\"max-width: 100%; height: auto;\" />"
-                      ]
-                    }
+                    "<img src=\"https://akinevz.com/images/Ateric1.png\" alt=\"ateric image 1\" style=\"max-width: 100%; height: auto;\" />"
                   ]
                 },
                 {
-                  "heading": "where to find Rueg?",
-                  "content": "anywhere, really"
-                }
-              ]
-            },
-            {
-              "heading": "who is Ateric",
-              "content": [
-                "playing on Thunderstrike as Ateric the Gnome",
-                {
-                  "heading": "what class is Ateric?",
-                  "content": "a Mage"
-                },
-                {
-                  "heading": "will we ever see Ateric?",
+                  "heading": "reveal ateric",
                   "content": [
-                    {
-                      "heading": "reveal ateric",
-                      "content": [
-                        "<img src=\"https://akinevz.com/images/Ateric1.png\" alt=\"ateric image 1\" style=\"max-width: 100%; height: auto;\" />"
-                      ]
-                    },
-                    {
-                      "heading": "reveal ateric",
-                      "content": [
-                        "<img src=\"https://akinevz.com/images/Ateric2.png\" alt=\"ateric image 2\" style=\"max-width: 100%; height: auto;\" />"
-                      ]
-                    }
+                    "<img src=\"https://akinevz.com/images/Ateric2.png\" alt=\"ateric image 2\" style=\"max-width: 100%; height: auto;\" />"
                   ]
                 }
               ]
+            }
+          ]
+        },
+        {
+          "heading": "who is Equal",
+          "content": [
+            "playing on Thunderstrike as Equal the Human",
+            {
+              "heading": "what class is Equal?",
+              "content": "a Priest"
             },
             {
-              "heading": "who is Equal",
+              "heading": "is she real?",
               "content": [
-                "playing on Thunderstrike as Equal the Human",
-                {
-                  "heading": "what class is Equal?",
-                  "content": "a Priest"
-                },
-                {
-                  "heading": "is she real?",
-                  "content": [
-                    "<img src=\"https://akinevz.com/images/equal1.png\" alt=\"equal dance\" style=\"max-width: 100%; height: auto;\" />"
-                  ]
-                }
+                "<img src=\"https://akinevz.com/images/equal1.png\" alt=\"equal dance\" style=\"max-width: 100%; height: auto;\" />"
+              ]
+            }
+          ]
+        },
+        {
+          "heading": "who is Jungie",
+          "content": [
+            "playing on Spineshatter as Jungie the Troll",
+            {
+              "heading": "what class is Jungie?",
+              "content": [
+                "a Shaman",
+                "uhh... actually he's a Hunter, but there's also a Warrior..."
+              ]
+            }
+          ]
+        },
+        {
+          "heading": "who is Kogg",
+          "content": [
+            "playing on Thunderstrike as Kogg the Tauren",
+            {
+              "heading": "what class is Kogg?",
+              "content": "a Shaman"
+            },
+            {
+              "heading": "where does Kogg come from?",
+              "content": [
+                "born in Northrend, he was raised by the Taunka people",
+                "he was recruited into the Horde war effort by the Warsong"
               ]
             },
             {
-              "heading": "who is Jungie",
+              "heading": "does Kogg ever stand still?",
               "content": [
-                "playing on Spineshatter as Jungie the Troll",
-                {
-                  "heading": "what class is Jungie?",
-                  "content": [
-                    "a Shaman",
-                    "uhh... actually he's a Hunter, but there's also a Warrior..."
-                  ]
-                }
-              ]
-            },
-            {
-              "heading": "who is Kogg",
-              "content": [
-                "playing on Thunderstrike as Kogg the Tauren",
-                {
-                  "heading": "what class is Kogg?",
-                  "content": "a Shaman"
-                },
-                {
-                  "heading": "where does Kogg come from?",
-                  "content": [
-                    "born in Northrend, he was raised by the Taunka people",
-                    "he was recruited into the Horde war effort by the Warsong"
-                  ]
-                },
-                {
-                  "heading": "does Kogg ever stand still?",
-                  "content": [
-                    "<img src=\"/images/kogg1.png\" alt=\"kogg image 1\" style=\"max-width: 100%; height: auto;\" />",
-                    "<img src=\"/images/kogg2.png\" alt=\"kogg image 2\" style=\"max-width: 100%; height: auto;\" />"
-                  ]
-                }
+                "<img src=\"/images/kogg1.png\" alt=\"kogg image 1\" style=\"max-width: 100%; height: auto;\" />",
+                "<img src=\"/images/kogg2.png\" alt=\"kogg image 2\" style=\"max-width: 100%; height: auto;\" />"
               ]
             }
           ]
