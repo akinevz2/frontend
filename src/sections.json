@@ -81,13 +81,13 @@
                     {
                       "heading": "reveal rueg",
                       "content": [
-                        "<img src=\"https://akinevz.com/images/rueg1.png\" alt=\"rueg image 1\" style=\"max-width: 100%; height: auto;\" />"
+                        "<img src=\"https://akinevz.com/images/rueg1.png\" alt=\"rueg image 1\" style=\"width: auto; height: auto; max-height: 600px;\" />"
                       ]
                     },
                     {
                       "heading": "reveal rueg",
                       "content": [
-                        "<img src=\"https://akinevz.com/images/rueg2.png\" alt=\"rueg image 2\" style=\"max-width: 100%; height: auto;\" />"
+                        "<img src=\"https://akinevz.com/images/rueg2.png\" alt=\"rueg image 2\" style=\"width: auto; height: auto; max-height: 600px;\" />"
                       ]
                     }
                   ]
@@ -112,13 +112,13 @@
                     {
                       "heading": "reveal ateric",
                       "content": [
-                        "<img src=\"https://akinevz.com/images/Ateric1.png\" alt=\"ateric image 1\" style=\"max-width: 100%; height: auto;\" />"
+                        "<img src=\"https://akinevz.com/images/Ateric1.png\" alt=\"ateric image 1\" style=\"width: auto; height: auto; max-height: 600px;\" />"
                       ]
                     },
                     {
                       "heading": "reveal ateric",
                       "content": [
-                        "<img src=\"https://akinevz.com/images/Ateric2.png\" alt=\"ateric image 2\" style=\"max-width: 100%; height: auto;\" />"
+                        "<img src=\"https://akinevz.com/images/Ateric2.png\" alt=\"ateric image 2\" style=\"width: auto; height: auto; max-height: 600px;\" />"
                       ]
                     }
                   ]
@@ -136,7 +136,7 @@
                 {
                   "heading": "is she real?",
                   "content": [
-                    "<img src=\"https://akinevz.com/images/equal1.png\" alt=\"equal dance\" style=\"max-width: 100%; height: auto;\" />"
+                    "<img src=\"https://akinevz.com/images/equal1.png\" alt=\"equal dance\" style=\"width: auto; height: auto; max-height: 600px;\" />"
                   ]
                 }
               ]
@@ -172,8 +172,8 @@
                 {
                   "heading": "does Kogg ever stand still?",
                   "content": [
-                    "<img src=\"/images/kogg1.png\" alt=\"kogg image 1\" style=\"max-width: 100%; height: auto;\" />",
-                    "<img src=\"/images/kogg2.png\" alt=\"kogg image 2\" style=\"max-width: 100%; height: auto;\" />"
+                    "<img src=\"/images/kogg1.png\" alt=\"kogg image 1\" style=\"width: auto; height: auto; max-height: 600px;\" />",
+                    "<img src=\"/images/kogg2.png\" alt=\"kogg image 2\" style=\"width: auto; height: auto; max-height: 600px;\" />"
                   ]
                 }
               ]

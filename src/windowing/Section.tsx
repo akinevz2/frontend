@@ -82,7 +82,7 @@ const markdownComponents = {
   img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
     <img
       {...props}
-      style={{ maxWidth: "100%", height: "auto", ...(props.style ?? {}) }}
+      style={{ maxWidth: "100%", height: "auto", maxHeight: "24rem", ...(props.style ?? {}) }}
     />
   ),
 };
