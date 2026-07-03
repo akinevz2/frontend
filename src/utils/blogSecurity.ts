@@ -1,4 +1,4 @@
-const DEFAULT_BLOG_POSTS_URL = "https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/";
+const DEFAULT_BLOG_POSTS_URL = "https://raw.githubusercontent.com/akinevz2/frontend/blogging/";
 const DEV_BLOG_POSTS_PATH = "/blog-assets/";
 const DEFAULT_ALLOWED_HOSTS = ["raw.githubusercontent.com"];
 
