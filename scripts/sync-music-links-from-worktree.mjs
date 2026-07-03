@@ -4,7 +4,7 @@
 // Does not write to disk — the file is consumed at runtime by MusicContent.tsx.
 
 const MUSIC_LINKS_URL =
-  "https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/music-links.json";
+  "https://raw.githubusercontent.com/akinevz2/frontend/refs/heads/blogging/music-links.json";
 
 const isFavouriteLink = (value) =>
   value !== null &&
@@ -14,7 +14,9 @@ const isFavouriteLink = (value) =>
 
 const response = await fetch(MUSIC_LINKS_URL);
 if (!response.ok) {
-  process.stderr.write(`Failed to fetch ${MUSIC_LINKS_URL}: HTTP ${response.status}\n`);
+  process.stderr.write(
+    `Failed to fetch ${MUSIC_LINKS_URL}: HTTP ${response.status}\n`,
+  );
   process.exit(1);
 }
 

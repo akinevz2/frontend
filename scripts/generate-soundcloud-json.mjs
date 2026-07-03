@@ -118,7 +118,8 @@ export const isTrackPath = (value) =>
   !RESERVED_PROFILE_ROUTES.has(value.split("/").filter(Boolean).at(-1) ?? "") &&
   /^\/akinevz\/[^/]+$/.test(value);
 
-export const titleFromPath = (value) => value.split("/").filter(Boolean).at(-1) ?? value;
+export const titleFromPath = (value) =>
+  value.split("/").filter(Boolean).at(-1) ?? value;
 
 export const buildTracks = (resources) => {
   const seen = new Set();
@@ -190,9 +191,14 @@ export const run = async () => {
   );
 };
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
+if (
+  process.argv[1] &&
+  fileURLToPath(import.meta.url) === resolve(process.argv[1])
+) {
   run().catch((error) => {
-    process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
+    process.stderr.write(
+      `${error instanceof Error ? error.message : String(error)}\n`,
+    );
     process.exit(1);
   });
 }

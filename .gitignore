@@ -55,4 +55,4 @@ docker
 2nd.fmt.json
 .cache/
 tsconfig.tsbuildinfo
-public/blog-assets
+public/blog

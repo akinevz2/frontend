@@ -40,9 +40,7 @@ const SITEMAP_HREF = "/sitemap";
 
 const hasAdminCookie = () =>
   typeof document !== "undefined" &&
-  document.cookie
-    .split("; ")
-    .some((cookie) => cookie === "admin=akinevz");
+  document.cookie.split("; ").some((cookie) => cookie === "admin=akinevz");
 
 const filterHiddenMenuItems = (menuItems: MenuItem[]) => {
   if (hasAdminCookie()) {
@@ -65,7 +63,9 @@ export default function MenuBar({
       );
     }
 
-    return filterHiddenMenuItems(generateMenuItems(PAGE_LINKS, additionalLinks));
+    return filterHiddenMenuItems(
+      generateMenuItems(PAGE_LINKS, additionalLinks),
+    );
   }, [links, additionalLinks]);
 
   useEffect(() => {

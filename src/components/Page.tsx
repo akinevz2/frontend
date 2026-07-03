@@ -23,11 +23,13 @@ export const PageContent = ({ sections, pageMetadata }: PageProps) => {
   return (
     <SectionProvider pageMetadata={metadata}>
       <section className="page">
-        {Array.isArray(sections)
-          ? sections.map((item, index) => (
+        {Array.isArray(sections) ? (
+          sections.map((item, index) => (
             <Section key={item.uuid || index} {...item} />
           ))
-          : <Section {...sections} />}
+        ) : (
+          <Section {...sections} />
+        )}
       </section>
       <MenuBarWithContext />
     </SectionProvider>
@@ -44,11 +46,13 @@ export const PageWithAddons = ({ addons, pageMetadata }: PageProps) => {
   return (
     <SectionProvider pageMetadata={metadata}>
       <section className="page">
-        {Array.isArray(addons)
-          ? addons.map((item, index) => (
+        {Array.isArray(addons) ? (
+          addons.map((item, index) => (
             <Addon key={item.uuid || index} {...item} />
           ))
-          : <AddonList {...addons} />}
+        ) : (
+          <AddonList {...addons} />
+        )}
       </section>
       <MenuBarWithContext />
     </SectionProvider>

@@ -10,4 +10,6 @@ export type SectionContextType = {
   pageMetadata: PageMetadata;
 };
 
-export const SectionContext = createContext<SectionContextType | undefined>(undefined);
+export const SectionContext = createContext<SectionContextType | undefined>(
+  undefined,
+);

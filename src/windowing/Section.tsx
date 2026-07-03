@@ -18,7 +18,8 @@ const BLOG_POSTS_HOST = getRuntimeBlogPostsHost(
   typeof window !== "undefined" ? window.location.origin : undefined,
 );
 
-const isBlogPath = (pathname: string) => pathname.replace(/\/+$/, "") === BLOG_PATH;
+const isBlogPath = (pathname: string) =>
+  pathname.replace(/\/+$/, "") === BLOG_PATH;
 
 const toPostSlug = (heading: string) =>
   heading
@@ -41,11 +42,17 @@ const contentContainsPostSlug = (
       return false;
     }
 
-    if (typeof item.heading === "string" && toPostSlug(item.heading) === targetPostSlug) {
+    if (
+      typeof item.heading === "string" &&
+      toPostSlug(item.heading) === targetPostSlug
+    ) {
       return true;
     }
 
-    return !!item.content && contentContainsPostSlug(item.content as Content, targetPostSlug);
+    return (
+      !!item.content &&
+      contentContainsPostSlug(item.content as Content, targetPostSlug)
+    );
   });
 };
 
@@ -81,7 +88,12 @@ const markdownComponents = {
   img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
     <img
       {...props}
-      style={{ maxWidth: "100%", height: "auto", maxHeight: "24rem", ...(props.style ?? {}) }}
+      style={{
+        maxWidth: "100%",
+        height: "auto",
+        maxHeight: "24rem",
+        ...(props.style ?? {}),
+      }}
     />
   ),
 };
@@ -107,7 +119,9 @@ function PrintoutContent({ printout }: { printout: string | string[] }) {
       if (typeof printout !== "string") {
         if (!cancelled) {
           setError(null);
-          setMarkdownContent(toFencedCodeBlock(normalizePrintoutText(printout)));
+          setMarkdownContent(
+            toFencedCodeBlock(normalizePrintoutText(printout)),
+          );
         }
         return;
       }
@@ -237,7 +251,11 @@ function renderContent(content: Content, depth: number) {
             </Markdown>
           </li>
         ) : (
-          <Section key={`section-${item.key}`} {...item.section} depth={depth + 1} />
+          <Section
+            key={`section-${item.key}`}
+            {...item.section}
+            depth={depth + 1}
+          />
         ),
       )}
     </ul>
@@ -298,7 +316,8 @@ export const Section = (props: SectionProps) => {
     !!targetPostSlug &&
     !!content &&
     contentContainsPostSlug(content as Content, targetPostSlug);
-  const isForcedExpanded = shouldOpenFromLink || shouldRevealLinkedPost || hasPrintout;
+  const isForcedExpanded =
+    shouldOpenFromLink || shouldRevealLinkedPost || hasPrintout;
 
   const [isMaximized, setIsMaximized] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(!isForcedExpanded);
@@ -348,8 +367,6 @@ export const Section = (props: SectionProps) => {
     // Closing should not leave an entry in the minimized windows menu.
     restoreSection(sectionUUID);
   };
-
-
 
   const handleMinimize = () => {
     if (heading && typeof heading === "string") {
@@ -556,7 +573,13 @@ export const Section = (props: SectionProps) => {
                 ) : null}
                 <div className="window-body" style={{ overflow: "auto" }}>
                   {isLinkableBlogPost ? (
-                    <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "8px" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        marginBottom: "8px",
+                      }}
+                    >
                       <a href={permalink}>
                         <button>Permalink</button>
                       </a>

@@ -5,20 +5,20 @@
 import { fileURLToPath } from "node:url";
 
 const MUSIC_LINKS_URL =
-  "https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/music-links.json";
+  "https://raw.githubusercontent.com/akinevz2/frontend/refs/heads/blogging/music-links.json";
 
 try {
   const response = await fetch(MUSIC_LINKS_URL, { method: "HEAD" });
   if (!response.ok) {
     process.stderr.write(
-      `blog-posts CDN asset unreachable: ${MUSIC_LINKS_URL} returned HTTP ${response.status}\n`,
+      `blogging-branch CDN asset unreachable: ${MUSIC_LINKS_URL} returned HTTP ${response.status}\n`,
     );
     process.exit(1);
   }
-  process.stdout.write(`blog-posts CDN OK: ${MUSIC_LINKS_URL}\n`);
+  process.stdout.write(`blogging-branch CDN OK: ${MUSIC_LINKS_URL}\n`);
 } catch (error) {
   process.stderr.write(
-    `blog-posts CDN check failed: ${error instanceof Error ? error.message : String(error)}\n`,
+    `blogging-branch CDN check failed: ${error instanceof Error ? error.message : String(error)}\n`,
   );
   process.exit(1);
 }

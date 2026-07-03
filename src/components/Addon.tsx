@@ -169,9 +169,7 @@ const WindowPanel = ({
     <div className={`window ${className || ""}`}>
       {hasHeading ? (
         <div className="title-bar">
-          <div className="title-bar-text">
-            {renderHeading(heading, link)}
-          </div>
+          <div className="title-bar-text">{renderHeading(heading, link)}</div>
           <div className="title-bar-controls">
             <button aria-label="Minimize"></button>
             <button aria-label="Maximize" onClick={handleMaximize}></button>
@@ -180,9 +178,7 @@ const WindowPanel = ({
         </div>
       ) : null}
       <div className="window-body">
-        {hasContent
-          ? renderContent(content, status, text)
-          : null}
+        {hasContent ? renderContent(content, status, text) : null}
         {children}
       </div>
     </div>

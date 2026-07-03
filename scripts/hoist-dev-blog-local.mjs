@@ -7,8 +7,8 @@ function createProjectPaths(currentWorkingDirectory) {
   const workspaceRoot = currentWorkingDirectory;
   return Object.freeze({
     workspaceRoot,
-    publicBlogAssetsPath: path.resolve(workspaceRoot, "public", "blog-assets"),
-    externalBlogPath: path.resolve(workspaceRoot, "..", "blog", "blog"),
+    publicBlogPath: path.resolve(workspaceRoot, "public", "blog"),
+    externalBlogPath: path.resolve(workspaceRoot, "..", "blog"),
     viteBinPath: path.resolve(workspaceRoot, "node_modules/vite/bin/vite.js"),
   });
 }
@@ -41,7 +41,8 @@ function unlinkPath(targetPath) {
 }
 
 function createRelativeDirectorySymlink(linkPath, targetPath) {
-  const relativeTarget = path.relative(path.dirname(linkPath), targetPath) || ".";
+  const relativeTarget =
+    path.relative(path.dirname(linkPath), targetPath) || ".";
   fs.symlinkSync(relativeTarget, linkPath, "dir");
 }
 
@@ -50,12 +51,12 @@ function logWarning(message) {
 }
 
 function probeInterruptedRunAndCleanup(paths) {
-  if (!pathExists(paths.publicBlogAssetsPath)) {
+  if (!pathExists(paths.publicBlogPath)) {
     return;
   }
 
-  if (isSymlinkTarget(paths.publicBlogAssetsPath, paths.externalBlogPath)) {
-    unlinkPath(paths.publicBlogAssetsPath);
+  if (isSymlinkTarget(paths.publicBlogPath, paths.externalBlogPath)) {
+    unlinkPath(paths.publicBlogPath);
   }
 }
 
@@ -64,19 +65,21 @@ function ensureExternalBlogExists(paths) {
     return true;
   }
 
-  logWarning("../blog/blog is missing; blog-assets symlink was not created.");
+  logWarning("../blog is missing; blog symlink was not created.");
   return false;
 }
 
-function ensurePublicBlogAssetsPathCanBeLinked(paths) {
-  if (!pathExists(paths.publicBlogAssetsPath)) {
+function ensurePublicBlogPathCanBeLinked(paths) {
+  if (!pathExists(paths.publicBlogPath)) {
     return true;
   }
 
-  if (isDirectorySymlink(paths.publicBlogAssetsPath)) {
-    logWarning("public/blog-assets exists as a symlink to another target; leaving it unchanged.");
+  if (isDirectorySymlink(paths.publicBlogPath)) {
+    logWarning(
+      "public/blog exists as a symlink to another target; leaving it unchanged.",
+    );
   } else {
-    logWarning("public/blog-assets exists as a real directory; leaving it unchanged.");
+    logWarning("public/blog exists as a real directory; leaving it unchanged.");
   }
   return false;
 }
@@ -86,20 +89,20 @@ function ensureBlogSymlink(paths) {
     return;
   }
 
-  if (!ensurePublicBlogAssetsPathCanBeLinked(paths)) {
+  if (!ensurePublicBlogPathCanBeLinked(paths)) {
     return;
   }
 
-  createRelativeDirectorySymlink(paths.publicBlogAssetsPath, paths.externalBlogPath);
+  createRelativeDirectorySymlink(paths.publicBlogPath, paths.externalBlogPath);
 }
 
 function cleanupBlogSymlink(paths) {
-  if (!pathExists(paths.publicBlogAssetsPath)) {
+  if (!pathExists(paths.publicBlogPath)) {
     return;
   }
 
-  if (isSymlinkTarget(paths.publicBlogAssetsPath, paths.externalBlogPath)) {
-    unlinkPath(paths.publicBlogAssetsPath);
+  if (isSymlinkTarget(paths.publicBlogPath, paths.externalBlogPath)) {
+    unlinkPath(paths.publicBlogPath);
   }
 }
 
