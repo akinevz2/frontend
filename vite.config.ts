@@ -272,7 +272,7 @@ export default defineConfig({
             return "xpcss";
           }
 
-          return "vendor";
+          return "javascript";
         },
       },
     },
