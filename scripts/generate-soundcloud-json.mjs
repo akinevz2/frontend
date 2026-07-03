@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { mkdir, writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
@@ -18,8 +18,7 @@ const RESERVED_PROFILE_ROUTES = new Set([
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const outputFile = resolve(__dirname, "../public/soundcloud.json");
-const cacheDir = resolve(__dirname, "../.cache");
-const cachedArtistPage = resolve(cacheDir, "soundcloud-artist.html");
+const cachedArtistPage = resolve(__dirname, "../public/soundcloud-artist.html");
 
 const runCommand = ({ command, args, cwd }) =>
   new Promise((resolvePromise, reject) => {
@@ -141,9 +140,24 @@ export const buildTracks = (resources) => {
     }));
 };
 
+export const extractTrackPathsFromHtml = (html) => {
+  const hrefPattern = /href=["'](\/akinevz2\/[^"'#?\s>]+)(?:\?[^"']*)?["']/gi;
+  const paths = [];
+
+  let match = hrefPattern.exec(html);
+  while (match) {
+    const href = match[1];
+    if (isTrackPath(href)) {
+      paths.push(href);
+    }
+    match = hrefPattern.exec(html);
+  }
+
+  return Array.from(new Set(paths));
+};
+
 export const run = async () => {
   const projectRoot = resolve(__dirname, "..");
-  await mkdir(cacheDir, { recursive: true });
 
   const curlResult = await runCommand({
     command: "curl",
@@ -157,26 +171,9 @@ export const run = async () => {
     );
   }
 
-  const pagertsResult = await runCommand({
-    command: "npx",
-    args: ["--yes", "pagerts@latest", cachedArtistPage],
-    cwd: projectRoot,
-  });
-
-  if (pagertsResult.exitCode !== 0) {
-    throw new Error(
-      `pagerts failed with exit code ${pagertsResult.exitCode}: ${pagertsResult.stderr.trim()}`,
-    );
-  }
-
-  const payload = parseOutput(pagertsResult.stdout);
-  const resources = payload[0]?.resources;
-
-  if (!Array.isArray(resources)) {
-    throw new Error("pagerts payload is missing resources");
-  }
-
-  const tracks = buildTracks(resources);
+  const artistHtml = await readFile(cachedArtistPage, "utf8");
+  const paths = extractTrackPathsFromHtml(artistHtml);
+  const tracks = buildTracks(paths.map((path) => ({ link: { value: path } })));
 
   const result = {
     source: SOURCE_URL,
