@@ -472,7 +472,7 @@ export const Section = (props: SectionProps) => {
   }, [shouldOpenFromLink]);
 
   const windowContent = (
-    <div className={`window ${className || ""}`}>
+    <div ref={inlineWindowRef} className={`window ${className || ""}`}>
       {hasHeading ? (
         <div className="title-bar">
           <div className="title-bar-text">{heading}</div>
@@ -503,9 +503,7 @@ export const Section = (props: SectionProps) => {
 
   return (
     <>
-      {!isMinimized && !isMaximized && (
-        <div ref={inlineWindowRef}>{windowContent}</div>
-      )}
+      {!isMinimized && !isMaximized && windowContent}
       {!isMinimized &&
         isMaximized &&
         typeof document !== "undefined" &&

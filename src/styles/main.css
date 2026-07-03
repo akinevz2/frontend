@@ -23,7 +23,7 @@
 /* Reset XP.css window styling overrides */
 .window {
   margin-bottom: var(--gap-size);
-  min-width: 768px;
+  min-width: min(768px, 100%);
   max-width: 100%;
   box-sizing: border-box;
 }
