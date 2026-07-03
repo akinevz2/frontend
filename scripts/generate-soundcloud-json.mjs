@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile, rm, writeFile } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
@@ -171,21 +171,25 @@ export const run = async () => {
     );
   }
 
-  const artistHtml = await readFile(cachedArtistPage, "utf8");
-  const paths = extractTrackPathsFromHtml(artistHtml);
-  const tracks = buildTracks(paths.map((path) => ({ link: { value: path } })));
+  try {
+    const artistHtml = await readFile(cachedArtistPage, "utf8");
+    const paths = extractTrackPathsFromHtml(artistHtml);
+    const tracks = buildTracks(paths.map((path) => ({ link: { value: path } })));
 
-  const result = {
-    source: SOURCE_URL,
-    generatedAt: new Date().toISOString(),
-    trackCount: tracks.length,
-    tracks,
-  };
+    const result = {
+      source: SOURCE_URL,
+      generatedAt: new Date().toISOString(),
+      trackCount: tracks.length,
+      tracks,
+    };
 
-  await writeFile(outputFile, `${JSON.stringify(result, null, 2)}\n`, "utf8");
-  process.stdout.write(
-    `Fetched artist page to ${cachedArtistPage} and wrote ${tracks.length} tracks to ${outputFile}\n`,
-  );
+    await writeFile(outputFile, `${JSON.stringify(result, null, 2)}\n`, "utf8");
+    process.stdout.write(
+      `Wrote ${tracks.length} tracks to ${outputFile} and cleaned temporary ${cachedArtistPage}\n`,
+    );
+  } finally {
+    await rm(cachedArtistPage, { force: true });
+  }
 };
 
 if (

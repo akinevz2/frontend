@@ -253,6 +253,7 @@ export default defineConfig({
   publicDir: "public",
   plugins: [react(), routeSkeletonPlugin()],
   build: {
+    cssMinify: false,
     rollupOptions: {
       output: {
         manualChunks(id) {
