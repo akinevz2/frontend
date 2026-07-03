@@ -23,6 +23,9 @@
 /* Reset XP.css window styling overrides */
 .window {
   margin-bottom: var(--gap-size);
+  min-width: 768px;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .window:last-child {
