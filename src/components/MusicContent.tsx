@@ -2,12 +2,20 @@ import { useEffect, useState } from "react";
 
 import { PageContent } from "./Page";
 import { processContent } from "../windowing/utils";
+import {
+  getRuntimeBlogPostsHost,
+  resolveTrustedBlogAssetUrl,
+} from "../utils/blogSecurity";
 import { type PageMetadata, type SectionProps } from "../windowing";
 
-const SOUNDCLOUD_JSON_URL =
-  "https://raw.githubusercontent.com/akinevz2/frontend/refs/heads/blogging/blog/soundcloud.json";
-const MUSIC_LINKS_URL =
-  "https://raw.githubusercontent.com/akinevz2/frontend/refs/heads/blogging/blog/music-links.json";
+const BLOG_POSTS_HOST = getRuntimeBlogPostsHost(
+  Boolean(import.meta.env.DEV),
+  typeof window !== "undefined" ? window.location.origin : undefined,
+);
+const MUSIC_LINKS_URL = resolveTrustedBlogAssetUrl(
+  "music-links.json",
+  BLOG_POSTS_HOST,
+);
 
 type MusicTrack = {
   path: string;
@@ -54,14 +62,20 @@ const buildState = (content: SectionProps | SectionProps[]): MusicState => {
 };
 const isSectionProps = (value: unknown): value is SectionProps => {
   const candidate = value as Partial<SectionProps>;
-  return typeof candidate.heading === "string" && Array.isArray(candidate.content);
-}
+  return (
+    typeof candidate.heading === "string" && Array.isArray(candidate.content)
+  );
+};
 const isFavouriteLink = (value: unknown): value is FavouriteLink => {
   const candidate = value as Partial<FavouriteLink>;
-  return typeof candidate.title === "string" && typeof candidate.url === "string";
-}
+  return (
+    typeof candidate.title === "string" && typeof candidate.url === "string"
+  );
+};
 
-const isValidContentFavLink = (value: unknown): value is FavouriteLink | SectionProps => {
+const isValidContentFavLink = (
+  value: unknown,
+): value is FavouriteLink | SectionProps => {
   if (!value || typeof value !== "object") return false;
   console.dir("Validating favourite link content:", value);
   return isSectionProps(value) || isFavouriteLink(value);
@@ -130,7 +144,14 @@ const getSpotifyEmbedUrl = (urlValue: string): string | null => {
       return null;
     }
 
-    const allowedTypes = new Set(["track", "playlist", "album", "artist", "episode", "show"]);
+    const allowedTypes = new Set([
+      "track",
+      "playlist",
+      "album",
+      "artist",
+      "episode",
+      "show",
+    ]);
     if (!allowedTypes.has(resourceType)) {
       return null;
     }
@@ -175,10 +196,15 @@ const renderFavouriteLink = (link: FavouriteLink) => {
   ].join("\n\n");
 };
 
-const toMusicSections = (payload: MusicPayload, favouriteLinks: FavouriteLinkContent[]): SectionProps[] => {
+const toMusicSections = (
+  payload: MusicPayload,
+  favouriteLinks: FavouriteLinkContent[],
+): SectionProps[] => {
   const trackEmbeds = payload.tracks.map((track) => renderTrackEmbed(track));
 
-  const favouriteLinkList = favouriteLinks.map((link) => (isFavouriteLink(link)) ? renderFavouriteLink(link) : link);
+  const favouriteLinkList = favouriteLinks.map((link) =>
+    isFavouriteLink(link) ? renderFavouriteLink(link) : link,
+  );
 
   // print all non-string to log
   for (const link of favouriteLinkList) {
@@ -195,10 +221,10 @@ const toMusicSections = (payload: MusicPayload, favouriteLinks: FavouriteLinkCon
       content:
         trackEmbeds.length > 0
           ? [
-            `Generated: ${new Date(payload.generatedAt).toLocaleString()}`,
-            `Track count: ${payload.trackCount}`,
-            ...trackEmbeds,
-          ]
+              `Generated: ${new Date(payload.generatedAt).toLocaleString()}`,
+              `Track count: ${payload.trackCount}`,
+              ...trackEmbeds,
+            ]
           : ["No tracks found in this snapshot."],
     },
     {
@@ -245,16 +271,10 @@ export default function MusicContent() {
     const load = async () => {
       try {
         const [scResponse, favouriteLinks] = await Promise.all([
-          fetch(SOUNDCLOUD_JSON_URL, {
+          fetch("/soundcloud.json", {
             method: "GET",
             cache: "no-store",
             headers: { Accept: "application/json" },
-          }).catch(() => {
-            return fetch("/soundcloud.json", {
-              method: "GET",
-              cache: "no-store",
-              headers: { Accept: "application/json" },
-            })
           }),
           fetchFavouriteLinks().catch(() => [] as FavouriteLink[]),
         ]);

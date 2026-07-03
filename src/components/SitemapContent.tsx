@@ -60,7 +60,9 @@ const SITE_MAP_GROUPS: SitemapSection[] = [
   {
     heading: "Index and diagnostics",
     summary: "Files and pages that help crawlers understand the site.",
-    routes: SITE_ROUTE_DEFINITIONS.filter(({ path }) => ["/sitemap"].includes(path)),
+    routes: SITE_ROUTE_DEFINITIONS.filter(({ path }) =>
+      ["/sitemap"].includes(path),
+    ),
   },
 ];
 

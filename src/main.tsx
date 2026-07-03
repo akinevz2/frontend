@@ -5,9 +5,9 @@ import "./styles/main.css";
 import App from "./App";
 
 const checkStylesLoaded = () => {
-  const themeCssLink = document.getElementById("theme-css") as
-    | HTMLLinkElement
-    | null;
+  const themeCssLink = document.getElementById(
+    "theme-css",
+  ) as HTMLLinkElement | null;
   if (themeCssLink?.sheet) {
     document.body.classList.add("styles-loaded");
     return true;

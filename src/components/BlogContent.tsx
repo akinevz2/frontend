@@ -16,7 +16,10 @@ type BlogState = {
 
 const LOADING_SECTION: SectionProps = {
   heading: "Loading...",
-  content: ["![Loading spinner](/spinner.svg)", "Fetching posts from raw.githubusercontent.com"],
+  content: [
+    "![Loading spinner](/spinner.svg)",
+    "Fetching posts from raw.githubusercontent.com",
+  ],
 };
 
 function isSectionPayload(
@@ -32,7 +35,10 @@ const BLOG_POSTS_HOST = getRuntimeBlogPostsHost(
   typeof window !== "undefined" ? window.location.origin : undefined,
 );
 
-const BLOG_POSTS_URL = resolveTrustedBlogAssetUrl("posts.json", BLOG_POSTS_HOST);
+const BLOG_POSTS_URL = resolveTrustedBlogAssetUrl(
+  "posts.json",
+  BLOG_POSTS_HOST,
+);
 
 function buildBlogState(content: SectionProps | SectionProps[]): BlogState {
   const { processed, metadata } = processContent(content);

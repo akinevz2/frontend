@@ -52,8 +52,8 @@
 }
 
 /* Hide border on first-level windows to avoid double border */
-.page>.window,
-main>.page {
+.page > .window,
+main > .page {
   border: none;
 }
 
@@ -120,7 +120,7 @@ li {
   opacity: 1 !important;
 }
 
-.page>ul,
+.page > ul,
 li {
   padding: 0;
   margin: 0;
@@ -154,9 +154,9 @@ li {
   background-color: beige;
 }
 
-ul>section>h1,
-ul>section>h4,
-form#form>label {
+ul > section > h1,
+ul > section > h4,
+form#form > label {
   margin: 0 calc(var(--gap-size) * 1.75);
   font-family: bahnscrift, system-ui, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -217,7 +217,7 @@ form#form>label {
   color: var(--button-shadow) !important;
 }
 
-.window-body>ul:first-child {
+.window-body > ul:first-child {
   margin-top: 0;
 }
 

@@ -164,7 +164,9 @@ const isSoundCloudPayload = (value: unknown): value is SoundCloudPayload => {
     Array.isArray(candidate.tracks) &&
     candidate.tracks.every(
       (track) =>
-        track && typeof track.title === "string" && typeof track.url === "string",
+        track &&
+        typeof track.title === "string" &&
+        typeof track.url === "string",
     )
   );
 };
@@ -224,10 +226,7 @@ const HomePage = () => {
 
   return (
     <main>
-      <PageContent
-        sections={processed}
-        pageMetadata={{ sections: metadata }}
-      />
+      <PageContent sections={processed} pageMetadata={{ sections: metadata }} />
     </main>
   );
 };
@@ -256,10 +255,7 @@ const ContactPage = () => {
 
   return (
     <main>
-      <PageContent
-        sections={processed}
-        pageMetadata={{ sections: metadata }}
-      />
+      <PageContent sections={processed} pageMetadata={{ sections: metadata }} />
     </main>
   );
 };
@@ -298,8 +294,7 @@ const ResumePage = () => {
 
     const handlePrintShortcut = (event: KeyboardEvent) => {
       const isPrintShortcut =
-        (event.ctrlKey || event.metaKey) &&
-        event.key.toLowerCase() === "p";
+        (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "p";
 
       if (!isPrintShortcut) {
         return;
@@ -542,7 +537,10 @@ const ResumePage = () => {
                   onClick={() => {
                     if (!hasResolvedInterestSubmission) {
                       setResumeAccessMode("pdf");
-                      window.localStorage.setItem(RESUME_ACCESS_MODE_KEY, "pdf");
+                      window.localStorage.setItem(
+                        RESUME_ACCESS_MODE_KEY,
+                        "pdf",
+                      );
                     }
                     setShowEmailModal(false);
                   }}
@@ -823,7 +821,10 @@ export default function App() {
 
     window.addEventListener("crunchy-kick-played", handleCrunchyKickPlayed);
     return () => {
-      window.removeEventListener("crunchy-kick-played", handleCrunchyKickPlayed);
+      window.removeEventListener(
+        "crunchy-kick-played",
+        handleCrunchyKickPlayed,
+      );
     };
   }, [showClippyBubble]);
 
@@ -969,9 +970,7 @@ export default function App() {
         }
 
         if (!cancelled) {
-          upsertStructuredDataScript(
-            buildMusicGroupSchema(payload.tracks),
-          );
+          upsertStructuredDataScript(buildMusicGroupSchema(payload.tracks));
         }
       } catch {
         if (!cancelled) {
@@ -1234,19 +1233,23 @@ export default function App() {
     showClippyHint();
   };
 
-  const clippyFilter = useMemo(() => buildClippyShadowFilter({
-    isSubmitPulseActive,
-    isConnectionFlashActive,
-    showConversationModal,
-    isAssistantRequestPending,
-    isClippyHovered,
-  }), [
-    isConnectionFlashActive,
-    isAssistantRequestPending,
-    isClippyHovered,
-    isSubmitPulseActive,
-    showConversationModal,
-  ]);
+  const clippyFilter = useMemo(
+    () =>
+      buildClippyShadowFilter({
+        isSubmitPulseActive,
+        isConnectionFlashActive,
+        showConversationModal,
+        isAssistantRequestPending,
+        isClippyHovered,
+      }),
+    [
+      isConnectionFlashActive,
+      isAssistantRequestPending,
+      isClippyHovered,
+      isSubmitPulseActive,
+      showConversationModal,
+    ],
+  );
 
   let content: ReactElement;
   switch (path) {
@@ -1334,8 +1337,13 @@ export default function App() {
                 ></button>
               </div>
             </div>
-            <div className="window-body" style={{ display: "grid", gap: "0.6rem" }}>
-              <label htmlFor="assistant-prompt-input">Prompt (max 256 chars)</label>
+            <div
+              className="window-body"
+              style={{ display: "grid", gap: "0.6rem" }}
+            >
+              <label htmlFor="assistant-prompt-input">
+                Prompt (max 256 chars)
+              </label>
               <textarea
                 id="assistant-prompt-input"
                 value={conversationInput}
@@ -1355,11 +1363,19 @@ export default function App() {
               <div style={{ fontSize: "0.85rem", textAlign: "right" }}>
                 {conversationInput.length}/256
               </div>
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  gap: "0.5rem",
+                }}
+              >
                 <button
                   type="button"
                   onClick={handleConversationSubmit}
-                  disabled={isAssistantRequestPending || !conversationInput.trim()}
+                  disabled={
+                    isAssistantRequestPending || !conversationInput.trim()
+                  }
                 >
                   {isAssistantRequestPending ? "Sending..." : "Send"}
                 </button>
@@ -1401,10 +1417,7 @@ export default function App() {
             </div>
           </div>
           {!assistantWindowMinimized ? (
-            <div
-              className="window-body"
-              style={{ whiteSpace: "pre-wrap" }}
-            >
+            <div className="window-body" style={{ whiteSpace: "pre-wrap" }}>
               <Markdown
                 rehypePlugins={markdownRehypePlugins}
                 components={markdownComponents}
@@ -1446,9 +1459,9 @@ export default function App() {
                 "haha it said no"
               ) : (
                 <>
-                  It looks like you&apos;re trying to close something. Try clicking
-                  one of the{" "}
-                  <strong>✕ close buttons</strong> on the page!
+                  It looks like you&apos;re trying to close something. Try
+                  clicking one of the <strong>✕ close buttons</strong> on the
+                  page!
                 </>
               )}
               <span
