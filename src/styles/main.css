@@ -130,13 +130,14 @@ li {
   border: 0;
   position: relative;
   z-index: 100;
-  width: 100%;
+  width: min(100%, calc(100vw - (var(--gap-size) * 2)));
   max-width: calc(100vw - (var(--gap-size) * 2));
   box-sizing: border-box;
+  justify-items: center;
 }
 
 .page > .window {
-  width: 100%;
+  width: fit-content;
   max-width: 100%;
   box-sizing: border-box;
 }
@@ -383,6 +384,11 @@ body {
   .page {
     margin: 0 auto;
     padding: var(--gap-size);
+    justify-items: stretch;
+  }
+
+  .page > .window {
+    width: 100%;
   }
 
   /* Constrain window width on mobile */
