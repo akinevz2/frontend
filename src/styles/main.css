@@ -61,6 +61,7 @@ main>.page {
 .title-bar-text,
 .title-bar-text a {
   color: #eee !important;
+  font-size: 0.85rem;
 }
 
 /* Add more vertical padding to title bars */
@@ -144,6 +145,7 @@ form#form>label {
   font-family: bahnscrift, system-ui, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
+  font-size: 0.9rem;
 }
 
 .window-body ul {
@@ -153,6 +155,18 @@ form#form>label {
 
 .window-body ul li {
   padding-left: 1.5em;
+}
+
+/* xp.css sets very large heading sizes; keep markdown headings readable in content windows. */
+.window-body h1 {
+  font-size: 1.2rem !important;
+  line-height: 1.25;
+  margin: 0.25em 0;
+}
+
+.window-body h2 {
+  text-align: right;
+  color: var(--button-shadow) !important;
 }
 
 .window-body>ul:first-child {

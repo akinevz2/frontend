@@ -8,15 +8,14 @@ import { playLayeredAudio } from "../lib/audioOverlap";
 import { useSectionContext } from "./hooks";
 import type { Content, HttpUrl, SectionProps } from "./types";
 import {
-  getSafeBlogPostsHost,
+  getRuntimeBlogPostsHost,
   resolveTrustedBlogAssetUrl,
 } from "../utils/blogSecurity";
 
 const BLOG_PATH = "/blog";
-const env = import.meta.env as Record<string, string | undefined>;
-const BLOG_POSTS_HOST = getSafeBlogPostsHost(
-  env.VITE_BLOG_POSTS_URL || env.PUBLIC_BLOG_POSTS_URL,
-  env.VITE_ALLOWED_BLOG_HOSTS || env.PUBLIC_ALLOWED_BLOG_HOSTS,
+const BLOG_POSTS_HOST = getRuntimeBlogPostsHost(
+  Boolean(import.meta.env.DEV),
+  typeof window !== "undefined" ? window.location.origin : undefined,
 );
 
 const isBlogPath = (pathname: string) => pathname.replace(/\/+$/, "") === BLOG_PATH;
@@ -189,20 +188,56 @@ function renderContent(content: Content, depth: number) {
         </li>
       </ul>
     );
+
+  const groupedContent: Array<
+    | { type: "markdown"; key: number; text: string }
+    | { type: "section"; key: number; section: SectionProps }
+  > = [];
+  let bufferedLines: string[] = [];
+  let bufferStartIndex = 0;
+
+  const flushBufferedLines = () => {
+    if (bufferedLines.length === 0) {
+      return;
+    }
+
+    groupedContent.push({
+      type: "markdown",
+      key: bufferStartIndex,
+      text: bufferedLines.join("  \n"),
+    });
+    bufferedLines = [];
+  };
+
+  content.forEach((item, index) => {
+    if (typeof item === "string") {
+      if (bufferedLines.length === 0) {
+        bufferStartIndex = index;
+      }
+      bufferedLines.push(item);
+      return;
+    }
+
+    flushBufferedLines();
+    groupedContent.push({ type: "section", key: index, section: item });
+  });
+
+  flushBufferedLines();
+
   return (
     <ul>
-      {content.map((text, index) =>
-        typeof text == "string" ? (
-          <li key={index}>
+      {groupedContent.map((item) =>
+        item.type === "markdown" ? (
+          <li key={`markdown-${item.key}`}>
             <Markdown
               rehypePlugins={markdownRehypePlugins}
               components={markdownComponents}
             >
-              {text}
+              {item.text}
             </Markdown>
           </li>
         ) : (
-          <Section key={index} {...text} depth={depth + 1} />
+          <Section key={`section-${item.key}`} {...item.section} depth={depth + 1} />
         ),
       )}
     </ul>

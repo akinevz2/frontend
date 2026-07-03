@@ -4,7 +4,7 @@
   "version": "1.4.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "npx -y node@20 ./scripts/dev-with-blog-symlink.mjs",
     "build": "npm run generate:music && vite build",
     "build:local": "npm run generate:music && npm run publish:music && vite build",
     "preview": "vite preview --host 127.0.0.1 --port 8086",
