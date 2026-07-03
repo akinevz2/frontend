@@ -260,6 +260,14 @@ export default defineConfig({
             return;
           }
 
+          if (id.includes("firebase")) {
+            return "firebase";
+          }
+
+          if (id.includes("react") || id.includes("scheduler")) {
+            return "react-core";
+          }
+
           if (id.includes("react-markdown") || id.includes("rehype-raw")) {
             return "markdown";
           }
@@ -272,7 +280,7 @@ export default defineConfig({
             return "xpcss";
           }
 
-          return "javascript";
+          return "vendor";
         },
       },
     },

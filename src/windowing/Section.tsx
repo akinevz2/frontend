@@ -300,13 +300,14 @@ export const Section = (props: SectionProps) => {
     contentContainsPostSlug(content as Content, targetPostSlug);
   const isForcedExpanded = shouldOpenFromLink || shouldRevealLinkedPost || hasPrintout;
 
-  const [isMaximized, setIsMaximized] = useState(shouldOpenFromLink);
+  const [isMaximized, setIsMaximized] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(!isForcedExpanded);
   const isCollapsedResolved = isForcedExpanded ? false : isCollapsed;
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const windowRef = useRef<HTMLDivElement>(null);
+  const inlineWindowRef = useRef<HTMLDivElement>(null);
   const { markAsExpanded, minimizeSection, minimizedSections, restoreSection } =
     useSectionContext();
 
@@ -442,6 +443,17 @@ export const Section = (props: SectionProps) => {
     }
   }, [isMaximized, position.x, position.y]);
 
+  useEffect(() => {
+    if (!shouldOpenFromLink || typeof window === "undefined") {
+      return;
+    }
+
+    inlineWindowRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, [shouldOpenFromLink]);
+
   const windowContent = (
     <div className={`window ${className || ""}`}>
       {hasHeading ? (
@@ -474,7 +486,9 @@ export const Section = (props: SectionProps) => {
 
   return (
     <>
-      {!isMinimized && !isMaximized && windowContent}
+      {!isMinimized && !isMaximized && (
+        <div ref={inlineWindowRef}>{windowContent}</div>
+      )}
       {!isMinimized &&
         isMaximized &&
         typeof document !== "undefined" &&
