@@ -23,7 +23,8 @@ test("buildMusicGroupSchema includes the requested profile fields", () => {
         description:
             "Independent sound designer, music creator, and electronic music artist.",
         sameAs: [
-            "https://soundcloud.com/akinevz",
+            "https://soundcloud.com/akinevz1",
+            "https://soundcloud.com/akinevz2",
             "https://youtube.com/@akinevz",
             "https://x.com/akinevz",
             "https://github.com/akinevz2",

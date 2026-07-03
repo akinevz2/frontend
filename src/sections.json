@@ -216,7 +216,10 @@
             },
             {
               "heading": "music",
-              "link": "https://soundcloud.com/akinevz"
+              "content": [
+                "[akinevz1](https://soundcloud.com/akinevz1)",
+                "[akinevz2](https://soundcloud.com/akinevz2)"
+              ]
             },
             {
               "heading": "abstract and surreal",
