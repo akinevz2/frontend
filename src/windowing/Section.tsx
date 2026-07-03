@@ -8,15 +8,14 @@ import { playLayeredAudio } from "../lib/audioOverlap";
 import { useSectionContext } from "./hooks";
 import type { Content, HttpUrl, SectionProps } from "./types";
 import {
-  getSafeBlogPostsHost,
+  getRuntimeBlogPostsHost,
   resolveTrustedBlogAssetUrl,
 } from "../utils/blogSecurity";
 
 const BLOG_PATH = "/blog";
-const env = import.meta.env as Record<string, string | undefined>;
-const BLOG_POSTS_HOST = getSafeBlogPostsHost(
-  env.VITE_BLOG_POSTS_URL || env.PUBLIC_BLOG_POSTS_URL,
-  env.VITE_ALLOWED_BLOG_HOSTS || env.PUBLIC_ALLOWED_BLOG_HOSTS,
+const BLOG_POSTS_HOST = getRuntimeBlogPostsHost(
+  Boolean(import.meta.env.DEV),
+  typeof window !== "undefined" ? window.location.origin : undefined,
 );
 
 const isBlogPath = (pathname: string) => pathname.replace(/\/+$/, "") === BLOG_PATH;

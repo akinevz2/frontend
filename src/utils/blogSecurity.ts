@@ -1,4 +1,5 @@
 const DEFAULT_BLOG_POSTS_URL = "https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/";
+const DEV_BLOG_POSTS_PATH = "/blog-assets/";
 const DEFAULT_ALLOWED_HOSTS = ["raw.githubusercontent.com"];
 
 function parseAllowedHosts(allowedHostsEnv?: string): Set<string> {
@@ -67,4 +68,20 @@ export function resolveTrustedBlogAssetUrl(
 
     const normalizedAssetPath = assetPath.replace(/^\/+/, "");
     return new URL(normalizedAssetPath, blogPostsHost).toString();
+}
+
+export function getRuntimeBlogPostsHost(
+    isDev: boolean,
+    origin?: string,
+): string {
+    if (isDev) {
+        if (!origin) {
+            return DEV_BLOG_POSTS_PATH;
+        }
+
+        return new URL(DEV_BLOG_POSTS_PATH, origin).toString();
+    }
+
+    // Production is intentionally pinned to raw GitHub user content CDN.
+    return DEFAULT_BLOG_POSTS_URL;
 }

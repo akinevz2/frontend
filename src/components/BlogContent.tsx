@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { PageContent } from "./Page";
 import { processContent } from "../windowing/utils";
 import {
-  getSafeBlogPostsHost,
+  getRuntimeBlogPostsHost,
   resolveTrustedBlogAssetUrl,
 } from "../utils/blogSecurity";
 import type { PageMetadata, SectionProps } from "../windowing";
@@ -27,11 +27,9 @@ function isSectionPayload(
   return "heading" in value || "content" in value;
 }
 
-const env = import.meta.env as Record<string, string | undefined>;
-
-const BLOG_POSTS_HOST = getSafeBlogPostsHost(
-  env.VITE_BLOG_POSTS_URL || env.PUBLIC_BLOG_POSTS_URL,
-  env.VITE_ALLOWED_BLOG_HOSTS || env.PUBLIC_ALLOWED_BLOG_HOSTS,
+const BLOG_POSTS_HOST = getRuntimeBlogPostsHost(
+  Boolean(import.meta.env.DEV),
+  typeof window !== "undefined" ? window.location.origin : undefined,
 );
 
 const BLOG_POSTS_URL = resolveTrustedBlogAssetUrl("posts.json", BLOG_POSTS_HOST);
