@@ -70,6 +70,10 @@
           "content": [
             "**public live projects**:",
             {
+              "heading": "website, my personal website",
+              "link": "https://www.npmjs.com/package/website-xp-phone"
+            },
+            {
               "heading": "pagerts, my first npm package",
               "link": "https://www.npmjs.com/package/pagerts"
             }
