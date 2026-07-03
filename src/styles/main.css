@@ -130,6 +130,15 @@ li {
   border: 0;
   position: relative;
   z-index: 100;
+  width: 100%;
+  max-width: calc(100vw - (var(--gap-size) * 2));
+  box-sizing: border-box;
+}
+
+.page > .window {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .menu-item {
@@ -155,6 +164,38 @@ form#form>label {
 
 .window-body ul li {
   padding-left: 1.5em;
+}
+
+.window-body {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.debug-printout-scroll {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.debug-printout-scroll pre,
+.debug-printout-scroll code {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.debug-printout-scroll pre {
+  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.window-body pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 /* xp.css sets very large heading sizes; keep markdown headings readable in content windows. */
