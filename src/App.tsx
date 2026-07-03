@@ -1,4 +1,5 @@
 import {
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -1055,7 +1056,10 @@ export default function App() {
   //   setShowAssistantConfigModal(false);
   // };
 
-  const hasAssistantEndpointAndModel = () => hasConfiguredAssistant(assistantConfig);
+  const hasAssistantEndpointAndModel = useCallback(
+    () => hasConfiguredAssistant(assistantConfig),
+    [assistantConfig],
+  );
 
   const triggerSubmitPulse = () => {
     setIsSubmitPulseActive(true);
@@ -1187,7 +1191,7 @@ export default function App() {
       setShowConversationModal(false);
       setConversationError("");
     }
-  }, [assistantConfig.endpoint, assistantConfig.model, showConversationModal]);
+  }, [hasAssistantEndpointAndModel, showConversationModal]);
 
   const handleDismissAssistantWindow = () => {
     setAssistantWindowVisible(false);
