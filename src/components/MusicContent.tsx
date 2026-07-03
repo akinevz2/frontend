@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 
 import { PageContent } from "./Page";
 import { processContent } from "../windowing/utils";
-import { Section, type PageMetadata, type SectionProps } from "../windowing";
+import { type PageMetadata, type SectionProps } from "../windowing";
 
 const SOUNDCLOUD_JSON_URL =
-  "https://raw.githubusercontent.com/akinevz2/frontend/refs/heads/blog-posts/soundcloud.json";
+  "https://raw.githubusercontent.com/akinevz2/frontend/refs/heads/blogging/blog/soundcloud.json";
 const MUSIC_LINKS_URL =
-  "https://raw.githubusercontent.com/akinevz2/frontend/refs/heads/blog-posts/music-links.json";
+  "https://raw.githubusercontent.com/akinevz2/frontend/refs/heads/blogging/blog/music-links.json";
 
 type MusicTrack = {
   path: string;
@@ -246,7 +246,7 @@ export default function MusicContent() {
             method: "GET",
             cache: "no-store",
             headers: { Accept: "application/json" },
-          }).catch((_error) => {
+          }).catch(() => {
             return fetch("/soundcloud.json", {
               method: "GET",
               cache: "no-store",
