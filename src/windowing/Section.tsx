@@ -188,20 +188,56 @@ function renderContent(content: Content, depth: number) {
         </li>
       </ul>
     );
+
+  const groupedContent: Array<
+    | { type: "markdown"; key: number; text: string }
+    | { type: "section"; key: number; section: SectionProps }
+  > = [];
+  let bufferedLines: string[] = [];
+  let bufferStartIndex = 0;
+
+  const flushBufferedLines = () => {
+    if (bufferedLines.length === 0) {
+      return;
+    }
+
+    groupedContent.push({
+      type: "markdown",
+      key: bufferStartIndex,
+      text: bufferedLines.join("  \n"),
+    });
+    bufferedLines = [];
+  };
+
+  content.forEach((item, index) => {
+    if (typeof item === "string") {
+      if (bufferedLines.length === 0) {
+        bufferStartIndex = index;
+      }
+      bufferedLines.push(item);
+      return;
+    }
+
+    flushBufferedLines();
+    groupedContent.push({ type: "section", key: index, section: item });
+  });
+
+  flushBufferedLines();
+
   return (
     <ul>
-      {content.map((text, index) =>
-        typeof text == "string" ? (
-          <li key={index}>
+      {groupedContent.map((item) =>
+        item.type === "markdown" ? (
+          <li key={`markdown-${item.key}`}>
             <Markdown
               rehypePlugins={markdownRehypePlugins}
               components={markdownComponents}
             >
-              {text}
+              {item.text}
             </Markdown>
           </li>
         ) : (
-          <Section key={index} {...text} depth={depth + 1} />
+          <Section key={`section-${item.key}`} {...item.section} depth={depth + 1} />
         ),
       )}
     </ul>
