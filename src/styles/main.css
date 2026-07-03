@@ -76,6 +76,8 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 #root {
@@ -83,6 +85,8 @@ body {
   display: flex;
   flex: 1;
   flex-direction: column;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 main {
@@ -91,6 +95,8 @@ main {
   flex-direction: column;
   justify-content: center;
   min-height: 0;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body,
@@ -130,8 +136,8 @@ li {
   border: 0;
   position: relative;
   z-index: 100;
-  width: min(100%, calc(100vw - (var(--gap-size) * 2)));
-  max-width: calc(100vw - (var(--gap-size) * 2));
+  width: calc(100% - (var(--gap-size) * 2));
+  max-width: calc(100% - (var(--gap-size) * 2));
   box-sizing: border-box;
   justify-items: center;
 }
@@ -286,6 +292,7 @@ form#form>label {
   max-width: 600px;
   padding: 0 var(--gap-size);
   position: relative;
+  box-sizing: border-box;
 }
 
 .minimized-menu-button {
@@ -372,7 +379,7 @@ body {
 
 @media screen and (min-width: 769px) {
   .page {
-    min-width: 600px;
+    min-width: min(600px, calc(100% - (var(--gap-size) * 2)));
   }
 }
 
@@ -383,6 +390,8 @@ body {
 
   .page {
     margin: 0 auto;
+    width: 100%;
+    max-width: 100%;
     padding: var(--gap-size);
     justify-items: stretch;
   }
@@ -399,7 +408,6 @@ body {
 
   .window-body {
     max-width: 100%;
-    overflow-x: auto;
   }
 
   /* Mobile-friendly menu bar */
