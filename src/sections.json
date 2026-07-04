@@ -216,15 +216,18 @@
             },
             {
               "heading": "music",
-              "content": [
-                "[akinevz1](https://soundcloud.com/akinevz1)",
-                "[akinevz2](https://soundcloud.com/akinevz2)"
-              ]
+              "link": "https://soundcloud.com/akinevz"
+            },
+            {
+              "heading": "more music",
+              "link": "https://soundcloud.com/akinevz1"
             },
             {
               "heading": "abstract and surreal",
               "content": []
-            }
+            },
+            "if my soundcloud links are broken",
+            "i probably have no idea"
           ]
         }
       ]
