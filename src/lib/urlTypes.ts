@@ -20,7 +20,9 @@ export function asTrustedHttpsUrl(
   }
 
   if (allowedHosts) {
-    const allowed = new Set(Array.from(allowedHosts, (host) => host.toLowerCase()));
+    const allowed = new Set(
+      Array.from(allowedHosts, (host) => host.toLowerCase()),
+    );
     if (!allowed.has(parsed.hostname.toLowerCase())) {
       throw new Error(`URL host '${parsed.hostname}' is not in the allowlist.`);
     }
