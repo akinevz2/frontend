@@ -3,7 +3,6 @@ import type { Heading, SectionProps } from "../windowing";
 import { useRef, useState } from "react";
 import { playLayeredAudio } from "../lib/audioOverlap";
 import Markdown, { type Options as ReactMarkdownOptions } from "react-markdown";
-import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 
 export type AddonProps = SectionProps & {
@@ -39,7 +38,6 @@ const markdownSanitizeSchema: unknown = {
 };
 
 const markdownRehypePlugins = [
-  rehypeRaw,
   [rehypeSanitize, markdownSanitizeSchema],
 ] as ReactMarkdownOptions["rehypePlugins"];
 

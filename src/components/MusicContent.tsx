@@ -2,20 +2,9 @@ import { useEffect, useState } from "react";
 
 import { PageContent } from "./Page";
 import { processContent } from "../windowing/utils";
-import {
-  getRuntimeBlogPostsHost,
-  resolveTrustedBlogAssetUrl,
-} from "../utils/blogSecurity";
 import { type PageMetadata, type SectionProps } from "../windowing";
 
-const BLOG_POSTS_HOST = getRuntimeBlogPostsHost(
-  Boolean(import.meta.env.DEV),
-  typeof window !== "undefined" ? window.location.origin : undefined,
-);
-const MUSIC_LINKS_URL = resolveTrustedBlogAssetUrl(
-  "music-links.json",
-  BLOG_POSTS_HOST,
-);
+const MUSIC_LINKS_URL = "/blog/music-links.json";
 
 type MusicTrack = {
   path: string;

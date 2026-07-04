@@ -2,10 +2,6 @@ import { useEffect, useState } from "react";
 
 import { PageContent } from "./Page";
 import { processContent } from "../windowing/utils";
-import {
-  getRuntimeBlogPostsHost,
-  resolveTrustedBlogAssetUrl,
-} from "../utils/blogSecurity";
 import type { PageMetadata, SectionProps } from "../windowing";
 
 type BlogState = {
@@ -18,7 +14,7 @@ const LOADING_SECTION: SectionProps = {
   heading: "Loading...",
   content: [
     "![Loading spinner](/spinner.svg)",
-    "Fetching posts from raw.githubusercontent.com",
+    "Fetching posts from local frozen content",
   ],
 };
 
@@ -30,15 +26,7 @@ function isSectionPayload(
   return "heading" in value || "content" in value;
 }
 
-const BLOG_POSTS_HOST = getRuntimeBlogPostsHost(
-  Boolean(import.meta.env.DEV),
-  typeof window !== "undefined" ? window.location.origin : undefined,
-);
-
-const BLOG_POSTS_URL = resolveTrustedBlogAssetUrl(
-  "posts.json",
-  BLOG_POSTS_HOST,
-);
+const BLOG_POSTS_URL = "/blog/posts.json";
 
 function buildBlogState(content: SectionProps | SectionProps[]): BlogState {
   const { processed, metadata } = processContent(content);

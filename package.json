@@ -3,18 +3,26 @@
   "version": "1.5.2",
   "author": "Kirill <kine> Nevzorov <akinevz@outlook.com>",
   "type": "module",
+  "packageManager": "npm@10.8.2",
+  "engines": {
+    "node": "20.19.4"
+  },
   "scripts": {
     "dev": "npx -y node@20 ./scripts/hoist-dev-blog-local.mjs",
-    "build": "npm run generate:music && vite build",
-    "build:local": "npm run generate:music && npm run publish:music && vite build",
+    "build": "npm run freeze:blog && npm run generate:music && npm run validate:content && vite build && npm run checksums",
+    "build:local": "npm run freeze:blog && npm run generate:music && npm run publish:music && npm run validate:content && vite build && npm run checksums",
     "preview": "vite preview --host 127.0.0.1 --port 8086",
     "lint": "npx --yes prettier --write \"src/**/*.{ts,tsx}\" && eslint ./src --ext .ts,.tsx",
     "test": "node --test",
     "test:watch": "node --test --watch",
     "check:audit": "npm audit --audit-level=low",
     "security:check": "npm run lint && npm run test && npm run check:audit",
+    "freeze:blog": "node ./scripts/freeze-blog-content.mjs",
     "generate:music": "node ./scripts/generate-soundcloud-json.mjs",
-    "publish:music": "node ./scripts/publish-soundcloud-json.mjs"
+    "publish:music": "node ./scripts/publish-soundcloud-json.mjs",
+    "validate:content": "node ./scripts/validate-content-schema.mjs",
+    "check:runtime-authored-content": "node ./scripts/check-no-runtime-remote-authored-fetch.mjs",
+    "checksums": "node ./scripts/write-dist-checksums.mjs"
   },
   "dependencies": {
     "firebase": "^12.14.0",

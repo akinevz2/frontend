@@ -237,3 +237,35 @@ Follow these rules without exception to keep authored content and runtime behavi
 2. No `any` and no unsafe assertion shortcuts in CI.
 3. Build artifact metadata verifies against schema and digest checks.
 4. Visitor-visible content is reproducible from typed, versioned sources at one commit.
+
+## 18-Pointed Implementation Order (n = 18)
+
+Ordered from simplest/cheapest to most complex. Points are effort/risk-change scores on a 1-10 scale.
+
+### Phase 1
+1. Point 1: Add exact Node version to `.nvmrc`.
+2. Point 1: Add exact `engines.node` and `packageManager` versions to `package.json`.
+3. Point 1: Replace `latest` tags in devcontainer with pinned versions.
+4. Point 2: Enforce `npm ci` in CI for deterministic installs.
+
+### Phase 2
+5. Point 2: Add CI lockfile drift check.
+6. Point 2: Add strict security headers in hosting config (CSP, nosniff, referrer policy).
+7. Point 3: Add typed runtime config loader and disallow direct env reads in components.
+8. Point 3: Add branded URL validators (`TrustedHttpsUrl`, `InternalPath`, `AssetPath`).
+
+### Phase 3
+9. Point 3: Add schema validation for all authored content files in prebuild.
+10. Point 4: Remove runtime `rehype-raw` usage and keep sanitize-only markdown rendering.
+11. Point 4: Add CI rule banning runtime remote authored-content fetches.
+12. Point 5: Generate and store artifact checksums (`dist/checksums.txt`) per build.
+
+### Phase 4
+13. Point 5: Emit typed build metadata JSON and validate it in CI before deploy.
+14. Point 6: Generate SBOM for each release and publish with artifact metadata.
+15. Point 6: Refactor route metadata to a single typed source and generate sitemap/meta from it.
+
+### Optional
+16. Point 7: Introduce typed boundary decoder modules for network/filesystem/user input paths.
+17. Point 8: Move authored blog/music content to build-time freeze pipeline with strict schemas.
+18. Point 10: Implement full immutable SHA-addressed deployment flow with atomic pointer switching, rollback pointers, provenance verification, and post-deploy digest attestation.
