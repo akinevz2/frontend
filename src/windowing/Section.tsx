@@ -109,7 +109,6 @@ function PrintoutContent({ printout }: { printout: string | string[] }) {
   const [markdownContent, setMarkdownContent] = useState(() =>
     toFencedCodeBlock(normalizePrintoutText(printout)),
   );
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -117,7 +116,6 @@ function PrintoutContent({ printout }: { printout: string | string[] }) {
     const loadPrintout = async () => {
       if (typeof printout !== "string") {
         if (!cancelled) {
-          setError(null);
           setMarkdownContent(
             toFencedCodeBlock(normalizePrintoutText(printout)),
           );
@@ -132,8 +130,14 @@ function PrintoutContent({ printout }: { printout: string | string[] }) {
         const message =
           urlError instanceof Error ? urlError.message : "Unknown error";
         if (!cancelled) {
-          setError(message);
-          setMarkdownContent(toFencedCodeBlock(printout));
+          setMarkdownContent(
+            [
+              "## Printout unavailable",
+              `Failed to resolve printout path (${message}).`,
+              "Please let kine (akinevz) know.",
+              toFencedCodeBlock(printout),
+            ].join("\n\n"),
+          );
         }
         return;
       }
@@ -153,17 +157,20 @@ function PrintoutContent({ printout }: { printout: string | string[] }) {
 
         const fileContent = await response.text();
         if (!cancelled) {
-          setError(null);
           setMarkdownContent(toFencedCodeBlock(fileContent));
         }
       } catch (fetchError) {
         const message =
           fetchError instanceof Error ? fetchError.message : "Unknown error";
         if (!cancelled) {
-          setError(
-            `Failed to fetch printout '${printout}' from local frozen content (${message}).`,
+          setMarkdownContent(
+            [
+              "## Printout unavailable",
+              `Failed to fetch printout '${printout}' from local frozen content (${message}).`,
+              "Please let kine (akinevz) know.",
+              toFencedCodeBlock(printout),
+            ].join("\n\n"),
           );
-          setMarkdownContent(toFencedCodeBlock(printout));
         }
       }
     };
@@ -178,7 +185,6 @@ function PrintoutContent({ printout }: { printout: string | string[] }) {
   return (
     <div className="debug-printout-scroll" data-debug="printout-scroll">
       <Markdown>{markdownContent}</Markdown>
-      {error ? <p className="status-bar">{error}</p> : null}
     </div>
   );
 }

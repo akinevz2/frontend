@@ -5,9 +5,8 @@ import { processContent } from "../windowing/utils";
 import type { PageMetadata, SectionProps } from "../windowing";
 
 type BlogState = {
-  sections?: SectionProps | SectionProps[];
+  sections: SectionProps | SectionProps[];
   metadata: PageMetadata;
-  error?: string;
 };
 
 const LOADING_SECTION: SectionProps = {
@@ -70,10 +69,17 @@ export default function BlogContent() {
         if (!cancelled) {
           const message =
             error instanceof Error ? error.message : "Unknown error";
-          setBlogState({
-            metadata: { sections: [] },
-            error: `Failed to fetch remote posts (${message}).`,
-          });
+          setBlogState(
+            buildBlogState({
+              className: "blog-error",
+              heading: "Blog unavailable",
+              content: [
+                "## Can't load blog posts",
+                `Failed to fetch remote posts (${message}).`,
+                "Please let kine (akinevz) know.",
+              ],
+            }),
+          );
         }
       }
     };
@@ -86,12 +92,9 @@ export default function BlogContent() {
   }, []);
 
   return (
-    <>
-      {blogState.error ? <p className="status-bar">{blogState.error}</p> : null}
-      <PageContent
-        {...(blogState.sections ? { sections: blogState.sections } : {})}
-        pageMetadata={blogState.metadata}
-      />
-    </>
+    <PageContent
+      sections={blogState.sections}
+      pageMetadata={blogState.metadata}
+    />
   );
 }

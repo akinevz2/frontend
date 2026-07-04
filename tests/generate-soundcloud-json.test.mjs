@@ -77,3 +77,27 @@ test("extractTrackPathsFromHtml finds valid track links and drops reserved route
     "/akinevz/track-two",
   ]);
 });
+
+/*
+  Maintenance plan to avoid breakage:
+
+  1. Start with intent:
+    Define exactly what changed in SoundCloud behavior (path format, reserved routes,
+    payload shape, or URL generation).
+
+  2. Update implementation first:
+    Change generator logic in scripts, keeping URL/path constants centralized.
+
+  3. Update test fixtures as a set:
+    Keep `parseOutput`, `isTrackPath`, `buildTracks`, and HTML extraction fixtures aligned
+    so they all describe the same account/path contract.
+
+  4. Cover edge cases explicitly:
+    Preserve negative checks for reserved routes and non-matching profile handles.
+
+  5. Validate in order:
+    Run this file directly first, then full `npm test` to catch cross-file fallout.
+
+  6. Ship with evidence:
+    In PR notes, include one example input and output URL/path to show the new contract.
+*/
