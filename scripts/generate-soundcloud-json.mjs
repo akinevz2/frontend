@@ -4,8 +4,8 @@ import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 
-const USER_PATH_PREFIX = "/akinevz2/";
-const SOURCE_URL = "https://soundcloud.com/akinevz2";
+const USER_PATH_PREFIX = "/akinevz/";
+const SOURCE_URL = "https://soundcloud.com/akinevz";
 const RESERVED_PROFILE_ROUTES = new Set([
   "likes",
   "sets",
@@ -112,10 +112,10 @@ export const parseOutput = (raw) => {
 export const isTrackPath = (value) =>
   typeof value === "string" &&
   value.startsWith(USER_PATH_PREFIX) &&
-  value !== "/akinevz2" &&
-  !value.startsWith("/akinevz2/sets/") &&
+  value !== "/akinevz" &&
+  !value.startsWith("/akinevz/sets/") &&
   !RESERVED_PROFILE_ROUTES.has(value.split("/").filter(Boolean).at(-1) ?? "") &&
-  /^\/akinevz2\/[^/]+$/.test(value);
+  /^\/akinevz\/[^/]+$/.test(value);
 
 export const titleFromPath = (value) =>
   value.split("/").filter(Boolean).at(-1) ?? value;
@@ -141,7 +141,7 @@ export const buildTracks = (resources) => {
 };
 
 export const extractTrackPathsFromHtml = (html) => {
-  const hrefPattern = /href=["'](\/akinevz2\/[^"'#?\s>]+)(?:\?[^"']*)?["']/gi;
+  const hrefPattern = /href=["'](\/akinevz\/[^"'#?\s>]+)(?:\?[^"']*)?["']/gi;
   const paths = [];
 
   let match = hrefPattern.exec(html);

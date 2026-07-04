@@ -16,8 +16,8 @@ const MUSIC_GROUP_GENRES = [
     "Glitch",
 ];
 const MUSIC_GROUP_SAME_AS = [
+    "https://soundcloud.com/akinevz",
     "https://soundcloud.com/akinevz1",
-    "https://soundcloud.com/akinevz2",
     "https://youtube.com/@akinevz",
     "https://x.com/akinevz",
     "https://github.com/akinevz2",
