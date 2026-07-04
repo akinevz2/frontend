@@ -47,7 +47,7 @@ This document defines the ideal final-state engineering configuration.
 ## Build Determinism Requirements
 
 ### Toolchain Pinning
-1. Pin Node exactly (for example `20.19.4`) in all places:
+1. Pin Node exactly (for example `24.18.0`) in all places:
    - `.nvmrc`
    - `package.json` `engines.node`
    - CI setup-node exact version
