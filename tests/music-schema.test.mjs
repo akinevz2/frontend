@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { buildMusicGroupSchema, serializeJsonLd } from "../scripts/music-schema.mjs";
+import { buildMusicGroupSchema, serializeJsonLd } from "../src/lib/musicSchema.mjs";
 
 test("buildMusicGroupSchema includes the requested profile fields", () => {
     const schema = buildMusicGroupSchema([
