@@ -12,6 +12,7 @@ import {
   serverTimestamp,
   type Firestore,
 } from "firebase/firestore";
+import { getFirebasePublicConfig } from "../config/runtimeConfig";
 
 type EventParam = string | number | boolean;
 
@@ -28,26 +29,21 @@ const getRequiredValue = (value: string | undefined) => {
 };
 
 const getFirebaseApp = (): FirebaseApp | null => {
-  const apiKey = getRequiredValue(import.meta.env.VITE_FIREBASE_API_KEY);
-  const authDomain = getRequiredValue(
-    import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  );
-  const projectId = getRequiredValue(import.meta.env.VITE_FIREBASE_PROJECT_ID);
-  const appId = getRequiredValue(import.meta.env.VITE_FIREBASE_APP_ID);
+  const firebaseConfig = getFirebasePublicConfig();
+  const apiKey = getRequiredValue(firebaseConfig.apiKey ?? undefined);
+  const authDomain = getRequiredValue(firebaseConfig.authDomain ?? undefined);
+  const projectId = getRequiredValue(firebaseConfig.projectId ?? undefined);
+  const appId = getRequiredValue(firebaseConfig.appId ?? undefined);
 
   if (!apiKey || !authDomain || !projectId || !appId) {
     return null;
   }
 
   const messagingSenderId = getRequiredValue(
-    import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    firebaseConfig.messagingSenderId ?? undefined,
   );
-  const storageBucket = getRequiredValue(
-    import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  );
-  const measurementId = getRequiredValue(
-    import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
-  );
+  const storageBucket = getRequiredValue(firebaseConfig.storageBucket ?? undefined);
+  const measurementId = getRequiredValue(firebaseConfig.measurementId ?? undefined);
 
   const existingApp = getApps()[0];
   if (existingApp) {

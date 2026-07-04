@@ -1,3 +1,5 @@
+import { asAssetPath, asInternalPath, asTrustedHttpsUrl } from "../lib/urlTypes";
+
 const DEFAULT_BLOG_POSTS_URL =
   "https://raw.githubusercontent.com/akinevz2/frontend/refs/heads/blogging/";
 const DEV_BLOG_POSTS_PATH = "/blog/";
@@ -29,20 +31,8 @@ export function resolveTrustedBlogPostsHost(
   const source = configuredUrl || DEFAULT_BLOG_POSTS_URL;
   const allowedHosts = parseAllowedHosts(allowedHostsEnv);
 
-  let parsed: URL;
-  try {
-    parsed = new URL(source);
-  } catch {
-    throw new Error(`Invalid blog host URL: '${source}'.`);
-  }
-
-  if (parsed.protocol !== "https:") {
-    throw new Error(`Blog host must use https: '${source}'.`);
-  }
-
-  if (!allowedHosts.has(parsed.hostname.toLowerCase())) {
-    throw new Error(`Blog host '${parsed.hostname}' is not in the allowlist.`);
-  }
+  const trustedHost = asTrustedHttpsUrl(source, allowedHosts);
+  const parsed = new URL(trustedHost);
 
   const normalizedPathname = normalizeHostPath(parsed.pathname);
   return new URL(normalizedPathname, parsed.origin).toString();
@@ -67,14 +57,9 @@ export function resolveTrustedBlogAssetUrl(
   assetPath: string,
   blogPostsHost: string,
 ): string {
-  if (/^https?:\/\//i.test(assetPath)) {
-    throw new Error(
-      `Absolute URLs are not allowed for blog assets: '${assetPath}'.`,
-    );
-  }
-
-  const normalizedAssetPath = assetPath.replace(/^\/+/, "");
-  return new URL(normalizedAssetPath, blogPostsHost).toString();
+  const normalizedAssetPath = asAssetPath(assetPath);
+  const trustedHost = asTrustedHttpsUrl(blogPostsHost);
+  return new URL(normalizedAssetPath, trustedHost).toString();
 }
 
 export function getRuntimeBlogPostsHost(
@@ -83,10 +68,10 @@ export function getRuntimeBlogPostsHost(
 ): string {
   if (isDev) {
     if (!origin) {
-      return DEV_BLOG_POSTS_PATH;
+      return asInternalPath(DEV_BLOG_POSTS_PATH);
     }
 
-    return new URL(DEV_BLOG_POSTS_PATH, origin).toString();
+    return new URL(asInternalPath(DEV_BLOG_POSTS_PATH), origin).toString();
   }
 
   // Production is intentionally pinned to raw GitHub user content CDN.

@@ -2,21 +2,14 @@ import type React from "react";
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Markdown, { type Options as ReactMarkdownOptions } from "react-markdown";
-import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { playLayeredAudio } from "../lib/audioOverlap";
+import { asAssetPath } from "../lib/urlTypes";
 import { useSectionContext } from "./hooks";
 import type { Content, HttpUrl, SectionProps } from "./types";
-import {
-  getRuntimeBlogPostsHost,
-  resolveTrustedBlogAssetUrl,
-} from "../utils/blogSecurity";
 
 const BLOG_PATH = "/blog";
-const BLOG_POSTS_HOST = getRuntimeBlogPostsHost(
-  Boolean(import.meta.env.DEV),
-  typeof window !== "undefined" ? window.location.origin : undefined,
-);
+const BLOG_POSTS_BASE_PATH = "/blog/";
 
 const isBlogPath = (pathname: string) =>
   pathname.replace(/\/+$/, "") === BLOG_PATH;
@@ -80,9 +73,13 @@ const markdownSanitizeSchema: unknown = {
 };
 
 const markdownRehypePlugins = [
-  rehypeRaw,
   [rehypeSanitize, markdownSanitizeSchema],
 ] as ReactMarkdownOptions["rehypePlugins"];
+
+function resolveLocalBlogAssetUrl(assetPath: string): string {
+  const safePath = asAssetPath(assetPath);
+  return `${BLOG_POSTS_BASE_PATH}${safePath}`;
+}
 
 const markdownComponents = {
   img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
@@ -128,7 +125,7 @@ function PrintoutContent({ printout }: { printout: string | string[] }) {
 
       let printoutUrl: string;
       try {
-        printoutUrl = resolveTrustedBlogAssetUrl(printout, BLOG_POSTS_HOST);
+        printoutUrl = resolveLocalBlogAssetUrl(printout);
       } catch (urlError) {
         const message =
           urlError instanceof Error ? urlError.message : "Unknown error";
@@ -162,7 +159,7 @@ function PrintoutContent({ printout }: { printout: string | string[] }) {
           fetchError instanceof Error ? fetchError.message : "Unknown error";
         if (!cancelled) {
           setError(
-            `Failed to fetch printout '${printout}' from trusted blog host (${message}).`,
+            `Failed to fetch printout '${printout}' from local frozen content (${message}).`,
           );
           setMarkdownContent(toFencedCodeBlock(printout));
         }

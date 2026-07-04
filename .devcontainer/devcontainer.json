@@ -7,11 +7,11 @@
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	"features": {
 		"ghcr.io/devcontainers/features/node:1": {
-			"version": "latest",
-			"nvmVersion": "latest"
+			"version": "20.19.4",
+			"nvmVersion": "0.40.3"
 		},
 		"ghcr.io/devcontainers-community/npm-features/typescript:1": {
-			"version": "latest"
+			"version": "5.9.3"
 		}
 	}
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

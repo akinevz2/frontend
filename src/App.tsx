@@ -9,7 +9,6 @@ import {
   type FormEvent,
 } from "react";
 import Markdown, { type Options as ReactMarkdownOptions } from "react-markdown";
-import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { ToastContainer } from "react-toastify";
 import {
@@ -137,7 +136,6 @@ const markdownSanitizeSchema: unknown = {
 };
 
 const markdownRehypePlugins = [
-  rehypeRaw,
   [rehypeSanitize, markdownSanitizeSchema],
 ] as ReactMarkdownOptions["rehypePlugins"];
 
