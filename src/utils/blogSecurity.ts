@@ -1,4 +1,8 @@
-import { asAssetPath, asInternalPath, asTrustedHttpsUrl } from "../lib/urlTypes";
+import {
+  asAssetPath,
+  asInternalPath,
+  asTrustedHttpsUrl,
+} from "../lib/urlTypes";
 
 const DEFAULT_BLOG_POSTS_URL =
   "https://raw.githubusercontent.com/akinevz2/frontend/refs/heads/blogging/";

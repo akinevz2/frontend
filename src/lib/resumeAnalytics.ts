@@ -42,8 +42,12 @@ const getFirebaseApp = (): FirebaseApp | null => {
   const messagingSenderId = getRequiredValue(
     firebaseConfig.messagingSenderId ?? undefined,
   );
-  const storageBucket = getRequiredValue(firebaseConfig.storageBucket ?? undefined);
-  const measurementId = getRequiredValue(firebaseConfig.measurementId ?? undefined);
+  const storageBucket = getRequiredValue(
+    firebaseConfig.storageBucket ?? undefined,
+  );
+  const measurementId = getRequiredValue(
+    firebaseConfig.measurementId ?? undefined,
+  );
 
   const existingApp = getApps()[0];
   if (existingApp) {
