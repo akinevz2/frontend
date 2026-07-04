@@ -2,6 +2,7 @@ import type React from "react";
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Markdown, { type Options as ReactMarkdownOptions } from "react-markdown";
+import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { playLayeredAudio } from "../lib/audioOverlap";
 import { asAssetPath } from "../lib/urlTypes";
@@ -73,6 +74,7 @@ const markdownSanitizeSchema: unknown = {
 };
 
 const markdownRehypePlugins = [
+  rehypeRaw,
   [rehypeSanitize, markdownSanitizeSchema],
 ] as ReactMarkdownOptions["rehypePlugins"];
 

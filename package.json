@@ -8,7 +8,7 @@
     "node": "24.x"
   },
   "scripts": {
-    "dev": "node ./scripts/hoist-dev-blog-local.mjs",
+    "dev": "vite",
     "refresh:content": "node ./scripts/refresh-content.mjs",
     "verify:policy": "node ./scripts/verify-policy.mjs",
     "build": "npm run verify:policy && vite build && npm run checksums",
