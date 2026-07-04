@@ -27,9 +27,8 @@ type FavouriteLink = {
 type FavouriteLinkContent = FavouriteLink | SectionProps;
 
 type MusicState = {
-  sections: SectionProps | SectionProps[] | undefined;
+  sections: SectionProps | SectionProps[];
   metadata: PageMetadata;
-  error?: string;
 };
 
 const LOADING_SECTION: SectionProps = {
@@ -286,11 +285,19 @@ export default function MusicContent() {
         if (!cancelled) {
           const message =
             error instanceof Error ? error.message : "Unknown error";
-          setMusicState({
-            sections: undefined,
-            metadata: { sections: [] },
-            error: `Failed to load music data (${message}).`,
-          });
+          setMusicState(
+            buildState({
+              className: "music-error",
+              children: [],
+              heading: "Library unavailable",
+              content: [
+                "## Can't reach the library",
+                `Failed to load music data (${message}).`,
+                "Website is still undergoing maintenance",
+                "Please let kine (akinevz) know.",
+              ],
+            }),
+          );
         }
       }
     };
@@ -303,18 +310,9 @@ export default function MusicContent() {
   }, []);
 
   return (
-    <>
-      {musicState.error ? (
-        <p className="status-bar">{musicState.error}</p>
-      ) : null}
-      {musicState.sections ? (
-        <PageContent
-          sections={musicState.sections}
-          pageMetadata={musicState.metadata}
-        />
-      ) : (
-        <PageContent pageMetadata={musicState.metadata} />
-      )}
-    </>
+    <PageContent
+      sections={musicState.sections}
+      pageMetadata={musicState.metadata}
+    />
   );
 }

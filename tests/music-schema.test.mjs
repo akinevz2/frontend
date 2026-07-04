@@ -51,3 +51,25 @@ test("buildMusicGroupSchema falls back to an empty track set", () => {
 test("serializeJsonLd escapes closing angle brackets", () => {
     assert.equal(serializeJsonLd({ value: "<script>" }), '{"value":"\\u003cscript>"}');
 });
+
+/*
+     Maintenance plan to avoid breakage:
+
+     1. Define the schema contract before edits:
+         List required `MusicGroup` fields and acceptable `sameAs` identities.
+
+     2. Change source and expected output together:
+         Update schema builder constants and this test in the same commit.
+
+     3. Keep assertions strict:
+         Use full object equality for top-level schema and focused assertions for edge behavior.
+
+     4. Validate escaping and safety invariants:
+         Preserve tests for JSON-LD escaping and empty-track fallback behavior.
+
+     5. Run layered verification:
+         Execute this file, then run full `npm test`, then verify rendered JSON-LD in built HTML.
+
+     6. Document every contract change:
+         Note why `sameAs` and identity fields changed so future updates stay intentional.
+*/
