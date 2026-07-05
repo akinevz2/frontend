@@ -1,9 +1,6 @@
 {
   "heading": "kine's blog posts",
   "content": [
-    "# bwomp. i no longer have akinevz on soundcloud",
-    "go to [akinevz1](https://soundcloud.com/akinevz1) or [akinevz2](https://soundcloud.com/akinevz2)",
-    "",
     {
       "heading": "eighth post (#here it gets interesting!)",
       "content": [
@@ -97,7 +94,7 @@
         "* my fades are never uniform",
         "> one channel has tape-grain decay",
         "> one has a slope to zero",
-        "> one just stops dead after the reverb tail",
+        "> one just stops dead after the reverbeve  tail",
         "* while the track is at full volume, the cancellation holds",
         "* everything sums clean",
         "* once the three channels start fading at different rates, the limiter on the cloned channel can't keep up",
@@ -118,9 +115,7 @@
         "> clone+limit the narrowed one",
         "> feed it back into the sum",
         "> give your channels mismatched fade shapes",
-        "> listen to what survives at the very end",
-        "",
-        "> co-written with style-transfer by Claude Sonnet 4.6"
+        "> listen to what survives at the very end"
       ]
     },
     {
