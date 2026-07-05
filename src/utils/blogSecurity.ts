@@ -4,10 +4,8 @@ import {
   asTrustedHttpsUrl,
 } from "../lib/urlTypes";
 
-const DEFAULT_BLOG_POSTS_URL =
-  "https://raw.githubusercontent.com/akinevz2/frontend/refs/heads/blogging/";
-const DEV_BLOG_POSTS_PATH = "/blog/";
-const DEFAULT_ALLOWED_HOSTS = ["raw.githubusercontent.com"];
+const DEFAULT_BLOG_POSTS_PATH = "/blog/";
+const DEFAULT_ALLOWED_HOSTS: string[] = [];
 
 function parseAllowedHosts(allowedHostsEnv?: string): Set<string> {
   const configuredHosts = (allowedHostsEnv || "")
@@ -32,7 +30,12 @@ export function resolveTrustedBlogPostsHost(
   configuredUrl?: string,
   allowedHostsEnv?: string,
 ): string {
-  const source = configuredUrl || DEFAULT_BLOG_POSTS_URL;
+  const source = (configuredUrl || DEFAULT_BLOG_POSTS_PATH).trim();
+
+  if (source.startsWith("/")) {
+    return asInternalPath(source);
+  }
+
   const allowedHosts = parseAllowedHosts(allowedHostsEnv);
 
   const trustedHost = asTrustedHttpsUrl(source, allowedHosts);
@@ -53,7 +56,7 @@ export function getSafeBlogPostsHost(
     console.warn(
       `Using default blog host due to unsafe configuration: ${message}`,
     );
-    return DEFAULT_BLOG_POSTS_URL;
+    return DEFAULT_BLOG_POSTS_PATH;
   }
 }
 
@@ -62,6 +65,12 @@ export function resolveTrustedBlogAssetUrl(
   blogPostsHost: string,
 ): string {
   const normalizedAssetPath = asAssetPath(assetPath);
+
+  if (blogPostsHost.startsWith("/")) {
+    const internalBase = asInternalPath(blogPostsHost).replace(/\/?$/, "/");
+    return `${internalBase}${normalizedAssetPath}`;
+  }
+
   const trustedHost = asTrustedHttpsUrl(blogPostsHost);
   return new URL(normalizedAssetPath, trustedHost).toString();
 }
@@ -70,14 +79,13 @@ export function getRuntimeBlogPostsHost(
   isDev: boolean,
   origin?: string,
 ): string {
-  if (isDev) {
-    if (!origin) {
-      return asInternalPath(DEV_BLOG_POSTS_PATH);
-    }
-
-    return new URL(asInternalPath(DEV_BLOG_POSTS_PATH), origin).toString();
+  if (!origin) {
+    return asInternalPath(DEFAULT_BLOG_POSTS_PATH);
   }
 
-  // Production is intentionally pinned to raw GitHub user content CDN.
-  return DEFAULT_BLOG_POSTS_URL;
+  if (isDev) {
+    return new URL(asInternalPath(DEFAULT_BLOG_POSTS_PATH), origin).toString();
+  }
+
+  return new URL(asInternalPath(DEFAULT_BLOG_POSTS_PATH), origin).toString();
 }
