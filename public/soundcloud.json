@@ -1,12 +1,27 @@
 {
   "source": "https://soundcloud.com/akinevz",
-  "generatedAt": "2026-07-04T03:36:25.084Z",
+  "generatedAt": "2026-07-05T05:12:40.468Z",
   "trackCount": 10,
   "tracks": [
     {
-      "path": "/akinevz/hope-kine-reeq",
-      "title": "hope-kine-reeq",
-      "url": "https://soundcloud.com/akinevz/hope-kine-reeq"
+      "path": "/akinevz/out-of-breath",
+      "title": "out-of-breath",
+      "url": "https://soundcloud.com/akinevz/out-of-breath"
+    },
+    {
+      "path": "/akinevz/hope-kine-bootleg",
+      "title": "hope-kine-bootleg",
+      "url": "https://soundcloud.com/akinevz/hope-kine-bootleg"
+    },
+    {
+      "path": "/akinevz/eternal",
+      "title": "eternal",
+      "url": "https://soundcloud.com/akinevz/eternal"
+    },
+    {
+      "path": "/akinevz/slowly-falling-apart",
+      "title": "slowly-falling-apart",
+      "url": "https://soundcloud.com/akinevz/slowly-falling-apart"
     },
     {
       "path": "/akinevz/try-try-try",
@@ -37,21 +52,6 @@
       "path": "/akinevz/resummoning-fried-beans",
       "title": "resummoning-fried-beans",
       "url": "https://soundcloud.com/akinevz/resummoning-fried-beans"
-    },
-    {
-      "path": "/akinevz/calculated-reception",
-      "title": "calculated-reception",
-      "url": "https://soundcloud.com/akinevz/calculated-reception"
-    },
-    {
-      "path": "/akinevz/out-of-breath-loop",
-      "title": "out-of-breath-loop",
-      "url": "https://soundcloud.com/akinevz/out-of-breath-loop"
-    },
-    {
-      "path": "/akinevz/microtonal-vudoo",
-      "title": "microtonal-vudoo",
-      "url": "https://soundcloud.com/akinevz/microtonal-vudoo"
     }
   ]
 }
