@@ -1,0 +1,14 @@
+// Main exports for the windowing subsystem (client-safe)
+export { Section } from "./Section";
+export { SectionProvider } from "./provider";
+export { SectionContext, type SectionContextType } from "./context";
+export { useSectionContext } from "./hooks";
+export { MinimizedSections } from "./MinimizedSections";
+export type {
+  SectionProps,
+  Content,
+  Heading,
+  PageMetadata,
+  SectionMetadata,
+  ContentWithUUID,
+} from "./types";

@@ -1,29 +1,51 @@
 :root {
-    --text-color: #F5F5DC;
-    --primary-color: #2F2F2F;
-    --background-color: #2F2F2F;
+  --text-color: #000;
+  --primary-color: #2f2f2f;
+  --background-color: #2f2f2f;
 
-    --mid-color: color-mix(in srgb, #F5F5DC, #2F2F2F 50%);
+  --mid-color: color-mix(in srgb, #f5f5dc, #2f2f2f 50%);
+}
+
+/* Hide content until styles are loaded, but keep menu bar visible */
+body:not(.styles-loaded) main,
+body:not(.styles-loaded) main *,
+body:not(.styles-loaded) main h1,
+body:not(.styles-loaded) main h2,
+body:not(.styles-loaded) main h3,
+body:not(.styles-loaded) main h4,
+body:not(.styles-loaded) main h5,
+body:not(.styles-loaded) main h6,
+body:not(.styles-loaded) main p,
+body:not(.styles-loaded) main span,
+body:not(.styles-loaded) main label,
+body:not(.styles-loaded) main li,
+body:not(.styles-loaded) main a,
+body:not(.styles-loaded) main button,
+body:not(.styles-loaded) main input,
+body:not(.styles-loaded) main textarea {
+  color: transparent !important;
+  opacity: 0 !important;
 }
 
 .light-mode-switch {
-    border-radius: 2em;
-    border: 2px solid --var(--text-color);
-    font-family: 'Courier New', Courier, monospace;
+  border-radius: 2em;
+  border: 2px solid --var(--text-color);
+  font-family: "Courier New", Courier, monospace;
 }
 
 @media (prefers-color-scheme: light) {
-    :root {
-        --text-color: #2F2F2F;
-        --primary-color: #F5F5DC;
-        --background-color: #F5F5DC;
-    }
-    .light-mode-switch {
-        display: none;
-    }
+  :root {
+    --text-color: #2f2f2f;
+    --primary-color: #f5f5dc;
+    --background-color: #f5f5dc;
+  }
+  .light-mode-switch {
+    display: none;
+  }
 }
 
-body, #root {
-    background-color: var(--mid-color);
-    margin: 0;
+body,
+#root {
+  background-color: var(--mid-color);
+  margin: 0;
 }

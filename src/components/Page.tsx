@@ -1,23 +1,60 @@
 import { Addon, AddonList, type AddonProps } from "./Addon";
-import { Section, type SectionProps } from "./Section";
+import {
+  Section,
+  SectionProvider,
+  type SectionProps,
+  type PageMetadata,
+} from "../windowing";
+import { MenuBarWithContext } from "./MenuBarWithContext";
 
 export type PageProps = {
-    sections?: SectionProps | SectionProps[]
-    addons?: AddonProps | AddonProps[]
-}
+  sections?: SectionProps | SectionProps[];
+  addons?: AddonProps | AddonProps[];
+  pageMetadata?: PageMetadata;
+};
 
-export const PageContent = ({ sections }: PageProps) => {
-    const isArray = Array.isArray(sections)
-    if (isArray)
-        return <section className="page"> {sections.map((section, index) => (<Section key={index} {...section} />))} </section>
-    if (sections)
-        return <Section className="page" {...sections} />
-}
+export const PageContent = ({ sections, pageMetadata }: PageProps) => {
+  const metadata = pageMetadata || { sections: [] };
 
-export const PageWithAddons = ({ addons }: PageProps) => {
-    const isArray = Array.isArray(addons)
-    if (isArray)
-        return <section className="page"> {addons.map((section, index) => (<Addon key={index} {...section} />))} </section>
-    if (addons)
-        return <AddonList className="page" {...addons} />
-}
+  if (!sections) {
+    return null;
+  }
+
+  return (
+    <SectionProvider pageMetadata={metadata}>
+      <section className="page">
+        {Array.isArray(sections) ? (
+          sections.map((item, index) => (
+            <Section key={item.uuid || index} {...item} />
+          ))
+        ) : (
+          <Section {...sections} />
+        )}
+      </section>
+      <MenuBarWithContext />
+    </SectionProvider>
+  );
+};
+
+export const PageWithAddons = ({ addons, pageMetadata }: PageProps) => {
+  const metadata = pageMetadata || { sections: [] };
+
+  if (!addons) {
+    return null;
+  }
+
+  return (
+    <SectionProvider pageMetadata={metadata}>
+      <section className="page">
+        {Array.isArray(addons) ? (
+          addons.map((item, index) => (
+            <Addon key={item.uuid || index} {...item} />
+          ))
+        ) : (
+          <AddonList {...addons} />
+        )}
+      </section>
+      <MenuBarWithContext />
+    </SectionProvider>
+  );
+};

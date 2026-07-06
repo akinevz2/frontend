@@ -1,0 +1,29 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /resume_interest/{docId} {
+      allow create: if
+        request.resource.data.keys().hasOnly([
+          'email',
+          'source',
+          'userAgent',
+          'createdAt'
+        ])
+        && request.resource.data.email is string
+        && request.resource.data.email.size() > 5
+        && request.resource.data.email.size() <= 254
+        && request.resource.data.email.matches('^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$')
+        && request.resource.data.source == 'resume_page'
+        && request.resource.data.userAgent is string
+        && request.resource.data.userAgent.size() > 0
+        && request.resource.data.userAgent.size() <= 1024
+        && request.resource.data.createdAt == request.time;
+
+      allow read, update, delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
