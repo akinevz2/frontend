@@ -1,7 +1,7 @@
-@import '../../public/loading.css';
+@import "../../public/loading.css";
 
 :root {
-  font-family: 'Courier New', Courier, monospace;
+  font-family: "Courier New", Courier, monospace;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -9,13 +9,97 @@
   --background-color: #000;
   --border-size: 0.25em;
   --gap-size: 0.5em;
+  --menu-bar-height: 24px;
+  font-size: 16px;
 }
 
 @font-face {
-  font-family: 'bahnscrift';
-  src: url('/BAHNSCHRIFT.TTF');
+  font-family: "bahnscrift";
+  src: url("/BAHNSCHRIFT.TTF");
   font-weight: normal;
   font-style: normal;
+}
+
+/* Reset XP.css window styling overrides */
+.window {
+  margin-bottom: var(--gap-size);
+  min-width: min(768px, 100%);
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.window:last-child {
+  margin-bottom: 0;
+}
+
+/* Add extra spacing for nested windows */
+.window-body .window {
+  margin-bottom: 0.5em;
+}
+
+.window-body .window:last-child {
+  margin-bottom: 0;
+}
+
+/* Spacing for windows inside lists (addon pages) */
+.window-body ul li .window,
+.window-body ul .window,
+.window-body .addon-wrapper {
+  margin-bottom: 0.5em;
+}
+
+.window-body ul li:last-child .window,
+.window-body ul .window:last-child,
+.window-body .addon-wrapper:last-child {
+  margin-bottom: 0;
+}
+
+/* Hide border on first-level windows to avoid double border */
+.page > .window,
+main > .page {
+  border: none;
+}
+
+/* Force title bar text to dark gray for readability */
+.title-bar-text,
+.title-bar-text a {
+  color: #eee !important;
+  font-size: 0.85rem;
+}
+
+/* Add more vertical padding to title bars */
+.title-bar {
+  padding-top: 0.25em !important;
+  padding-bottom: 0.25em !important;
+}
+
+body {
+  margin-bottom: 0;
+  margin-top: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+#root {
+  min-height: 100%;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body,
@@ -33,54 +117,261 @@ textarea,
 button,
 form,
 div,
-a {
-  color: var(--text-color);
-  background-color: var(--background-color);
+a,
+li {
+  color: var(--text-color) !important;
+  opacity: 1 !important;
 }
 
-section,
-button,
-input,
-select,
-textarea {
-  color: var(--text-color);
-  border: var(--border-size) solid var(--primary-color);
-}
-
-.page>ul {
+.page > ul,
+li {
   padding: 0;
   margin: 0;
-}
-
-section {
-  margin-bottom: var(--border-size);
-  padding: var(--gap-size);
-}
-
-section:last-child {
-  margin-bottom: 0;
+  list-style: none;
+  margin-bottom: var(--gap-size);
 }
 
 .page {
   margin: 0 auto;
-  padding: var(--border-size);
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--gap-size);
-  max-width: 768px;
-  width: 33%;
   border: 0;
+  position: relative;
+  z-index: 100;
+  width: calc(100% - (var(--gap-size) * 2));
+  max-width: calc(100% - (var(--gap-size) * 2));
+  box-sizing: border-box;
+  justify-items: center;
 }
 
-ul>section>h1, ul>section>h4, form#form>label{
+.page > .window {
+  width: fit-content;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.menu-item {
+  margin: 0;
+  padding: calc(var(--gap-size) / 2) var(--gap-size);
+  background-color: beige;
+}
+
+ul > section > h1,
+ul > section > h4,
+form#form > label {
   margin: 0 calc(var(--gap-size) * 1.75);
   font-family: bahnscrift, system-ui, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
+  font-size: 0.9rem;
 }
 
-section>ul {
-  margin-top: calc(var(--gap-size) - var(--border-size));
+.window-body ul {
+  margin: 0;
+  padding-left: 0;
+}
+
+.window-body ul li {
+  padding-left: 1.5em;
+}
+
+.window-body {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.debug-printout-scroll {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.debug-printout-scroll pre,
+.debug-printout-scroll code {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.debug-printout-scroll pre {
+  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.window-body pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* xp.css sets very large heading sizes; keep markdown headings readable in content windows. */
+.window-body h1 {
+  font-size: 1.2rem !important;
+  line-height: 1.25;
+  margin: 0.25em 0;
+}
+
+.window-body h2 {
+  text-align: right;
+  color: var(--button-shadow) !important;
+}
+
+.window-body > ul:first-child {
+  margin-top: 0;
+}
+
+.music-track-title {
+  font-size: 1.08em;
+  font-weight: 600;
+  margin: 0 0 0.35em 0;
+}
+
+/* Menu Bar - Windows XP style */
+.menu-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: linear-gradient(to bottom, #f0f0f0 0%, #e0e0e0 100%);
+  border-bottom: 1px solid #808080;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  padding: 0;
+  margin: 0;
+}
+
+.menu-bar menu {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+}
+
+.menu-bar menu li {
+  margin: 0;
+  padding: 0;
+}
+
+.menu-bar menu a {
+  display: block;
+  padding: 4px 8px;
+  text-decoration: none;
+  color: #000 !important;
+  font-size: 13px;
+  font-family: "Tahoma", "MS Sans Serif", sans-serif;
+  white-space: nowrap;
+  transition: background-color 0.1s ease;
+}
+
+.menu-bar menu a:hover {
+  background-color: rgba(51, 153, 255, 0.2);
+}
+
+.menu-bar menu a:active {
+  background-color: rgba(51, 153, 255, 0.4);
+}
+
+.menu-bar .menu-underline {
+  text-decoration: underline;
+}
+
+/* Minimized Sections Menu */
+.minimized-sections-item {
+  margin-left: auto;
+  position: relative;
+}
+
+/* Minimized sections button container */
+.minimized-menu-container {
+  display: flex;
+  justify-content: center;
+  margin: 20px auto;
+  width: 100%;
+  max-width: 600px;
+  padding: 0 var(--gap-size);
+  position: relative;
+  box-sizing: border-box;
+}
+
+.minimized-menu-button {
+  min-width: 200px;
+  padding: 8px 24px !important;
+  font-size: 13px !important;
+}
+
+.minimized-menu {
+  position: relative;
+  display: inline-block;
+}
+
+.minimized-menu .menu-button {
+  display: block;
+  padding: 4px 8px;
+  text-decoration: none;
+  color: #000 !important;
+  font-size: 13px;
+  font-family: "Tahoma", "MS Sans Serif", sans-serif;
+  white-space: nowrap;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+
+.minimized-menu .menu-button:hover {
+  background-color: rgba(51, 153, 255, 0.2);
+}
+
+.minimized-menu .menu-button:active {
+  background-color: rgba(51, 153, 255, 0.4);
+}
+
+.minimized-menu-container .dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  border: 2px outset #dfdfdf;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  min-width: 250px;
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 1001;
+  padding: 2px;
+  display: flex;
+  flex-direction: column;
+}
+
+.minimized-menu-container .dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 6px 12px;
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: #000 !important;
+  font-size: 13px;
+  font-family: "Tahoma", "MS Sans Serif", sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.minimized-menu-container .dropdown-item:hover {
+  background-color: #0a246a;
+  color: #fff !important;
+}
+
+/* Account for fixed menu bar */
+body {
+  padding-top: var(--menu-bar-height);
 }
 
 @media (prefers-color-scheme: light) {
@@ -89,9 +380,9 @@ section>ul {
   }
 }
 
-@media screen and (max-width: 1920px) {
+@media screen and (min-width: 769px) {
   .page {
-    width: 66%;
+    min-width: min(600px, calc(100% - (var(--gap-size) * 2)));
   }
 }
 
@@ -101,9 +392,77 @@ section>ul {
   }
 
   .page {
-    max-width: unset;
-    width: unset;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 100%;
     padding: var(--gap-size);
+    justify-items: stretch;
   }
 
+  .page > .window {
+    width: 100%;
+  }
+
+  /* Constrain window width on mobile */
+  .window {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .window-body {
+    max-width: 100%;
+  }
+
+  /* Mobile-friendly menu bar */
+  .menu-bar {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f0f0f0;
+  }
+
+  /* Hide scrollbar for cleaner look but keep functionality */
+  .menu-bar::-webkit-scrollbar {
+    height: 3px;
+  }
+
+  .menu-bar::-webkit-scrollbar-track {
+    background: #f0f0f0;
+  }
+
+  .menu-bar::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 2px;
+  }
+
+  .menu-bar menu {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    min-width: min-content;
+  }
+
+  .menu-bar menu a {
+    padding: 6px 12px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  /* Increase touch target size for better mobile usability */
+  .menu-bar menu li {
+    display: flex;
+    align-items: center;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  :root {
+    --menu-bar-height: 28px;
+  }
+
+  /* Extra small screens - even more compact */
+  .menu-bar menu a {
+    padding: 5px 10px;
+    font-size: 11px;
+  }
 }
