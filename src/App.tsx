@@ -746,8 +746,6 @@ export default function App() {
     useState(false);
   const [isSubmitPulseActive, setIsSubmitPulseActive] = useState(false);
   const [isClippyHovered, setIsClippyHovered] = useState(false);
-  const [assistantConnectionInterrupted, setAssistantConnectionInterrupted] =
-    useState(false);
   const [isConnectionFlashActive, setIsConnectionFlashActive] = useState(false);
   const holdTimerRef = useRef<number | null>(null);
   const holdTriggeredRef = useRef(false);
@@ -767,43 +765,30 @@ export default function App() {
     };
   }, []);
 
-  useEffect(() => {
-    const markDisconnected = () => {
-      setAssistantConnectionInterrupted(true);
-    };
-
-    const markConnected = () => {
-      setAssistantConnectionInterrupted(false);
-    };
-
-    window.addEventListener("offline", markDisconnected);
-    window.addEventListener("online", markConnected);
-
-    return () => {
-      window.removeEventListener("offline", markDisconnected);
-      window.removeEventListener("online", markConnected);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!assistantConnectionInterrupted) {
-      return;
-    }
+  const startConnectionFlash = useCallback(() => {
+    setIsConnectionFlashActive(true);
 
     if (connectionFlashTimerRef.current !== null) {
       window.clearTimeout(connectionFlashTimerRef.current);
     }
 
-    window.setTimeout(() => {
-      setIsConnectionFlashActive(true);
-    }, 0);
-
     connectionFlashTimerRef.current = window.setTimeout(() => {
       setIsConnectionFlashActive(false);
-      setAssistantConnectionInterrupted(false);
       connectionFlashTimerRef.current = null;
     }, SHADOW_PULSE_MS);
-  }, [assistantConnectionInterrupted]);
+  }, []);
+
+  useEffect(() => {
+    const markDisconnected = () => {
+      startConnectionFlash();
+    };
+
+    window.addEventListener("offline", markDisconnected);
+
+    return () => {
+      window.removeEventListener("offline", markDisconnected);
+    };
+  }, [startConnectionFlash]);
 
   useEffect(() => {
     const wasVisible = wasClippyBubbleVisibleRef.current;
@@ -1117,7 +1102,6 @@ export default function App() {
       setAssistantWindowText(result);
       setAssistantWindowVisible(true);
       setAssistantWindowMinimized(false);
-      setAssistantConnectionInterrupted(false);
       const readyBeep = new Audio("/Beep.ogg");
       void readyBeep.play().catch(() => {});
     } catch (error) {
@@ -1126,7 +1110,7 @@ export default function App() {
           ? error.message
           : "Failed to reach configured assistant endpoint.",
       );
-      setAssistantConnectionInterrupted(true);
+      startConnectionFlash();
     } finally {
       setIsAssistantRequestPending(false);
       // if (shouldPulseInTransit) {
@@ -1205,16 +1189,7 @@ export default function App() {
     }
 
     rightClickFlashArmedRef.current = false;
-    setIsConnectionFlashActive(true);
-
-    if (connectionFlashTimerRef.current !== null) {
-      window.clearTimeout(connectionFlashTimerRef.current);
-    }
-
-    connectionFlashTimerRef.current = window.setTimeout(() => {
-      setIsConnectionFlashActive(false);
-      connectionFlashTimerRef.current = null;
-    }, SHADOW_PULSE_MS);
+    startConnectionFlash();
   };
 
   const handleUnavailableAssistantConfig = () => {
