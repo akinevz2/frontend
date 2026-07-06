@@ -5,14 +5,16 @@ import { processContent } from "../windowing/utils";
 import type { PageMetadata, SectionProps } from "../windowing";
 
 type BlogState = {
-  sections?: SectionProps | SectionProps[];
+  sections: SectionProps | SectionProps[];
   metadata: PageMetadata;
-  error?: string;
 };
 
 const LOADING_SECTION: SectionProps = {
   heading: "Loading...",
-  content: ["![Loading spinner](/spinner.svg)", "Fetching posts from raw.githubusercontent.com"],
+  content: [
+    "![Loading spinner](/spinner.svg)",
+    "Fetching posts from local frozen content",
+  ],
 };
 
 function isSectionPayload(
@@ -23,18 +25,7 @@ function isSectionPayload(
   return "heading" in value || "content" in value;
 }
 
-const env = import.meta.env as Record<string, string | undefined>;
-
-const BLOG_POSTS_CONFIGURED_URL =
-  env.VITE_BLOG_POSTS_URL ||
-  env.PUBLIC_BLOG_POSTS_URL ||
-  "https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/";
-
-const BLOG_POSTS_HOST = BLOG_POSTS_CONFIGURED_URL.endsWith(".json")
-  ? BLOG_POSTS_CONFIGURED_URL.replace(/[^/]+$/, "")
-  : BLOG_POSTS_CONFIGURED_URL;
-
-const BLOG_POSTS_URL = new URL("posts.json", BLOG_POSTS_HOST).toString();
+const BLOG_POSTS_URL = "/blog/posts.json";
 
 function buildBlogState(content: SectionProps | SectionProps[]): BlogState {
   const { processed, metadata } = processContent(content);
@@ -78,11 +69,17 @@ export default function BlogContent() {
         if (!cancelled) {
           const message =
             error instanceof Error ? error.message : "Unknown error";
-          setBlogState({
-            sections: undefined,
-            metadata: { sections: [] },
-            error: `Failed to fetch remote posts (${message}).`,
-          });
+          setBlogState(
+            buildBlogState({
+              className: "blog-error",
+              heading: "Blog unavailable",
+              content: [
+                "## Can't load blog posts",
+                `Failed to fetch remote posts (${message}).`,
+                "Please let kine (akinevz) know.",
+              ],
+            }),
+          );
         }
       }
     };
@@ -95,12 +92,9 @@ export default function BlogContent() {
   }, []);
 
   return (
-    <>
-      {blogState.error ? <p className="status-bar">{blogState.error}</p> : null}
-      <PageContent
-        sections={blogState.sections}
-        pageMetadata={blogState.metadata}
-      />
-    </>
+    <PageContent
+      sections={blogState.sections}
+      pageMetadata={blogState.metadata}
+    />
   );
 }

@@ -1,7 +1,4 @@
-import {
-  useState,
-  type ReactNode,
-} from "react";
+import { useState, type ReactNode } from "react";
 import { SectionContext } from "./context";
 import type { PageMetadata, SectionMetadata } from "./types";
 
@@ -17,12 +14,18 @@ const getAncestorSectionUuids = (
     return [];
   }
 
-  let expectedDepth = sectionMetadata[sectionIndex].depth - 1;
+  const currentSection = sectionMetadata[sectionIndex];
+  if (!currentSection) {
+    return [];
+  }
+
+  let expectedDepth = currentSection.depth - 1;
   const ancestors: string[] = [];
 
   for (let i = sectionIndex - 1; i >= 0 && expectedDepth >= 0; i--) {
-    if (sectionMetadata[i].depth === expectedDepth) {
-      ancestors.push(sectionMetadata[i].uuid);
+    const candidate = sectionMetadata[i];
+    if (candidate && candidate.depth === expectedDepth) {
+      ancestors.push(candidate.uuid);
       expectedDepth -= 1;
     }
   }
@@ -30,13 +33,19 @@ const getAncestorSectionUuids = (
   return ancestors;
 };
 
-export const SectionProvider = ({ children, pageMetadata }: { children: ReactNode; pageMetadata: PageMetadata }) => {
+export const SectionProvider = ({
+  children,
+  pageMetadata,
+}: {
+  children: ReactNode;
+  pageMetadata: PageMetadata;
+}) => {
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
-    new Set()
+    new Set(),
   );
-  const [minimizedSections, setMinimizedSections] = useState<Map<string, string>>(
-    new Map()
-  );
+  const [minimizedSections, setMinimizedSections] = useState<
+    Map<string, string>
+  >(new Map());
 
   const markAsExpanded = (heading: string) => {
     setExpandedSections((prev) => new Set(prev).add(heading));
@@ -49,7 +58,10 @@ export const SectionProvider = ({ children, pageMetadata }: { children: ReactNod
   const restoreSection = (uuid: string) => {
     setMinimizedSections((prev) => {
       const newMap = new Map(prev);
-      const ancestorUuids = getAncestorSectionUuids(uuid, pageMetadata.sections);
+      const ancestorUuids = getAncestorSectionUuids(
+        uuid,
+        pageMetadata.sections,
+      );
 
       newMap.delete(uuid);
       ancestorUuids.forEach((ancestorUuid) => {
@@ -61,7 +73,16 @@ export const SectionProvider = ({ children, pageMetadata }: { children: ReactNod
   };
 
   return (
-    <SectionContext.Provider value={{ expandedSections, markAsExpanded, minimizedSections, minimizeSection, restoreSection, pageMetadata }}>
+    <SectionContext.Provider
+      value={{
+        expandedSections,
+        markAsExpanded,
+        minimizedSections,
+        minimizeSection,
+        restoreSection,
+        pageMetadata,
+      }}
+    >
       {children}
     </SectionContext.Provider>
   );

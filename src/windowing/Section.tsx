@@ -1,22 +1,19 @@
 import type React from "react";
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
-import Markdown from "react-markdown";
+import Markdown, { type Options as ReactMarkdownOptions } from "react-markdown";
 import rehypeRaw from "rehype-raw";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
+import { playLayeredAudio } from "../lib/audioOverlap";
+import { asAssetPath } from "../lib/urlTypes";
 import { useSectionContext } from "./hooks";
-import type { Content, SectionProps } from "./types";
+import type { Content, HttpUrl, SectionProps } from "./types";
 
 const BLOG_PATH = "/blog";
-const env = import.meta.env as Record<string, string | undefined>;
-const BLOG_POSTS_CONFIGURED_URL =
-  env.VITE_BLOG_POSTS_URL ||
-  env.PUBLIC_BLOG_POSTS_URL ||
-  "https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/";
-const BLOG_POSTS_HOST = BLOG_POSTS_CONFIGURED_URL.endsWith(".json")
-  ? BLOG_POSTS_CONFIGURED_URL.replace(/[^/]+$/, "")
-  : BLOG_POSTS_CONFIGURED_URL;
+const BLOG_POSTS_BASE_PATH = "/blog/";
 
-const isBlogPath = (pathname: string) => pathname.replace(/\/+$/, "") === BLOG_PATH;
+const isBlogPath = (pathname: string) =>
+  pathname.replace(/\/+$/, "") === BLOG_PATH;
 
 const toPostSlug = (heading: string) =>
   heading
@@ -39,21 +36,63 @@ const contentContainsPostSlug = (
       return false;
     }
 
-    if (typeof item.heading === "string" && toPostSlug(item.heading) === targetPostSlug) {
+    if (
+      typeof item.heading === "string" &&
+      toPostSlug(item.heading) === targetPostSlug
+    ) {
       return true;
     }
 
-    return !!item.content && contentContainsPostSlug(item.content as Content, targetPostSlug);
+    return (
+      !!item.content &&
+      contentContainsPostSlug(item.content as Content, targetPostSlug)
+    );
   });
 };
 
-const markdownRehypePlugins = [rehypeRaw];
+const markdownSanitizeSchema: unknown = {
+  ...defaultSchema,
+  tagNames: [...(defaultSchema.tagNames || []), "iframe"],
+  attributes: {
+    ...defaultSchema.attributes,
+    a: [...(defaultSchema.attributes?.a || []), ["target"], ["rel"]],
+    img: [...(defaultSchema.attributes?.img || []), ["loading"], ["decoding"]],
+    iframe: [
+      ["title"],
+      ["src"],
+      ["width"],
+      ["height"],
+      ["style"],
+      ["scrolling"],
+      ["loading"],
+      ["allow"],
+      ["allowfullscreen"],
+      ["referrerpolicy"],
+      ["frameborder"],
+    ],
+  },
+};
+
+const markdownRehypePlugins = [
+  rehypeRaw,
+  [rehypeSanitize, markdownSanitizeSchema],
+] as ReactMarkdownOptions["rehypePlugins"];
+
+function resolveLocalBlogAssetUrl(assetPath: string): string {
+  const safePath = asAssetPath(assetPath);
+  return `${BLOG_POSTS_BASE_PATH}${safePath}`;
+}
 
 const markdownComponents = {
   img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
     <img
       {...props}
-      style={{ maxWidth: "100%", height: "auto", ...(props.style ?? {}) }}
+      style={{
+        maxWidth: "100%",
+        height: "auto",
+        maxHeight: "24rem",
+        ...(props.style ?? {}),
+      }}
     />
   ),
 };
@@ -70,7 +109,6 @@ function PrintoutContent({ printout }: { printout: string | string[] }) {
   const [markdownContent, setMarkdownContent] = useState(() =>
     toFencedCodeBlock(normalizePrintoutText(printout)),
   );
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -78,13 +116,31 @@ function PrintoutContent({ printout }: { printout: string | string[] }) {
     const loadPrintout = async () => {
       if (typeof printout !== "string") {
         if (!cancelled) {
-          setError(null);
-          setMarkdownContent(toFencedCodeBlock(normalizePrintoutText(printout)));
+          setMarkdownContent(
+            toFencedCodeBlock(normalizePrintoutText(printout)),
+          );
         }
         return;
       }
 
-      const printoutUrl = new URL(printout, BLOG_POSTS_HOST).toString();
+      let printoutUrl: string;
+      try {
+        printoutUrl = resolveLocalBlogAssetUrl(printout);
+      } catch (urlError) {
+        const message =
+          urlError instanceof Error ? urlError.message : "Unknown error";
+        if (!cancelled) {
+          setMarkdownContent(
+            [
+              "## Printout unavailable",
+              `Failed to resolve printout path (${message}).`,
+              "Please let kine (akinevz) know.",
+              toFencedCodeBlock(printout),
+            ].join("\n\n"),
+          );
+        }
+        return;
+      }
 
       try {
         const response = await fetch(printoutUrl, {
@@ -101,17 +157,20 @@ function PrintoutContent({ printout }: { printout: string | string[] }) {
 
         const fileContent = await response.text();
         if (!cancelled) {
-          setError(null);
           setMarkdownContent(toFencedCodeBlock(fileContent));
         }
       } catch (fetchError) {
         const message =
           fetchError instanceof Error ? fetchError.message : "Unknown error";
         if (!cancelled) {
-          setError(
-            `Failed to fetch printout '${printout}' from BLOG_POSTS_HOST (${message}).`,
+          setMarkdownContent(
+            [
+              "## Printout unavailable",
+              `Failed to fetch printout '${printout}' from local frozen content (${message}).`,
+              "Please let kine (akinevz) know.",
+              toFencedCodeBlock(printout),
+            ].join("\n\n"),
           );
-          setMarkdownContent(toFencedCodeBlock(printout));
         }
       }
     };
@@ -126,7 +185,6 @@ function PrintoutContent({ printout }: { printout: string | string[] }) {
   return (
     <div className="debug-printout-scroll" data-debug="printout-scroll">
       <Markdown>{markdownContent}</Markdown>
-      {error ? <p className="status-bar">{error}</p> : null}
     </div>
   );
 }
@@ -149,36 +207,85 @@ function renderContent(content: Content, depth: number) {
         </li>
       </ul>
     );
+
+  const groupedContent: Array<
+    | { type: "markdown"; key: number; text: string }
+    | { type: "section"; key: number; section: SectionProps }
+  > = [];
+  let bufferedLines: string[] = [];
+  let bufferStartIndex = 0;
+
+  const flushBufferedLines = () => {
+    if (bufferedLines.length === 0) {
+      return;
+    }
+
+    groupedContent.push({
+      type: "markdown",
+      key: bufferStartIndex,
+      text: bufferedLines.join("  \n"),
+    });
+    bufferedLines = [];
+  };
+
+  content.forEach((item, index) => {
+    if (typeof item === "string") {
+      if (bufferedLines.length === 0) {
+        bufferStartIndex = index;
+      }
+      bufferedLines.push(item);
+      return;
+    }
+
+    flushBufferedLines();
+    groupedContent.push({ type: "section", key: index, section: item });
+  });
+
+  flushBufferedLines();
+
   return (
     <ul>
-      {content.map((text, index) =>
-        typeof text == "string" ? (
-          <li key={index}>
+      {groupedContent.map((item) =>
+        item.type === "markdown" ? (
+          <li key={`markdown-${item.key}`}>
             <Markdown
               rehypePlugins={markdownRehypePlugins}
               components={markdownComponents}
             >
-              {text}
+              {item.text}
             </Markdown>
           </li>
         ) : (
-          <Section key={index} {...text} depth={depth + 1} />
+          <Section
+            key={`section-${item.key}`}
+            {...item.section}
+            depth={depth + 1}
+          />
         ),
       )}
     </ul>
   );
 }
 
+function isValidHttpUrl(link: string): link is HttpUrl {
+  try {
+    const parsed = new URL(link);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 const playSound = () => {
-  console.log("Close button clicked!");
-  const audio = new Audio("/crunchy_kick.ogg");
-  audio.play().catch((err) => alert("Error playing sound: " + err));
+  playLayeredAudio("/crunchy_kick.ogg");
+  window.dispatchEvent(new CustomEvent("crunchy-kick-played"));
 };
 
 export const Section = (props: SectionProps) => {
   const {
     heading,
     content,
+    link,
     printout,
     className,
     children,
@@ -187,6 +294,7 @@ export const Section = (props: SectionProps) => {
   } = props;
   const hasHeading = !!heading;
   const hasContent = !!content;
+  const hasLink = typeof link === "string" && link.length > 0;
   const hasPrintout =
     printout !== undefined &&
     ((typeof printout === "string" && printout.length > 0) ||
@@ -213,21 +321,23 @@ export const Section = (props: SectionProps) => {
     !!targetPostSlug &&
     !!content &&
     contentContainsPostSlug(content as Content, targetPostSlug);
-  const isForcedExpanded = shouldOpenFromLink || shouldRevealLinkedPost || hasPrintout;
+  const isForcedExpanded =
+    shouldOpenFromLink || shouldRevealLinkedPost || hasPrintout;
 
-  const [isMaximized, setIsMaximized] = useState(shouldOpenFromLink);
+  const [isMaximized, setIsMaximized] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(!isForcedExpanded);
   const isCollapsedResolved = isForcedExpanded ? false : isCollapsed;
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const windowRef = useRef<HTMLDivElement>(null);
+  const inlineWindowRef = useRef<HTMLDivElement>(null);
   const { markAsExpanded, minimizeSection, minimizedSections, restoreSection } =
     useSectionContext();
 
   // UUID must be provided from server-side processing
   if (!uuid) {
-    console.error("Section missing UUID:", { heading, depth });
+    // UUID must be provided from server-side processing; fall back silently.
   }
   const sectionUUID = uuid || `fallback-${heading}-${depth}`;
   const isMinimized = minimizedSections.has(sectionUUID);
@@ -263,17 +373,6 @@ export const Section = (props: SectionProps) => {
     restoreSection(sectionUUID);
   };
 
-  // Debug logging
-  console.log("Section render:", {
-    heading,
-    hasContent,
-    isCollapsed: isCollapsedResolved,
-    isMinimized,
-    isMaximized,
-    uuid: sectionUUID,
-    depth,
-  });
-
   const handleMinimize = () => {
     if (heading && typeof heading === "string") {
       // Close maximized window before minimizing
@@ -303,6 +402,15 @@ export const Section = (props: SectionProps) => {
     if (heading && typeof heading === "string") {
       markAsExpanded(heading);
     }
+  };
+
+  const handlePrimaryAction = () => {
+    if (hasLink && isValidHttpUrl(link)) {
+      window.location.assign(link);
+      return;
+    }
+
+    handleExpand();
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -357,8 +465,19 @@ export const Section = (props: SectionProps) => {
     }
   }, [isMaximized, position.x, position.y]);
 
+  useEffect(() => {
+    if (!shouldOpenFromLink || typeof window === "undefined") {
+      return;
+    }
+
+    inlineWindowRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, [shouldOpenFromLink]);
+
   const windowContent = (
-    <div className={`window ${className || ""}`}>
+    <div ref={inlineWindowRef} className={`window ${className || ""}`}>
       {hasHeading ? (
         <div className="title-bar">
           <div className="title-bar-text">{heading}</div>
@@ -374,7 +493,7 @@ export const Section = (props: SectionProps) => {
       <div className="window-body">
         {isCollapsedResolved ? (
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            <button onClick={handleExpand}>OK</button>
+            <button onClick={handlePrimaryAction}>OK</button>
           </div>
         ) : (
           <>
@@ -457,7 +576,13 @@ export const Section = (props: SectionProps) => {
                 ) : null}
                 <div className="window-body" style={{ overflow: "auto" }}>
                   {isLinkableBlogPost ? (
-                    <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "8px" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        marginBottom: "8px",
+                      }}
+                    >
                       <a href={permalink}>
                         <button>Permalink</button>
                       </a>
@@ -467,7 +592,7 @@ export const Section = (props: SectionProps) => {
                     <div
                       style={{ display: "flex", justifyContent: "flex-end" }}
                     >
-                      <button onClick={handleExpand}>OK</button>
+                      <button onClick={handlePrimaryAction}>OK</button>
                     </div>
                   ) : (
                     <>

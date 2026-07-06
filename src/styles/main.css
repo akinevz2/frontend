@@ -23,6 +23,9 @@
 /* Reset XP.css window styling overrides */
 .window {
   margin-bottom: var(--gap-size);
+  min-width: min(768px, 100%);
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .window:last-child {
@@ -61,6 +64,7 @@ main > .page {
 .title-bar-text,
 .title-bar-text a {
   color: #eee !important;
+  font-size: 0.85rem;
 }
 
 /* Add more vertical padding to title bars */
@@ -75,6 +79,8 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 #root {
@@ -82,6 +88,8 @@ body {
   display: flex;
   flex: 1;
   flex-direction: column;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 main {
@@ -90,6 +98,8 @@ main {
   flex-direction: column;
   justify-content: center;
   min-height: 0;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body,
@@ -129,6 +139,16 @@ li {
   border: 0;
   position: relative;
   z-index: 100;
+  width: calc(100% - (var(--gap-size) * 2));
+  max-width: calc(100% - (var(--gap-size) * 2));
+  box-sizing: border-box;
+  justify-items: center;
+}
+
+.page > .window {
+  width: fit-content;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .menu-item {
@@ -144,6 +164,7 @@ form#form > label {
   font-family: bahnscrift, system-ui, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
+  font-size: 0.9rem;
 }
 
 .window-body ul {
@@ -155,8 +176,58 @@ form#form > label {
   padding-left: 1.5em;
 }
 
+.window-body {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.debug-printout-scroll {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.debug-printout-scroll pre,
+.debug-printout-scroll code {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.debug-printout-scroll pre {
+  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.window-body pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* xp.css sets very large heading sizes; keep markdown headings readable in content windows. */
+.window-body h1 {
+  font-size: 1.2rem !important;
+  line-height: 1.25;
+  margin: 0.25em 0;
+}
+
+.window-body h2 {
+  text-align: right;
+  color: var(--button-shadow) !important;
+}
+
 .window-body > ul:first-child {
   margin-top: 0;
+}
+
+.music-track-title {
+  font-size: 1.08em;
+  font-weight: 600;
+  margin: 0 0 0.35em 0;
 }
 
 /* Menu Bar - Windows XP style */
@@ -224,6 +295,7 @@ form#form > label {
   max-width: 600px;
   padding: 0 var(--gap-size);
   position: relative;
+  box-sizing: border-box;
 }
 
 .minimized-menu-button {
@@ -310,7 +382,7 @@ body {
 
 @media screen and (min-width: 769px) {
   .page {
-    min-width: 600px;
+    min-width: min(600px, calc(100% - (var(--gap-size) * 2)));
   }
 }
 
@@ -321,7 +393,14 @@ body {
 
   .page {
     margin: 0 auto;
+    width: 100%;
+    max-width: 100%;
     padding: var(--gap-size);
+    justify-items: stretch;
+  }
+
+  .page > .window {
+    width: 100%;
   }
 
   /* Constrain window width on mobile */
@@ -332,7 +411,6 @@ body {
 
   .window-body {
     max-width: 100%;
-    overflow-x: auto;
   }
 
   /* Mobile-friendly menu bar */
