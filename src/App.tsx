@@ -790,10 +790,13 @@ export default function App() {
       return;
     }
 
-    setIsConnectionFlashActive(true);
     if (connectionFlashTimerRef.current !== null) {
       window.clearTimeout(connectionFlashTimerRef.current);
     }
+
+    window.setTimeout(() => {
+      setIsConnectionFlashActive(true);
+    }, 0);
 
     connectionFlashTimerRef.current = window.setTimeout(() => {
       setIsConnectionFlashActive(false);
@@ -1178,17 +1181,6 @@ export default function App() {
   const handleClippyDoubleClick = () => {
     // Wisdom-on-double-click is intentionally disabled.
   };
-
-  useEffect(() => {
-    if (!showConversationModal) {
-      return;
-    }
-
-    if (!hasAssistantEndpointAndModel()) {
-      setShowConversationModal(false);
-      setConversationError("");
-    }
-  }, [hasAssistantEndpointAndModel, showConversationModal]);
 
   const handleDismissAssistantWindow = () => {
     setAssistantWindowVisible(false);
