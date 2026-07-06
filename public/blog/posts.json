@@ -8,7 +8,14 @@
     {
       "heading": "hastily attached scribble written at midnight (#heredoc)",
       "content": [
-        "does it meow tho"
+        {
+          "heading": "does it meow tho",
+          "content": "an introductory write up by Claude on the next blog post"
+        },
+        {
+          "heading": "rough text content for the next post",
+          "printout": "5th.md"
+        }
       ]
     },
     {
