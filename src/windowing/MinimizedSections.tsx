@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useSectionContext } from './hooks';
+import React, { useState, useEffect, useRef } from "react";
+import { useSectionContext } from "./hooks";
 
 export const MinimizedSections: React.FC = () => {
-  const { minimizedSections, restoreSection, pageMetadata } = useSectionContext();
+  const { minimizedSections, restoreSection, pageMetadata } =
+    useSectionContext();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -15,10 +16,10 @@ export const MinimizedSections: React.FC = () => {
     };
 
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen]);
 
@@ -27,17 +28,19 @@ export const MinimizedSections: React.FC = () => {
   }
 
   // Check if any root-level sections (depth=0) are minimized
-  const hasRootLevelMinimized = Array.from(minimizedSections.keys()).some(uuid => {
-    const metadata = pageMetadata.sections.find(s => s.uuid === uuid);
-    return metadata?.depth === 0;
-  });
+  const hasRootLevelMinimized = Array.from(minimizedSections.keys()).some(
+    (uuid) => {
+      const metadata = pageMetadata.sections.find((s) => s.uuid === uuid);
+      return metadata?.depth === 0;
+    },
+  );
 
-  const buttonText = hasRootLevelMinimized ? 'unhide all' : 'unhide';
+  const buttonText = hasRootLevelMinimized ? "unhide all" : "unhide";
 
   const handleButtonClick = () => {
     if (hasRootLevelMinimized) {
       // Restore all minimized sections
-      Array.from(minimizedSections.keys()).forEach(uuid => {
+      Array.from(minimizedSections.keys()).forEach((uuid) => {
         restoreSection(uuid);
       });
       setIsOpen(false);
@@ -49,23 +52,27 @@ export const MinimizedSections: React.FC = () => {
 
   return (
     <div className="minimized-menu-container" ref={menuRef}>
-      <button 
+      <button
         className="menu-button minimized-menu-button"
         style={{
-          backgroundColor: minimizedSections.size > 0 ? 'rgba(51, 153, 255, 0.3)' : 'transparent'
+          backgroundColor:
+            minimizedSections.size > 0
+              ? "rgba(51, 153, 255, 0.3)"
+              : "transparent",
         }}
         onClick={handleButtonClick}
         aria-expanded={isOpen}
       >
-        <span className="menu-underline">u</span>{buttonText.slice(1)} ({minimizedSections.size})
+        <span className="menu-underline">u</span>
+        {buttonText.slice(1)} ({minimizedSections.size})
       </button>
       {isOpen && (
         <div className="dropdown-menu">
           {Array.from(minimizedSections.entries()).map(([uuid, heading]) => {
             // Look up full metadata if available
-            const metadata = pageMetadata.sections.find(s => s.uuid === uuid);
+            const metadata = pageMetadata.sections.find((s) => s.uuid === uuid);
             const displayHeading = metadata?.heading || heading;
-            
+
             return (
               <button
                 key={uuid}

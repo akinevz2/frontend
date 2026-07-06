@@ -1,34 +1,88 @@
 import { CopyToClipboardButton } from "./CopyToClipboardButton.tsx";
 import type { Heading, SectionProps } from "../windowing";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { playLayeredAudio } from "../lib/audioOverlap";
+import Markdown, { type Options as ReactMarkdownOptions } from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 
 export type AddonProps = SectionProps & {
-  status?: string;
-  text?: string;
-  link?: string;
-  content?: string | (string | AddonProps)[];
+  status?: string | undefined;
+  text?: string | undefined;
+  link?: string | undefined;
+  content?: string | (string | AddonProps)[] | undefined;
 };
 
 export type AddonContent = string | (string | AddonProps)[];
 
-function renderHeading(heading: Heading, props: AddonProps) {
-  const { link } = props;
+const markdownSanitizeSchema: unknown = {
+  ...defaultSchema,
+  tagNames: [...(defaultSchema.tagNames || []), "iframe"],
+  attributes: {
+    ...defaultSchema.attributes,
+    a: [...(defaultSchema.attributes?.a || []), ["target"], ["rel"]],
+    img: [...(defaultSchema.attributes?.img || []), ["loading"], ["decoding"]],
+    iframe: [
+      ["title"],
+      ["src"],
+      ["width"],
+      ["height"],
+      ["style"],
+      ["scrolling"],
+      ["loading"],
+      ["allow"],
+      ["allowfullscreen"],
+      ["referrerpolicy"],
+      ["frameborder"],
+    ],
+  },
+};
+
+const markdownRehypePlugins = [
+  rehypeRaw,
+  [rehypeSanitize, markdownSanitizeSchema],
+] as ReactMarkdownOptions["rehypePlugins"];
+
+const markdownComponents = {
+  img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
+    <img
+      {...props}
+      style={{ maxWidth: "100%", height: "auto", ...(props.style ?? {}) }}
+    />
+  ),
+};
+
+function renderHeading(heading: Heading, link?: string) {
   return <RenderLink link={link} text={heading} />;
 }
 
-function renderContent(content: AddonContent, props: AddonProps) {
+function renderContent(content: AddonContent, status?: string, text?: string) {
   if (typeof content === "string")
     return (
       <ul>
-        <li key={0}>{content}</li>
-        {renderAddon(props)}
+        <li key={0}>
+          <Markdown
+            rehypePlugins={markdownRehypePlugins}
+            components={markdownComponents}
+          >
+            {content}
+          </Markdown>
+        </li>
+        {renderAddon(status, text)}
       </ul>
     );
   return (
     <ul>
       {content.map((text, index) =>
         typeof text == "string" ? (
-          <li key={index}>{text}</li>
+          <li key={index}>
+            <Markdown
+              rehypePlugins={markdownRehypePlugins}
+              components={markdownComponents}
+            >
+              {text}
+            </Markdown>
+          </li>
         ) : (
           <Addon key={index} {...text} />
         ),
@@ -45,7 +99,7 @@ function renderStatus(status: string) {
   );
 }
 
-function RenderLink(props: { link?: string; text: string }) {
+function RenderLink(props: { link: string | undefined; text: string }) {
   const { link, text } = props;
   if (link) {
     return (
@@ -57,8 +111,7 @@ function RenderLink(props: { link?: string; text: string }) {
   return <>{text}</>;
 }
 
-function renderAddon(props: AddonProps) {
-  const { status, text } = props;
+function renderAddon(status?: string, text?: string) {
   const elements = [];
   if (status) {
     elements.push(<span key="status">{renderStatus(status)}</span>);
@@ -73,17 +126,31 @@ function renderAddon(props: AddonProps) {
   return elements;
 }
 
-const playSound = () => {
-  console.log("Close button clicked!");
-  const audio = new Audio("/crunchy_kick.ogg");
-  audio.play().catch(() => alert("Error playing sound: crunchy_kick.ogg"));
+const playSound = (clickCount: number) => {
+  const probability = 1 / Math.log(clickCount + Math.E);
+  if (Math.random() < probability) {
+    playLayeredAudio("/crunchy_kick.ogg");
+    window.dispatchEvent(new CustomEvent("crunchy-kick-played"));
+  }
 };
 
-export const AddonList = (props: AddonProps) => {
-  const { heading, content, className, children } = props;
+type WindowPanelProps = AddonProps & {
+  asList?: boolean;
+};
+
+const WindowPanel = ({
+  heading,
+  content,
+  link,
+  status,
+  text,
+  className,
+  children,
+}: WindowPanelProps) => {
   const hasHeading = !!heading;
   const hasContent = !!content;
   const [isMaximized, setIsMaximized] = useState(false);
+  const closeClickCountRef = useRef(0);
 
   const handleMaximize = () => {
     setIsMaximized(!isMaximized);
@@ -93,7 +160,8 @@ export const AddonList = (props: AddonProps) => {
     if (isMaximized) {
       setIsMaximized(false);
     } else {
-      playSound();
+      closeClickCountRef.current += 1;
+      playSound(closeClickCountRef.current);
     }
   };
 
@@ -101,7 +169,7 @@ export const AddonList = (props: AddonProps) => {
     <div className={`window ${className || ""}`}>
       {hasHeading ? (
         <div className="title-bar">
-          <div className="title-bar-text">{renderHeading(heading, props)}</div>
+          <div className="title-bar-text">{renderHeading(heading, link)}</div>
           <div className="title-bar-controls">
             <button aria-label="Minimize"></button>
             <button aria-label="Maximize" onClick={handleMaximize}></button>
@@ -110,7 +178,7 @@ export const AddonList = (props: AddonProps) => {
         </div>
       ) : null}
       <div className="window-body">
-        {hasContent ? renderContent(content, props) : null}
+        {hasContent ? renderContent(content, status, text) : null}
         {children}
       </div>
     </div>
@@ -144,67 +212,8 @@ export const AddonList = (props: AddonProps) => {
   );
 };
 
-export const Addon = (props: AddonProps) => {
-  const { heading, content, className, children } = props;
-  const hasHeading = !!heading;
-  const hasContent = !!content;
-  const [isMaximized, setIsMaximized] = useState(false);
+export const AddonList = (props: AddonProps) => (
+  <WindowPanel {...props} asList={true} />
+);
 
-  const handleMaximize = () => {
-    setIsMaximized(!isMaximized);
-  };
-
-  const handleClose = () => {
-    if (isMaximized) {
-      setIsMaximized(false);
-    } else {
-      playSound();
-    }
-  };
-
-  const windowContent = (
-    <div className={`window ${className || ""}`}>
-      {hasHeading ? (
-        <div className="title-bar">
-          <div className="title-bar-text">{renderHeading(heading, props)}</div>
-          <div className="title-bar-controls">
-            <button aria-label="Minimize"></button>
-            <button aria-label="Maximize" onClick={handleMaximize}></button>
-            <button aria-label="Close" onClick={handleClose}></button>
-          </div>
-        </div>
-      ) : null}
-      <div className="window-body">
-        {hasContent ? renderContent(content, props) : null}
-        {children}
-      </div>
-    </div>
-  );
-
-  return (
-    <>
-      <div
-        className="addon-wrapper"
-        style={{ visibility: isMaximized ? "hidden" : "visible" }}
-      >
-        {windowContent}
-      </div>
-      {isMaximized && (
-        <div
-          style={{
-            position: "fixed",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            zIndex: 9999,
-            maxWidth: "90vw",
-            maxHeight: "90vh",
-            overflow: "auto",
-          }}
-        >
-          {windowContent}
-        </div>
-      )}
-    </>
-  );
-};
+export const Addon = (props: AddonProps) => <WindowPanel {...props} />;

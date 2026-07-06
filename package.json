@@ -1,24 +1,34 @@
 {
-  "name": "website",
-  "private": true,
-  "version": "1.1.5",
+  "name": "website-xp-phone",
+  "version": "1.5.4",
+  "author": "Kirill <kine> Nevzorov <akinevz@outlook.com>",
   "type": "module",
+  "packageManager": "npm@10.8.2",
+  "engines": {
+    "node": "20.19.2"
+  },
   "scripts": {
     "dev": "vite",
-    "build": "npm run generate:music && vite build",
-    "preview": "vite preview --host --port 8086",
-    "lint": "eslint .",
+    "refresh:content": "node ./scripts/refresh-content.mjs",
+    "verify:policy": "node ./scripts/verify-policy.mjs",
+    "build": "npm run refresh:content && npm run verify:policy && vite build && npm run checksums",
+    "build:local": "npm run build",
+    "preview": "vite preview --host 127.0.0.1 --port 8086",
+    "lint": "npx --yes prettier --write \"src/**/*.{ts,tsx}\" && eslint ./src --ext .ts,.tsx",
+    "test": "node --test",
+    "test:watch": "node --test --watch",
     "check:audit": "npm audit --audit-level=low",
-    "prebuild": "node -e \"console.log('About to run npm audit in 5 seconds. Press Ctrl+C to abort.'); setTimeout(() => {}, 5000);\" && npm run check:audit",
-    "pagerts": "NPM_CONFIG_LOGLEVEL=error npx --yes pagerts",
-    "generate:music": "node ./scripts/generate-soundcloud-json.mjs"
+    "security:check": "npm run lint && npm run test && npm run check:audit",
+    "checksums": "node ./scripts/write-dist-checksums.mjs"
   },
   "dependencies": {
+    "firebase": "^12.14.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-markdown": "^10.1.0",
     "react-toastify": "^11.0.5",
     "rehype-raw": "^7.0.0",
+    "rehype-sanitize": "^6.0.0",
     "xp.css": "^0.2.6"
   },
   "devDependencies": {
@@ -38,5 +48,9 @@
   },
   "overrides": {
     "lodash": "^4.17.21"
+  },
+  "allowScripts": {
+    "@firebase/util@1.15.1": true,
+    "protobufjs@7.6.4": true
   }
 }

@@ -5,6 +5,7 @@ import react from "@vitejs/plugin-react";
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
+import { buildMusicGroupSchema, serializeJsonLd } from "./src/lib/musicSchema";
 
 const pagesJsonPath = new URL("./src/pages.json", import.meta.url);
 
@@ -14,8 +15,26 @@ type PageDefinition = {
   description: string;
 };
 
+type SoundCloudTrack = {
+  title: string;
+  url: string;
+};
+
+type SoundCloudPayload = {
+  tracks?: SoundCloudTrack[];
+};
+
 const pages = JSON.parse(fs.readFileSync(pagesJsonPath, "utf-8")) as PageDefinition[];
 const SITE_ORIGIN = process.env.SITE_ORIGIN || "https://akinevz.com";
+const DEV_HOST = process.env.VITE_DEV_HOST || "127.0.0.1";
+const DEV_PORT = Number(process.env.VITE_DEV_PORT || "8086");
+
+const SECURITY_HEADERS = {
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "SAMEORIGIN",
+  "Content-Security-Policy": "frame-ancestors 'self'",
+  "Referrer-Policy": "no-referrer",
+};
 
 function normalizeRoute(routePath: string): string {
   if (!routePath || routePath === "/") {
@@ -27,6 +46,61 @@ function normalizeRoute(routePath: string): string {
 
 function getRouteUrl(routePath: string): string {
   return new URL(normalizeRoute(routePath), SITE_ORIGIN).toString();
+}
+
+function getSitemapLastMod(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function getSitemapPriority(routePath: string): string {
+  switch (normalizeRoute(routePath)) {
+    case "/":
+      return "1.0";
+    case "/sitemap":
+      return "0.9";
+    case "/music":
+    case "/blog":
+      return "0.8";
+    default:
+      return "0.7";
+  }
+}
+
+function getSitemapChangeFreq(routePath: string): string {
+  switch (normalizeRoute(routePath)) {
+    case "/":
+    case "/music":
+      return "weekly";
+    case "/blog":
+      return "monthly";
+    case "/sitemap":
+      return "monthly";
+    default:
+      return "yearly";
+  }
+}
+
+function getSoundCloudTracks(): SoundCloudTrack[] {
+  const soundcloudJsonPath = path.resolve(process.cwd(), "public/soundcloud.json");
+
+  if (!fs.existsSync(soundcloudJsonPath)) {
+    return [];
+  }
+
+  try {
+    const payload = JSON.parse(fs.readFileSync(soundcloudJsonPath, "utf-8")) as SoundCloudPayload;
+    return Array.isArray(payload.tracks) ? payload.tracks : [];
+  } catch {
+    return [];
+  }
+}
+
+function withStructuredData(indexHtml: string, tracks: SoundCloudTrack[]): string {
+  const structuredData = `<script type="application/ld+json" id="homepage-music-structured-data">${serializeJsonLd(
+    buildMusicGroupSchema(tracks),
+  )}</script>`;
+
+  return indexHtml.replace("</head>", `${structuredData}\n  </head>`);
 }
 
 function escapeHtml(value: string): string {
@@ -117,7 +191,17 @@ function withRouteMeta(indexHtml: string, page: PageDefinition): string {
 
 function generateSitemapXml(): string {
   const urls = pages
-    .map((page) => `  <url><loc>${escapeHtml(getRouteUrl(page.path))}</loc></url>`)
+    .map(
+      (page) =>
+        [
+          "  <url>",
+          `    <loc>${escapeHtml(getRouteUrl(page.path))}</loc>`,
+          `    <lastmod>${getSitemapLastMod()}</lastmod>`,
+          `    <changefreq>${getSitemapChangeFreq(page.path)}</changefreq>`,
+          `    <priority>${getSitemapPriority(page.path)}</priority>`,
+          "  </url>",
+        ].join("\n"),
+    )
     .join("\n");
 
   return [
@@ -140,10 +224,14 @@ function routeSkeletonPlugin() {
       }
 
       const indexHtml = fs.readFileSync(indexPath, "utf-8");
+      const soundCloudTracks = getSoundCloudTracks();
       fs.writeFileSync(path.join(outDir, "sitemap.xml"), generateSitemapXml(), "utf-8");
 
       for (const page of pages) {
-        const routeHtml = withRouteMeta(indexHtml, page);
+        const routeHtml =
+          normalizeRoute(page.path || "/") === "/"
+            ? withStructuredData(withRouteMeta(indexHtml, page), soundCloudTracks)
+            : withRouteMeta(indexHtml, page);
         const normalizedRoutePath = normalizeRoute(page.path || "/");
 
         if (normalizedRoutePath === "/") {
@@ -165,11 +253,20 @@ export default defineConfig({
   publicDir: "public",
   plugins: [react(), routeSkeletonPlugin()],
   build: {
+    cssMinify: false,
     rollupOptions: {
       output: {
         manualChunks(id) {
           if (!id.includes("node_modules")) {
             return;
+          }
+
+          if (id.includes("firebase")) {
+            return "firebase";
+          }
+
+          if (id.includes("react") || id.includes("scheduler")) {
+            return "react-core";
           }
 
           if (id.includes("react-markdown") || id.includes("rehype-raw")) {
@@ -190,10 +287,19 @@ export default defineConfig({
     },
   },
   server: {
-    host: true,
-    port: 8086,
+    host: DEV_HOST,
+    port: DEV_PORT,
+    strictPort: true,
+    cors: false,
+    headers: SECURITY_HEADERS,
     watch: {
       usePolling: true,
     },
+  },
+  preview: {
+    host: DEV_HOST,
+    port: DEV_PORT,
+    strictPort: true,
+    headers: SECURITY_HEADERS,
   },
 });

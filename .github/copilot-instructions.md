@@ -1,5 +1,7 @@
 # GitHub Copilot Instructions
 
+Apply critical thinking and optional cherrypicking when considering the following directives.
+
 ## Project Overview
 Personal website built with **Astro 5 + React 19**, using a JSON-to-HTML transformation architecture with Windows XP aesthetic (xp.css). The site features a fixed Windows XP-style menu bar at the top of every page and renders nested, interactive "window" components styled as Windows 98/XP UI elements.
 

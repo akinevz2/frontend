@@ -19,7 +19,10 @@ export function generateMenuItems(
       const fallbackLabel =
         normalizedUrl === "/"
           ? "home"
-          : normalizedUrl.replace(/^\//, "").replace(/\/$/, "").replace(/-/g, " ");
+          : normalizedUrl
+              .replace(/^\//, "")
+              .replace(/\/$/, "")
+              .replace(/-/g, " ");
       const label = page.label ?? fallbackLabel;
 
       return {

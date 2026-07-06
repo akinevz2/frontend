@@ -11,12 +11,15 @@ type Props = {
   links?: Link[];
   additionalLinks?: MenuItem[];
   onNavigate?: (href: string) => void;
+  onMenuAction?: (href: string) => boolean;
 };
 
-const PAGE_LINKS = (pages as Array<{ path: string }>).map((page) => ({
-  url: page.path,
-  label: (page as { menuLabel?: string }).menuLabel,
-}));
+const PAGE_LINKS = (pages as Array<{ path: string; menuLabel?: string }>).map(
+  (page) => ({
+    url: page.path,
+    ...(page.menuLabel ? { label: page.menuLabel } : {}),
+  }),
+);
 
 const isTypingTarget = (target: EventTarget | null) => {
   if (!(target instanceof HTMLElement)) {
@@ -33,13 +36,36 @@ const isTypingTarget = (target: EventTarget | null) => {
 
 const isInternalPath = (href: string) => href.startsWith("/");
 
-export default function MenuBar({ links, additionalLinks = [], onNavigate }: Props) {
+const SITEMAP_HREF = "/sitemap";
+
+const hasAdminCookie = () =>
+  typeof document !== "undefined" &&
+  document.cookie.split("; ").some((cookie) => cookie === "admin=akinevz");
+
+const filterHiddenMenuItems = (menuItems: MenuItem[]) => {
+  if (hasAdminCookie()) {
+    return menuItems;
+  }
+
+  return menuItems.filter((item) => item.href !== SITEMAP_HREF);
+};
+
+export default function MenuBar({
+  links,
+  additionalLinks = [],
+  onNavigate,
+  onMenuAction,
+}: Props) {
   const menuItems = useMemo(() => {
     if (links) {
-      return links.map((link) => ({ label: link.label, href: link.href }));
+      return filterHiddenMenuItems(
+        links.map((link) => ({ label: link.label, href: link.href })),
+      );
     }
 
-    return generateMenuItems(PAGE_LINKS, additionalLinks);
+    return filterHiddenMenuItems(
+      generateMenuItems(PAGE_LINKS, additionalLinks),
+    );
   }, [links, additionalLinks]);
 
   useEffect(() => {
@@ -65,6 +91,11 @@ export default function MenuBar({ links, additionalLinks = [], onNavigate }: Pro
         return;
       }
 
+      if (onMenuAction?.(item.href)) {
+        event.preventDefault();
+        return;
+      }
+
       if (onNavigate && isInternalPath(item.href)) {
         event.preventDefault();
         onNavigate(item.href);
@@ -75,7 +106,7 @@ export default function MenuBar({ links, additionalLinks = [], onNavigate }: Pro
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [menuItems, onNavigate]);
+  }, [menuItems, onMenuAction, onNavigate]);
 
   return (
     <div className="menu-bar">
@@ -87,10 +118,6 @@ export default function MenuBar({ links, additionalLinks = [], onNavigate }: Pro
               role="menuitem"
               data-key={item.label.charAt(0).toLowerCase()}
               onClick={(event) => {
-                if (!onNavigate || !isInternalPath(item.href)) {
-                  return;
-                }
-
                 if (
                   event.defaultPrevented ||
                   event.button !== 0 ||
@@ -102,8 +129,15 @@ export default function MenuBar({ links, additionalLinks = [], onNavigate }: Pro
                   return;
                 }
 
-                event.preventDefault();
-                onNavigate(item.href);
+                if (onMenuAction?.(item.href)) {
+                  event.preventDefault();
+                  return;
+                }
+
+                if (onNavigate && isInternalPath(item.href)) {
+                  event.preventDefault();
+                  onNavigate(item.href);
+                }
               }}
             >
               <span className="menu-underline">{item.label.charAt(0)}</span>
