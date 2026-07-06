@@ -47,5 +47,9 @@
   },
   "overrides": {
     "lodash": "^4.17.21"
+  },
+  "allowScripts": {
+    "@firebase/util@1.15.1": true,
+    "protobufjs@7.6.4": true
   }
 }
