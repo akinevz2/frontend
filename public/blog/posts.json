@@ -2,6 +2,10 @@
   "heading": "kine's blog posts",
   "content": [
     {
+      "content": "last post was a joke",
+      "heading": "sixth post (#meta, #blog)"
+    },
+    {
       "heading": "hastily attached scribble written at midnight (#heredoc)",
       "content": [
         "does it meow tho"
