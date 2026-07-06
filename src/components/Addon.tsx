@@ -38,7 +38,7 @@ function renderStatus(status: string) {
 function RenderLink(props: { link?: string, text: string, }) {
     const { link, text } = props
     return <h1>
-        <a href={link} target="_blank">
+        <a href={link} target="_blank" rel="noopener noreferrer">
             {text}
         </a>
     </h1>
