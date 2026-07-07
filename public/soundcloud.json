@@ -1,27 +1,12 @@
 {
   "source": "https://soundcloud.com/akinevz",
-  "generatedAt": "2026-07-05T05:16:56.297Z",
+  "generatedAt": "2026-07-07T21:12:38.333Z",
   "trackCount": 10,
   "tracks": [
     {
       "path": "/akinevz/out-of-breath",
       "title": "out-of-breath",
       "url": "https://soundcloud.com/akinevz/out-of-breath"
-    },
-    {
-      "path": "/akinevz/hope-kine-bootleg",
-      "title": "hope-kine-bootleg",
-      "url": "https://soundcloud.com/akinevz/hope-kine-bootleg"
-    },
-    {
-      "path": "/akinevz/eternal",
-      "title": "eternal",
-      "url": "https://soundcloud.com/akinevz/eternal"
-    },
-    {
-      "path": "/akinevz/slowly-falling-apart",
-      "title": "slowly-falling-apart",
-      "url": "https://soundcloud.com/akinevz/slowly-falling-apart"
     },
     {
       "path": "/akinevz/try-try-try",
@@ -52,6 +37,21 @@
       "path": "/akinevz/resummoning-fried-beans",
       "title": "resummoning-fried-beans",
       "url": "https://soundcloud.com/akinevz/resummoning-fried-beans"
+    },
+    {
+      "path": "/akinevz/spiritual-overload",
+      "title": "spiritual-overload",
+      "url": "https://soundcloud.com/akinevz/spiritual-overload"
+    },
+    {
+      "path": "/akinevz/corporate-dresscore",
+      "title": "corporate-dresscore",
+      "url": "https://soundcloud.com/akinevz/corporate-dresscore"
+    },
+    {
+      "path": "/akinevz/project-vox",
+      "title": "project-vox",
+      "url": "https://soundcloud.com/akinevz/project-vox"
     }
   ]
 }
