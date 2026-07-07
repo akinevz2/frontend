@@ -71,3 +71,6 @@ I want to be direct rather than keep answering these one at a time: I think it's
 If instead your dissertation is on thermal/electronic analysis and Lie theory is a separate, unrelated thread, then let's treat them as two separate things rather than trying to weld them together.
 What's the actual assignment brief or thesis question you're working from? That'll tell me whether I should be helping you find a real Lie-theory application (there are plenty of legitimate ones — robotics, quantum mechanics, crystallography/symmetry groups in materials science) or whether we're talking about two unconnected topics.
 ---
+rest of the material will remain encypted
+---
+This came out of the DAMTP Numerical Analysis group at Cambridge, which is exactly what you described — they pioneered numerical integrators that preserve Lie-group structure when solving differential equations. The paper surveys the theory of numerical integrators that respect Lie-group structure, covering differential geometry foundations, algorithmic issues, and applications. The core insight is that many differential equations evolve on Lie groups or manifolds acted on by Lie groups, and preserving that structure during discretization matters for getting qualitatively correct geometry/dynamics and minimizing numerical error.
