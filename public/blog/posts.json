@@ -54,7 +54,22 @@
     },
     {
       "heading": "Related papers from the same Cambridge NA group circa 1999–2000 that came up:",
-      "printout": "7.md"
+      "content": [
+        {
+          "printout": "7.md",
+          // "printout": "7.md",
+          "heading": "повествование"
+        },
+        {
+          "style": "NA.2000.03.pdf",
+          "content": "Iserles, A., Munthe-Kaas, H.Z., Nørsett, S.P., and Zanna, A.: 'Lie-group methods', DAMTP Technical Report NA2000/03, University of Cambridge, 2000. Published in Acta Numerica, Vol. 9, pp. 215–365, Cambridge University Press."
+        },
+        {
+          "style": "Iserles, A. — dossier",
+          "content": "Arieh Iserles (b. 2 September 1947). Emeritus Professor in Numerical Analysis of Differential Equations, DAMTP, University of Cambridge. Studied at Hebrew University of Jerusalem and Ben-Gurion University of the Negev; PhD on numerical methods for stiff ODEs. Joined Cambridge 1978 as Junior Research Fellow, King's College; University Lecturer 1987–95; Reader 1995–99; Professor 1999–present.",
+          "comments": "Primary architect of geometric/Lie-group integration methods at Cambridge. Managing editor of Acta Numerica (the journal in which NA2000/03 was formally published). Chair of the Society for Foundations of Computational Mathematics 1997–2000, i.e. the exact period of this preprint. Engaged directly with the Russian mathematical community — gave a talk at JINR Dubna (1999) on Lie groups and computation of invariants, published in Self-Similar Systems. Awards: Onsager Medal (Norwegian Univ. of Science and Technology, 1999), David Crighton Medal (IMA/LMS, 2012), SIAM Prize for Distinguished Service (2014). The Russian translation of NA2000/03 circulating as a local file in the early 2000s is consistent with his active outreach to the Soviet/Russian mathematical tradition during this period."
+        }
+      ]
     },
     {
       "heading": "jumpscare",
