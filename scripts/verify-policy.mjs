@@ -66,6 +66,9 @@ function validateSectionNode(node, context, options = {}) {
     assert(node && typeof node === "object" && !Array.isArray(node), `${context}: must be object`);
 
     const allowed = new Set([
+        "all",
+        "style",
+        "styles",
         "className",
         "heading",
         "content",
