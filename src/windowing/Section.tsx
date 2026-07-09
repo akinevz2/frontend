@@ -276,6 +276,11 @@ function isValidHttpUrl(link: string): link is HttpUrl {
   }
 }
 
+function isRootOffsetUrl(link: string): boolean {
+  // Root-offset links keep navigation on this site (e.g. /blog/?post=slug).
+  return link.startsWith("/");
+}
+
 const playSound = () => {
   playLayeredAudio("/crunchy_kick.ogg");
   window.dispatchEvent(new CustomEvent("crunchy-kick-played"));
@@ -410,7 +415,7 @@ export const Section = (props: SectionProps) => {
   };
 
   const handlePrimaryAction = () => {
-    if (hasLink && isValidHttpUrl(link)) {
+    if (hasLink && (isValidHttpUrl(link) || isRootOffsetUrl(link))) {
       window.location.assign(link);
       return;
     }
