@@ -184,6 +184,19 @@
           "heading": "the concept of:",
           "content": [
             "programming and technology",
+            {
+              "heading": "such as good code",
+              "content": [
+                {
+                  "heading": "video: what is good code?",
+                  "link": "/documents/Creating%20Good%20Code.mp4"
+                },
+                {
+                  "heading": "presentation slides here",
+                  "link": "/documents/Creating%20Good%20Code.pptx"
+                }
+              ]
+            },
             "and cats [\\[?\\]](https://akinevz.com/images/hyperawareofwhatacatis.png)",
             {
               "heading": "open source",
