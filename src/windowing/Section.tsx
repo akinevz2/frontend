@@ -294,11 +294,16 @@ export const Section = (props: SectionProps) => {
   } = props;
   const hasHeading = !!heading;
   const hasContent = !!content;
+  const hasStringContent = typeof content === "string";
   const hasLink = typeof link === "string" && link.length > 0;
   const hasPrintout =
     printout !== undefined &&
     ((typeof printout === "string" && printout.length > 0) ||
       (Array.isArray(printout) && printout.length > 0));
+  const hasChildren = children !== undefined && children !== null;
+  const shouldShowCollapsedContent =
+    hasHeading && hasStringContent && !hasPrintout && !hasChildren;
+  const shouldShowCollapsedOkButton = !shouldShowCollapsedContent || hasLink;
   const isOnBlogPage =
     typeof window !== "undefined" && isBlogPath(window.location.pathname);
   const rawTargetPostSlug =
@@ -492,8 +497,21 @@ export const Section = (props: SectionProps) => {
       ) : null}
       <div className="window-body">
         {isCollapsedResolved ? (
-          <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            <button onClick={handlePrimaryAction}>OK</button>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: "0.75rem",
+              flexWrap: "wrap",
+            }}
+          >
+            {shouldShowCollapsedContent && hasContent
+              ? renderContent(content, depth)
+              : null}
+            {shouldShowCollapsedOkButton ? (
+              <button onClick={handlePrimaryAction}>OK</button>
+            ) : null}
           </div>
         ) : (
           <>
@@ -590,9 +608,20 @@ export const Section = (props: SectionProps) => {
                   ) : null}
                   {isCollapsedResolved ? (
                     <div
-                      style={{ display: "flex", justifyContent: "flex-end" }}
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        gap: "0.75rem",
+                        flexWrap: "wrap",
+                      }}
                     >
-                      <button onClick={handlePrimaryAction}>OK</button>
+                      {shouldShowCollapsedContent && hasContent
+                        ? renderContent(content, depth)
+                        : null}
+                      {shouldShowCollapsedOkButton ? (
+                        <button onClick={handlePrimaryAction}>OK</button>
+                      ) : null}
                     </div>
                   ) : (
                     <>

@@ -1263,6 +1263,7 @@ export default function App() {
     <>
       <MenuBar
         onNavigate={navigate}
+        currentPath={path}
         // additionalLinks={showClippy ? TOP_BAR_ADDITIONAL_LINKS : []}
         additionalLinks={[]}
         // onMenuAction={handleTopMenuAction}
