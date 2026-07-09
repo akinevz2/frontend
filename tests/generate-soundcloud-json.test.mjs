@@ -13,14 +13,14 @@ test("parseOutput extracts the first JSON payload from pagerts output", () => {
   const payload = parseOutput(
     `noise
 [{
-  "resources": [{ "link": { "value": "/akinevz/track-one" } }]
+  "resources": [{ "link": { "value": "/akinevz1/track-one" } }]
 }]
 trailing logs`,
   );
 
   assert.equal(Array.isArray(payload), true);
   assert.equal(payload.length, 1);
-  assert.deepEqual(payload[0].resources[0].link.value, "/akinevz/track-one");
+  assert.deepEqual(payload[0].resources[0].link.value, "/akinevz1/track-one");
 });
 
 test("parseOutput rejects output without JSON", () => {
@@ -28,53 +28,53 @@ test("parseOutput rejects output without JSON", () => {
 });
 
 test("isTrackPath only accepts direct track paths", () => {
-  assert.equal(isTrackPath("/akinevz/track-one"), true);
-  assert.equal(isTrackPath("/akinevz"), false);
-  assert.equal(isTrackPath("/akinevz/sets/mixtape"), false);
-  assert.equal(isTrackPath("/akinevz/likes"), false);
-  assert.equal(isTrackPath("/akinevz/tracks"), false);
-  assert.equal(isTrackPath("/akinevz/comments"), false);
+  assert.equal(isTrackPath("/akinevz1/track-one"), true);
+  assert.equal(isTrackPath("/akinevz1"), false);
+  assert.equal(isTrackPath("/akinevz1/sets/mixtape"), false);
+  assert.equal(isTrackPath("/akinevz1/likes"), false);
+  assert.equal(isTrackPath("/akinevz1/tracks"), false);
+  assert.equal(isTrackPath("/akinevz1/comments"), false);
   assert.equal(isTrackPath("/akinevz2/track"), false);
 });
 
 test("titleFromPath derives the last path segment", () => {
-  assert.equal(titleFromPath("/akinevz/microtonal-vudoo"), "microtonal-vudoo");
+  assert.equal(titleFromPath("/akinevz1/microtonal-vudoo"), "microtonal-vudoo");
 });
 
 test("buildTracks deduplicates resources and maps them into soundcloud URLs", () => {
   const tracks = buildTracks([
-    { link: { value: "/akinevz/track-one" } },
-    { link: { value: "/akinevz/track-one" } },
-    { link: { value: "/akinevz/track-two" } },
-    { link: { value: "/akinevz/sets/mixtape" } },
+    { link: { value: "/akinevz1/track-one" } },
+    { link: { value: "/akinevz1/track-one" } },
+    { link: { value: "/akinevz1/track-two" } },
+    { link: { value: "/akinevz1/sets/mixtape" } },
   ]);
 
   assert.deepEqual(tracks, [
     {
-      path: "/akinevz/track-one",
+      path: "/akinevz1/track-one",
       title: "track-one",
-      url: "https://soundcloud.com/akinevz/track-one",
+      url: "https://soundcloud.com/akinevz1/track-one",
     },
     {
-      path: "/akinevz/track-two",
+      path: "/akinevz1/track-two",
       title: "track-two",
-      url: "https://soundcloud.com/akinevz/track-two",
+      url: "https://soundcloud.com/akinevz1/track-two",
     },
   ]);
 });
 
 test("extractTrackPathsFromHtml finds valid track links and drops reserved routes", () => {
   const html = `
-    <a href="/akinevz/track-one">track</a>
-    <a href='/akinevz/likes'>likes</a>
-    <a href="/akinevz/track-two?si=abc">track two</a>
-    <a href="/akinevz/sets/mix">set</a>
-    <a href="/akinevz/track-one">duplicate</a>
+    <a href="/akinevz1/track-one">track</a>
+    <a href='/akinevz1/likes'>likes</a>
+    <a href="/akinevz1/track-two?si=abc">track two</a>
+    <a href="/akinevz1/sets/mix">set</a>
+    <a href="/akinevz1/track-one">duplicate</a>
   `;
 
   assert.deepEqual(extractTrackPathsFromHtml(html), [
-    "/akinevz/track-one",
-    "/akinevz/track-two",
+    "/akinevz1/track-one",
+    "/akinevz1/track-two",
   ]);
 });
 

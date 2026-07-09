@@ -209,10 +209,10 @@ const toMusicSections = (
       content:
         trackEmbeds.length > 0
           ? [
-              `Generated: ${new Date(payload.generatedAt).toLocaleString()}`,
-              `Track count: ${payload.trackCount}`,
-              ...trackEmbeds,
-            ]
+            `Generated: ${new Date(payload.generatedAt).toLocaleString()}`,
+            `Track count: ${payload.trackCount}`,
+            ...trackEmbeds,
+          ]
           : ["No tracks found in this snapshot."],
     },
     {
@@ -229,8 +229,8 @@ const toMusicSections = (
       children: [],
       heading: "Source",
       content: [
-        "Artist page: [soundcloud.com/akinevz](https://soundcloud.com/akinevz)",
-        "Backup page: [soundcloud.com/akinevz1](https://soundcloud.com/akinevz1)",
+        "Artist page: [soundcloud.com/akinevz1](https://soundcloud.com/akinevz1)",
+        "Backup page: [soundcloud.com/akinevz](https://soundcloud.com/akinevz)",
         "",
         `<iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/artist/2vy7FXU6dP4OEBiJVjsw7r?utm_source=generator&theme=0&si=0c8005cead7543c5" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`,
       ],

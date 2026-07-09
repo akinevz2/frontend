@@ -1,6 +1,11 @@
 {
   "heading": "kine's blog posts",
   "content": [
+    {
+      "heading": "friend spotlight",
+      "content": "check out kaine.sh",
+      "link": "https://kaine.sh"
+    },
     "sorry, website broke really badly",
     "i asked Github AI to help me harden security of my website",
     "i don't know where i messed up",
