@@ -210,7 +210,7 @@ const toMusicSections = (
         trackEmbeds.length > 0
           ? [
             `Generated: ${new Date(payload.generatedAt).toLocaleString()}`,
-            `Track count: ${payload.trackCount}`,
+            `Track count: ${payload.trackCount} (43)`,
             ...trackEmbeds,
           ]
           : ["No tracks found in this snapshot."],
