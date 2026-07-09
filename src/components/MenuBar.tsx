@@ -12,6 +12,7 @@ type Props = {
   additionalLinks?: MenuItem[];
   onNavigate?: (href: string) => void;
   onMenuAction?: (href: string) => boolean;
+  currentPath?: string;
 };
 
 const PAGE_LINKS = (pages as Array<{ path: string; menuLabel?: string }>).map(
@@ -37,17 +38,31 @@ const isTypingTarget = (target: EventTarget | null) => {
 const isInternalPath = (href: string) => href.startsWith("/");
 
 const SITEMAP_HREF = "/sitemap";
+const ADDONS_HREF = "/addons";
+
+const normalizePath = (path: string) => {
+  if (!path || path === "/") {
+    return "/";
+  }
+
+  return `/${path.replace(/^\/+|\/+$/g, "")}`;
+};
 
 const hasAdminCookie = () =>
   typeof document !== "undefined" &&
   document.cookie.split("; ").some((cookie) => cookie === "admin=akinevz");
 
-const filterHiddenMenuItems = (menuItems: MenuItem[]) => {
+const filterHiddenMenuItems = (menuItems: MenuItem[], currentPath?: string) => {
+  const isAddonsPage = normalizePath(currentPath ?? "") === ADDONS_HREF;
+  const withoutAddons = isAddonsPage
+    ? menuItems
+    : menuItems.filter((item) => item.href !== ADDONS_HREF);
+
   if (hasAdminCookie()) {
-    return menuItems;
+    return withoutAddons;
   }
 
-  return menuItems.filter((item) => item.href !== SITEMAP_HREF);
+  return withoutAddons.filter((item) => item.href !== SITEMAP_HREF);
 };
 
 export default function MenuBar({
@@ -55,18 +70,21 @@ export default function MenuBar({
   additionalLinks = [],
   onNavigate,
   onMenuAction,
+  currentPath,
 }: Props) {
   const menuItems = useMemo(() => {
     if (links) {
       return filterHiddenMenuItems(
         links.map((link) => ({ label: link.label, href: link.href })),
+        currentPath,
       );
     }
 
     return filterHiddenMenuItems(
       generateMenuItems(PAGE_LINKS, additionalLinks),
+      currentPath,
     );
-  }, [links, additionalLinks]);
+  }, [links, additionalLinks, currentPath]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {

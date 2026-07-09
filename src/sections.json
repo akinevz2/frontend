@@ -81,12 +81,7 @@
                     {
                       "heading": "reveal rueg",
                       "content": [
-                        "<img src=\"https://akinevz.com/images/rueg1.png\" alt=\"rueg image 1\" style=\"width: auto; height: auto; max-height: 600px;\" />"
-                      ]
-                    },
-                    {
-                      "heading": "reveal rueg",
-                      "content": [
+                        "<img src=\"https://akinevz.com/images/rueg1.png\" alt=\"rueg image 1\" style=\"width: auto; height: auto; max-height: 600px;\" />",
                         "<img src=\"https://akinevz.com/images/rueg2.png\" alt=\"rueg image 2\" style=\"width: auto; height: auto; max-height: 600px;\" />"
                       ]
                     }
