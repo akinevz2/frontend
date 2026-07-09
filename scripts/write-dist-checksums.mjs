@@ -34,9 +34,40 @@ async function sha256File(filePath) {
     return createHash("sha256").update(content).digest("hex");
 }
 
+async function readExistingChecksums() {
+    try {
+        const content = await readFile(checksumsPath, "utf8");
+        const entries = new Map();
+
+        for (const line of content.split(/\r?\n/)) {
+            const trimmed = line.trim();
+            if (!trimmed) {
+                continue;
+            }
+
+            const [digest, relPath] = trimmed.split(/\s{2,}/);
+            if (!digest || !relPath) {
+                continue;
+            }
+
+            entries.set(relPath, digest);
+        }
+
+        return entries;
+    } catch (error) {
+        const code = error && typeof error === "object" ? error.code : undefined;
+        if (code === "ENOENT") {
+            return new Map();
+        }
+        throw error;
+    }
+}
+
 async function run() {
     const files = await walk(distRoot);
     const rows = [];
+    const existing = await readExistingChecksums();
+    let index = 0;
 
     for (const filePath of files.sort()) {
         if (filePath === checksumsPath) {
@@ -45,6 +76,20 @@ async function run() {
 
         const digest = await sha256File(filePath);
         const relPath = relative(distRoot, filePath).replace(/\\/g, "/");
+        const previous = existing.get(relPath);
+        const status = !previous
+            ? "NEW"
+            : previous === digest
+                ? "UNCHANGED"
+                : "CHANGED";
+        index += 1;
+
+        process.stdout.write(
+            `${String(index).padStart(3, "0")}. [${status}] ${relPath}\n` +
+            `     prev: ${previous ?? "(none)"}\n` +
+            `     next: ${digest}\n`,
+        );
+
         rows.push(`${digest}  ${relPath}`);
     }
 
