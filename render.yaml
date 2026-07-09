@@ -1,8 +1,8 @@
 services:
   - type: web
-    name: your-astro-site
+    name: kirill's home website
     envVars:
       - key: NODE_VERSION
-        value: latest
+        value: 20.19.2
     buildCommand: git submodule update --init --recursive && npm install && npm run build
     staticPublishPath: ./dist
