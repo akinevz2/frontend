@@ -28,12 +28,17 @@ async function freezeBlogContent() {
     }
 }
 
-async function run() {
+export async function run() {
     await freezeBlogContent();
     await generateSoundcloud();
 }
 
-run().catch((error) => {
-    process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
-    process.exit(1);
-});
+const isDirectExecution =
+    process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1]);
+
+if (isDirectExecution) {
+    run().catch((error) => {
+        process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
+        process.exit(1);
+    });
+}

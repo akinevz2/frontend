@@ -4,7 +4,7 @@ import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 
-const SOUND_CLOUD_OWNER = "akinevz1";
+const SOUND_CLOUD_OWNER = "akinevz";
 const USER_PATH_PREFIX = `/${SOUND_CLOUD_OWNER}/`;
 const USER_PROFILE_PATH = `/${SOUND_CLOUD_OWNER}`;
 const SOURCE_URL = `https://soundcloud.com/${SOUND_CLOUD_OWNER}`;
