@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-import { readFile, rm, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
+import { homedir } from "node:os";
 
 const SOUND_CLOUD_OWNER = "akinevz";
 const USER_PATH_PREFIX = `/${SOUND_CLOUD_OWNER}/`;
@@ -21,6 +22,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const outputFile = resolve(__dirname, "../public/soundcloud.json");
 const cachedArtistPage = resolve(__dirname, "../public/soundcloud-artist.html");
+const preservedTmpDir = resolve(homedir(), "tmp");
+const preservedCachedArtistPage = resolve(
+  preservedTmpDir,
+  "soundcloud-artist.html",
+);
 
 const runCommand = ({ command, args, cwd }) =>
   new Promise((resolvePromise, reject) => {
@@ -190,10 +196,28 @@ export const run = async () => {
 
     await writeFile(outputFile, `${JSON.stringify(result, null, 2)}\n`, "utf8");
     process.stdout.write(
-      `Wrote ${tracks.length} tracks to ${outputFile} and cleaned temporary ${cachedArtistPage}\n`,
+      `Wrote ${tracks.length} tracks to ${outputFile} and moved temporary snapshot to ${preservedCachedArtistPage}\n`,
     );
   } finally {
-    await rm(cachedArtistPage, { force: true });
+    try {
+      await mkdir(preservedTmpDir, { recursive: true });
+      try {
+        await rename(cachedArtistPage, preservedCachedArtistPage);
+      } catch (error) {
+        const code = error && typeof error === "object" ? error.code : undefined;
+        if (code !== "EXDEV") {
+          throw error;
+        }
+
+        await copyFile(cachedArtistPage, preservedCachedArtistPage);
+        await rm(cachedArtistPage, { force: true });
+      }
+    } catch (error) {
+      const code = error && typeof error === "object" ? error.code : undefined;
+      if (code !== "ENOENT") {
+        throw error;
+      }
+    }
   }
 };
 

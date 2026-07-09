@@ -37,8 +37,9 @@ const isDirectExecution =
     process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1]);
 
 if (isDirectExecution) {
-    run().catch((error) => {
-        process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
-        process.exit(1);
-    });
+    process.stderr.write('Hello world :) <boom>')
 }
+run().catch((error) => {
+    process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
+    process.exit(1);
+});
