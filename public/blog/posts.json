@@ -1,6 +1,9 @@
 {
   "heading": "kine's blog posts",
   "content": [
+    "sorry, website broke really badly",
+    "i asked Github AI to help me harden security of my website",
+    "i don't know where i messed up",
     {
       "content": [
         "research dissertation posts incoming PLEASE DO NOT PANIC",
@@ -140,7 +143,9 @@
     {
       "heading": "ninth post (#funny)",
       "content": [
-        "![jumpscare](https://files.catbox.moe/105hw4.gif)"
+        "![jumpscare](https://files.catbox.moe/105hw4.gif)",
+        "> yer da",
+        "me when i realise someone will see my shit in half disassembled order"
       ]
     },
     {
@@ -194,7 +199,7 @@
         "* my fades are never uniform",
         "> one channel has tape-grain decay",
         "> one has a slope to zero",
-        "> one just stops dead after the reverbeve  tail",
+        "> one just stops dead after the reverb tail",
         "* while the track is at full volume, the cancellation holds",
         "* everything sums clean",
         "* once the three channels start fading at different rates, the limiter on the cloned channel can't keep up",
@@ -215,7 +220,9 @@
         "> clone+limit the narrowed one",
         "> feed it back into the sum",
         "> give your channels mismatched fade shapes",
-        "> listen to what survives at the very end"
+        "> listen to what survives at the very end",
+        "",
+        "> co-written with style-transfer by Claude Sonnet 4.6"
       ]
     },
     {
