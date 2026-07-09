@@ -6,7 +6,7 @@ import { processContent } from "../windowing/utils";
 import type { PageMetadata, SectionProps } from "../windowing";
 
 type RouteDefinition = {
-  path: string;
+  path: `/${string}`;
   title: string;
   description: string;
   menuLabel?: string;
