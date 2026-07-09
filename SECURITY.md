@@ -9,3 +9,8 @@ Please consult the version history, or any markdown files in the root of the pro
 ## Reporting a Vulnerability
 
 Please report vulnerabilities directly through Github issues.
+
+Views and opinions expressed here are my own and do not represent those of my employer.
+Nothing on this site should be attributed to any organisation I am affiliated with.
+
+When in doubt, make some art.
