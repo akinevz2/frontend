@@ -3,7 +3,7 @@
 [![CI/CD Security Pipeline](https://github.com/akinevz2/frontend/actions/workflows/ci.yml/badge.svg)](https://github.com/akinevz2/frontend/actions/workflows/ci.yml)
 [![Security](https://img.shields.io/badge/security-maintained-green.svg)](./SECURITY.md)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.19.2-brightgreen.svg)](https://nodejs.org)
-[![License](https://img.shields.io/badge/license-Creative%20Commons-lightgrey.svg)](https://creativecommons.org/)
+[![License](https://img.shields.io/badge/license-CC--BY--NC--ND--4.0-lightgrey.svg)](./LICENSE)
 
 This is the source code for my personal website. I built it as a landing page for myself, and as a point-of-interest for those that stumble upon it.
 
@@ -60,6 +60,8 @@ Most content is managed through JSON, rendered into components in the browser.
 This keeps content updates straightforward while still allowing rich UI behavior.
 
 Some pages rely on raw github user content to serve the json so that a full website-rebuild is not necessary for updating content on those pages, such as blog.
+
+External media/profile links may be removed or replaced over time when distribution or licensing terms change.
 
 ## Contact
 

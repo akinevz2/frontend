@@ -24,8 +24,7 @@ test("buildMusicGroupSchema includes the requested profile fields", () => {
             "Independent sound designer, music creator, and electronic music artist.",
         sameAs: [
             "https://soundcloud.com/akinevz",
-            "https://youtube.com/@akinevz",
-            "https://x.com/akinevz",
+            "https://open.spotify.com/artist/2vy7FXU6dP4OEBiJVjsw7r",
             "https://github.com/akinevz2",
         ],
         track: [
