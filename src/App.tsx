@@ -1029,7 +1029,7 @@ export default function App() {
 
     const loadStructuredData = async () => {
       try {
-        const response = await fetch("https://raw.githubusercontent.com/akinevz2/frontend/refs/heads/main/public/soundcloud.json", {
+        const response = await fetch("/soundcloud.json", {
           method: "GET",
           cache: "no-store",
           headers: {
@@ -1194,7 +1194,7 @@ export default function App() {
       setAssistantWindowVisible(true);
       setAssistantWindowMinimized(false);
       const readyBeep = new Audio("/Beep.ogg");
-      void readyBeep.play().catch(() => {});
+      void readyBeep.play().catch(() => { });
     } catch (error) {
       setConversationError(
         error instanceof Error
@@ -1358,7 +1358,7 @@ export default function App() {
         currentPath={path}
         // additionalLinks={showClippy ? TOP_BAR_ADDITIONAL_LINKS : []}
         additionalLinks={[]}
-        // onMenuAction={handleTopMenuAction}
+      // onMenuAction={handleTopMenuAction}
       />
       {content}
       {/* Assistant config modal intentionally disabled. */}

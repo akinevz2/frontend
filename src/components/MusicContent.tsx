@@ -37,7 +37,7 @@ const LOADING_SECTION: SectionProps = {
   heading: "Loading...",
   content: [
     "![Loading spinner](/spinner.svg)",
-    "Fetching tracks from https://raw.githubusercontent.com/akinevz2/frontend/refs/heads/main/public/soundcloud.json",
+    "Fetching tracks from /soundcloud.json",
   ],
 };
 
@@ -261,7 +261,7 @@ export default function MusicContent() {
     const load = async () => {
       try {
         const [scResponse, favouriteLinks] = await Promise.all([
-          fetch("https://raw.githubusercontent.com/akinevz2/frontend/refs/heads/main/public/soundcloud.json", {
+          fetch("/soundcloud.json", {
             method: "GET",
             cache: "no-store",
             headers: { Accept: "application/json" },
