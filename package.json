@@ -14,7 +14,7 @@
     "refresh:content": "node ./scripts/refresh-content.mjs",
     "verify:policy": "node ./scripts/verify-policy.mjs",
     "render": "echo 'https://render.com/'",
-    "build": "npm run refresh:content && npm run verify:policy && vite build && npm run checksums",
+    "build": "npm run refresh:content && npm run verify:policy && vite build && npm run checksums && npm run render",
     "build:local": "npm run build",
     "preview": "vite preview --host 127.0.0.1 --port 8086",
     "lint": "npx --yes prettier --write \"src/**/*.{ts,tsx}\" && eslint ./src --ext .ts,.tsx",
