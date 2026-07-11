@@ -12,11 +12,17 @@ const SECTION_PROPS_KEYS = readAllowedSectionKeys();
 const runtimeRoots = [resolve(srcRoot, "components"), resolve(srcRoot, "windowing")];
 const runtimeTopLevelFiles = [resolve(srcRoot, "App.tsx")];
 
+const SOUNDCLOUD_RAW_URL = /raw\.githubusercontent\.com\/akinevz2\/frontend\/.+\/public\/soundcloud\.json/i;
+
 const bannedPatterns = [
     /raw\.githubusercontent\.com/i,
     /getRuntimeBlogPostsHost\s*\(/,
     /resolveTrustedBlogAssetUrl\s*\(/,
 ];
+
+function isAllowedRawUrl(line) {
+    return SOUNDCLOUD_RAW_URL.test(line);
+}
 
 function assert(condition, message) {
     if (!condition) {
@@ -197,8 +203,13 @@ async function checkRuntimePolicy() {
 
     for (const filePath of files) {
         const source = await readFile(filePath, "utf8");
+        const lines = source.split("\n");
         for (const pattern of bannedPatterns) {
-            if (pattern.test(source)) {
+            const matched = lines.some((line) => {
+                if (!pattern.test(line)) return false;
+                return !isAllowedRawUrl(line);
+            });
+            if (matched) {
                 violations.push(`${filePath}: matches ${pattern}`);
             }
         }

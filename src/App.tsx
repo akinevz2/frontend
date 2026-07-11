@@ -938,7 +938,7 @@ export default function App() {
 
     const loadStructuredData = async () => {
       try {
-        const response = await fetch("/soundcloud.json", {
+        const response = await fetch("https://raw.githubusercontent.com/akinevz2/frontend/refs/heads/main/public/soundcloud.json", {
           method: "GET",
           cache: "no-store",
           headers: {
