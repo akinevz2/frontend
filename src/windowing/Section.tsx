@@ -89,6 +89,21 @@ function resolveLocalBlogAssetUrl(assetPath: string): string {
   return `${BLOG_POSTS_BASE_PATH}${safePath}`;
 }
 
+function resolvePrintoutUrl(printoutPath: string): string {
+  const trimmed = printoutPath.trim();
+
+  try {
+    const parsed = new URL(trimmed);
+    if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+      return parsed.toString();
+    }
+  } catch {
+    // Not an absolute URL, fall back to local asset resolution.
+  }
+
+  return resolveLocalBlogAssetUrl(trimmed);
+}
+
 const markdownComponents = {
   img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
     <img
@@ -131,7 +146,7 @@ function PrintoutContent({ printout }: { printout: string | string[] }) {
 
       let printoutUrl: string;
       try {
-        printoutUrl = resolveLocalBlogAssetUrl(printout);
+        printoutUrl = resolvePrintoutUrl(printout);
       } catch (urlError) {
         const message =
           urlError instanceof Error ? urlError.message : "Unknown error";
@@ -172,7 +187,7 @@ function PrintoutContent({ printout }: { printout: string | string[] }) {
           setMarkdownContent(
             [
               "## Printout unavailable",
-              `Failed to fetch printout '${printout}' from local frozen content (${message}).`,
+              `Failed to fetch printout '${printout}' (${message}).`,
               "Please let kine (akinevz) know.",
               toFencedCodeBlock(printout),
             ].join("\n\n"),
