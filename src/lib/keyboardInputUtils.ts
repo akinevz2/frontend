@@ -5,6 +5,28 @@ const CLIPPY_SEQUENCE_LENGTH = CLIPPY_SEQUENCE.length;
 
 const CLIPPY_SESSION_KEY = "kroflmao_ui_var";
 
+const isMobilePhoneDevice = () => {
+  if (typeof navigator === "undefined") {
+    return false;
+  }
+
+  type NavigatorWithUserAgentData = Navigator & {
+    userAgentData?: {
+      mobile?: boolean;
+    };
+  };
+
+  const navigatorWithUserAgentData = navigator as NavigatorWithUserAgentData;
+  if (navigatorWithUserAgentData.userAgentData?.mobile) {
+    return true;
+  }
+
+  const userAgent = navigator.userAgent.toLowerCase();
+  return /(iphone|ipod|android.*mobile|windows phone|blackberry|iemobile|opera mini)/.test(
+    userAgent,
+  );
+};
+
 let sequenceProgress = 0;
 let allowFullVolumeTail = false;
 let listenerAttached = false;
@@ -73,7 +95,8 @@ export const onClippyClick = () => {
   }
 };
 
-let currentVisibility = sessionStorage.getItem(CLIPPY_SESSION_KEY) === "1";
+let currentVisibility =
+  sessionStorage.getItem(CLIPPY_SESSION_KEY) === "1" || isMobilePhoneDevice();
 
 export const subscribeClippyVisibility = (
   callback: (visible: boolean) => void,

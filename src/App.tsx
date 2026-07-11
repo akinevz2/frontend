@@ -11,6 +11,7 @@ import {
 import Markdown, { type Options as ReactMarkdownOptions } from "react-markdown";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { ToastContainer } from "react-toastify";
+import { setTheme } from "lightdni-jssas-toggle";
 import {
   attachClippyListener,
   detachClippyListener,
@@ -153,6 +154,46 @@ const markdownComponents = {
 // ];
 
 const SHADOW_PULSE_MS = 700;
+const BORDER_FLASH_DURATION_MS = 180;
+const CLIPPY_DEFAULT_THEME = "theme-default";
+const CLIPPY_FLASH_THEME = "theme-border-flash";
+const CLIPPY_THEME_CLASSNAMES = [CLIPPY_DEFAULT_THEME, CLIPPY_FLASH_THEME];
+const CLIPPY_THEME_DEFINITIONS = {
+  [CLIPPY_DEFAULT_THEME]: {
+    className: CLIPPY_DEFAULT_THEME,
+    variables: {
+      "--clippy-border-flash-color": "transparent",
+    },
+  },
+  [CLIPPY_FLASH_THEME]: {
+    className: CLIPPY_FLASH_THEME,
+    variables: {
+      "--clippy-border-flash-color": "#FEEF69",
+    },
+  },
+} as const;
+
+const isMobilePhoneDevice = () => {
+  if (typeof navigator === "undefined") {
+    return false;
+  }
+
+  type NavigatorWithUserAgentData = Navigator & {
+    userAgentData?: {
+      mobile?: boolean;
+    };
+  };
+
+  const navigatorWithUserAgentData = navigator as NavigatorWithUserAgentData;
+  if (navigatorWithUserAgentData.userAgentData?.mobile) {
+    return true;
+  }
+
+  const userAgent = navigator.userAgent.toLowerCase();
+  return /(iphone|ipod|android.*mobile|windows phone|blackberry|iemobile|opera mini)/.test(
+    userAgent,
+  );
+};
 
 const isSoundCloudPayload = (value: unknown): value is SoundCloudPayload => {
   if (!value || typeof value !== "object") return false;
@@ -750,14 +791,32 @@ export default function App() {
   const holdTimerRef = useRef<number | null>(null);
   const holdTriggeredRef = useRef(false);
   const connectionFlashTimerRef = useRef<number | null>(null);
+  const borderFlashTimerRef = useRef<number | null>(null);
   const rightClickFlashArmedRef = useRef(true);
   const wasClippyBubbleVisibleRef = useRef(false);
   // const wisdomPulseClockRef = useRef(new WisdomPulseClock());
 
   useEffect(() => {
+    setTheme({
+      themeName: CLIPPY_DEFAULT_THEME,
+      themes: CLIPPY_THEME_DEFINITIONS,
+      previousClassNames: CLIPPY_THEME_CLASSNAMES,
+      persistence: "none",
+      accessibility: {
+        setColorScheme: false,
+      },
+    });
+  }, []);
+
+  useEffect(() => {
     attachClippyListener();
     const unsubscribeVisibility = subscribeClippyVisibility(setShowClippy);
     const unsubscribeBubble = subscribeClippyBubble(setShowClippyBubble);
+
+    if (isMobilePhoneDevice()) {
+      setShowClippy(true);
+    }
+
     return () => {
       unsubscribeVisibility();
       unsubscribeBubble();
@@ -837,8 +896,40 @@ export default function App() {
       if (connectionFlashTimerRef.current !== null) {
         window.clearTimeout(connectionFlashTimerRef.current);
       }
+      if (borderFlashTimerRef.current !== null) {
+        window.clearTimeout(borderFlashTimerRef.current);
+      }
       // wisdomPulseClockRef.current.stop();
     };
+  }, []);
+
+  const triggerBorderFlashTheme = useCallback(() => {
+    if (borderFlashTimerRef.current !== null) {
+      window.clearTimeout(borderFlashTimerRef.current);
+    }
+
+    setTheme({
+      themeName: CLIPPY_FLASH_THEME,
+      themes: CLIPPY_THEME_DEFINITIONS,
+      previousClassNames: CLIPPY_THEME_CLASSNAMES,
+      persistence: "none",
+      accessibility: {
+        setColorScheme: false,
+      },
+    });
+
+    borderFlashTimerRef.current = window.setTimeout(() => {
+      setTheme({
+        themeName: CLIPPY_DEFAULT_THEME,
+        themes: CLIPPY_THEME_DEFINITIONS,
+        previousClassNames: CLIPPY_THEME_CLASSNAMES,
+        persistence: "none",
+        accessibility: {
+          setColorScheme: false,
+        },
+      });
+      borderFlashTimerRef.current = null;
+    }, BORDER_FLASH_DURATION_MS);
   }, []);
 
   useEffect(() => {
@@ -1160,6 +1251,7 @@ export default function App() {
     }
 
     onClippyClick();
+    triggerBorderFlashTheme();
   };
 
   const handleClippyDoubleClick = () => {
