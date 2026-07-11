@@ -213,6 +213,10 @@
                 {
                   "heading": "pagerts, my first npm package",
                   "link": "https://www.npmjs.com/package/pagerts"
+                },
+                {
+                  "heading": "rarebert, akinevz2/rarebert",
+                  "link": "https://github.com/akinevz2/rarebert/commit/936a6ff"
                 }
               ]
             },
