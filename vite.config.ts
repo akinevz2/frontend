@@ -69,10 +69,9 @@ function getSitemapPriority(routePath: string): string {
 function getSitemapChangeFreq(routePath: string): string {
   switch (normalizeRoute(routePath)) {
     case "/":
-    case "/music":
-      return "weekly";
     case "/blog":
-      return "monthly";
+    case "/music":
+      return "daily";
     case "/sitemap":
       return "monthly";
     default:
