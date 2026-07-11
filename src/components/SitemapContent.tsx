@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import pages from "../pages.json";
+import pages from "../../pages.json";
 import { PageContent } from "./Page";
 import { processContent } from "../windowing/utils";
 import type { PageMetadata, SectionProps } from "../windowing";
