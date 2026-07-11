@@ -64,7 +64,7 @@ const UploadingCounter = ({ total }: { total: number }) => (
       padding: "0.35rem 0.5rem",
     }}
   >
-    AS OF UPLOADING: {total} tracks (left + right)
+    AS OF UPLOADING: {total} tracks (main and alt)
   </div>
 );
 
@@ -266,7 +266,7 @@ const toMusicSections = (
       heading: "Discography Total",
       content: [
         `Generated: ${new Date(payload.generatedAt).toLocaleString()}`,
-        "This total measures left + right profiles as of uploading.",
+        "This total measures main and alt profiles as of uploading.",
       ],
     },
     {
@@ -292,8 +292,8 @@ const toMusicSections = (
       children: [],
       heading: "Source",
       content: [
-        "Artist page (left): [soundcloud.com/akinevz](https://soundcloud.com/akinevz)",
-        "Artist page (right): [soundcloud.com/akinevz1](https://soundcloud.com/akinevz1)",
+        "Artist page (main): [soundcloud.com/akinevz](https://soundcloud.com/akinevz)",
+        "Artist page (alt): [soundcloud.com/akinevz1](https://soundcloud.com/akinevz1)",
         "Some mirror links were removed due to licensing restrictions.",
         "",
         `<iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/artist/2vy7FXU6dP4OEBiJVjsw7r?utm_source=generator&theme=0&si=0c8005cead7543c5" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`,
