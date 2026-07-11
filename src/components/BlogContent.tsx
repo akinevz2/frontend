@@ -11,10 +11,7 @@ type BlogState = {
 
 const LOADING_SECTION: SectionProps = {
   heading: "Loading...",
-  content: [
-    "![Loading spinner](/spinner.svg)",
-    "Fetching latest posts",
-  ],
+  content: ["![Loading spinner](/spinner.svg)", "Fetching latest posts"],
 };
 
 function isSectionPayload(
