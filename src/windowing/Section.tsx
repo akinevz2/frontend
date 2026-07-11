@@ -11,6 +11,8 @@ import type { Content, HttpUrl, SectionProps } from "./types";
 
 const BLOG_PATH = "/blog";
 const BLOG_POSTS_BASE_PATH = "/blog/";
+const EXPERIMENTAL_THEME = "experimental";
+const EXPERIMENTAL_THEME_REDIRECT_URL = "https://akinevz.dev";
 
 const isBlogPath = (pathname: string) =>
   pathname.replace(/\/+$/, "") === BLOG_PATH;
@@ -76,6 +78,10 @@ const markdownSanitizeSchema: unknown = {
 const markdownRehypePlugins = [
   rehypeRaw,
   [rehypeSanitize, markdownSanitizeSchema],
+] as ReactMarkdownOptions["rehypePlugins"];
+
+const experimentalMarkdownRehypePlugins = [
+  rehypeRaw,
 ] as ReactMarkdownOptions["rehypePlugins"];
 
 function resolveLocalBlogAssetUrl(assetPath: string): string {
@@ -193,13 +199,23 @@ function renderPrintout(printout: string | string[]) {
   return <PrintoutContent printout={printout} />;
 }
 
-function renderContent(content: Content, depth: number) {
+function renderContent(
+  content: Content,
+  depth: number,
+  sectionTheme?: string,
+  allowedTheme: string = EXPERIMENTAL_THEME,
+) {
+  const isExperimental = sectionTheme === allowedTheme;
+  const rehypePlugins = isExperimental
+    ? experimentalMarkdownRehypePlugins
+    : markdownRehypePlugins;
+
   if (typeof content === "string")
     return (
       <ul>
         <li>
           <Markdown
-            rehypePlugins={markdownRehypePlugins}
+            rehypePlugins={rehypePlugins}
             components={markdownComponents}
           >
             {content}
@@ -249,7 +265,7 @@ function renderContent(content: Content, depth: number) {
         item.type === "markdown" ? (
           <li key={`markdown-${item.key}`}>
             <Markdown
-              rehypePlugins={markdownRehypePlugins}
+              rehypePlugins={rehypePlugins}
               components={markdownComponents}
             >
               {item.text}
@@ -296,6 +312,7 @@ export const Section = (props: SectionProps) => {
     children,
     depth = 0,
     uuid,
+    theme,
   } = props;
   const hasHeading = !!heading;
   const hasContent = !!content;
@@ -423,6 +440,18 @@ export const Section = (props: SectionProps) => {
     handleExpand();
   };
 
+  const handleExperimentalContextMenu = (
+    event: React.MouseEvent<HTMLDivElement>,
+  ) => {
+    if (theme !== EXPERIMENTAL_THEME) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    window.location.assign(EXPERIMENTAL_THEME_REDIRECT_URL);
+  };
+
   const handleMouseDown = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest(".title-bar-controls")) {
       return; // Don't drag when clicking window controls
@@ -487,7 +516,11 @@ export const Section = (props: SectionProps) => {
   }, [shouldOpenFromLink]);
 
   const windowContent = (
-    <div ref={inlineWindowRef} className={`window ${className || ""}`}>
+    <div
+      ref={inlineWindowRef}
+      className={`window ${className || ""}`}
+      onContextMenu={handleExperimentalContextMenu}
+    >
       {hasHeading ? (
         <div className="title-bar">
           <div className="title-bar-text">{heading}</div>
@@ -512,7 +545,7 @@ export const Section = (props: SectionProps) => {
             }}
           >
             {shouldShowCollapsedContent && hasContent
-              ? renderContent(content, depth)
+              ? renderContent(content, depth, theme)
               : null}
             {shouldShowCollapsedOkButton ? (
               <button onClick={handlePrimaryAction}>OK</button>
@@ -521,7 +554,7 @@ export const Section = (props: SectionProps) => {
         ) : (
           <>
             {hasPrintout ? renderPrintout(printout) : null}
-            {hasContent ? renderContent(content, depth) : null}
+            {hasContent ? renderContent(content, depth, theme) : null}
             {children}
           </>
         )}
@@ -570,6 +603,7 @@ export const Section = (props: SectionProps) => {
             >
               <div
                 className={`window ${className || ""}`}
+                onContextMenu={handleExperimentalContextMenu}
                 style={{
                   cursor: "default",
                   maxWidth: "100%",
@@ -622,7 +656,7 @@ export const Section = (props: SectionProps) => {
                       }}
                     >
                       {shouldShowCollapsedContent && hasContent
-                        ? renderContent(content, depth)
+                        ? renderContent(content, depth, theme)
                         : null}
                       {shouldShowCollapsedOkButton ? (
                         <button onClick={handlePrimaryAction}>OK</button>
@@ -631,7 +665,7 @@ export const Section = (props: SectionProps) => {
                   ) : (
                     <>
                       {hasPrintout ? renderPrintout(printout) : null}
-                      {hasContent ? renderContent(content, depth) : null}
+                      {hasContent ? renderContent(content, depth, theme) : null}
                       {children}
                     </>
                   )}
