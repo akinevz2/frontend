@@ -14,9 +14,10 @@
   font-size: 16px;
 }
 
-:root.theme-border-flash *,
-:root.theme-border-flash *::before,
-:root.theme-border-flash *::after {
+:root.theme-border-flash .window,
+:root.theme-border-flash .window *,
+:root.theme-border-flash .window *::before,
+:root.theme-border-flash .window *::after {
   border-color: var(--clippy-border-flash-color, #FEEF69) !important;
 }
 
