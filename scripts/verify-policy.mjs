@@ -1,27 +1,14 @@
 #!/usr/bin/env node
 import { readdir, readFile } from "node:fs/promises";
+import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-
-const allowed = new Set([
-    "all",
-    "style",
-    "styles",
-    "className",
-    "heading",
-    "content",
-    "link",
-    "printout",
-    "theme",
-    "depth",
-    "uuid",
-    ...(options.allowAddonFields ? ["status", "text"] : []),
-]);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const projectRoot = resolve(__dirname, "..");
 const srcRoot = resolve(projectRoot, "src");
+const SECTION_PROPS_KEYS = readAllowedSectionKeys();
 const runtimeRoots = [resolve(srcRoot, "components"), resolve(srcRoot, "windowing")];
 const runtimeTopLevelFiles = [resolve(srcRoot, "App.tsx")];
 
@@ -68,6 +55,24 @@ function assertAllowedKeys(value, allowedKeys, context) {
     assert(extras.length === 0, `${context}: unexpected keys: ${extras.join(", ")}`);
 }
 
+function readAllowedSectionKeys() {
+    const typesPath = resolve(projectRoot, "src/windowing/types.ts");
+    const source = readFileSync(typesPath, "utf8");
+
+    const match = source.match(/export type SectionProps = \{([^}]*)\}/s);
+    assert(match, "Could not find SectionProps type in src/windowing/types.ts");
+
+    const body = match[1];
+    const keys = ["style", "styles"];
+    const regex = /(\w+)\??:/g;
+    let m;
+    while ((m = regex.exec(body)) !== null) {
+        keys.push(m[1]);
+    }
+
+    return keys;
+}
+
 function assertSafeLink(value, context) {
     assert(typeof value === "string", `${context}: link must be string`);
     const trimmed = value.trim();
@@ -79,6 +84,11 @@ function assertSafeLink(value, context) {
 
 function validateSectionNode(node, context, options = {}) {
     assert(node && typeof node === "object" && !Array.isArray(node), `${context}: must be object`);
+
+    const allowed = new Set([
+        ...SECTION_PROPS_KEYS,
+        ...(options.allowAddonFields ? ["status", "text"] : []),
+    ]);
     assertAllowedKeys(node, allowed, context);
 
     if ("heading" in node) {
