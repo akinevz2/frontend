@@ -1,6 +1,6 @@
 {
   "name": "website-xp-phone",
-  "version": "1.5.6",
+  "version": "1.5.7",
   "license": "CC-BY-NC-ND-4.0",
   "author": "Kirill <kine> Nevzorov <akinevz@outlook.com>",
   "type": "module",
@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "firebase": "^12.14.0",
-    "lightdni-jssas-toggle": "https://codeload.github.com/akinevz2/lightdni-jssas-toggle/tar.gz/52a5b37",
+    "lightdni-jssas-toggle": "^1.0.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-markdown": "^10.1.0",
