@@ -60,6 +60,11 @@ Most content is managed through JSON, rendered into components in the browser.
 
 This keeps content updates straightforward while still allowing rich UI behavior.
 
+### Clippy Interaction
+
+- Clicking Clippy triggers the assistant click handler and a short border flash.
+- The border flash uses the `theme-border-flash` class and flashes yellow (`#FEEF69`) briefly before returning to default.
+
 ### Post Manipulation Ignore Rules
 
 When editing or generating blog post content, treat operational notes as out of scope.
