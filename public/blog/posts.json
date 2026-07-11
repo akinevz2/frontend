@@ -3,11 +3,7 @@
   "content": [
     {
       "heading": "devcontainer usage update (#ops, #status)",
-      "content": [
-        "Current usage is up to 3/4.",
-        "Tracking notes are now published via the production blog page."
-      ],
-      "link": "https://akinevz.com/blog"
+      "printout": "wsl.1.md"
     },
     {
       "heading": "add more links: music-making, #creator",
@@ -261,7 +257,8 @@
             {
               "heading": "clone this repo!!!!",
               "content": [
-                "[website code](https://github.com/akinevz2/frontend)"
+                "[website code](https://github.com/akinevz2/frontend)",
+                "[rarebert](https://github.com/akinevz2/rarebert.git)"
               ]
             },
             "it would be cool if this, completely generic and adoptable website scaffold",
