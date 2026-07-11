@@ -6,12 +6,14 @@
   "type": "module",
   "packageManager": "npm@10.8.2",
   "engines": {
-    "node": "20.19.2"
+    "node": "20.19.2",
+    "clippy": "1"
   },
   "scripts": {
     "dev": "vite",
     "refresh:content": "node ./scripts/refresh-content.mjs",
     "verify:policy": "node ./scripts/verify-policy.mjs",
+    "render": "echo 'https://render.com/'",
     "build": "npm run refresh:content && npm run verify:policy && vite build && npm run checksums",
     "build:local": "npm run build",
     "preview": "vite preview --host 127.0.0.1 --port 8086",
