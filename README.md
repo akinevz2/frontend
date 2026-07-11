@@ -77,6 +77,8 @@ Some pages rely on raw github user content to serve the json so that a full webs
 
 External media/profile links may be removed or replaced over time when distribution or licensing terms change.
 
+Dependency release note: `lightdni-jssas-toggle` `1.0.2` is present on GitHub (`akinevz2/lightdni-jssas-toggle`), but npm publication is pending authenticated `npm publish` from a trusted maintainer session.
+
 ## Contact
 
 If you are here to learn more about me professionally, the website includes my resume and contact details.
