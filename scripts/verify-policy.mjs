@@ -162,7 +162,7 @@ function validateSoundcloud(value) {
     value.tracks.forEach((track, index) => {
         const context = `public/soundcloud.json.tracks[${index}]`;
         assert(track && typeof track === "object" && !Array.isArray(track), `${context}: must be object`);
-        assertAllowedKeys(track, new Set(["path", "title", "url"]), context);
+        assertAllowedKeys(track, new Set(["owner", "path", "title", "url"]), context);
         assert(typeof track.path === "string", `${context}.path must be string`);
         assert(typeof track.title === "string", `${context}.title must be string`);
         assertSafeLink(track.url, `${context}.url`);

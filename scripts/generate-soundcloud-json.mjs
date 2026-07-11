@@ -1,216 +1,234 @@
 #!/usr/bin/env node
-import { copyFile, mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
-import { spawn } from "node:child_process";
+/**
+ * Generate public/soundcloud.json from the SoundCloud API v2.
+ *
+ * Background:
+ * SoundCloud's public profile pages only render a small number of tracks on the
+ * server (around 10). To publish the complete discography for akinevz (~43
+ * tracks) and akinevz1 (~33 tracks) we query the public API v2 endpoint and
+ * paginate through the full track collection.
+ */
+import { copyFile, mkdir, rename, rm, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 import { homedir } from "node:os";
 
-const SOUND_CLOUD_OWNER = "akinevz";
-const USER_PATH_PREFIX = `/${SOUND_CLOUD_OWNER}/`;
-const USER_PROFILE_PATH = `/${SOUND_CLOUD_OWNER}`;
-const SOURCE_URL = `https://soundcloud.com/${SOUND_CLOUD_OWNER}`;
-const RESERVED_PROFILE_ROUTES = new Set([
-  "likes",
-  "sets",
-  "tracks",
-  "comments",
-  "reposts",
-  "popular-tracks",
-]);
+/** SoundCloud usernames whose discographies should be published. */
+const SOUND_CLOUD_OWNERS = ["akinevz", "akinevz1"];
+
+/**
+ * Static mapping from username to SoundCloud user id.
+ *
+ * These ids are public and stable (they appear in profile meta tags and API
+ * requests). Keeping them inline avoids an extra "resolve URL -> user id" round
+ * trip at generation time.
+ */
+const SOUND_CLOUD_USER_IDS = {
+  akinevz: 56124544,
+  akinevz1: 1188527119,
+};
+
+/**
+ * Public client id observed in SoundCloud's own web player requests.
+ *
+ * SoundCloud rotates these periodically. If generation starts failing with 401,
+ * open a SoundCloud page in a browser, inspect any request to
+ * api-v2.soundcloud.com, and update this value from the query string.
+ */
+const SOUND_CLOUD_CLIENT_ID = "lmRjTI0FqeXygHMXc3hRzS7hth20PNk5";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const outputFile = resolve(__dirname, "../public/soundcloud.json");
-const cachedArtistPage = resolve(__dirname, "../public/soundcloud-artist.html");
 const preservedTmpDir = resolve(homedir(), "tmp");
-const preservedCachedArtistPage = resolve(
-  preservedTmpDir,
-  "soundcloud-artist.html",
-);
 
-const runCommand = ({ command, args, cwd }) =>
-  new Promise((resolvePromise, reject) => {
-    const child = spawn(command, args, {
-      cwd,
-      stdio: ["ignore", "pipe", "pipe"],
-    });
+const getSourceUrl = (owner) => `https://soundcloud.com/${owner}`;
+const getCachedArtistPage = (owner) =>
+  resolve(__dirname, `../public/soundcloud-artist-${owner}.html`);
+const getPreservedCachedArtistPage = (owner) =>
+  resolve(preservedTmpDir, `soundcloud-artist-${owner}.html`);
 
-    let stdout = "";
-    let stderr = "";
-
-    child.stdout.on("data", (chunk) => {
-      stdout += chunk.toString();
-    });
-
-    child.stderr.on("data", (chunk) => {
-      stderr += chunk.toString();
-    });
-
-    child.on("error", reject);
-    child.on("close", (exitCode) => {
-      resolvePromise({ exitCode, stdout, stderr });
-    });
+/**
+ * Fetch a JSON resource from SoundCloud's API v2.
+ *
+ * The API requires a client_id query parameter. Requests that fail with a non-2xx
+ * status throw an Error including the URL and status code.
+ */
+const fetchJson = async (url) => {
+  const response = await fetch(url, {
+    headers: {
+      Accept: "application/json",
+    },
   });
 
-export const parseOutput = (raw) => {
-  const trimmed = raw.trim();
-  const start = trimmed.indexOf("[");
-
-  if (start === -1) {
-    throw new Error("pagerts output does not contain JSON payload");
+  if (!response.ok) {
+    throw new Error(`SoundCloud API request failed: ${url} -> HTTP ${response.status}`);
   }
 
-  let inString = false;
-  let isEscaped = false;
-  let depth = 0;
-  let end = -1;
-
-  for (let i = start; i < trimmed.length; i += 1) {
-    const char = trimmed[i];
-
-    if (inString) {
-      if (isEscaped) {
-        isEscaped = false;
-        continue;
-      }
-
-      if (char === "\\") {
-        isEscaped = true;
-        continue;
-      }
-
-      if (char === '"') {
-        inString = false;
-      }
-
-      continue;
-    }
-
-    if (char === '"') {
-      inString = true;
-      continue;
-    }
-
-    if (char === "[") {
-      depth += 1;
-      continue;
-    }
-
-    if (char === "]") {
-      depth -= 1;
-      if (depth === 0) {
-        end = i;
-        break;
-      }
-    }
-  }
-
-  if (end === -1) {
-    throw new Error("pagerts output contains incomplete JSON payload");
-  }
-
-  const payload = JSON.parse(trimmed.slice(start, end + 1));
-  if (!Array.isArray(payload) || payload.length === 0) {
-    throw new Error("pagerts returned an empty payload");
-  }
-
-  return payload;
+  return response.json();
 };
 
-export const isTrackPath = (value) =>
-  typeof value === "string" &&
-  value.startsWith(USER_PATH_PREFIX) &&
-  value !== USER_PROFILE_PATH &&
-  !value.startsWith(`${USER_PROFILE_PATH}/sets/`) &&
-  !RESERVED_PROFILE_ROUTES.has(value.split("/").filter(Boolean).at(-1) ?? "") &&
-  new RegExp(`^/${SOUND_CLOUD_OWNER}/[^/]+$`).test(value);
+/**
+ * Fetch all tracks for a user, following the cursor-based `next_href` links that
+ * the API returns.
+ */
+const fetchAllTracks = async (userId) => {
+  const baseUrl = new URL(`https://api-v2.soundcloud.com/users/${userId}/tracks`);
+  baseUrl.searchParams.set("client_id", SOUND_CLOUD_CLIENT_ID);
+  baseUrl.searchParams.set("limit", "100");
+  baseUrl.searchParams.set("linked_partitioning", "1");
 
-export const titleFromPath = (value) =>
-  value.split("/").filter(Boolean).at(-1) ?? value;
+  const tracks = [];
+  let nextUrl = baseUrl.toString();
 
-export const buildTracks = (resources) => {
-  const seen = new Set();
+  while (nextUrl) {
+    const payload = await fetchJson(nextUrl);
+    const collection = Array.isArray(payload.collection) ? payload.collection : [];
 
-  return resources
-    .filter((resource) => isTrackPath(resource?.link?.value))
-    .map((resource) => resource.link.value)
-    .filter((value) => {
-      if (seen.has(value)) {
-        return false;
+    for (const track of collection) {
+      if (track && typeof track.permalink_url === "string") {
+        tracks.push(track);
       }
-      seen.add(value);
-      return true;
-    })
-    .map((path) => ({
-      path,
-      title: titleFromPath(path),
-      url: `https://soundcloud.com${path}`,
-    }));
+    }
+
+    // The API's next_href does not repeat the client_id, so re-inject it before
+    // following the cursor.
+    const rawNext =
+      typeof payload.next_href === "string" && payload.next_href.length > 0
+        ? payload.next_href
+        : "";
+
+    if (!rawNext) {
+      nextUrl = "";
+    } else {
+      const nextUrlObject = new URL(rawNext);
+      if (!nextUrlObject.searchParams.has("client_id")) {
+        nextUrlObject.searchParams.set("client_id", SOUND_CLOUD_CLIENT_ID);
+      }
+      nextUrl = nextUrlObject.toString();
+    }
+  }
+
+  return tracks;
 };
 
-export const extractTrackPathsFromHtml = (html) => {
-  const hrefPattern = new RegExp(
-    `href=["'](/${SOUND_CLOUD_OWNER}/[^"'#?\\s>]+)(?:\\?[^"']*)?["']`,
-    "gi",
+/**
+ * Fetch public profile metadata for a user (avatar, display name, track count).
+ */
+const fetchUserProfile = async (userId) => {
+  const url = new URL(`https://api-v2.soundcloud.com/users/${userId}`);
+  url.searchParams.set("client_id", SOUND_CLOUD_CLIENT_ID);
+  return fetchJson(url.toString());
+};
+
+/**
+ * Convert an API track record into the shape expected by MusicContent.tsx.
+ */
+const toTrack = (owner, track) => {
+  const permalink = track.permalink ?? "";
+  const path = permalink ? `/${owner}/${permalink}` : "";
+
+  return {
+    owner,
+    path,
+    title: track.title ?? permalink,
+    url: track.permalink_url ?? `https://soundcloud.com${path}`,
+  };
+};
+
+/**
+ * Fetch the complete discography for a single SoundCloud owner.
+ *
+ * Writes a JSON snapshot of the raw API data to the public/ directory so it can
+ * be inspected later, then moves it to ~/tmp/ for preservation.
+ */
+const fetchOwnerDiscography = async (owner) => {
+  const sourceUrl = getSourceUrl(owner);
+  const cachedArtistPage = getCachedArtistPage(owner);
+  const preservedCachedArtistPage = getPreservedCachedArtistPage(owner);
+  const userId = SOUND_CLOUD_USER_IDS[owner];
+
+  if (typeof userId !== "number") {
+    throw new Error(`Missing user id mapping for ${owner}`);
+  }
+
+  const [profile, tracks] = await Promise.all([
+    fetchUserProfile(userId),
+    fetchAllTracks(userId),
+  ]);
+
+  const snapshot = {
+    url: sourceUrl,
+    fetchedAt: new Date().toISOString(),
+    profile,
+    tracks,
+  };
+  await writeFile(
+    cachedArtistPage,
+    `${JSON.stringify(snapshot, null, 2)}\n`,
+    "utf8",
   );
-  const paths = [];
 
-  let match = hrefPattern.exec(html);
-  while (match) {
-    const href = match[1];
-    if (isTrackPath(href)) {
-      paths.push(href);
-    }
-    match = hrefPattern.exec(html);
-  }
-
-  return Array.from(new Set(paths));
+  return {
+    owner,
+    source: sourceUrl,
+    profileImageUrl: profile.avatar_url ?? null,
+    trackCount: tracks.length,
+    tracks: tracks.map((track) => toTrack(owner, track)),
+    preservedCachedArtistPage,
+    cachedArtistPage,
+  };
 };
 
 export const run = async () => {
-  const projectRoot = resolve(__dirname, "..");
+  const ownerResults = await Promise.all(
+    SOUND_CLOUD_OWNERS.map((owner) => fetchOwnerDiscography(owner)),
+  );
 
-  const curlResult = await runCommand({
-    command: "curl",
-    args: ["-fLsS", SOURCE_URL, "-o", cachedArtistPage],
-    cwd: projectRoot,
-  });
+  const allTracks = ownerResults.flatMap((ownerResult) => ownerResult.tracks);
+  const asOfUploadingTrackCount = ownerResults.reduce(
+    (sum, ownerResult) => sum + ownerResult.trackCount,
+    0,
+  );
 
-  if (curlResult.exitCode !== 0) {
-    throw new Error(
-      `curl failed with exit code ${curlResult.exitCode}: ${curlResult.stderr.trim()}`,
-    );
-  }
+  const result = {
+    source: ownerResults[0]?.source ?? null,
+    generatedAt: new Date().toISOString(),
+    asOfUploadingTrackCount,
+    trackCount: asOfUploadingTrackCount,
+    tracks: allTracks,
+    profiles: ownerResults.map((ownerResult) => ({
+      owner: ownerResult.owner,
+      source: ownerResult.source,
+      profileImageUrl: ownerResult.profileImageUrl,
+      trackCount: ownerResult.trackCount,
+      tracks: ownerResult.tracks,
+    })),
+  };
 
-  try {
-    const artistHtml = await readFile(cachedArtistPage, "utf8");
-    const paths = extractTrackPathsFromHtml(artistHtml);
-    const tracks = buildTracks(paths.map((path) => ({ link: { value: path } })));
+  await writeFile(outputFile, `${JSON.stringify(result, null, 2)}\n`, "utf8");
 
-    const result = {
-      source: SOURCE_URL,
-      generatedAt: new Date().toISOString(),
-      trackCount: tracks.length,
-      tracks,
-    };
+  const preservedPaths = ownerResults
+    .map((ownerResult) => ownerResult.preservedCachedArtistPage)
+    .join(", ");
+  process.stdout.write(
+    `Wrote ${allTracks.length} tracks across ${ownerResults.length} music posts to ${outputFile} and moved temporary snapshots to ${preservedPaths}\n`,
+  );
 
-    await writeFile(outputFile, `${JSON.stringify(result, null, 2)}\n`, "utf8");
-    process.stdout.write(
-      `Wrote ${tracks.length} tracks to ${outputFile} and moved temporary snapshot to ${preservedCachedArtistPage}\n`,
-    );
-  } finally {
+  // Preserve raw snapshots to ~/tmp/ for later inspection.
+  for (const ownerResult of ownerResults) {
     try {
       await mkdir(preservedTmpDir, { recursive: true });
       try {
-        await rename(cachedArtistPage, preservedCachedArtistPage);
+        await rename(ownerResult.cachedArtistPage, ownerResult.preservedCachedArtistPage);
       } catch (error) {
         const code = error && typeof error === "object" ? error.code : undefined;
         if (code !== "EXDEV") {
           throw error;
         }
 
-        await copyFile(cachedArtistPage, preservedCachedArtistPage);
-        await rm(cachedArtistPage, { force: true });
+        await copyFile(ownerResult.cachedArtistPage, ownerResult.preservedCachedArtistPage);
+        await rm(ownerResult.cachedArtistPage, { force: true });
       }
     } catch (error) {
       const code = error && typeof error === "object" ? error.code : undefined;

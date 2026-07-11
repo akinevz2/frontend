@@ -67,20 +67,20 @@ export const buildMusicGroupSchema = (
   sameAs: MUSIC_GROUP_SAME_AS,
   track: Array.isArray(tracks)
     ? tracks
-      .filter(
-        (track): track is MusicSchemaTrack =>
-          Boolean(track) &&
-          typeof track.title === "string" &&
-          typeof track.url === "string",
-      )
-      .map((track) => ({
-        "@type": "MusicRecording",
-        name: track.title,
-        url: track.url,
-        byArtist: {
-          "@type": "MusicGroup",
-          name: MUSIC_GROUP_PRIMARY_ALIAS,
-        },
-      }))
+        .filter(
+          (track): track is MusicSchemaTrack =>
+            Boolean(track) &&
+            typeof track.title === "string" &&
+            typeof track.url === "string",
+        )
+        .map((track) => ({
+          "@type": "MusicRecording",
+          name: track.title,
+          url: track.url,
+          byArtist: {
+            "@type": "MusicGroup",
+            name: MUSIC_GROUP_PRIMARY_ALIAS,
+          },
+        }))
     : [],
 });

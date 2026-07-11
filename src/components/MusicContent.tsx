@@ -7,16 +7,28 @@ import { type PageMetadata, type SectionProps } from "../windowing";
 const MUSIC_LINKS_URL = "/blog/music-links.json";
 
 type MusicTrack = {
+  owner?: string;
   path: string;
   title: string;
   url: string;
 };
 
-type MusicPayload = {
+type MusicProfile = {
+  owner: string;
+  comments?: string;
   source: string;
-  generatedAt: string;
+  profileImageUrl: string | null;
   trackCount: number;
   tracks: MusicTrack[];
+};
+
+type MusicPayload = {
+  source: string | null;
+  generatedAt: string;
+  asOfUploadingTrackCount?: number;
+  trackCount: number;
+  tracks: MusicTrack[];
+  profiles?: MusicProfile[];
 };
 
 type FavouriteLink = {
@@ -29,6 +41,7 @@ type FavouriteLinkContent = FavouriteLink | SectionProps;
 type MusicState = {
   sections: SectionProps | SectionProps[];
   metadata: PageMetadata;
+  payload: MusicPayload | null;
 };
 
 const LOADING_SECTION: SectionProps = {
@@ -41,11 +54,29 @@ const LOADING_SECTION: SectionProps = {
   ],
 };
 
-const buildState = (content: SectionProps | SectionProps[]): MusicState => {
+const UploadingCounter = ({ total }: { total: number }) => (
+  <div
+    style={{
+      fontSize: "1.3rem",
+      fontWeight: 700,
+      lineHeight: 1.3,
+      textAlign: "center",
+      padding: "0.35rem 0.5rem",
+    }}
+  >
+    AS OF UPLOADING: {total} tracks (left + right)
+  </div>
+);
+
+const buildState = (
+  content: SectionProps | SectionProps[],
+  payload: MusicPayload | null = null,
+): MusicState => {
   const { processed, metadata } = processContent(content);
   return {
     sections: processed as SectionProps | SectionProps[],
     metadata: { sections: metadata },
+    payload,
   };
 };
 const isSectionProps = (value: unknown): value is SectionProps => {
@@ -65,7 +96,6 @@ const isValidContentFavLink = (
   value: unknown,
 ): value is FavouriteLink | SectionProps => {
   if (!value || typeof value !== "object") return false;
-  console.dir("Validating favourite link content:", value);
   return isSectionProps(value) || isFavouriteLink(value);
 };
 
@@ -188,31 +218,64 @@ const toMusicSections = (
   payload: MusicPayload,
   favouriteLinks: FavouriteLinkContent[],
 ): SectionProps[] => {
-  const trackEmbeds = payload.tracks.map((track) => renderTrackEmbed(track));
+  const profiles = Array.isArray(payload.profiles)
+    ? payload.profiles
+    : [
+      {
+        owner: "akinevz",
+        source: payload.source ?? "https://soundcloud.com/akinevz",
+        profileImageUrl: null,
+        trackCount: payload.trackCount,
+        tracks: payload.tracks,
+      },
+    ];
 
   const favouriteLinkList = favouriteLinks.map((link) =>
     isFavouriteLink(link) ? renderFavouriteLink(link) : link,
   );
 
-  // print all non-string to log
-  for (const link of favouriteLinkList) {
-    if (typeof link !== "string") {
-      console.dir("Non-string favourite link content:", link);
-    }
-  }
+  const combinedTrackCount = profiles.reduce(
+    (sum, profile) => sum + profile.trackCount,
+    0,
+  );
+  const asOfUploadingTrackCount =
+    payload.asOfUploadingTrackCount ?? combinedTrackCount;
+
+  const profileSections: SectionProps[] = profiles.map((profile) => {
+    const trackEmbeds = profile.tracks.map((track) => renderTrackEmbed(track));
+
+    return {
+      className: "music-profile-discography",
+      children: [],
+      heading: `@${profile.owner} discography`,
+      content: [
+        `Profile: [${profile.source}](${profile.source})`,
+        profile.profileImageUrl
+          ? `[![${profile.owner} profile image](${profile.profileImageUrl})](${profile.profileImageUrl})`
+          : "Profile image unavailable in cached snapshot.",
+        `Track count: ${profile.trackCount}`,
+        ...trackEmbeds,
+      ],
+    };
+  });
 
   return [
     {
-      className: "music-favorite-uploads",
+      className: "music-as-of-uploading",
+      children: <UploadingCounter total={asOfUploadingTrackCount} />,
+      heading: "Discography Total",
+      content: [
+        `Generated: ${new Date(payload.generatedAt).toLocaleString()}`,
+        "This total measures left + right profiles as of uploading.",
+      ],
+    },
+    {
+      className: "music-profile-uploads",
       children: [],
-      heading: "Favorite Uploads",
+      heading: "SoundCloud Discography",
       content:
-        trackEmbeds.length > 0
-          ? [
-            `Generated: ${new Date(payload.generatedAt).toLocaleString()}`,
-            `Track count: ${payload.trackCount} (43)`,
-            ...trackEmbeds,
-          ]
+        profileSections.length > 0
+          ? profileSections
           : ["No tracks found in this snapshot."],
     },
     {
@@ -229,7 +292,8 @@ const toMusicSections = (
       children: [],
       heading: "Source",
       content: [
-        "Artist page: [soundcloud.com/akinevz](https://soundcloud.com/akinevz)",
+        "Artist page (left): [soundcloud.com/akinevz](https://soundcloud.com/akinevz)",
+        "Artist page (right): [soundcloud.com/akinevz1](https://soundcloud.com/akinevz1)",
         "Some mirror links were removed due to licensing restrictions.",
         "",
         `<iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/artist/2vy7FXU6dP4OEBiJVjsw7r?utm_source=generator&theme=0&si=0c8005cead7543c5" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`,
@@ -243,7 +307,7 @@ const isMusicPayload = (value: unknown): value is MusicPayload => {
 
   const candidate = value as Partial<MusicPayload>;
   return (
-    typeof candidate.source === "string" &&
+    (typeof candidate.source === "string" || candidate.source === null) &&
     typeof candidate.generatedAt === "string" &&
     typeof candidate.trackCount === "number" &&
     Array.isArray(candidate.tracks)
@@ -279,7 +343,7 @@ export default function MusicContent() {
         }
 
         if (!cancelled) {
-          setMusicState(buildState(toMusicSections(payload, favouriteLinks)));
+          setMusicState(buildState(toMusicSections(payload, favouriteLinks), payload));
         }
       } catch (error) {
         if (!cancelled) {
@@ -310,9 +374,100 @@ export default function MusicContent() {
   }, []);
 
   return (
-    <PageContent
-      sections={musicState.sections}
-      pageMetadata={musicState.metadata}
-    />
+    <>
+      <PageContent
+        sections={musicState.sections}
+        pageMetadata={musicState.metadata}
+      />
+      <MusicDebugOverlay payload={musicState.payload} />
+    </>
+  );
+}
+
+/**
+ * Debug overlay visible to visitors.
+ *
+ * Shows the raw track count and profile summary from /soundcloud.json. Hidden
+ * when Firefox Developer Tools are open (detected via window.outerWidth/Height
+ * changes that devtools introduce).
+ */
+function MusicDebugOverlay({ payload }: { payload: MusicPayload | null }) {
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    /**
+     * The "hide on open inspector" behaviour is Firefox-specific as requested.
+     * We detect Firefox from the user agent and then watch for the dimension gap
+     * that appears when devtools are docked to the right or bottom.
+     */
+    const isFirefox = /firefox/i.test(navigator.userAgent);
+    if (!isFirefox) {
+      return;
+    }
+
+    const checkDevtools = () => {
+      const threshold = 200;
+      const widthDiff = window.outerWidth - window.innerWidth;
+      const heightDiff = window.outerHeight - window.innerHeight;
+      const devtoolsOpen = widthDiff > threshold || heightDiff > threshold;
+      setVisible(!devtoolsOpen);
+    };
+
+    checkDevtools();
+    window.addEventListener("resize", checkDevtools);
+    const timeoutId = window.setTimeout(checkDevtools, 1000);
+
+    return () => {
+      window.removeEventListener("resize", checkDevtools);
+      window.clearTimeout(timeoutId);
+    };
+  }, []);
+
+  if (!visible || !payload) {
+    return null;
+  }
+
+  const profileSummary = (payload.profiles ?? [])
+    .map((profile) => `@${profile.owner}: ${profile.trackCount}`)
+    .join(" | ");
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 9999,
+        background: "#ffffff",
+        color: "#000",
+        fontFamily: "monospace",
+        fontSize: "0.85rem",
+        padding: "0.5rem 1rem",
+        borderTop: "2px solid #c0c0c0",
+        visibility: "visible",
+        animation: "music-debug-slide-up 0.3s ease-out",
+      }}
+      role="status"
+      aria-live="polite"
+    >
+      <style>{`
+        @keyframes music-debug-slide-up {
+          from {
+            transform: translateY(100%);
+          }
+          to {
+            transform: translateY(0);
+          }
+        }
+      `}</style>
+      <strong>Debug:</strong> {payload.trackCount} tracks loaded
+      {profileSummary ? ` (${profileSummary})` : ""}. Generated{" "}
+      {new Date(payload.generatedAt).toLocaleString()}.
+    </div>
   );
 }

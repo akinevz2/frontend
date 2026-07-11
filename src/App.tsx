@@ -1194,7 +1194,7 @@ export default function App() {
       setAssistantWindowVisible(true);
       setAssistantWindowMinimized(false);
       const readyBeep = new Audio("/Beep.ogg");
-      void readyBeep.play().catch(() => { });
+      void readyBeep.play().catch(() => {});
     } catch (error) {
       setConversationError(
         error instanceof Error
@@ -1358,7 +1358,7 @@ export default function App() {
         currentPath={path}
         // additionalLinks={showClippy ? TOP_BAR_ADDITIONAL_LINKS : []}
         additionalLinks={[]}
-      // onMenuAction={handleTopMenuAction}
+        // onMenuAction={handleTopMenuAction}
       />
       {content}
       {/* Assistant config modal intentionally disabled. */}
