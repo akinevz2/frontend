@@ -13,7 +13,7 @@ const LOADING_SECTION: SectionProps = {
   heading: "Loading...",
   content: [
     "![Loading spinner](/spinner.svg)",
-    "Fetching posts from local frozen content",
+    "Fetching latest posts",
   ],
 };
 
@@ -45,7 +45,8 @@ export default function BlogContent() {
 
     const load = async () => {
       try {
-        const response = await fetch(BLOG_POSTS_URL, {
+        // Add a cache-busting query string to force fresh content after new posts.
+        const response = await fetch(`${BLOG_POSTS_URL}?t=${Date.now()}`, {
           method: "GET",
           cache: "no-store",
           headers: {
