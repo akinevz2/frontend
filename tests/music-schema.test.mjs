@@ -19,24 +19,16 @@ test("buildMusicGroupSchema includes the requested profile fields", () => {
             "I lied my name isn't actually KALE",
         ],
         url: "https://akinevz.com",
-        genre: ["Electronic", "Experimental", "Industrial", "Drone", "Glitch"],
+        genre: ["Electronic", "Experimental", "Industrial", "Gabber", "Experimental"],
         description:
             "Independent sound designer, music creator, and electronic music artist.",
         sameAs: [
             "https://soundcloud.com/akinevz",
-            "https://open.spotify.com/artist/2vy7FXU6dP4OEBiJVjsw7r",
+            "https://soundcloud.com/akinevz0",
+            "https://soundcloud.com/akinevz1",
+            "https://soundcloud.com/akinevz2",
+            "https://github.com/akinevz",
             "https://github.com/akinevz2",
-        ],
-        track: [
-            {
-                "@type": "MusicRecording",
-                name: "latest-track",
-                url: "https://soundcloud.com/akinevz/latest-track",
-                byArtist: {
-                    "@type": "MusicGroup",
-                    name: "KINE",
-                },
-            },
         ],
     });
 });
