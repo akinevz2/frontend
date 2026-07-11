@@ -60,6 +60,14 @@ Most content is managed through JSON, rendered into components in the browser.
 
 This keeps content updates straightforward while still allowing rich UI behavior.
 
+### Post Manipulation Ignore Rules
+
+When editing or generating blog post content, treat operational notes as out of scope.
+
+- Ignore memory notes and memory paths (for example `/memories/` and session scratch notes).
+- Ignore Nix store paths (`/nix/store/...`) and any generated derivation content.
+- Ignore personal-directory notes outside this website project (for example `/home/kine/development/personal/*` except this repository).
+
 Some pages rely on raw github user content to serve the json so that a full website-rebuild is not necessary for updating content on those pages, such as blog.
 
 External media/profile links may be removed or replaced over time when distribution or licensing terms change.

@@ -2,6 +2,14 @@
   "heading": "kine's blog posts",
   "content": [
     {
+      "heading": "devcontainer usage update (#ops, #status)",
+      "content": [
+        "Current usage is up to 3/4.",
+        "Tracking notes are now published via the production blog page."
+      ],
+      "link": "https://akinevz.com/blog"
+    },
+    {
       "heading": "add more links: music-making, #creator",
       "content": "<a id=\"sc-link\" href=\"https://soundcloud.com/akinevz1\">![aaaa](/images/aaaa.png)</a><script>document.getElementById('sc-link').addEventListener('contextmenu', function(e) { e.preventDefault(); window.location.href = 'https://akinevz.dev'; });</script>",
       "theme": "experimental"
@@ -14,7 +22,7 @@
         "so that degradation of my work does not incur due to neglect",
         "any misgivings or misforgiveness",
         {
-          "heading": "sorry to those that were affected",
+          "heading": "welcome to those that were here for the trip",
           "link": "/music"
         }
       ],
@@ -30,19 +38,9 @@
       "content": "check out kaine.sh",
       "link": "https://kaine.sh"
     },
-    "sorry, website broke really badly",
-    "i asked Github AI to help me harden security of my website",
-    "i don't know where i messed up",
-    {
-      "content": [
-        "research dissertation posts incoming PLEASE DO NOT PANIC",
-        "it all started with a cheese toastie. a panini",
-        "i was trying to make a perfect slice on a standing vertical block of cheese",
-        "turns out there is a maths field centered around this, called 'Lie groups', and it was being researched at Cambridge University in the early 2000s",
-        "my mum might have studied it back in Moscow when we lived there"
-      ],
-      "heading": "university of sussex material. property of kn253@sussex.ac.uk"
-    },
+    "we're in process of recovering all lost data!",
+    "please excuse the frequent changes!",
+    "-kine",
     {
       "heading": "content (see above notice if removed)",
       "content": [
