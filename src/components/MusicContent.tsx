@@ -221,14 +221,14 @@ const toMusicSections = (
   const profiles = Array.isArray(payload.profiles)
     ? payload.profiles
     : [
-      {
-        owner: "akinevz",
-        source: payload.source ?? "https://soundcloud.com/akinevz",
-        profileImageUrl: null,
-        trackCount: payload.trackCount,
-        tracks: payload.tracks,
-      },
-    ];
+        {
+          owner: "akinevz",
+          source: payload.source ?? "https://soundcloud.com/akinevz",
+          profileImageUrl: null,
+          trackCount: payload.trackCount,
+          tracks: payload.tracks,
+        },
+      ];
 
   const favouriteLinkList = favouriteLinks.map((link) =>
     isFavouriteLink(link) ? renderFavouriteLink(link) : link,
@@ -343,7 +343,9 @@ export default function MusicContent() {
         }
 
         if (!cancelled) {
-          setMusicState(buildState(toMusicSections(payload, favouriteLinks), payload));
+          setMusicState(
+            buildState(toMusicSections(payload, favouriteLinks), payload),
+          );
         }
       } catch (error) {
         if (!cancelled) {

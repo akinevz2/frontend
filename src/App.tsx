@@ -764,7 +764,7 @@ export default function App() {
   const [path, setPath] = useState(() =>
     normalizePath(window.location.pathname),
   );
-  const [showClippy, setShowClippy] = useState(false);
+  const [showClippy, setShowClippy] = useState(() => isMobilePhoneDevice());
   const [showClippyBubble, setShowClippyBubble] = useState(false);
   const [clippyBubbleSaysNo, setClippyBubbleSaysNo] = useState(false);
   // const [showAssistantConfigModal, setShowAssistantConfigModal] = useState(false);
@@ -812,10 +812,6 @@ export default function App() {
     attachClippyListener();
     const unsubscribeVisibility = subscribeClippyVisibility(setShowClippy);
     const unsubscribeBubble = subscribeClippyBubble(setShowClippyBubble);
-
-    if (isMobilePhoneDevice()) {
-      setShowClippy(true);
-    }
 
     return () => {
       unsubscribeVisibility();
