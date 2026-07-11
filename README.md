@@ -4,6 +4,7 @@
 [![Security](https://img.shields.io/badge/security-maintained-green.svg)](./SECURITY.md)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.19.2-brightgreen.svg)](https://nodejs.org)
 [![License](https://img.shields.io/badge/license-CC--BY--NC--ND--4.0-lightgrey.svg)](./LICENSE)
+[![Website CI](https://github.com/akinevz2/frontend/actions/workflows/ci.yml/badge.svg)](https://github.com/akinevz2/frontend/actions/workflows/ci.yml)
 
 This is the source code for my personal website. I built it as a landing page for myself, and as a point-of-interest for those that stumble upon it.
 
