@@ -27,7 +27,7 @@ const SITE_ASSETS: SectionProps[] = [
     content: [
       "[robots.txt](/robots.txt)",
       "[XML sitemap](/sitemap.xml)",
-      "[SoundCloud snapshot](/soundcloud.json)",
+      "[SoundCloud snapshot](https://raw.githubusercontent.com/akinevz2/frontend/refs/heads/main/public/soundcloud.json)",
     ],
   },
   {
