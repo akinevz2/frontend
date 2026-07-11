@@ -55,3 +55,4 @@ docker
 2nd.fmt.json
 .cache/
 tsconfig.tsbuildinfo
+**/soundcloud.json
