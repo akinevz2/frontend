@@ -1486,7 +1486,7 @@ export default function App() {
           ) : null}
         </div>
       ) : null}
-      {showClippy ? (
+      {showClippy && path !== "/blog" ? (
         <div
           ref={(element) => {
             if (element) {
