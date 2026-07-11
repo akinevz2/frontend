@@ -7,7 +7,7 @@ import path from "node:path";
 import process from "node:process";
 import { buildMusicGroupSchema, serializeJsonLd } from "./src/lib/musicSchema";
 
-const pagesJsonPath = new URL("./src/pages.json", import.meta.url);
+const pagesJsonPath = new URL("./pages.json", import.meta.url);
 
 type PageDefinition = {
   path: string;

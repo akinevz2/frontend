@@ -138,10 +138,10 @@ function validateSectionNode(node, context, options = {}) {
 }
 
 function validatePages(value) {
-    assert(Array.isArray(value), "src/pages.json must be an array");
+    assert(Array.isArray(value), "pages.json must be an array");
 
     value.forEach((page, index) => {
-        const context = `src/pages.json[${index}]`;
+        const context = `pages.json[${index}]`;
         assert(page && typeof page === "object" && !Array.isArray(page), `${context}: must be object`);
         assertAllowedKeys(page, new Set(["path", "menuLabel", "title", "description"]), context);
         assert(typeof page.path === "string", `${context}.path must be string`);
@@ -222,19 +222,19 @@ async function checkRuntimePolicy() {
 
 async function checkContentSchema() {
     const [pages, contacts, sections, addons, soundcloud, blogPosts, musicLinks] = await Promise.all([
-        readJson("src/pages.json"),
-        readJson("src/contacts.json"),
-        readJson("src/sections.json"),
-        readJson("src/addons.json"),
+        readJson("pages.json"),
+        readJson("contacts.json"),
+        readJson("sections.json"),
+        readJson("addons.json"),
         readJson("public/soundcloud.json"),
         readJson("public/blog/posts.json"),
         readJson("public/blog/music-links.json"),
     ]);
 
     validatePages(pages);
-    validateSectionNode(contacts, "src/contacts.json");
-    validateSectionNode(sections, "src/sections.json");
-    validateSectionNode(addons, "src/addons.json", { allowAddonFields: true });
+    validateSectionNode(contacts, "contacts.json");
+    validateSectionNode(sections, "sections.json");
+    validateSectionNode(addons, "addons.json", { allowAddonFields: true });
     validateSoundcloud(soundcloud);
     validateBlogPosts(blogPosts);
     validateMusicLinks(musicLinks);

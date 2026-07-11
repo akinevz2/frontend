@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { generateMenuItems, type MenuItem } from "../utils/menuItems";
-import pages from "../pages.json";
+import pages from "../../pages.json";
 
 type Link = {
   label: string;
