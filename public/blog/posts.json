@@ -2,6 +2,17 @@
   "heading": "kine's blog posts",
   "content": [
     {
+      "heading": "fourteenth post (#rarebert, #utilities, #github)",
+      "content": [
+        "i merged the child uni utility modules into the top-level rarebert checkout and published the result on the utilities branch.",
+        {
+          "heading": "rarebert utilities merge commit abe0f1a",
+          "link": "https://github.com/akinevz2/rarebert/commit/abe0f1a"
+        },
+        "thanks bub"
+      ]
+    },
+    {
       "heading": "devcontainer usage update (#ops, #status)",
       "printout": "wsl.1.md"
     },
