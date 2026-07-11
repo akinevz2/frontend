@@ -594,8 +594,8 @@ const WowPage = () => {
 
     window.setTimeout(() => {
       const link = document.createElement("a");
-      link.href = "/WoW_Config.zip";
-      link.download = "WoW_Config.zip";
+      link.href = "/RuegConfig.7z";
+      link.download = "RuegConfig.7z";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -613,7 +613,7 @@ const WowPage = () => {
           style={{ background: "#ece9d8", border: "2px outset #dfdfdf" }}
         >
           <div className="title-bar">
-            <span className="title-bar-text">WoW Configuration Download</span>
+            <span className="title-bar-text">Rueg Configuration Download</span>
           </div>
 
           <div style={{ marginBottom: "1rem", lineHeight: 1.5 }}>

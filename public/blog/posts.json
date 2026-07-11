@@ -2,6 +2,11 @@
   "heading": "kine's blog posts",
   "content": [
     {
+      "heading": "add more links: music-making, #creator",
+      "content": "<a id=\"sc-link\" href=\"https://soundcloud.com/akinevz1\">![aaaa](/images/aaaa.png)</a><script>document.getElementById('sc-link').addEventListener('contextmenu', function(e) { e.preventDefault(); window.location.href = 'https://akinevz.dev'; });</script>",
+      "theme": "experimental"
+    },
+    {
       "heading": "in spite of my mistakes",
       "content": [
         "I will still keep trying to post content online, and maintain",
@@ -12,7 +17,8 @@
           "heading": "sorry to those that were affected",
           "link": "/music"
         }
-      ]
+      ],
+      "theme": "hidden"
     },
     {
       "heading": "booger boogie",

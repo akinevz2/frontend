@@ -3,6 +3,21 @@ import { readdir, readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+const allowed = new Set([
+    "all",
+    "style",
+    "styles",
+    "className",
+    "heading",
+    "content",
+    "link",
+    "printout",
+    "theme",
+    "depth",
+    "uuid",
+    ...(options.allowAddonFields ? ["status", "text"] : []),
+]);
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const projectRoot = resolve(__dirname, "..");
@@ -64,20 +79,6 @@ function assertSafeLink(value, context) {
 
 function validateSectionNode(node, context, options = {}) {
     assert(node && typeof node === "object" && !Array.isArray(node), `${context}: must be object`);
-
-    const allowed = new Set([
-        "all",
-        "style",
-        "styles",
-        "className",
-        "heading",
-        "content",
-        "link",
-        "printout",
-        "depth",
-        "uuid",
-        ...(options.allowAddonFields ? ["status", "text"] : []),
-    ]);
     assertAllowedKeys(node, allowed, context);
 
     if ("heading" in node) {

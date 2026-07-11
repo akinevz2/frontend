@@ -12,6 +12,7 @@ export type SectionProps = {
   content?: Content | undefined;
   link?: LinkUrl | undefined;
   printout?: string | string[] | undefined;
+  theme?: string | undefined;
   children?: React.ReactNode;
   depth?: number | undefined;
   uuid?: string | undefined;
