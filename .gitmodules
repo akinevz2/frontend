@@ -1,5 +1,0 @@
-[submodule "resume-pandoc"]
-	path = resume-pandoc
-	url = https://github.com/john-bokma/resume-pandoc.git
-[submodule "public/xp.css"]
-	path = public/xp.css
