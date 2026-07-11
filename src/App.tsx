@@ -1396,6 +1396,11 @@ export default function App() {
       ) : null}
       {showClippy ? (
         <div
+          ref={(element) => {
+            if (element) {
+              element.scrollIntoView({ behavior: "smooth", block: "end" });
+            }
+          }}
           style={{
             position: "fixed",
             right: "1rem",
@@ -1405,6 +1410,7 @@ export default function App() {
             flexDirection: "column",
             alignItems: "flex-end",
             gap: "0.4rem",
+            animation: "clippyEnter 600ms ease-out forwards",
           }}
         >
           {showClippyBubble ? (
