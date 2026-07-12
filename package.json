@@ -6,7 +6,8 @@
   "type": "module",
   "packageManager": "npm@10.8.2",
   "engines": {
-    "node": "20.19.2",
+    "node": "^26",
+    "npm": "^11",
     "clippy": "1"
   },
   "scripts": {
