@@ -18,29 +18,9 @@ This document defines the ideal final-state engineering configuration.
 3. Output artifact: static files under `dist/` with content-hashed filenames and immutable cache headers.
 4. Deploy target: object storage or CDN with immutable objects; each deploy addressed by commit SHA.
 
-## Required TypeScript Engineering Changes
+## Permitted TypeScript Scoped Changes
 
-### 1) Eliminate Runtime Remote Content
-- Remove browser-side `fetch(...)` for authored blog/music content from remote hosts.
-- Replace with build-time generation pipeline:
-  1. `scripts/fetch-content.ts` (Node TS script) fetches external source using pinned URL with commit SHA, not branch ref.
-  2. `scripts/validate-content.ts` validates payload with strict schemas (`zod` or `valibot`).
-  3. `scripts/freeze-content.ts` writes normalized JSON into `src/generated/content.<sha>.json`.
-- App imports only generated local content modules.
-
-### 2) Ban Raw HTML Parsing in Markdown Path
-- Remove `rehype-raw` from rendering paths.
-- Keep `rehype-sanitize` with explicit allowlist and no `style` attribute passthrough by default.
-- If HTML is absolutely needed, parse only trusted precompiled fragments generated at build-time from controlled templates.
-
-### 3) Strict Content Contracts
-- Add a content schema package at `src/content/schema.ts`.
-- Validate every content file in prebuild; fail build on unknown keys, invalid URLs, oversized fields, or unexpected HTML.
-- Enforce URL policy:
-  - external URLs allowed only from explicit allowlist
-  - reject `javascript:`, `data:`, mixed-content `http:` on `https` pages
-
-### 4) Deterministic Route Metadata
+### 1) Deterministic Route Metadata
 - Keep route metadata in one typed source (`src/pages.ts`), not ad-hoc JSON edits.
 - Generate sitemap, OpenGraph metadata, and route shells from the same typed source.
 
