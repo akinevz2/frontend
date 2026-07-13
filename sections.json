@@ -176,6 +176,22 @@
                   ]
                 }
               ]
+            },
+            {
+              "heading": "who is Brudder",
+              "content": [
+                "playing as Brúdder the Tauren",
+                {
+                  "heading": "what class is Brúdder?",
+                  "content": "a Nature Paladin"
+                },
+                {
+                  "heading": "can we see Brúdder?",
+                  "content": [
+                    "<img src=\"/images/brudder.png\" alt=\"brúdder\" style=\"width: auto; height: auto; max-height: 600px;\" />"
+                  ]
+                }
+              ]
             }
           ]
         }
