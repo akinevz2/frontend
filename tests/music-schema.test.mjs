@@ -25,7 +25,7 @@ test("buildMusicGroupSchema includes the requested profile fields", () => {
         sameAs: [
             "https://soundcloud.com/akinevz",
             "https://soundcloud.com/akinevz0",
-            "https://soundcloud.com/akinevz1",
+            "https://soundcloud.com/kirill_nevzorov",
             "https://soundcloud.com/akinevz2",
             "https://github.com/akinevz",
             "https://github.com/akinevz2",
