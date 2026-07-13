@@ -503,6 +503,12 @@
             "<img src=\"/images/kogg1.png\" alt=\"kogg\" style=\"width: auto; height: auto; max-height: 600px;\" />",
             "<img src=\"/images/kogg2.png\" alt=\"kogg\" style=\"width: auto; height: auto; max-height: 600px;\" />"
           ]
+        },
+        {
+          "heading": "brúdder",
+          "content": [
+            "<img src=\"/images/brudder.png\" alt=\"brúdder\" style=\"width: auto; height: auto; max-height: 600px;\" />"
+          ]
         }
       ]
     }
