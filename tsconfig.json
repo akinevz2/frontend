@@ -28,5 +28,8 @@
     "forceConsistentCasingInFileNames": true,
     "incremental": true
   },
-  // "include": ["src", "vite.config.ts"]
+  "include": [
+    "src",
+    "vite.config.ts"
+  ]
 }

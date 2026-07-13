@@ -57,10 +57,10 @@ function getSitemapPriority(routePath: string): string {
     case "/":
       return "1.0";
     case "/sitemap":
-      return "0.9";
+      return "1.9";
     case "/music":
     case "/blog":
-      return "0.8";
+      return "0.1";
     default:
       return "0.7";
   }
@@ -71,11 +71,11 @@ function getSitemapChangeFreq(routePath: string): string {
     case "/":
     case "/blog":
     case "/music":
-      return "daily";
+      return "hourly";
     case "/sitemap":
-      return "monthly";
+      return "hourly";
     default:
-      return "yearly";
+      return "daily";
   }
 }
 
