@@ -660,7 +660,7 @@ const WowPage = () => {
           <div style={{ marginBottom: "1rem", lineHeight: 1.5 }}>
             <p>
               To download the World of Warcraft configuration files, please
-              enter your username and verify today's date.
+              enter your <a href="/addons">username</a> and verify today's date.
             </p>
           </div>
 
@@ -1190,7 +1190,7 @@ export default function App() {
       setAssistantWindowVisible(true);
       setAssistantWindowMinimized(false);
       const readyBeep = new Audio("/Beep.ogg");
-      void readyBeep.play().catch(() => {});
+      void readyBeep.play().catch(() => { });
     } catch (error) {
       setConversationError(
         error instanceof Error
@@ -1354,7 +1354,7 @@ export default function App() {
         currentPath={path}
         // additionalLinks={showClippy ? TOP_BAR_ADDITIONAL_LINKS : []}
         additionalLinks={[]}
-        // onMenuAction={handleTopMenuAction}
+      // onMenuAction={handleTopMenuAction}
       />
       {content}
       {/* Assistant config modal intentionally disabled. */}
