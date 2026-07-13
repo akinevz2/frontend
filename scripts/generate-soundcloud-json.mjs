@@ -5,7 +5,7 @@
  * Background:
  * SoundCloud's public profile pages only render a small number of tracks on the
  * server (around 10). To publish the complete discography for akinevz (~43
- * tracks) and akinevz1 (~33 tracks) we query the public API v2 endpoint and
+ * tracks) and kirill_nevzorov (~33 tracks) we query the public API v2 endpoint and
  * paginate through the full track collection.
  */
 import { copyFile, mkdir, rename, rm, writeFile } from "node:fs/promises";
@@ -14,7 +14,7 @@ import { dirname, resolve } from "node:path";
 import { homedir } from "node:os";
 
 /** SoundCloud usernames whose discographies should be published. */
-const SOUND_CLOUD_OWNERS = ["akinevz", "akinevz1"];
+const SOUND_CLOUD_OWNERS = ["akinevz", "kirill_nevzorov"];
 
 /**
  * Static mapping from username to SoundCloud user id.
@@ -25,7 +25,7 @@ const SOUND_CLOUD_OWNERS = ["akinevz", "akinevz1"];
  */
 const SOUND_CLOUD_USER_IDS = {
   akinevz: 56124544,
-  akinevz1: 1188527119,
+  kirill_nevzorov: 1188527119,
 };
 
 /**
