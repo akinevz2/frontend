@@ -1,9 +1,21 @@
 {
   "source": "https://soundcloud.com/akinevz",
-  "generatedAt": "2026-07-12T21:11:03.568Z",
-  "asOfUploadingTrackCount": 76,
-  "trackCount": 76,
+  "generatedAt": "2026-07-13T07:21:03.381Z",
+  "asOfUploadingTrackCount": 78,
+  "trackCount": 78,
   "tracks": [
+    {
+      "owner": "akinevz",
+      "path": "/akinevz/constant-diagonality",
+      "title": "Constant Diagonality HQ",
+      "url": "https://soundcloud.com/akinevz/constant-diagonality"
+    },
+    {
+      "owner": "akinevz",
+      "path": "/akinevz/singular-singularity",
+      "title": "Singular(1) Minute HQ",
+      "url": "https://soundcloud.com/akinevz/singular-singularity"
+    },
     {
       "owner": "akinevz",
       "path": "/akinevz/continuity",
@@ -466,8 +478,20 @@
       "owner": "akinevz",
       "source": "https://soundcloud.com/akinevz",
       "profileImageUrl": "https://i1.sndcdn.com/avatars-eI6ppszSrGTnxwcJ-uK7pyw-large.jpg",
-      "trackCount": 43,
+      "trackCount": 45,
       "tracks": [
+        {
+          "owner": "akinevz",
+          "path": "/akinevz/constant-diagonality",
+          "title": "Constant Diagonality HQ",
+          "url": "https://soundcloud.com/akinevz/constant-diagonality"
+        },
+        {
+          "owner": "akinevz",
+          "path": "/akinevz/singular-singularity",
+          "title": "Singular(1) Minute HQ",
+          "url": "https://soundcloud.com/akinevz/singular-singularity"
+        },
         {
           "owner": "akinevz",
           "path": "/akinevz/continuity",
