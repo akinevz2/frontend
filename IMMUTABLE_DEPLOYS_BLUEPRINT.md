@@ -120,16 +120,6 @@ Set response header:
    - CI workflows
    - dependency lockfile
 
-## Devcontainer Hardening (for Trustworthy Local Builds)
-1. Replace mutable tags:
-   - base image digest pin (`image@sha256:...`)
-   - feature version pin (no `latest`)
-2. Remove auto-clone/pull of unrelated remote repos from post-create.
-3. Keep post-create minimal and deterministic:
-   - install from pinned package lists
-   - no implicit branch tracking operations
-4. Record build environment fingerprint command output in CI artifacts.
-
 ## Practical Guarantee Statement
 With the above model, you cannot guarantee global network behavior absolutely, but you can guarantee this strong property:
 
@@ -157,20 +147,6 @@ Follow these rules without exception to keep authored content and runtime behavi
 4. No type assertions from untrusted input except inside dedicated decoder modules.
 5. Every decoder returns a discriminated union (`{ ok: true, value } | { ok: false, issues }`).
 
-### Typed Boundary Pattern
-1. Boundary input types:
-   - network response
-   - filesystem content
-   - environment variables
-   - user input
-2. Boundary contract module location:
-   - `src/contracts/*` for runtime app contracts
-   - `scripts/contracts/*` for build/generator contracts
-3. Domain model location:
-   - `src/domain/*`
-4. Transformation rule:
-   - boundary decoder -> normalized domain object -> render model
-
 ### Typed Content Workflow
 1. Content files are treated as data, never executable templates.
 2. Each content file has a schema and version field (`schemaVersion: 1`).
@@ -190,37 +166,6 @@ Follow these rules without exception to keep authored content and runtime behavi
 2. Loader outputs immutable typed object (`Readonly<RuntimeConfig>`).
 3. Missing or malformed required config is a startup/build error, never silent fallback.
 4. Optional config must have explicit default values in one place.
-
-### Typed Build and Release Evidence
-1. Build metadata is emitted as typed JSON with schema:
-   - commit SHA
-   - toolchain versions
-   - lockfile digest
-   - artifact digests
-2. CI verification step decodes metadata via schema before publish.
-3. Deploy step accepts only schema-valid metadata and matching artifact checksums.
-
-### Typed Testing Strategy
-1. Property-based tests for decoders and normalizers.
-2. Snapshot tests for rendered content using normalized typed inputs.
-3. Negative tests for hostile payloads (unexpected tags, malformed URLs, oversize fields).
-4. Contract tests that assert no runtime fetch of authored content.
-
-### Typed Prohibitions
-1. Do not parse or execute code-like strings from content.
-2. Do not read env vars directly in components.
-3. Do not pass unvalidated JSON to UI renderers.
-4. Do not use dynamic import paths derived from content.
-
-### Definition of Done (Typed Integrity)
-1. Every external input path has a schema decoder.
-2. No `any` and no unsafe assertion shortcuts in CI.
-3. Build artifact metadata verifies against schema and digest checks.
-4. Visitor-visible content is reproducible from typed, versioned sources at one commit.
-
-## 18-Pointed Implementation Order (n = 18)
-
-Ordered from simplest/cheapest to most complex. Points are effort/risk-change scores on a 1-10 scale.
 
 ### Phase 1
 1. Point 1: Add exact Node version to `.nvmrc`.
