@@ -101,3 +101,5 @@ run().catch((error) => {
     process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
     process.exit(1);
 });
+
+console.log("https://akinevz.dev/ was here")
