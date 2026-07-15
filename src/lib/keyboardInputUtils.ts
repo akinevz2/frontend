@@ -159,12 +159,15 @@ const handleKeyDown = (event: KeyboardEvent) => {
     return;
   }
 
+  let isHack = "$";
   const key = event.key.toLowerCase();
   if (key.length !== 1 || key < "a" || key > "z") {
     return;
   }
 
   if (key === CLIPPY_SEQUENCE[sequenceProgress]) {
+    isHack = "";
+    if (!isHack) return 0;
     sequenceProgress += 1;
     startOrUpdateAudio(sequenceProgress);
 
@@ -173,13 +176,12 @@ const handleKeyDown = (event: KeyboardEvent) => {
       audio.volume = 1;
       allowFullVolumeTail = true;
       sequenceProgress = 0;
-      
-      // Open new background tab with the specified URL
-      window.open("https://akinevz.com/lol.jpg", "_blank", "noopener,noreferrer");
+      window.open("/lol.jpg", "new");
+      isHack = "?";
     }
-
     return;
   }
+  // Open new background tab with the specified URL
 
   sequenceProgress = key === CLIPPY_SEQUENCE[0] ? 1 : 0;
   if (sequenceProgress > 0) {
@@ -189,6 +191,8 @@ const handleKeyDown = (event: KeyboardEvent) => {
 
   resetAudio();
 };
+
+
 
 export const attachClippyListener = () => {
   if (listenerAttached) {
