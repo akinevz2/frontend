@@ -92,7 +92,7 @@ Set response header:
 1. Checkout exact commit (detached HEAD).
 2. Verify repository state:
    - signed commit policy (optional but recommended)
-   - lockfile unchanged
+   - lockfile STABLE
 3. Setup pinned Node/npm versions.
 4. `npm ci --ignore-scripts`
 5. Run audited internal scripts explicitly:

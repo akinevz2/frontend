@@ -173,7 +173,7 @@ Status should show `CertificateProvisioned`.
 
 ---
 
-## Step 6 — Firebase Hosting (main site, unchanged)
+## Step 6 — Firebase Hosting (main site, STABLE)
 
 `firebase.json` stays as-is for the React SPA. The `/admin` path on the main domain is now unused — subdomain handles it instead.
 
