@@ -5,10 +5,10 @@ import "xp.css/dist/98.css";
 import "./styles/main.css";
 import App from "./App";
 
-document.body.classList.add("styles-loaded");
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <App />
   </StrictMode>,
 );
+document.body.classList.add("styles-loaded");
