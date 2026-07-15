@@ -18,7 +18,7 @@ Apply a consistent commit-message policy so all commits include the token [skip 
 
 ## Procedure
 1. Inspect the target commit message.
-2. If [skip preview] is already present, leave the commit unchanged.
+2. If [skip preview] is already present, leave the commit STABLE.
 3. If creating a new commit, append [skip preview] to the message.
 4. If fixing the latest local commit only, amend with the corrected message.
 5. Verify the final commit subject contains [skip preview].
