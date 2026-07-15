@@ -43,5 +43,8 @@
   },
   "overrides": {
     "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@types/react-dom": "^19.2.3"
   }
 }
