@@ -190,6 +190,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
   }
 
   resetAudio();
+  return
 };
 
 
