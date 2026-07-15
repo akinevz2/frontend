@@ -1,5 +1,3 @@
-5be31d58-407d-4262-9c23
-
 ================================================================================
 INCORRECT RESPONSE REPORT
 Generated from: benchmark_results.sqlite
@@ -120,7 +118,3 @@ HOST: minifridge  (http://minifridge:11434)
       Latency    : 0.28s
       Prompt     : Say 'Hello World'
       Response  : Hello, World!
-
-
-// why would you do this to me 
-// 20c8f20342fb
