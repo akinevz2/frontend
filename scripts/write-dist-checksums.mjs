@@ -80,8 +80,8 @@ async function run() {
         const status = !previous
             ? "NEW"
             : previous === digest
-                ? "UNCHANGED"
-                : "CHANGED";
+                ? "STABLE"
+                : "UNCHANGED";
         index += 1;
 
         process.stdout.write(
