@@ -1,10 +1,17 @@
 {
+  "heading": "I am a contact card!",
   "content": [
     "I hope that I have added enough!",
     "",
-    "Please someone summon the \"`fuckingclippy`\" asap!!!",
     {
-      "heading": "Media",
+      "heading": "Don't click if you're at work, or a child!",
+      "content": [
+        "Please someone summon the demon already,",
+        "Type \"`fuckingclippy`\" anywhere on this site!!!"
+      ]
+    },
+    {
+      "heading": "Media made by akinevz!",
       "content": [
         "[Youtube (akinevz)](https://www.youtube.com/@akinevz)",
         "",
@@ -13,7 +20,7 @@
       ]
     },
     {
-      "heading": "Social",
+      "heading": "Social contacts of akinevz!",
       "content": [
         {
           "heading": "Email",
