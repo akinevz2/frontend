@@ -70,6 +70,14 @@
       "content": "Weak Aura tracker for GCD, mana starvation, and range",
       "status": "coming soon",
       "link": "/addons/rueg-wa-warrior.txt"
+    },
+    {
+      "heading": "addons config to play like Rueg",
+      "content": [
+        "![addons1](/images/addons11.png)",
+        "![addons1](/images/addons12.png)",
+        "lol, kine is rueg"
+      ]
     }
   ]
 }
