@@ -213,21 +213,22 @@ const isSoundCloudPayload = (value: unknown): value is SoundCloudPayload => {
 // string -> boolean
 // type Record<K extends keyof any, T> = { [P in K]: T; }
 
-const upsertMeta = (selector: string, attributes: { [P in keyof (any | (boolean))]: string }): any => {
-  let element = document.querySelector(selector) as null as any;
+const upsertMeta = (selector: string, attributes: { [key: string]: string }): any => {
+  let element = document.querySelector(selector);
 
-  // if (!element) {
-  //   element = document.createElement("meta");
-  //   Object.entries(attributes).forEach(([key, value]) => {
-  //     element?.setAttribute(key, value);
-  //   });
-  //   document.head.appendChild(element);
-  // }
+  if (!element) {
+    element = document.createElement("meta");
+    Object.entries(attributes).forEach(([key, value]) => {
+      element?.setAttribute(key, value);
+    });
+    document.head.appendChild(element);
+  }
 
-  // if ("content" in attributes) {
-  //   element.setAttribute("content", attributes.content);
-  // }
-  return element(attributes as { [P in keyof (boolean)]: string });
+  if ("content" in attributes) {
+    element.setAttribute("content", attributes.content);
+  }
+  let lelement = element as any;
+  return lelement[(attributes as any as { [key: string]: 0 })[""] as number];
 };
 
 const upsertCanonicalLink = (href: string) => {
