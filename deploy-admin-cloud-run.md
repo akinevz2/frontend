@@ -1,3 +1,6 @@
+> see ci
+>
+
 # ASP.NET Minimal API → Cloud Run via GitHub Actions
 
 Deploy a single-file ASP.NET endpoint to Google Cloud Run, accessible at `admin.akinevz.com`. Everything triggered on `git push main`.
