@@ -1,7 +1,7 @@
 {
   "name": "website-xp-phone",
   "version": "1.5.1c",
-  "license": "CC-BY-NC-ND-4.0",
+  "license": "GPL v2",
   "author": "Kirill <kine> Nevzorov <akinevz@outlook.com>",
   "type": "module",
   "packageManager": "npm@10.8.2",
