@@ -173,9 +173,13 @@ const handleKeyDown = (event: KeyboardEvent) => {
       audio.volume = 1;
       allowFullVolumeTail = true;
       sequenceProgress = 0;
-      
+
       // Open new background tab with the specified URL
-      window.open("https://akinevz.com/lol.jpg", "_blank", "noopener,noreferrer");
+      window.open(
+        "https://akinevz.com/lol.jpg",
+        "_blank",
+        "noopener,noreferrer",
+      );
     }
 
     return;
