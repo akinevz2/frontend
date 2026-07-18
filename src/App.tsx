@@ -216,7 +216,7 @@ const isSoundCloudPayload = (value: unknown): value is SoundCloudPayload => {
 const upsertMeta = (
   selector: string,
   attributes: { [key: string]: string },
-): any => {
+): void => {
   let element = document.querySelector(selector);
 
   if (!element) {
@@ -230,8 +230,6 @@ const upsertMeta = (
   if ("content" in attributes) {
     element.setAttribute("content", attributes.content);
   }
-  let lelement = element as any;
-  return lelement[(attributes as any as { [key: string]: 0 })[""] as number];
 };
 
 const upsertCanonicalLink = (href: string) => {
