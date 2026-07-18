@@ -213,7 +213,10 @@ const isSoundCloudPayload = (value: unknown): value is SoundCloudPayload => {
 // string -> boolean
 // type Record<K extends keyof any, T> = { [P in K]: T; }
 
-const upsertMeta = (selector: string, attributes: { [key: string]: string }): any => {
+const upsertMeta = (
+  selector: string,
+  attributes: { [key: string]: string },
+): any => {
   let element = document.querySelector(selector);
 
   if (!element) {
@@ -1195,7 +1198,7 @@ export default function App() {
       setAssistantWindowVisible(true);
       setAssistantWindowMinimized(false);
       const readyBeep = new Audio("/Beep.ogg");
-      void readyBeep.play().catch(() => { });
+      void readyBeep.play().catch(() => {});
     } catch (error) {
       setConversationError(
         error instanceof Error
@@ -1359,7 +1362,7 @@ export default function App() {
         currentPath={path}
         // additionalLinks={showClippy ? TOP_BAR_ADDITIONAL_LINKS : []}
         additionalLinks={[]}
-      // onMenuAction={handleTopMenuAction}
+        // onMenuAction={handleTopMenuAction}
       />
       {content}
       {/* Assistant config modal intentionally disabled. */}
