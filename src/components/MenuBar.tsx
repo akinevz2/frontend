@@ -38,7 +38,7 @@ const isTypingTarget = (target: EventTarget | null) => {
 const isInternalPath = (href: string) => href.startsWith("/");
 
 const SITEMAP_HREF = "/sitemap";
-const ADDONS_HREF = "/addons";
+const HIDDEN_HREFS = ["/addons", "/resume", "/documents"];
 
 const normalizePath = (path: string) => {
   if (!path || path === "/") {
@@ -53,10 +53,13 @@ const hasAdminCookie = () =>
   document.cookie.split("; ").some((cookie) => cookie === "admin=akinevz");
 
 const filterHiddenMenuItems = (menuItems: MenuItem[], currentPath?: string) => {
-  const isAddonsPage = normalizePath(currentPath ?? "") === ADDONS_HREF;
+  const hide: (href: string) => boolean = (href) => {
+    return HIDDEN_HREFS.includes(href);
+  };
+  const isAddonsPage = hide(normalizePath(currentPath ?? "/404"));
   const withoutAddons = isAddonsPage
     ? menuItems
-    : menuItems.filter((item) => item.href !== ADDONS_HREF);
+    : menuItems.filter((item) => !hide(item.href));
 
   if (hasAdminCookie()) {
     return withoutAddons;

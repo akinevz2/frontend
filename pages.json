@@ -6,8 +6,8 @@
     "description": "my cozy little personal website"
   },
   {
-    "path": "/addons",
-    "menuLabel": "addons",
+    "path": "/resume",
+    "menuLabel": "resume",
     "title": "ui of kine",
     "description": "look at my UI in wow!"
   },
@@ -16,12 +16,6 @@
     "menuLabel": "wow config",
     "title": "WoW Config - kine",
     "description": "Download World of Warcraft configuration files"
-  },
-  {
-    "path": "/blog",
-    "menuLabel": "blog",
-    "title": "blog of kine",
-    "description": "posts and notes from kine"
   },
   {
     "path": "/music",
@@ -42,9 +36,15 @@
     "description": "contact me!"
   },
   {
-    "path": "/resume",
-    "menuLabel": "resume",
+    "path": "/addons",
+    "menuLabel": "addons",
     "title": "please hire kine",
     "description": "hire me!"
+  },
+  {
+    "path": "/blog",
+    "menuLabel": "blog",
+    "title": "blog of kine",
+    "description": "posts and notes from kine"
   }
 ]

@@ -1348,6 +1348,7 @@ export default function App() {
     case "/wow":
       content = <WowPage />;
       break;
+    case "/404":
     default:
       content = <NotFoundPage />;
       break;
