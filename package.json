@@ -43,10 +43,12 @@
     "rehype-sanitize": "^6.0.0",
     "typescript-eslint": "^8.64.0",
     "vite": "^8.1.5",
-    "xp.css": "^0.2.6"
+    "xp.css": "^0.2.6",
+    "postcss": ">=8.5.12"
   },
   "overrides": {
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "protobufjs": "^7.6.5"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
