@@ -1562,6 +1562,14 @@ export default function App() {
               event.stopPropagation();
               rightClickFlashArmedRef.current = true;
               handleUnavailableAssistantConfig();
+              document.documentElement.classList.add("theme-box-shadow-flash");
+              window.setTimeout(
+                () =>
+                  document.documentElement.classList.remove(
+                    "theme-box-shadow-flash",
+                  ),
+                180,
+              );
             }}
             style={{
               width: "120px",
