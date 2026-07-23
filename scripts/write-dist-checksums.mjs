@@ -30,7 +30,7 @@ async function walk(dirPath) {
 }
 
 async function sha256File(filePath) {
-    const content = await readFile(filePath);
+    const content = await readFile(filePath, "utf8");
     return createHash("sha256").update(content).digest("hex");
 }
 
