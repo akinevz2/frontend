@@ -7,6 +7,7 @@ import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { playLayeredAudio } from "../lib/audioOverlap";
 import { asAssetPath } from "../lib/urlTypes";
 import { useSectionContext } from "./hooks";
+import { OkButton } from "./OkButton";
 import type { Content, HttpUrl, SectionProps } from "./types";
 
 const BLOG_PATH = "/blog";
@@ -563,7 +564,10 @@ export const Section = (props: SectionProps) => {
               ? renderContent(content, depth, theme)
               : null}
             {shouldShowCollapsedOkButton ? (
-              <button onClick={handlePrimaryAction}>OK</button>
+              <OkButton
+                data-section-uuid={sectionUUID}
+                onClick={handlePrimaryAction}
+              />
             ) : null}
           </div>
         ) : (
@@ -674,7 +678,10 @@ export const Section = (props: SectionProps) => {
                         ? renderContent(content, depth, theme)
                         : null}
                       {shouldShowCollapsedOkButton ? (
-                        <button onClick={handlePrimaryAction}>OK</button>
+                        <OkButton
+                          data-section-uuid={sectionUUID}
+                          onClick={handlePrimaryAction}
+                        />
                       ) : null}
                     </div>
                   ) : (

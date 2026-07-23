@@ -4,6 +4,7 @@ export { SectionProvider } from "./provider";
 export { SectionContext, type SectionContextType } from "./context";
 export { useSectionContext } from "./hooks";
 export { MinimizedSections } from "./MinimizedSections";
+export { OkButton } from "./OkButton";
 export type {
   SectionProps,
   Content,
