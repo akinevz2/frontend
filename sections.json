@@ -27,7 +27,7 @@
       "content": [
         {
           "heading": "current occupation",
-          "content": "to graduate University of Sussex!"
+          "content": "studying at University of Sussex!"
         },
         {
           "heading": "current hobbies",
@@ -42,10 +42,13 @@
     {
       "heading": "what's kine busy with",
       "content": [
+        "currently:",
+        {
+          "content": "I'M FREAKIN GRADUATING TODAY!"
+        },
         "preparing to:",
         {
           "content": [
-            "graduate University of Sussex",
             "apply for a very prestige job in the IT sector",
             "meet new people",
             "travel to new exotic places"
@@ -134,8 +137,12 @@
       "heading": "where's kine been",
       "content": [
         {
+          "heading": "for lifestyle",
+          "content": "in a cozy apartment in Hove"
+        },
+        {
           "heading": "for studies",
-          "content": "currently at University of Sussex"
+          "content": "graduating University of Sussex today!"
         },
         {
           "heading": "for work",
