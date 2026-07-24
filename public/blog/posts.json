@@ -2,15 +2,27 @@
   "heading": "kine's blog posts",
   "content": [
     {
+      "heading": "fifteenth post (#very-rare, #windows, #funny)",
+      "content": [
+        "top windows-menu",
+        "can you reach my",
+        "upper shelf, the",
+        "pans don't go on",
+        "bottom one",
+        {
+          "heading": "what are you doing up there??",
+          "content": "![floating](/images/Screenshot%202026-07-23%20074101.png)"
+        }
+      ]
+    },
+    {
       "heading": "fourteenth post (#rarebert, #utilities, #github)",
       "content": [
-        "i merged the child uni utility modules into the top-level rarebert checkout and published the result on the utilities branch.",
         {
-          "heading": "rarebert utilities merge commit abe0f1a",
-          "link": "https://github.com/akinevz2/rarebert/commit/abe0f1a"
-        },
-        "thanks bub",
-        "-/public+{}"
+          "heading": "rarebert utilities is a really fun mental gymnastics exercise!",
+          "content": "i merged the uni utility modules into the top-level rarebert repo and published the result: its somewhat public-ready.",
+          "link": "https://github.com/akinevz2/rarebert/"
+        }
       ]
     },
     {
