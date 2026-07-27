@@ -29,7 +29,7 @@
     "checksums": "node ./scripts/write-dist-checksums.mjs"
   },
   "dependencies": {
-    "@vitejs/plugin-react": "^6.0.3",
+    "@vitejs/plugin-react": "^6.0.4",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.3",
     "firebase": "^12.16.0",
