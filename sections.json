@@ -27,7 +27,7 @@
       "content": [
         {
           "heading": "current occupation",
-          "content": "studying at University of Sussex!"
+          "content": "job search! web dev! data hoarding? continued research!"
         },
         {
           "heading": "current hobbies",
@@ -42,26 +42,30 @@
     {
       "heading": "what's kine busy with",
       "content": [
-        "currently:",
-        {
-          "content": "I'M FREAKIN GRADUATING TODAY!"
-        },
-        "preparing to:",
+        "recently:",
         {
           "content": [
-            "apply for a very prestige job in the IT sector",
-            "meet new people",
-            "travel to new exotic places"
+            "graduated University of Sussex!"
           ]
         },
-        "actively implementing:",
+        "currently:",
         {
           "content": [
-            "blogging platform",
+            "looking for a job in the IT sector",
+            "want to build more mechanical keyboards",
+            "need to travel to new exotic places",
+            "make a videogame"
+          ]
+        },
+        "programming:",
+        {
+          "content": [
             "audio compression/filtering algorithms",
             "python rapid development framework",
             "fluent web app admin panel",
-            "bulletproof security"
+            "bulletproof security",
+            "blogging platform",
+            "RPC Makefile"
           ]
         }
       ]
@@ -86,7 +90,7 @@
                 }
               ]
             },
-            "and cats [\\[?\\]](https://akinevz.com/images/hyperawareofwhatacatis.png)",
+            "and cats, above all creatures",
             {
               "heading": "open source",
               "content": [
@@ -105,6 +109,7 @@
                 }
               ]
             },
+            "video games, nostalgic ones",
             {
               "heading": "secret",
               "content": [
@@ -115,20 +120,20 @@
                 }
               ]
             },
+            "arts and expressions of free will",
             {
               "heading": "music",
               "link": "https://soundcloud.com/akinevz"
             },
             {
-              "heading": "more music",
+              "heading": "another music",
               "link": "https://soundcloud.com/kirill_nevzorov"
             },
+            "and endlessly, deeply",
             {
               "heading": "abstract and surreal",
               "content": []
-            },
-            "if my soundcloud links are broken",
-            "i probably have no idea"
+            }
           ]
         }
       ]
@@ -137,19 +142,23 @@
       "heading": "where's kine been",
       "content": [
         {
-          "heading": "for lifestyle",
-          "content": "in a cozy apartment in Hove"
+          "heading": "for lifestyle full of relaxing and cozy",
+          "content": "in a little apartment in Hove"
         },
         {
-          "heading": "for studies",
-          "content": "graduating University of Sussex today!"
-        },
-        {
-          "heading": "for work",
+          "heading": "for work in the past",
           "content": [
             "at Revolent Group (Salesforce)",
             "in the wild (freelance)",
             "at CMS (during merger w/ Nabarro+Olswang)"
+          ]
+        },
+        {
+          "heading": "for studies completed well",
+          "content": [
+            "GEMS Hampshire School",
+            "Southborough High School",
+            "University of Sussex"
           ]
         }
       ]
