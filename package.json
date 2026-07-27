@@ -35,7 +35,7 @@
     "firebase": "^12.16.0",
     "globals": "^17.7.0",
     "lightdni-jssas-toggle": "1.0.4",
-    "react": "^19.2.7",
+    "react": "^19.2.8",
     "react-dom": "^19.2.7",
     "react-markdown": "^10.1.0",
     "react-toastify": "^11.1.0",
