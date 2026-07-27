@@ -27,7 +27,11 @@
     },
     {
       "heading": "devcontainer usage update (#ops, #status)",
-      "link": "/blog/wsl.1.md"
+      "content": [
+        {
+          "printout": "/wsl.1.md"
+        }
+      ]
     },
     {
       "heading": "add more links: music-making, #creator",
