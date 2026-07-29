@@ -1,9 +1,11 @@
 
+import type { ReactNode } from "react";
+
 export type Heading = string;
 export type HttpUrl = `http://${string}` | `https://${string}`;
 export type LinkUrl = HttpUrl | `/${string}`;
 
-export type Content = string | (string | SectionProps)[];
+export type Content = string | (ReactNode | SectionProps)[];
 
 export type SectionProps = {
   className?: string | undefined;
@@ -12,7 +14,6 @@ export type SectionProps = {
   link?: LinkUrl | undefined;
   printout?: string | string[] | undefined;
   theme?: string | undefined;
-  children?: React.ReactNode;
   depth?: number | undefined;
   uuid?: string | undefined;
   treeIndex?: string | undefined;
@@ -24,6 +25,9 @@ export type SectionMetadata = {
   depth: number;
 };
 
+/**
+ * NB: Ephemeral per page visit
+ */
 export type ContentWithUUID<T> = Omit<T, "content"> & {
   uuid: string;
   treeIndex: string;

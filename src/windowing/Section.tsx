@@ -1,4 +1,4 @@
-import type React from "react";
+import { } from "react";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 import Markdown, { type Options as ReactMarkdownOptions } from "react-markdown";
@@ -39,17 +39,26 @@ const contentContainsPostSlug = (
       return false;
     }
 
-    if (
-      typeof item.heading === "string" &&
-      toPostSlug(item.heading) === targetPostSlug
-    ) {
-      return true;
+    // Check if it's a SectionProps object with heading/content
+    if (typeof item === "object" && item !== null) {
+      const sectionItem = item as SectionProps;
+      if (
+        typeof sectionItem.heading === "string" &&
+        toPostSlug(sectionItem.heading) === targetPostSlug
+      ) {
+        return true;
+      }
+
+      if (sectionItem.content) {
+        return contentContainsPostSlug(
+          sectionItem.content as Content,
+          targetPostSlug,
+        );
+      }
     }
 
-    return (
-      !!item.content &&
-      contentContainsPostSlug(item.content as Content, targetPostSlug)
-    );
+    // ReactNode items don't have nested sections to check
+    return false;
   });
 };
 
@@ -72,15 +81,24 @@ const contentContainsSectionId = (
       return false;
     }
 
-    const candidateId = item.treeIndex || toPostSlug(item.heading || "");
-    if (candidateId === targetSectionId) {
-      return true;
+    // Check if it's a SectionProps object with treeIndex/heading/content
+    if (typeof item === "object" && item !== null) {
+      const sectionItem = item as SectionProps;
+      const candidateId = sectionItem.treeIndex || toPostSlug(sectionItem.heading || "");
+      if (candidateId === targetSectionId) {
+        return true;
+      }
+
+      if (sectionItem.content) {
+        return contentContainsSectionId(
+          sectionItem.content as Content,
+          targetSectionId,
+        );
+      }
     }
 
-    return (
-      !!item.content &&
-      contentContainsSectionId(item.content as Content, targetSectionId)
-    );
+    // ReactNode items don't have nested sections to check
+    return false;
   });
 };
 
@@ -284,6 +302,7 @@ function renderContent(
   const groupedContent: Array<
     | { type: "markdown"; key: number; text: string }
     | { type: "section"; key: number; section: SectionProps }
+    | { type: "react"; key: number; element: React.ReactNode }
   > = [];
   let bufferedLines: string[] = [];
   let bufferStartIndex = 0;
@@ -301,6 +320,16 @@ function renderContent(
     bufferedLines = [];
   };
 
+  // Helper to check if item is a SectionProps object (not a string or React element)
+  const isSectionPropsObject = (item: unknown): item is SectionProps => {
+    return (
+      typeof item === "object" &&
+      item !== null &&
+      !Array.isArray(item) &&
+      "content" in item
+    );
+  };
+
   content.forEach((item, index) => {
     if (typeof item === "string") {
       if (bufferedLines.length === 0) {
@@ -311,31 +340,51 @@ function renderContent(
     }
 
     flushBufferedLines();
-    groupedContent.push({ type: "section", key: index, section: item });
+
+    // Check if it's a SectionProps object - if so, render as nested section
+    if (isSectionPropsObject(item)) {
+      groupedContent.push({ type: "section", key: index, section: item });
+    } else {
+      // Otherwise treat as ReactNode and render directly without wrapper
+      groupedContent.push({ type: "react", key: index, element: item });
+    }
   });
 
   flushBufferedLines();
 
   return (
     <ul>
-      {groupedContent.map((item) =>
-        item.type === "markdown" ? (
-          <li key={`markdown - ${item.key} `}>
-            <Markdown
-              rehypePlugins={rehypePlugins}
-              components={markdownComponents}
-            >
-              {item.text}
-            </Markdown>
+      {groupedContent.map((item) => {
+        if (item.type === "markdown") {
+          return (
+            <li key={`markdown - ${item.key} `}>
+              <Markdown
+                rehypePlugins={rehypePlugins}
+                components={markdownComponents}
+              >
+                {item.text}
+              </Markdown>
+            </li>
+          );
+        }
+
+        if (item.type === "section") {
+          return (
+            <Section
+              key={`section - ${item.key} `}
+              {...item.section}
+              depth={depth + 1}
+            />
+          );
+        }
+
+        // ReactNode items render directly without wrapper
+        return (
+          <li key={`react - ${item.key} `} className="react-node-item">
+            {item.element}
           </li>
-        ) : (
-          <Section
-            key={`section - ${item.key} `}
-            {...item.section}
-            depth={depth + 1}
-          />
-        ),
-      )}
+        );
+      })}
     </ul>
   );
 }
@@ -494,7 +543,6 @@ export const Section = (props: SectionProps) => {
     link,
     printout,
     className,
-    children,
     depth = 0,
     uuid,
     treeIndex,
@@ -508,9 +556,8 @@ export const Section = (props: SectionProps) => {
     printout !== undefined &&
     ((typeof printout === "string" && printout.length > 0) ||
       (Array.isArray(printout) && printout.length > 0));
-  const hasChildren = children !== undefined && children !== null;
   const shouldShowCollapsedContent =
-    hasHeading && hasStringContent && !hasPrintout && !hasChildren;
+    hasHeading && hasStringContent && !hasPrintout;
   const shouldShowCollapsedOkButton = !shouldShowCollapsedContent || hasLink;
   const isOnBlogPage =
     typeof window !== "undefined" && isBlogPath(window.location.pathname);
@@ -784,7 +831,6 @@ export const Section = (props: SectionProps) => {
             showPermalink={false}
             content={content}
             printout={printout}
-            children={children}
             depth={depth}
             theme={theme}
             sectionUUID={sectionUUID}
@@ -881,7 +927,6 @@ export const Section = (props: SectionProps) => {
                       showPermalink={hasHeading && typeof heading === "string"}
                       content={content}
                       printout={printout}
-                      children={children}
                       depth={depth}
                       theme={theme}
                       sectionUUID={sectionUUID}
