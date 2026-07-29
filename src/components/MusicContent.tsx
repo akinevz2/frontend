@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
 
 import { PageContent } from "./Page";
 import { processContent } from "../windowing/utils";
@@ -46,7 +47,6 @@ type MusicState = {
 
 const LOADING_SECTION: SectionProps = {
   className: "music-loading",
-  children: [],
   heading: "Loading...",
   content: [
     "![Loading spinner](/spinner.svg)",
@@ -67,6 +67,24 @@ const UploadingCounter = ({ total }: { total: number }) => (
     AS OF UPLOADING: {total} tracks (main and alt)
   </div>
 );
+
+const ArtistProfilePicture = ({
+  imageUrl,
+  children,
+}: {
+  imageUrl?: string | null;
+  children?: ReactNode;
+}) => {
+  if (!imageUrl) return null;
+  return (
+    <div
+      className="artist-profile-picture"
+      style={{ backgroundImage: `url('${imageUrl}')` }}
+    >
+      {children}
+    </div>
+  );
+};
 
 const buildState = (
   content: SectionProps | SectionProps[],
@@ -258,9 +276,11 @@ const toMusicSections = (
         heading: `@${profile.owner} discography`,
         content: [
           `Profile: [${profile.source}](${profile.source})`,
-          profile.profileImageUrl
-            ? `[![${profile.owner} profile image](${profile.profileImageUrl})](${profile.profileImageUrl})`
-            : "Profile image unavailable in cached snapshot.",
+          profile.profileImageUrl ? (
+            <ArtistProfilePicture imageUrl={profile.profileImageUrl}>
+              @{profile.owner}
+            </ArtistProfilePicture>
+          ) : "Profile image unavailable in cached snapshot.",
           `Track count: ${profile.trackCount}`,
           ...trackWindows,
         ],
@@ -271,16 +291,15 @@ const toMusicSections = (
   return [
     {
       className: "music-as-of-uploading",
-      children: <UploadingCounter total={asOfUploadingTrackCount} />,
       heading: "Discography Total",
       content: [
+        <UploadingCounter total={asOfUploadingTrackCount} />,
         `Generated: ${new Date(payload.generatedAt).toLocaleString()}`,
         "This total measures main and alt profiles as of uploading.",
       ],
     },
     {
       className: "music-profile-uploads",
-      children: [],
       heading: "SoundCloud Discography",
       content:
         profileSections.length > 0
@@ -289,7 +308,6 @@ const toMusicSections = (
     },
     {
       className: "music-favourite-links",
-      children: [],
       heading: "Favourite Links",
       content:
         favouriteLinkList.length > 0
@@ -298,7 +316,6 @@ const toMusicSections = (
     },
     {
       className: "music-source",
-      children: [],
       heading: "Source",
       content: [
         "Artist page (main): [soundcloud.com/akinevz](https://soundcloud.com/akinevz)",
@@ -363,7 +380,6 @@ export default function MusicContent() {
           setMusicState(
             buildState({
               className: "music-error",
-              children: [],
               heading: "Library unavailable",
               content: [
                 "## Can't reach the library",
