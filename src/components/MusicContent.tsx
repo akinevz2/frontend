@@ -377,11 +377,11 @@ export default function MusicContent() {
 
   return (
     <>
+      <MusicDebugOverlay payload={musicState.payload} />
       <PageContent
         sections={musicState.sections}
         pageMetadata={musicState.metadata}
       />
-      <MusicDebugOverlay payload={musicState.payload} />
     </>
   );
 }
@@ -393,7 +393,7 @@ export default function MusicContent() {
  * when Firefox Developer Tools are open (detected via window.outerWidth/Height
  * changes that devtools introduce).
  */
-function MusicDebugOverlay({ payload }: { payload: MusicPayload | null }) {
+export function MusicDebugOverlay({ payload }: { payload: MusicPayload | null }) {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
@@ -440,30 +440,32 @@ function MusicDebugOverlay({ payload }: { payload: MusicPayload | null }) {
   return (
     <div
       style={{
-        position: "fixed",
-        bottom: 0,
+        position: "absolute",
         left: 0,
+        top: 28,
         right: 0,
-        zIndex: 9000,
         background: "#ffffff",
         color: "#000",
         fontFamily: "monospace",
         fontSize: "0.85rem",
         padding: "0.5rem 1rem",
-        borderTop: "2px solid #c0c0c0",
+        borderBottom: "2px solid #c0c0c0",
         visibility: "visible",
-        animation: "music-debug-slide-up 0.3s ease-out",
+        animation: "music-debug-slide-down 0.3s ease-out",
       }}
       role="status"
       aria-live="polite"
+      data-debug-bar
     >
       <style>{`
-        @keyframes music-debug-slide-up {
+        @keyframes music-debug-slide-down {
           from {
-            transform: translateY(100%);
+            transform: translateY(-100%);
+            opacity: 0;
           }
           to {
             transform: translateY(0);
+            opacity: 1;
           }
         }
       `}</style>
