@@ -422,21 +422,24 @@ const playSound = () => {
 // --- Shared sub-components --------------------------------------------------
 
 type WindowControlsProps = {
-  isIconified: boolean;
   showMaximize: boolean;
+  showMinimize: boolean;
   onMinimize: () => void;
   onMaximize: () => void;
   onClose: () => void;
 };
 
 const WindowControls = ({
+  showMinimize,
   showMaximize,
   onMinimize,
   onMaximize,
   onClose,
 }: WindowControlsProps) => (
   <div className="title-bar-controls">
-    <button aria-label="Minimize" onClick={onMinimize}></button>
+    {showMinimize ? (
+      <button aria-label="Minimize" onClick={onMinimize}></button>
+    ) : null}
     {showMaximize ? (
       <button aria-label="Maximize" onClick={onMaximize}></button>
     ) : null}
@@ -468,10 +471,10 @@ const TitleBar = ({
       <a href={link}>{heading}</a>
     </div>
     <WindowControls
-      isIconified={isIconified}
-      showMaximize={showMaximize}
+      showMaximize={isIconified ? isIconified : showMaximize}
+      showMinimize={!isIconified}
       onMinimize={onMinimize}
-      onMaximize={onMaximize}
+      onMaximize={isIconified ? onMinimize : onMaximize}
       onClose={onClose}
     />
   </div>
