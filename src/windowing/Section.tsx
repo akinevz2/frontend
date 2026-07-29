@@ -1,12 +1,12 @@
 import type React from "react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 import Markdown, { type Options as ReactMarkdownOptions } from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
+import { toast } from "react-toastify";
 import { playLayeredAudio } from "../lib/audioOverlap";
-import { asAssetPath } from "../lib/urlTypes";
-import { useSectionContext } from "./hooks";
+import { useSectionContext, useWindow } from "./hooks";
 import { OkButton } from "./OkButton";
 import type { Content, HttpUrl, SectionProps } from "./types";
 
@@ -85,11 +85,6 @@ const experimentalMarkdownRehypePlugins = [
   rehypeRaw,
 ] as ReactMarkdownOptions["rehypePlugins"];
 
-function resolveLocalBlogAssetUrl(assetPath: string): string {
-  const safePath = asAssetPath(assetPath);
-  return `${BLOG_POSTS_BASE_PATH}${safePath}`;
-}
-
 function resolvePrintoutUrl(printoutPath: string): string {
   const trimmed = printoutPath.trim();
 
@@ -102,7 +97,18 @@ function resolvePrintoutUrl(printoutPath: string): string {
     // Not an absolute URL, fall back to local asset resolution.
   }
 
-  return resolveLocalBlogAssetUrl(trimmed);
+  // Use absolute root-path style: ensure path starts with /blog/
+  if (!trimmed.startsWith("/")) {
+    return `${BLOG_POSTS_BASE_PATH}${trimmed}`;
+  }
+
+  // Already an absolute path (starts with /), use as-is or prepend blog base
+  // For paths not starting with /blog/, prepend the blog prefix
+  if (!trimmed.startsWith(BLOG_PATH)) {
+    return `${BLOG_POSTS_BASE_PATH}${trimmed.slice(1)}`;
+  }
+
+  return trimmed;
 }
 
 const markdownComponents = {
@@ -310,7 +316,7 @@ function isValidHttpUrl(link: string): link is HttpUrl {
 
 function isRootOffsetUrl(link: string): boolean {
   // Root-offset links keep navigation on this site (e.g. /blog/?post=slug).
-  return link.startsWith("/");
+  return link.startsWith("/") && link.indexOf("..") == -1;
 }
 
 const playSound = () => {
@@ -351,10 +357,26 @@ export const Section = (props: SectionProps) => {
   const targetPostSlug = rawTargetPostSlug ? toPostSlug(rawTargetPostSlug) : "";
   const isBlogPost = depth > 0 && typeof heading === "string";
   const isLinkableBlogPost = isOnBlogPage && isBlogPost;
+
+  // Create section ID for anchoring sections on any page
+  const sectionId = useMemo(() => {
+    return `section-${uuid || toPostSlug(heading || "")}`;
+  }, [heading, uuid]);
+
+  // Generate permalink that works on any page
   const postSlug = isLinkableBlogPost ? toPostSlug(heading) : "";
-  const permalink = isLinkableBlogPost
-    ? `${BLOG_PATH}/?post=${encodeURIComponent(postSlug)}`
-    : "";
+  const permalink = useMemo(() => {
+    if (isLinkableBlogPost) {
+      return `${BLOG_PATH}/?post=${encodeURIComponent(postSlug)}`;
+    } else if (hasHeading && typeof heading === "string") {
+      // For non-blog pages, use current URL with hash anchor
+      if (typeof window !== "undefined") {
+        const baseUrl = `${window.location.origin}${window.location.pathname}`;
+        return `${baseUrl}#${sectionId}`;
+      }
+    }
+    return "";
+  }, [isLinkableBlogPost, postSlug, hasHeading, heading, sectionId]);
   const shouldOpenFromLink =
     typeof window !== "undefined" &&
     isLinkableBlogPost &&
@@ -367,23 +389,57 @@ export const Section = (props: SectionProps) => {
   const isForcedExpanded =
     shouldOpenFromLink || shouldRevealLinkedPost || hasPrintout;
 
-  const [isMaximized, setIsMaximized] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(!isForcedExpanded);
   const isCollapsedResolved = isForcedExpanded ? false : isCollapsed;
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-  const windowRef = useRef<HTMLDivElement>(null);
-  const inlineWindowRef = useRef<HTMLDivElement>(null);
-  const { markAsExpanded, minimizeSection, minimizedSections, restoreSection } =
-    useSectionContext();
 
-  // UUID must be provided from server-side processing
-  if (!uuid) {
-    // UUID must be provided from server-side processing; fall back silently.
-  }
+  // Handle permalink click - copy to clipboard and show notification
+  const handlePermalinkClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+
+    if (typeof window === "undefined" || !permalink) return;
+
+    // Copy URL to clipboard
+    navigator.clipboard.writeText(permalink).then(() => {
+      // Play sound and show toast notification with window styling
+      playSound();
+      toast.success("Link copied to clipboard!", {
+        position: "bottom-center",
+        autoClose: 2000,
+        hideProgressBar: true,
+        closeOnClick: false,
+        pauseOnHover: false,
+        draggable: false,
+        style: {
+          padding: "8px 16px",
+          fontFamily: "'Pixelated MS Sans Serif', Arial",
+          display: "flex"
+        },
+      });
+    });
+  }, [permalink]);
+
+  // Define sectionUUID before using it in the hook
   const sectionUUID = uuid || `fallback-${heading}-${depth}`;
-  const isMinimized = minimizedSections.has(sectionUUID);
+
+  // Use the useWindow hook for window state management (heading and uuid are from props)
+  const {
+    isMaximized,
+    setIsMaximized,
+    position,
+    isDragging,
+    handleMaximize,
+    handleMinimize,
+    closePoppedOutWindow,
+    handleMouseDown,
+    windowRef,
+    inlineWindowRef,
+    isMinimized,
+  } = useWindow(heading, sectionUUID);
+
+  // Use the local context for other operations that aren't in the hook yet
+  const { markAsExpanded } = useSectionContext();
+
+  // isMinimized comes from the useWindow hook (checks minimizedSections context)
 
   const clearPostSlugFromUrl = () => {
     if (typeof window === "undefined" || !isOnBlogPage || !isLinkableBlogPost) {
@@ -401,51 +457,21 @@ export const Section = (props: SectionProps) => {
     window.history.replaceState({}, "", nextUrl);
   };
 
-  const minimizePoppedOutWindow = () => {
-    setIsMaximized(false);
-
-    if (heading && typeof heading === "string") {
-      minimizeSection(sectionUUID, heading);
-    }
-  };
-
-  const closePoppedOutWindow = () => {
-    setIsMaximized(false);
-    clearPostSlugFromUrl();
-    // Closing should not leave an entry in the minimized windows menu.
-    restoreSection(sectionUUID);
-  };
-
-  const handleMinimize = () => {
-    if (heading && typeof heading === "string") {
-      // Close maximized window before minimizing
-      if (isMaximized) {
-        minimizePoppedOutWindow();
-        return;
-      }
-
-      minimizeSection(sectionUUID, heading);
-    }
-  };
-
-  const handleMaximize = () => {
-    setIsMaximized(!isMaximized);
-  };
-
+  // handleClose uses closePoppedOutWindow from the hook, with clearPostSlugFromUrl as callback
   const handleClose = () => {
     if (isMaximized) {
-      closePoppedOutWindow();
+      closePoppedOutWindow(clearPostSlugFromUrl);
     } else {
       playSound();
     }
   };
 
-  const handleExpand = () => {
+  const handleExpand = useCallback(() => {
     setIsCollapsed(false);
     if (heading && typeof heading === "string") {
       markAsExpanded(heading);
     }
-  };
+  }, [heading, markAsExpanded, setIsCollapsed]);
 
   const handlePrimaryAction = () => {
     if (hasLink && (isValidHttpUrl(link) || isRootOffsetUrl(link))) {
@@ -468,58 +494,7 @@ export const Section = (props: SectionProps) => {
     window.location.assign(EXPERIMENTAL_THEME_REDIRECT_URL);
   };
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).closest(".title-bar-controls")) {
-      return; // Don't drag when clicking window controls
-    }
-    setIsDragging(true);
-    setDragOffset({
-      x: e.clientX - position.x,
-      y: e.clientY - position.y,
-    });
-  };
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (isDragging && isMaximized) {
-        setPosition({
-          x: e.clientX - dragOffset.x,
-          y: e.clientY - dragOffset.y,
-        });
-      }
-    };
-
-    const handleMouseUp = () => {
-      setIsDragging(false);
-    };
-
-    if (isDragging) {
-      window.addEventListener("mousemove", handleMouseMove);
-      window.addEventListener("mouseup", handleMouseUp);
-    }
-
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-    };
-  }, [isDragging, dragOffset, isMaximized]);
-
-  // Center the window when first maximized
-  useEffect(() => {
-    if (
-      isMaximized &&
-      windowRef.current &&
-      position.x === 0 &&
-      position.y === 0
-    ) {
-      const rect = windowRef.current.getBoundingClientRect();
-      setPosition({
-        x: (window.innerWidth - rect.width) / 2,
-        y: (window.innerHeight - rect.height) / 2,
-      });
-    }
-  }, [isMaximized, position.x, position.y]);
-
+  // Scroll to element when opening from link (for blog post navigation)
   useEffect(() => {
     if (!shouldOpenFromLink || typeof window === "undefined") {
       return;
@@ -529,17 +504,43 @@ export const Section = (props: SectionProps) => {
       behavior: "smooth",
       block: "start",
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shouldOpenFromLink]);
+
+  // Scroll to section on initial load if URL has matching hash (for non-blog pages)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const scrollToSection = () => {
+      if (!hasHeading || typeof heading !== "string" || !sectionId) return;
+
+      // Check if current URL has a hash matching this section
+      if (window.location.hash === `#${sectionId}`) {
+        // Small delay to ensure DOM is rendered
+        setTimeout(() => {
+          const element = document.getElementById(sectionId);
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }, 100);
+      }
+    };
+
+    scrollToSection();
+  }, [hasHeading, heading, sectionId]);
 
   const windowContent = (
     <div
       ref={inlineWindowRef}
+      id={hasHeading && typeof heading === "string" ? sectionId : undefined}
       className={`window ${className || ""}`}
       onContextMenu={handleExperimentalContextMenu}
     >
       {hasHeading ? (
         <div className="title-bar">
-          <div className="title-bar-text">{heading}</div>
+          <a href={hasLink ? link : undefined}>
+            <div className="title-bar-text">{heading}</div>
+          </a>
           <div className="title-bar-controls">
             <button aria-label="Minimize" onClick={handleMinimize}></button>
             {depth !== 0 && (
@@ -621,6 +622,7 @@ export const Section = (props: SectionProps) => {
               }}
             >
               <div
+                id={hasHeading && typeof heading === "string" ? sectionId : undefined}
                 className={`window ${className || ""}`}
                 onContextMenu={handleExperimentalContextMenu}
                 style={{
@@ -636,7 +638,11 @@ export const Section = (props: SectionProps) => {
                     style={{ cursor: "grab" }}
                     onMouseDown={handleMouseDown}
                   >
-                    <div className="title-bar-text">{heading}</div>
+                    <div className="title-bar-text">
+                      <a href={hasLink ? link : undefined}>
+                        {heading}
+                      </a>
+                    </div>
                     <div className="title-bar-controls">
                       <button
                         aria-label="Minimize"
@@ -651,7 +657,7 @@ export const Section = (props: SectionProps) => {
                   </div>
                 ) : null}
                 <div className="window-body" style={{ overflow: "auto" }}>
-                  {isLinkableBlogPost ? (
+                  {hasHeading && typeof heading === "string" ? (
                     <div
                       style={{
                         display: "flex",
@@ -659,9 +665,7 @@ export const Section = (props: SectionProps) => {
                         marginBottom: "8px",
                       }}
                     >
-                      <a href={permalink}>
-                        <button>Permalink</button>
-                      </a>
+                      <button onClick={handlePermalinkClick}>Permalink</button>
                     </div>
                   ) : null}
                   {isCollapsedResolved ? (
