@@ -45,6 +45,14 @@ type MusicState = {
   payload: MusicPayload | null;
 };
 
+const getProfileImageUrl = (owner?: string): string | null => {
+  const imageMap: Record<string, string> = {
+    akinevz: "/medium.png",
+    kirill_nevzorov: "/avatar.jpg",
+  };
+  return owner ? (imageMap[owner] ?? null) : null;
+};
+
 const LOADING_SECTION: SectionProps = {
   className: "music-loading",
   heading: "Loading...",
@@ -174,7 +182,6 @@ const createTrackSection = (track: MusicTrack): SectionProps => {
     heading: `Track: ${track.title}`,
     // link: track.url as `https://${string}` | `http://${string}`,
     content: [
-      `<p class="music-track-title"><a href="${track.url}">${track.title}</a></p>`,
       `<iframe
         title="SoundCloud track: ${track.title}"
         width="100%"
@@ -256,8 +263,7 @@ const renderFavouriteLink = (link: FavouriteLink) => {
       allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
       loading="lazy"
       referrerpolicy="strict-origin-when-cross-origin"
-    ></iframe>`,
-    `[Open on Spotify](${favouriteLink.url})`,
+    ></iframe>`
   ].join("\n\n");
 };
 
@@ -266,12 +272,16 @@ const toMusicSections = (
   favouriteLinks: FavouriteLinkContent[],
 ): SectionProps[] => {
   const profiles = Array.isArray(payload.profiles)
-    ? payload.profiles
+    ? payload.profiles.map((profile) => ({
+      ...profile,
+      profileImageUrl:
+        getProfileImageUrl(profile.owner) ?? profile.profileImageUrl,
+    }))
     : [
       {
         owner: "akinevz",
         source: payload.source ?? "https://soundcloud.com/akinevz",
-        profileImageUrl: null,
+        profileImageUrl: getProfileImageUrl("akinevz"),
         trackCount: payload.trackCount,
         tracks: payload.tracks,
       },
