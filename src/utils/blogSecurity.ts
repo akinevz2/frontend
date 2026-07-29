@@ -1,5 +1,4 @@
 import {
-  asAssetPath,
   asInternalPath,
   asTrustedHttpsUrl,
 } from "../lib/urlTypes";
@@ -60,11 +59,33 @@ export function getSafeBlogPostsHost(
   }
 }
 
+/**
+ * Validates and normalizes an asset path for use in URLs.
+ * Uses absolute root-path style - paths starting with / are kept as-is,
+ * relative paths get the blog base prepended.
+ */
+function normalizeAssetPath(assetPath: string): string {
+  const trimmed = assetPath.trim();
+
+  if (!trimmed) {
+    throw new Error(`Asset path must be non-empty: '${assetPath}'.`);
+  }
+
+  // Check for path traversal attempts
+  if (trimmed.includes("..")) {
+    throw new Error(`Asset path cannot contain '..': '${assetPath}'.`);
+  }
+
+  // Use absolute root-path style: keep paths starting with / as-is
+  // Relative paths will be handled by the caller prepending the base
+  return trimmed;
+}
+
 export function resolveTrustedBlogAssetUrl(
   assetPath: string,
   blogPostsHost: string,
 ): string {
-  const normalizedAssetPath = asAssetPath(assetPath);
+  const normalizedAssetPath = normalizeAssetPath(assetPath);
 
   if (blogPostsHost.startsWith("/")) {
     const internalBase = asInternalPath(blogPostsHost).replace(/\/?$/, "/");
@@ -74,6 +95,7 @@ export function resolveTrustedBlogAssetUrl(
   const trustedHost = asTrustedHttpsUrl(blogPostsHost);
   return new URL(normalizedAssetPath, trustedHost).toString();
 }
+
 
 export function getRuntimeBlogPostsHost(
   isDev: boolean,
