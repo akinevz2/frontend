@@ -18,12 +18,12 @@
 :root.theme-border-flash .window *,
 :root.theme-border-flash .window *::before,
 :root.theme-border-flash .window *::after {
-  border-color: var(--clippy-border-flash-color, #FEEF69) !important;
+  border-color: var(--clippy-border-flash-color, #feef69) !important;
 }
 
 :root.theme-border-flash .window .title-bar,
 :root.theme-border-flash .title-bar {
-  background: var(--clippy-border-flash-color, #FEEF69) !important;
+  background: var(--clippy-border-flash-color, #feef69) !important;
   background-image: none !important;
 }
 
@@ -33,7 +33,7 @@
 }
 
 :root.theme-box-shadow-flash .window .title-bar {
-  border-color: var(--clippy-border-flash-color, #FEEF69) !important;
+  border-color: var(--clippy-border-flash-color, #feef69) !important;
   box-shadow: 0 0 15px 4px #feef69 !important;
 }
 
@@ -489,4 +489,14 @@ body {
     padding: 5px 10px;
     font-size: 11px;
   }
+}
+
+.Toastify__toast {
+  max-width: 100%;
+  width: 100%;
+}
+.Toastify__close-button {
+  place-self: center;
+  bottom: 6px;
+  right: 6px;
 }
