@@ -42,9 +42,9 @@ import addons from "../addons.json";
 import pages from "../pages.json";
 import type { AddonProps } from "./components/Addon";
 import type { SectionProps } from "./windowing";
-import { processContent } from "./windowing/utils";
 import { buildMusicGroupSchema, serializeJsonLd } from "./lib/musicSchema.ts";
 import { submitResumeInterest, trackResumeEvent } from "./lib/resumeAnalytics";
+import { processContent } from "./windowing/utils.ts";
 
 type RouteConfig = {
   title: string;

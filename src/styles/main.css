@@ -511,7 +511,7 @@ body:has(.minimized-menu-container) {
   :root {
     --gap-size: 1.26em;
   }
-  body:has([data-debug-bar]) .page {
+  body:has([data-debug-bar]) main {
     margin-top: calc(var(--menu-bar-height) + 3em);
   }
   .page {
