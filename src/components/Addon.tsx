@@ -145,7 +145,6 @@ const WindowPanel = ({
   status,
   text,
   className,
-  children,
 }: WindowPanelProps) => {
   const hasHeading = !!heading;
   const hasContent = !!content;
@@ -179,7 +178,6 @@ const WindowPanel = ({
       ) : null}
       <div className="window-body">
         {hasContent ? renderContent(content, status, text) : null}
-        {children}
       </div>
     </div>
   );
