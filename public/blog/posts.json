@@ -34,23 +34,19 @@
       ]
     },
     {
-      "heading": "add more links: music-making, #creator",
-      "content": "<a id=\"sc-link\" href=\"https://soundcloud.com/kirill_nevzorov\">![aaaa](/images/aaaa.png)</a><script>document.getElementById('sc-link').addEventListener('contextmenu', function(e) { e.preventDefault(); window.location.href = 'https://akinevz.dev'; });</script>",
-      "theme": "experimental"
-    },
-    {
       "heading": "in spite of my mistakes",
+      "theme": "experimental",
       "content": [
-        "I will still keep trying to post content online, and maintain",
-        "my existing content in respectable condition",
-        "so that degradation of my work does not incur due to neglect",
-        "any misgivings or misforgiveness",
         {
-          "heading": "welcome to those that were here for the trip",
-          "link": "/music"
+          "link": "/images/aaaa.png"
+        },
+        {
+          "content": [
+            "![lol](/lol.jpg)",
+            "[1](https://soundcloud.com/akinevz) + [2](https://soundcloud.com/kirill_nevzorov)"
+          ]
         }
-      ],
-      "theme": "hidden"
+      ]
     },
     {
       "heading": "booger boogie",
@@ -321,6 +317,7 @@
     },
     {
       "heading": "archive",
+      "theme": "experimental",
       "content": [
         {
           "heading": "support me! (#meta, #blog)",

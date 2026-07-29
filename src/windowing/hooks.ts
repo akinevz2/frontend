@@ -22,7 +22,8 @@ export const useWindow = (heading?: string, uuid?: string) => {
   const [isDragging, setIsDragging] = useState(false);
   const windowRef = useRef<HTMLDivElement>(null);
   const inlineWindowRef = useRef<HTMLDivElement>(null);
-  const { minimizedSections, minimizeSection, restoreSection } = useSectionContext();
+  const { minimizedSections, minimizeSection, restoreSection } =
+    useSectionContext();
 
   // UUID must be provided from server-side processing
   const sectionUUID = uuid || (heading ? `fallback-${heading}` : undefined);
@@ -39,16 +40,19 @@ export const useWindow = (heading?: string, uuid?: string) => {
     }
   }, [heading, sectionUUID, minimizeSection]);
 
-  const closePoppedOutWindow = useCallback((clearUrl?: () => void) => {
-    setIsMaximized(false);
-    if (clearUrl) {
-      clearUrl();
-    }
-    // Closing should not leave an entry in the minimized windows menu.
-    if (sectionUUID) {
-      restoreSection(sectionUUID);
-    }
-  }, [sectionUUID, restoreSection]);
+  const closePoppedOutWindow = useCallback(
+    (clearUrl?: () => void) => {
+      setIsMaximized(false);
+      if (clearUrl) {
+        clearUrl();
+      }
+      // Closing should not leave an entry in the minimized windows menu.
+      if (sectionUUID) {
+        restoreSection(sectionUUID);
+      }
+    },
+    [sectionUUID, restoreSection],
+  );
 
   const handleMinimize = useCallback(() => {
     if (!heading || typeof heading !== "string") return;
@@ -62,7 +66,13 @@ export const useWindow = (heading?: string, uuid?: string) => {
     if (sectionUUID) {
       minimizeSection(sectionUUID, heading);
     }
-  }, [heading, isMaximized, sectionUUID, minimizeSection, minimizePoppedOutWindow]);
+  }, [
+    heading,
+    isMaximized,
+    sectionUUID,
+    minimizeSection,
+    minimizePoppedOutWindow,
+  ]);
 
   // Drag handling
   useEffect(() => {
@@ -106,16 +116,19 @@ export const useWindow = (heading?: string, uuid?: string) => {
     }
   }, [isMaximized, position.x, position.y]);
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).closest(".title-bar-controls")) {
-      return; // Don't drag when clicking window controls
-    }
-    setIsDragging(true);
-    setDragOffset({
-      x: e.clientX - position.x,
-      y: e.clientY - position.y,
-    });
-  }, [position]);
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      if ((e.target as HTMLElement).closest(".title-bar-controls")) {
+        return; // Don't drag when clicking window controls
+      }
+      setIsDragging(true);
+      setDragOffset({
+        x: e.clientX - position.x,
+        y: e.clientY - position.y,
+      });
+    },
+    [position],
+  );
 
   return {
     isMaximized,
