@@ -1078,6 +1078,13 @@ export default function App() {
       return;
     }
 
+    // Preserve the current hash in the history entry so pressing "back"
+    // returns to the section the user was viewing.
+    const { pathname, search, hash } = window.location;
+    if (hash) {
+      window.history.replaceState({}, "", `${pathname}${search}${hash}`);
+    }
+
     window.history.pushState({}, "", href);
     setPath(next);
   };
