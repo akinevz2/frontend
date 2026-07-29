@@ -1,11 +1,9 @@
-
-import type { ReactNode } from "react";
-
 export type Heading = string;
 export type HttpUrl = `http://${string}` | `https://${string}`;
 export type LinkUrl = HttpUrl | `/${string}`;
 
-export type Content = string | (ReactNode | SectionProps)[];
+export type Content = string | (React.ReactNode | string | SectionProps)[];
+// export type Content = string | ReactNode | Element | SectionProps[];
 
 export type SectionProps = {
   className?: string | undefined;

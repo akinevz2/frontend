@@ -7,7 +7,7 @@ export { MinimizedSections } from "./MinimizedSections";
 export { OkButton } from "./OkButton";
 export type {
   SectionProps,
-  Content,
+  Content as SectionContent,
   Heading,
   PageMetadata,
   SectionMetadata,

@@ -26,6 +26,20 @@ const toPostSlug = (heading: string) =>
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-");
 
+// /**
+//  * Type guard to check if an item is a valid SectionProps object.
+//  * This filters out ReactNodes and other non-SectionProps items that may be
+//  * present in content arrays.
+//  */
+// const isSectionPropsObject = (item: unknown): item is SectionProps => {
+//   return (
+//     typeof item === "object" &&
+//     item !== null &&
+//     !Array.isArray(item) &&
+//     ("heading" in item || "content" in item)
+//   );
+// };
+
 const contentContainsPostSlug = (
   content: Content,
   targetPostSlug: string,
@@ -84,7 +98,8 @@ const contentContainsSectionId = (
     // Check if it's a SectionProps object with treeIndex/heading/content
     if (typeof item === "object" && item !== null) {
       const sectionItem = item as SectionProps;
-      const candidateId = sectionItem.treeIndex || toPostSlug(sectionItem.heading || "");
+      const candidateId =
+        sectionItem.treeIndex || toPostSlug(sectionItem.heading || "");
       if (candidateId === targetSectionId) {
         return true;
       }
@@ -302,7 +317,7 @@ function renderContent(
   const groupedContent: Array<
     | { type: "markdown"; key: number; text: string }
     | { type: "section"; key: number; section: SectionProps }
-    | { type: "react"; key: number; element: React.ReactNode }
+    | { type: "reactNode"; key: number; element: React.ReactNode }
   > = [];
   let bufferedLines: string[] = [];
   let bufferStartIndex = 0;
@@ -346,7 +361,7 @@ function renderContent(
       groupedContent.push({ type: "section", key: index, section: item });
     } else {
       // Otherwise treat as ReactNode and render directly without wrapper
-      groupedContent.push({ type: "react", key: index, element: item });
+      groupedContent.push({ type: "reactNode", key: index, element: item });
     }
   });
 
@@ -371,7 +386,7 @@ function renderContent(
         if (item.type === "section") {
           return (
             <Section
-              key={`section - ${item.key} `}
+              key={`section - ${item.key}`}
               {...item.section}
               depth={depth + 1}
             />
@@ -379,13 +394,9 @@ function renderContent(
         }
 
         // ReactNode items render directly without wrapper
-        return (
-          <li key={`react - ${item.key} `} className="react-node-item">
-            {item.element}
-          </li>
-        );
+        return item.element;
       })}
-    </ul>
+    </ul >
   );
 }
 
@@ -802,11 +813,13 @@ export const Section = (props: SectionProps) => {
     return () => clearTimeout(timer);
   }, [shouldOpenFromLink, inlineWindowRef]);
 
-  const windowContent = (
+  const windowContent = !hasContent ? (
+    content
+  ) : (
     <div
       ref={inlineWindowRef}
       id={hasHeading && typeof heading === "string" ? sectionId : undefined}
-      className={`window ${className || ""}`}
+      className={`window ${className || ""}`.trim()}
       onContextMenu={handleExperimentalContextMenu}
     >
       {hasHeading && typeof heading === "string" ? (

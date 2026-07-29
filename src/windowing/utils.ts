@@ -54,6 +54,20 @@ function ensureValidLinkUrl(link: string, heading?: string): void {
   }
 }
 
+/**
+ * Type guard to check if an item is a valid SectionProps object.
+ * This filters out ReactNodes and other non-SectionProps items that may be
+ * present in content arrays.
+ */
+function isSectionPropsObject(item: unknown): item is SectionProps {
+  return (
+    typeof item === "object" &&
+    item !== null &&
+    !Array.isArray(item) &&
+    ("heading" in item || "content" in item)
+  );
+}
+
 function validateSectionLinks(item: SectionProps): void {
   if (typeof item.link === "string") {
     ensureValidLinkUrl(item.link, item.heading);
@@ -68,7 +82,10 @@ function validateSectionLinks(item: SectionProps): void {
       continue;
     }
 
-    validateSectionLinks(subItem);
+    // Only validate actual SectionProps objects, not ReactNodes or other elements
+    if (isSectionPropsObject(subItem)) {
+      validateSectionLinks(subItem);
+    }
   }
 }
 
@@ -117,16 +134,16 @@ function assignUUIDs<T extends SectionProps>(
       const mapped = item.content.map((subItem: unknown) => {
         if (typeof subItem === "string") {
           return subItem;
-        } else {
+        } else if (isSectionPropsObject(subItem)) {
+          // Only process actual SectionProps objects, not ReactNodes or other elements
           const childIndex = `${treeIndex}.${sectionCounter}`;
           sectionCounter += 1;
-          const result = assignUUIDs(
-            subItem as T,
-            depth + 1,
-            metadata,
-            childIndex,
-          );
+          const result = assignUUIDs(subItem, depth + 1, metadata, childIndex);
           return result.result;
+        } else {
+          // ReactNode or other non-SectionProps items - pass through unchanged
+          sectionCounter += 1;
+          return subItem;
         }
       });
       newContent = mapped as (string | ContentWithUUID<T>)[];

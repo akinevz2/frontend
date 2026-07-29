@@ -68,19 +68,43 @@ const UploadingCounter = ({ total }: { total: number }) => (
   </div>
 );
 
-const ArtistProfilePicture = ({
+const ArtistProfileBackground = ({
   imageUrl,
   children,
+  link,
 }: {
   imageUrl?: string | null;
   children?: ReactNode;
+  link?: string;
 }) => {
   if (!imageUrl) return null;
+
+  const containerStyle: React.CSSProperties = {
+    backgroundImage: `url('${imageUrl}')`,
+  };
+
+  // If a link is provided, make the background clickable via anchor tag
+  if (link) {
+    return (
+      <a
+        href={link}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="artist-profile-background"
+        style={{
+          ...containerStyle,
+          display: "block",
+          textDecoration: "none",
+          color: "inherit",
+        }}
+      >
+        {children}
+      </a>
+    );
+  }
+
   return (
-    <div
-      className="artist-profile-picture"
-      style={{ backgroundImage: `url('${imageUrl}')` }}
-    >
+    <div className="artist-profile-background" style={containerStyle}>
       {children}
     </div>
   );
@@ -267,7 +291,7 @@ const toMusicSections = (
   const profileSections: SectionProps[] = profiles.flatMap((profile) => {
     // Create individual windowed sections for each track
     const trackWindows: SectionProps[] = profile.tracks.map((track) =>
-      createTrackSection(track)
+      createTrackSection(track),
     );
 
     return [
@@ -275,13 +299,14 @@ const toMusicSections = (
         className: "music-profile-discography",
         heading: `@${profile.owner} discography`,
         content: [
-          `Profile: [${profile.source}](${profile.source})`,
-          profile.profileImageUrl ? (
-            <ArtistProfilePicture imageUrl={profile.profileImageUrl}>
-              @{profile.owner}
-            </ArtistProfilePicture>
-          ) : "Profile image unavailable in cached snapshot.",
-          `Track count: ${profile.trackCount}`,
+          <ArtistProfileBackground
+            imageUrl={profile.profileImageUrl}
+            link={profile.source}
+          >
+            {`${profile.owner}`}
+            <br />
+            {`Total uploads: ${profile.trackCount}`}
+          </ArtistProfileBackground>,
           ...trackWindows,
         ],
       },
@@ -293,9 +318,9 @@ const toMusicSections = (
       className: "music-as-of-uploading",
       heading: "Discography Total",
       content: [
-        <UploadingCounter total={asOfUploadingTrackCount} />,
         `Generated: ${new Date(payload.generatedAt).toLocaleString()}`,
         "This total measures main and alt profiles as of uploading.",
+        <UploadingCounter total={asOfUploadingTrackCount} />,
       ],
     },
     {
@@ -320,7 +345,8 @@ const toMusicSections = (
       content: [
         "Artist page (main): [soundcloud.com/akinevz](https://soundcloud.com/akinevz)",
         "Artist page (alt): [soundcloud.com/kirill_nevzorov](https://soundcloud.com/kirill_nevzorov)",
-        "Some mirror links were removed due to licensing restrictions.",
+        "Some other links were removed due to licensing restrictions.",
+        "Unfortunately, I can't collect every piece of music I love on here.",
         "",
         `<iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/artist/2vy7FXU6dP4OEBiJVjsw7r?utm_source=generator&theme=0&si=0c8005cead7543c5" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`,
       ],
@@ -402,11 +428,11 @@ export default function MusicContent() {
 
   return (
     <>
-      <MusicDebugOverlay payload={musicState.payload} />
       <PageContent
         sections={musicState.sections}
         pageMetadata={musicState.metadata}
       />
+      <MusicDebugOverlay payload={musicState.payload} />
     </>
   );
 }
@@ -469,27 +495,29 @@ export function MusicDebugOverlay({
   return (
     <div
       style={{
-        position: "absolute",
         left: 0,
-        top: 28,
+        bottom: 0,
         right: 0,
+        position: "fixed",
         background: "#ffffff",
         color: "#000",
         fontFamily: "monospace",
         fontSize: "0.85rem",
         padding: "0.5rem 1rem",
-        borderBottom: "2px solid #c0c0c0",
+        borderTop: "2px solid #c0c0c0",
         visibility: "visible",
-        animation: "music-debug-slide-down 0.3s ease-out",
+        animation: "music-debug-slide-up 0.3s ease-out",
+        zIndex: 9999,
       }}
+      className="debug-bar"
       role="status"
       aria-live="polite"
       data-debug-bar
     >
       <style>{`
-        @keyframes music-debug-slide-down {
+        @keyframes music-debug-slide-up {
           from {
-            transform: translateY(-100%);
+            transform: translateY(100%);
             opacity: 0;
           }
           to {
