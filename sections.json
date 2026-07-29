@@ -25,6 +25,7 @@
     },
     {
       "heading": "who is kine",
+      "theme": "experimental",
       "content": [
         {
           "heading": "current occupation",
@@ -51,6 +52,7 @@
         },
         "currently:",
         {
+          "theme": "experimental",
           "content": [
             "looking for a job in the IT sector",
             "want to build more mechanical keyboards",
@@ -60,6 +62,7 @@
         },
         "programming:",
         {
+          "theme": "experimental",
           "content": [
             "audio compression/filtering algorithms",
             "python rapid development framework",
@@ -79,6 +82,7 @@
           "content": [
             "programming and technology",
             {
+              "theme": "experimental",
               "heading": "such as good code",
               "content": [
                 {

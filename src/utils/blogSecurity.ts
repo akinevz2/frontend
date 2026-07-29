@@ -1,7 +1,4 @@
-import {
-  asInternalPath,
-  asTrustedHttpsUrl,
-} from "../lib/urlTypes";
+import { asInternalPath, asTrustedHttpsUrl } from "../lib/urlTypes";
 
 const DEFAULT_BLOG_POSTS_PATH = "/blog/";
 const DEFAULT_ALLOWED_HOSTS: string[] = [];
@@ -95,7 +92,6 @@ export function resolveTrustedBlogAssetUrl(
   const trustedHost = asTrustedHttpsUrl(blogPostsHost);
   return new URL(normalizedAssetPath, trustedHost).toString();
 }
-
 
 export function getRuntimeBlogPostsHost(
   isDev: boolean,

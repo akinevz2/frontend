@@ -53,6 +53,37 @@ const contentContainsPostSlug = (
   });
 };
 
+/**
+ * Checks whether any nested section within `content` would produce the given
+ * `targetSectionId` (a raw UUID on non-blog pages). This is used to auto-expand
+ * ancestor sections so that a deeply nested target section reached via a
+ * `#uuid` hash permalink becomes visible on any page.
+ */
+const contentContainsSectionId = (
+  content: Content,
+  targetSectionId: string,
+): boolean => {
+  if (typeof content === "string") {
+    return false;
+  }
+
+  return content.some((item): boolean => {
+    if (typeof item === "string") {
+      return false;
+    }
+
+    const candidateId = item.uuid || toPostSlug(item.heading || "");
+    if (candidateId === targetSectionId) {
+      return true;
+    }
+
+    return (
+      !!item.content &&
+      contentContainsSectionId(item.content as Content, targetSectionId)
+    );
+  });
+};
+
 const markdownSanitizeSchema: unknown = {
   ...defaultSchema,
   tagNames: [...(defaultSchema.tagNames || []), "iframe"],
@@ -355,19 +386,22 @@ export const Section = (props: SectionProps) => {
       ? new URLSearchParams(window.location.search).get("post") || ""
       : "";
   const targetPostSlug = rawTargetPostSlug ? toPostSlug(rawTargetPostSlug) : "";
-  const isBlogPost = depth > 0 && typeof heading === "string";
-  const isLinkableBlogPost = isOnBlogPage && isBlogPost;
 
-  // Create section ID for anchoring sections on any page
+  // On the blog page, sections are identified by their post slug (derived from
+  // the heading). On every other page we use the raw UUID as the anchor so that
+  // permalinks stay stable regardless of heading text.
   const sectionId = useMemo(() => {
-    return `section-${uuid || toPostSlug(heading || "")}`;
-  }, [heading, uuid]);
+    if (isOnBlogPage) {
+      return `section-${uuid || toPostSlug(heading || "")}`;
+    }
+    return uuid || toPostSlug(heading || "");
+  }, [heading, uuid, isOnBlogPage]);
 
   // Generate permalink that works on any page
-  const postSlug = isLinkableBlogPost ? toPostSlug(heading) : "";
+  const postSlug = toPostSlug(isOnBlogPage && heading ? heading : uuid ?? "");
   const permalink = useMemo(() => {
-    if (isLinkableBlogPost) {
-      return `${BLOG_PATH}/?post=${encodeURIComponent(postSlug)}`;
+    if (isOnBlogPage && typeof window !== "undefined") {
+      return `${window.location.origin}${BLOG_PATH}/?post=${encodeURIComponent(postSlug)}`;
     } else if (hasHeading && typeof heading === "string") {
       // For non-blog pages, use current URL with hash anchor
       if (typeof window !== "undefined") {
@@ -376,47 +410,73 @@ export const Section = (props: SectionProps) => {
       }
     }
     return "";
-  }, [isLinkableBlogPost, postSlug, hasHeading, heading, sectionId]);
+  }, [postSlug, hasHeading, heading, sectionId, isOnBlogPage]);
+
+  // Detect whether this section should auto-open from a permalink.
+  // On the blog page we match the ?post=slug query parameter.
+  // On any other page we match the #sectionId hash fragment.
+  const targetHash =
+    typeof window !== "undefined" ? window.location.hash.slice(1) : "";
+  const hasMatchingHash =
+    typeof window !== "undefined" &&
+    hasHeading &&
+    typeof heading === "string" &&
+    targetHash === sectionId;
   const shouldOpenFromLink =
     typeof window !== "undefined" &&
-    isLinkableBlogPost &&
-    targetPostSlug === postSlug;
+    (isOnBlogPage
+      ? targetPostSlug === postSlug
+      : hasMatchingHash);
+  // On the blog page, expand ancestors whose content contains the target slug.
+  // On any other page, expand ancestors whose content contains the target
+  // sectionId so that a deeply nested section reached via #sectionId is visible.
   const shouldRevealLinkedPost =
     isOnBlogPage &&
     !!targetPostSlug &&
     !!content &&
     contentContainsPostSlug(content as Content, targetPostSlug);
+  const shouldRevealLinkedSection =
+    !isOnBlogPage &&
+    !!targetHash &&
+    !!content &&
+    contentContainsSectionId(content as Content, targetHash);
   const isForcedExpanded =
-    shouldOpenFromLink || shouldRevealLinkedPost || hasPrintout;
+    shouldOpenFromLink ||
+    shouldRevealLinkedPost ||
+    shouldRevealLinkedSection ||
+    hasPrintout;
 
   const [isCollapsed, setIsCollapsed] = useState(!isForcedExpanded);
   const isCollapsedResolved = isForcedExpanded ? false : isCollapsed;
 
   // Handle permalink click - copy to clipboard and show notification
-  const handlePermalinkClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+  const handlePermalinkClick = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
 
-    if (typeof window === "undefined" || !permalink) return;
+      if (typeof window === "undefined" || !permalink) return;
 
-    // Copy URL to clipboard
-    navigator.clipboard.writeText(permalink).then(() => {
-      // Play sound and show toast notification with window styling
-      playSound();
-      toast.success("Link copied to clipboard!", {
-        position: "bottom-center",
-        autoClose: 2000,
-        hideProgressBar: true,
-        closeOnClick: false,
-        pauseOnHover: false,
-        draggable: false,
-        style: {
-          padding: "8px 16px",
-          fontFamily: "'Pixelated MS Sans Serif', Arial",
-          display: "flex"
-        },
+      // Copy URL to clipboard
+      navigator.clipboard.writeText(permalink).then(() => {
+        // Play sound and show toast notification with window styling
+        playSound();
+        toast.success("Link copied to clipboard!", {
+          position: "bottom-center",
+          autoClose: 2000,
+          hideProgressBar: true,
+          closeOnClick: false,
+          pauseOnHover: false,
+          draggable: false,
+          style: {
+            padding: "8px 16px",
+            fontFamily: "'Pixelated MS Sans Serif', Arial",
+            display: "flex",
+          },
+        });
       });
-    });
-  }, [permalink]);
+    },
+    [permalink],
+  );
 
   // Define sectionUUID before using it in the hook
   const sectionUUID = uuid || `fallback-${heading}-${depth}`;
@@ -442,7 +502,7 @@ export const Section = (props: SectionProps) => {
   // isMinimized comes from the useWindow hook (checks minimizedSections context)
 
   const clearPostSlugFromUrl = () => {
-    if (typeof window === "undefined" || !isOnBlogPage || !isLinkableBlogPost) {
+    if (typeof window === "undefined") {
       return;
     }
 
@@ -461,9 +521,8 @@ export const Section = (props: SectionProps) => {
   const handleClose = () => {
     if (isMaximized) {
       closePoppedOutWindow(clearPostSlugFromUrl);
-    } else {
-      playSound();
     }
+    playSound();
   };
 
   const handleExpand = useCallback(() => {
@@ -494,40 +553,33 @@ export const Section = (props: SectionProps) => {
     window.location.assign(EXPERIMENTAL_THEME_REDIRECT_URL);
   };
 
-  // Scroll to element when opening from link (for blog post navigation)
+  // Scroll to element when opening from a permalink (works on any page).
+  // On the blog page this is triggered by ?post=slug; on other pages by #sectionId.
+  // We scroll to the closest ancestor .window container (if any) rather than the
+  // target element itself, so the whole parent window is brought into view with
+  // the linked section visible inside it.
   useEffect(() => {
     if (!shouldOpenFromLink || typeof window === "undefined") {
       return;
     }
 
-    inlineWindowRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shouldOpenFromLink]);
+    // Small delay to ensure DOM is fully rendered before scrolling.
+    const timer = setTimeout(() => {
+      const self = inlineWindowRef.current;
+      if (!self) return;
 
-  // Scroll to section on initial load if URL has matching hash (for non-blog pages)
-  useEffect(() => {
-    if (typeof window === "undefined") return;
+      // Find the nearest ancestor .window (skip the element itself).
+      const scrollTarget =
+        self.parentElement?.closest(".window") ?? self;
 
-    const scrollToSection = () => {
-      if (!hasHeading || typeof heading !== "string" || !sectionId) return;
+      scrollTarget.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 100);
 
-      // Check if current URL has a hash matching this section
-      if (window.location.hash === `#${sectionId}`) {
-        // Small delay to ensure DOM is rendered
-        setTimeout(() => {
-          const element = document.getElementById(sectionId);
-          if (element) {
-            element.scrollIntoView({ behavior: "smooth", block: "start" });
-          }
-        }, 100);
-      }
-    };
-
-    scrollToSection();
-  }, [hasHeading, heading, sectionId]);
+    return () => clearTimeout(timer);
+  }, [shouldOpenFromLink, inlineWindowRef]);
 
   const windowContent = (
     <div
@@ -622,9 +674,12 @@ export const Section = (props: SectionProps) => {
               }}
             >
               <div
-                id={hasHeading && typeof heading === "string" ? sectionId : undefined}
+                id={
+                  hasHeading && typeof heading === "string"
+                    ? sectionId
+                    : undefined
+                }
                 className={`window ${className || ""}`}
-                onContextMenu={handleExperimentalContextMenu}
                 style={{
                   cursor: "default",
                   maxWidth: "100%",
@@ -639,9 +694,7 @@ export const Section = (props: SectionProps) => {
                     onMouseDown={handleMouseDown}
                   >
                     <div className="title-bar-text">
-                      <a href={hasLink ? link : undefined}>
-                        {heading}
-                      </a>
+                      <a href={hasLink ? link : undefined}>{heading}</a>
                     </div>
                     <div className="title-bar-controls">
                       <button
