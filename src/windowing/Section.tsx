@@ -1,4 +1,4 @@
-import {} from "react";
+import { } from "react";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 import Markdown, { type Options as ReactMarkdownOptions } from "react-markdown";
@@ -422,6 +422,7 @@ const playSound = () => {
 // --- Shared sub-components --------------------------------------------------
 
 type WindowControlsProps = {
+  isIconified: boolean;
   showMaximize: boolean;
   onMinimize: () => void;
   onMaximize: () => void;
@@ -444,6 +445,7 @@ const WindowControls = ({
 );
 
 type TitleBarProps = {
+  isIconified: boolean;
   heading: string;
   link?: string | undefined;
   showMaximize: boolean;
@@ -453,6 +455,7 @@ type TitleBarProps = {
 };
 
 const TitleBar = ({
+  isIconified,
   heading,
   link,
   showMaximize,
@@ -465,6 +468,7 @@ const TitleBar = ({
       <a href={link}>{heading}</a>
     </div>
     <WindowControls
+      isIconified={isIconified}
       showMaximize={showMaximize}
       onMinimize={onMinimize}
       onMaximize={onMaximize}
@@ -824,6 +828,7 @@ export const Section = (props: SectionProps) => {
     >
       {hasHeading && typeof heading === "string" ? (
         <TitleBar
+          isIconified={isIconified}
           heading={heading}
           link={hasLink ? link : undefined}
           showMaximize={depth !== 0}
@@ -913,6 +918,7 @@ export const Section = (props: SectionProps) => {
               >
                 {hasHeading && typeof heading === "string" ? (
                   <TitleBar
+                    isIconified={isIconified}
                     heading={heading}
                     link={hasLink ? link : undefined}
                     showMaximize={true}
