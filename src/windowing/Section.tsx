@@ -55,9 +55,9 @@ const contentContainsPostSlug = (
 
 /**
  * Checks whether any nested section within `content` would produce the given
- * `targetSectionId` (a raw UUID on non-blog pages). This is used to auto-expand
- * ancestor sections so that a deeply nested target section reached via a
- * `#uuid` hash permalink becomes visible on any page.
+ * `targetSectionId` (a stable tree-index on non-blog pages). This is used to
+ * auto-expand ancestor sections so that a deeply nested target section reached
+ * via a `#treeIndex` hash permalink becomes visible on any page.
  */
 const contentContainsSectionId = (
   content: Content,
@@ -72,7 +72,7 @@ const contentContainsSectionId = (
       return false;
     }
 
-    const candidateId = item.uuid || toPostSlug(item.heading || "");
+    const candidateId = item.treeIndex || item.uuid || toPostSlug(item.heading || "");
     if (candidateId === targetSectionId) {
       return true;
     }
@@ -365,6 +365,7 @@ export const Section = (props: SectionProps) => {
     children,
     depth = 0,
     uuid,
+    treeIndex,
     theme,
   } = props;
   const hasHeading = !!heading;
@@ -388,14 +389,15 @@ export const Section = (props: SectionProps) => {
   const targetPostSlug = rawTargetPostSlug ? toPostSlug(rawTargetPostSlug) : "";
 
   // On the blog page, sections are identified by their post slug (derived from
-  // the heading). On every other page we use the raw UUID as the anchor so that
-  // permalinks stay stable regardless of heading text.
+  // the heading). On every other page we use the stable tree-index (e.g.
+  // "0", "0.1", "0.1.2") as the anchor so that permalinks remain valid across
+  // page reloads regardless of randomly generated UUIDs.
   const sectionId = useMemo(() => {
     if (isOnBlogPage) {
       return `section-${uuid || toPostSlug(heading || "")}`;
     }
-    return uuid || toPostSlug(heading || "");
-  }, [heading, uuid, isOnBlogPage]);
+    return treeIndex || uuid || toPostSlug(heading || "");
+  }, [heading, uuid, treeIndex, isOnBlogPage]);
 
   // Generate permalink that works on any page
   const postSlug = toPostSlug(isOnBlogPage && heading ? heading : uuid ?? "");

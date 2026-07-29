@@ -84,17 +84,25 @@ function validateContentLinks<T extends SectionProps>(content: T | T[]): void {
 }
 
 /**
- * Generic function to recursively assign UUIDs to content items
+ * Recursively assigns stable tree-index identifiers to content items.
+ * The identifier is a dot-separated path of child indices (e.g. "0", "0.0",
+ * "0.1.2") that is deterministic across page loads, making permalink anchors
+ * stable regardless of when the page is rendered.
+ *
+ * The random UUID is still stored for internal state (minimise/restore) but
+ * the tree-index is used as the permalink anchor via the `uuid` field.
  */
 function assignUUIDs<T extends SectionProps>(
   item: T,
   depth: number = 0,
   metadata: Map<string, SectionMetadata> = new Map(),
+  indexPath: string = "0",
 ): { result: ContentWithUUID<T>; metadata: Map<string, SectionMetadata> } {
   const uuid = createUUID();
+  const treeIndex = indexPath;
   const heading = item.heading || "";
 
-  // Store metadata
+  // Store metadata keyed by uuid for minimise/restore lookups.
   if (heading) {
     metadata.set(uuid, { uuid, heading, depth });
   }
@@ -105,11 +113,19 @@ function assignUUIDs<T extends SectionProps>(
     if (typeof item.content === "string") {
       newContent = item.content;
     } else if (Array.isArray(item.content)) {
+      let sectionCounter = 0;
       const mapped = item.content.map((subItem: unknown) => {
         if (typeof subItem === "string") {
           return subItem;
         } else {
-          const result = assignUUIDs(subItem as T, depth + 1, metadata);
+          const childIndex = `${treeIndex}.${sectionCounter}`;
+          sectionCounter += 1;
+          const result = assignUUIDs(
+            subItem as T,
+            depth + 1,
+            metadata,
+            childIndex,
+          );
           return result.result;
         }
       });
@@ -120,6 +136,8 @@ function assignUUIDs<T extends SectionProps>(
   const resultWithUUID: ContentWithUUID<T> = {
     ...item,
     uuid,
+    // Store the stable tree-index for permalink anchoring.
+    treeIndex,
     content: newContent,
     depth,
   } as ContentWithUUID<T>;
@@ -141,13 +159,13 @@ export function processContent<T extends SectionProps>(
   const metadata = new Map<string, SectionMetadata>();
 
   if (Array.isArray(content)) {
-    const processed = content.map((item) => {
-      const result = assignUUIDs(item, 0, metadata);
+    const processed = content.map((item, index) => {
+      const result = assignUUIDs(item, 0, metadata, String(index));
       return result.result;
     });
     return { processed, metadata: Array.from(metadata.values()) };
   } else {
-    const result = assignUUIDs(content, 0, metadata);
+    const result = assignUUIDs(content, 0, metadata, "0");
     return {
       processed: result.result,
       metadata: Array.from(result.metadata.values()),

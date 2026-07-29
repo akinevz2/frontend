@@ -16,6 +16,7 @@ export type SectionProps = {
   children?: React.ReactNode;
   depth?: number | undefined;
   uuid?: string | undefined;
+  treeIndex?: string | undefined;
 };
 
 export type SectionMetadata = {
@@ -26,6 +27,7 @@ export type SectionMetadata = {
 
 export type ContentWithUUID<T> = Omit<T, "content"> & {
   uuid: string;
+  treeIndex: string;
   content?: string | (string | ContentWithUUID<T>)[];
 };
 
