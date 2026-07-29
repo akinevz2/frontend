@@ -263,7 +263,7 @@ const renderFavouriteLink = (link: FavouriteLink) => {
       allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
       loading="lazy"
       referrerpolicy="strict-origin-when-cross-origin"
-    ></iframe>`
+    ></iframe>`,
   ].join("\n\n");
 };
 
@@ -273,19 +273,19 @@ const toMusicSections = (
 ): SectionProps[] => {
   const profiles = Array.isArray(payload.profiles)
     ? payload.profiles.map((profile) => ({
-      ...profile,
-      profileImageUrl:
-        getProfileImageUrl(profile.owner) ?? profile.profileImageUrl,
-    }))
+        ...profile,
+        profileImageUrl:
+          getProfileImageUrl(profile.owner) ?? profile.profileImageUrl,
+      }))
     : [
-      {
-        owner: "akinevz",
-        source: payload.source ?? "https://soundcloud.com/akinevz",
-        profileImageUrl: getProfileImageUrl("akinevz"),
-        trackCount: payload.trackCount,
-        tracks: payload.tracks,
-      },
-    ];
+        {
+          owner: "akinevz",
+          source: payload.source ?? "https://soundcloud.com/akinevz",
+          profileImageUrl: getProfileImageUrl("akinevz"),
+          trackCount: payload.trackCount,
+          tracks: payload.tracks,
+        },
+      ];
 
   const favouriteLinkList = favouriteLinks.map((link) =>
     isFavouriteLink(link) ? renderFavouriteLink(link) : link,
