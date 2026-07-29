@@ -36,15 +36,12 @@ export const useWindow = (heading?: string, uuid?: string) => {
     }
   }, [heading, sectionUUID, minimizeSection]);
 
-  const closePoppedOutWindow = useCallback(
-    (clearUrl?: () => void) => {
-      setIsMaximized(false);
-      if (clearUrl) {
-        clearUrl();
-      }
-    },
-    [],
-  );
+  const closePoppedOutWindow = useCallback((clearUrl?: () => void) => {
+    setIsMaximized(false);
+    if (clearUrl) {
+      clearUrl();
+    }
+  }, []);
 
   // Minimizing toggles the iconified state: hides/shows the window-body while
   // keeping the title bar visible on the page.
@@ -80,7 +77,13 @@ export const useWindow = (heading?: string, uuid?: string) => {
     if (heading && typeof heading === "string" && sectionUUID) {
       minimizeSection(sectionUUID, heading);
     }
-  }, [isMaximized, closePoppedOutWindow, heading, sectionUUID, minimizeSection]);
+  }, [
+    isMaximized,
+    closePoppedOutWindow,
+    heading,
+    sectionUUID,
+    minimizeSection,
+  ]);
 
   return {
     isMaximized,

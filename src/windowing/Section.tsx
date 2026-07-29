@@ -474,10 +474,7 @@ const SectionBody = ({
           ? renderContent(content, depth, theme)
           : null}
         {shouldShowCollapsedOkButton ? (
-          <OkButton
-            data-section-uuid={sectionUUID}
-            onClick={onPrimaryAction}
-          />
+          <OkButton data-section-uuid={sectionUUID} onClick={onPrimaryAction} />
         ) : null}
       </div>
     ) : (
@@ -537,7 +534,8 @@ export const Section = (props: SectionProps) => {
   // Generate permalink that works on any page.
   // On the blog page, only nested sections (depth > 0) with headings are
   // treated as linkable blog posts — the top-level container is not.
-  const isLinkableBlogPost = isOnBlogPage && depth > 0 && typeof heading === "string";
+  const isLinkableBlogPost =
+    isOnBlogPage && depth > 0 && typeof heading === "string";
   const postSlug = isLinkableBlogPost ? toPostSlug(heading) : "";
   const permalink = useMemo(() => {
     if (isLinkableBlogPost && typeof window !== "undefined") {
@@ -564,9 +562,7 @@ export const Section = (props: SectionProps) => {
     targetHash === sectionId;
   const shouldOpenFromLink =
     typeof window !== "undefined" &&
-    (isLinkableBlogPost
-      ? targetPostSlug === postSlug
-      : hasMatchingHash);
+    (isLinkableBlogPost ? targetPostSlug === postSlug : hasMatchingHash);
   // On the blog page, expand ancestors whose content contains the target slug.
   // On any other page, expand ancestors whose content contains the target
   // sectionId so that a deeply nested section reached via #sectionId is visible.
@@ -709,7 +705,11 @@ export const Section = (props: SectionProps) => {
       if (typeof window !== "undefined" && sectionId && !isOnBlogPage) {
         const { pathname, search, hash } = window.location;
         if (hash !== `#${sectionId}`) {
-          window.history.replaceState({}, "", `${pathname}${search}#${sectionId}`);
+          window.history.replaceState(
+            {},
+            "",
+            `${pathname}${search}#${sectionId}`,
+          );
         }
       }
       window.location.assign(link);
@@ -746,9 +746,9 @@ export const Section = (props: SectionProps) => {
       if (!self) return;
 
       // Scroll to the section's own .window element so its title bar is in view.
-      (self).scrollIntoView({
+      self.scrollIntoView({
         behavior: "smooth",
-        block: "start"
+        block: "start",
       });
     }, 100);
 
@@ -799,7 +799,8 @@ export const Section = (props: SectionProps) => {
   return (
     <>
       {!isMinimized && !isMaximized && windowContent}
-      {!isMinimized && isMaximized &&
+      {!isMinimized &&
+        isMaximized &&
         typeof document !== "undefined" &&
         createPortal(
           <div
@@ -891,7 +892,7 @@ export const Section = (props: SectionProps) => {
                 ) : null}
               </div>
             </div>
-          </div >,
+          </div>,
           document.body,
         )}
     </>

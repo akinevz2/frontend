@@ -221,14 +221,14 @@ const toMusicSections = (
   const profiles = Array.isArray(payload.profiles)
     ? payload.profiles
     : [
-      {
-        owner: "akinevz",
-        source: payload.source ?? "https://soundcloud.com/akinevz",
-        profileImageUrl: null,
-        trackCount: payload.trackCount,
-        tracks: payload.tracks,
-      },
-    ];
+        {
+          owner: "akinevz",
+          source: payload.source ?? "https://soundcloud.com/akinevz",
+          profileImageUrl: null,
+          trackCount: payload.trackCount,
+          tracks: payload.tracks,
+        },
+      ];
 
   const favouriteLinkList = favouriteLinks.map((link) =>
     isFavouriteLink(link) ? renderFavouriteLink(link) : link,
@@ -393,7 +393,11 @@ export default function MusicContent() {
  * when Firefox Developer Tools are open (detected via window.outerWidth/Height
  * changes that devtools introduce).
  */
-export function MusicDebugOverlay({ payload }: { payload: MusicPayload | null }) {
+export function MusicDebugOverlay({
+  payload,
+}: {
+  payload: MusicPayload | null;
+}) {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
