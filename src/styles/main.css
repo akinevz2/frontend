@@ -421,14 +421,35 @@ body {
 
 @media screen and (max-width: 768px) {
   :root {
-    --gap-size: 0.5em;
+    --gap-size: 1.26em;
+  }
+
+  /* Leave room for the fixed unhide chinbar — only when it's visible. */
+  body:has(.minimized-menu-container) {
+    padding-bottom: 48px;
+  }
+
+  body {
+    padding-top: calc(var(--menu-bar-height) + var(--gap-size));
+    max-width: 100vw;
+  }
+
+  main {
+    width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    overflow-x: clip;
+    padding: 0;
+    margin: 0;
   }
 
   .page {
     margin: 0 auto;
     width: 100%;
     max-width: 100%;
-    padding: var(--gap-size);
+    padding: 0;
+    box-sizing: border-box;
     justify-items: stretch;
   }
 
@@ -485,6 +506,34 @@ body {
   .menu-bar menu li {
     display: flex;
     align-items: center;
+  }
+
+  /* Give the unhide button a visible chinbar on mobile so it isn't
+     clobbered by on-screen content. */
+  .minimized-menu-container {
+    left: 0;
+    bottom: 0;
+    right: 0;
+    padding: 2px 20px;
+    align-items: stretch;
+    z-index: 1;
+  }
+
+  .minimized-menu-button {
+    min-width: unset;
+    width: 100%;
+    padding: 10px 16px !important;
+    font-size: 14px !important;
+    text-align: center;
+    opacity: 1;
+  }
+
+  .minimized-menu-container .dropdown-menu {
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    min-width: unset;
+    width: 100%;
   }
 }
 
