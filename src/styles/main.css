@@ -9,7 +9,7 @@
   --background-color: #000;
   --border-size: 0.25em;
   --gap-size: 0.5em;
-  --menu-bar-height: 2em;
+  --menu-bar-height: 3.456em;
   --clippy-border-flash-color: transparent;
   font-size: 16px;
 }
@@ -55,7 +55,6 @@
 .window {
   margin-bottom: var(--gap-size);
   min-width: min(480px, 100%);
-  width: fit-content;
   max-width: 100%;
   box-sizing: border-box;
   /* Leave room for the fixed menu bar when scrolling to a window. */
@@ -158,22 +157,17 @@ li {
 
 .page {
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--gap-size);
+  display: flex;
   border: 0;
-  position: relative;
   z-index: 100;
   width: calc(100% - (var(--gap-size) * 2));
+  height: 100%;
   box-sizing: border-box;
-  justify-items: center;
+  flex-direction: column;
+  place-items: center;
+  min-height: 100%;
 }
 
-.page > .window {
-  width: fit-content;
-  box-sizing: border-box;
-  margin: 0 auto;
-}
 .window.maximized {
   max-height: 100%;
   max-width: 100%;
@@ -296,6 +290,17 @@ form#form > label {
   border-radius: 4px;
   margin-right: 0.5em;
   vertical-align: middle;
+}
+
+/* Artist Profile Background - stretched background under text */
+.artist-profile-background {
+  width: 100%;
+  min-height: 12em;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 4px;
+  margin-bottom: 0.5em;
 }
 
 /* Menu Bar - Windows XP style */
@@ -482,12 +487,13 @@ form#form > label {
 
 body main {
   margin-top: var(--menu-bar-height);
+  height: auto;
+  min-height: 100%;
 }
 
 /* Account for the fixed debug bar on the music page (sits below menu bar) */
 body:has([data-debug-bar]) main {
-  margin-top: calc(var(--menu-bar-height) + 4em);
-  padding-bottom: calc(var(--menu-bar-height));
+  margin-bottom: calc(var(--menu-bar-height) + 4em);
 }
 
 /* Leave room for the fixed unhide chinbar on desktop - same as mobile */
@@ -509,7 +515,7 @@ body:has(.minimized-menu-container) {
     margin-top: calc(var(--menu-bar-height) + 3em);
   }
   .page {
-    min-width: min(600px, calc(100% - (var(--gap-size) * 2)));
+    width: 100%;
   }
 
   /* Leave room for the fixed unhide chinbar — only when it's visible. */
@@ -535,7 +541,7 @@ body:has(.minimized-menu-container) {
     margin: 0 auto;
     padding: 0;
     box-sizing: border-box;
-    justify-items: stretch;
+    justify-items: center;
   }
 
   /* Constrain window width on mobile */
@@ -602,6 +608,7 @@ body:has(.minimized-menu-container) {
   .minimized-menu-button {
     min-width: unset;
     width: 100%;
+    border-radius: 2em;
     padding: 10px 16px !important;
     font-size: 14px !important;
     text-align: center;
@@ -620,6 +627,11 @@ body:has(.minimized-menu-container) {
 @media screen and (max-width: 480px) {
   :root {
     --menu-bar-height: 24px;
+  }
+  .page > .window {
+    box-sizing: border-box;
+    margin: 0 auto;
+    width: fit-content;
   }
 
   /* Extra small screens - even more compact */
