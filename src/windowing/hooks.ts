@@ -1,6 +1,5 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useContext } from "react";
-import type React from "react";
 import { SectionContext } from "./context";
 
 export const useSectionContext = () => {
@@ -17,9 +16,6 @@ export const useSectionContext = () => {
  */
 export const useWindow = (heading?: string, uuid?: string) => {
   const [isMaximized, setIsMaximized] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
   const windowRef = useRef<HTMLDivElement>(null);
   const inlineWindowRef = useRef<HTMLDivElement>(null);
   const { minimizedSections, minimizeSection, restoreSection } =
@@ -46,101 +42,53 @@ export const useWindow = (heading?: string, uuid?: string) => {
       if (clearUrl) {
         clearUrl();
       }
-      // Closing should not leave an entry in the minimized windows menu.
-      if (sectionUUID) {
-        restoreSection(sectionUUID);
-      }
     },
-    [sectionUUID, restoreSection],
+    [],
   );
 
+  // Minimizing toggles the iconified state: hides/shows the window-body while
+  // keeping the title bar visible on the page.
   const handleMinimize = useCallback(() => {
-    if (!heading || typeof heading !== "string") return;
+    if (!heading || typeof heading !== "string" || !sectionUUID) return;
 
-    // Close maximized window before minimizing
     if (isMaximized) {
       minimizePoppedOutWindow();
       return;
     }
 
-    if (sectionUUID) {
+    if (isMinimized) {
+      restoreSection(sectionUUID);
+    } else {
       minimizeSection(sectionUUID, heading);
     }
   }, [
     heading,
     isMaximized,
+    isMinimized,
     sectionUUID,
     minimizeSection,
+    restoreSection,
     minimizePoppedOutWindow,
   ]);
 
-  // Drag handling
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (isDragging && isMaximized) {
-        setPosition({
-          x: e.clientX - dragOffset.x,
-          y: e.clientY - dragOffset.y,
-        });
-      }
-    };
-
-    const handleMouseUp = () => {
-      setIsDragging(false);
-    };
-
-    if (isDragging) {
-      window.addEventListener("mousemove", handleMouseMove);
-      window.addEventListener("mouseup", handleMouseUp);
+  // Closing hides the entire window (including title bar) and adds it to the
+  // "unhide" menu so it can be brought back.
+  const handleClose = useCallback(() => {
+    if (isMaximized) {
+      closePoppedOutWindow();
     }
-
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-    };
-  }, [isDragging, dragOffset, isMaximized]);
-
-  // Center the window when first maximized
-  useEffect(() => {
-    if (
-      isMaximized &&
-      windowRef.current &&
-      position.x === 0 &&
-      position.y === 0
-    ) {
-      const rect = windowRef.current.getBoundingClientRect();
-      setPosition({
-        x: (window.innerWidth - rect.width) / 2,
-        y: (window.innerHeight - rect.height) / 2,
-      });
+    if (heading && typeof heading === "string" && sectionUUID) {
+      minimizeSection(sectionUUID, heading);
     }
-  }, [isMaximized, position.x, position.y]);
-
-  const handleMouseDown = useCallback(
-    (e: React.MouseEvent) => {
-      if ((e.target as HTMLElement).closest(".title-bar-controls")) {
-        return; // Don't drag when clicking window controls
-      }
-      setIsDragging(true);
-      setDragOffset({
-        x: e.clientX - position.x,
-        y: e.clientY - position.y,
-      });
-    },
-    [position],
-  );
+  }, [isMaximized, closePoppedOutWindow, heading, sectionUUID, minimizeSection]);
 
   return {
     isMaximized,
     setIsMaximized,
-    position,
-    dragOffset,
-    isDragging,
     handleMaximize,
     handleMinimize,
-    minimizePoppedOutWindow,
+    handleClose,
     closePoppedOutWindow,
-    handleMouseDown,
     windowRef,
     inlineWindowRef,
     isMinimized,

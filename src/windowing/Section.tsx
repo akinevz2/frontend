@@ -355,6 +355,137 @@ const playSound = () => {
   window.dispatchEvent(new CustomEvent("crunchy-kick-played"));
 };
 
+// --- Shared sub-components --------------------------------------------------
+
+type WindowControlsProps = {
+  showMaximize: boolean;
+  onMinimize: () => void;
+  onMaximize: () => void;
+  onClose: () => void;
+};
+
+const WindowControls = ({
+  showMaximize,
+  onMinimize,
+  onMaximize,
+  onClose,
+}: WindowControlsProps) => (
+  <div className="title-bar-controls">
+    <button aria-label="Minimize" onClick={onMinimize}></button>
+    {showMaximize ? (
+      <button aria-label="Maximize" onClick={onMaximize}></button>
+    ) : null}
+    <button aria-label="Close" onClick={onClose}></button>
+  </div>
+);
+
+type TitleBarProps = {
+  heading: string;
+  link?: string | undefined;
+  showMaximize: boolean;
+  onMinimize: () => void;
+  onMaximize: () => void;
+  onClose: () => void;
+};
+
+const TitleBar = ({
+  heading,
+  link,
+  showMaximize,
+  onMinimize,
+  onMaximize,
+  onClose,
+}: TitleBarProps) => (
+  <div className="title-bar">
+    <div className="title-bar-text">
+      <a href={link}>{heading}</a>
+    </div>
+    <WindowControls
+      showMaximize={showMaximize}
+      onMinimize={onMinimize}
+      onMaximize={onMaximize}
+      onClose={onClose}
+    />
+  </div>
+);
+
+type SectionBodyProps = {
+  isCollapsed: boolean;
+  hasHeading: boolean;
+  hasContent: boolean;
+  hasPrintout: boolean;
+  shouldShowCollapsedContent: boolean;
+  shouldShowCollapsedOkButton: boolean;
+  showPermalink: boolean;
+  content?: Content | undefined;
+  printout?: string | string[] | undefined;
+  children?: React.ReactNode;
+  depth: number;
+  theme?: string | undefined;
+  sectionUUID: string;
+  onPrimaryAction: () => void;
+  onPermalinkClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+};
+
+const SectionBody = ({
+  isCollapsed,
+  hasHeading,
+  hasContent,
+  hasPrintout,
+  shouldShowCollapsedContent,
+  shouldShowCollapsedOkButton,
+  showPermalink,
+  content,
+  printout,
+  children,
+  depth,
+  theme,
+  sectionUUID,
+  onPrimaryAction,
+  onPermalinkClick,
+}: SectionBodyProps) => (
+  <>
+    {showPermalink && hasHeading ? (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          marginBottom: "8px",
+        }}
+      >
+        <button onClick={onPermalinkClick}>Permalink</button>
+      </div>
+    ) : null}
+    {isCollapsed ? (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: "0.75rem",
+          flexWrap: "wrap",
+        }}
+      >
+        {shouldShowCollapsedContent && hasContent && content
+          ? renderContent(content, depth, theme)
+          : null}
+        {shouldShowCollapsedOkButton ? (
+          <OkButton
+            data-section-uuid={sectionUUID}
+            onClick={onPrimaryAction}
+          />
+        ) : null}
+      </div>
+    ) : (
+      <>
+        {hasPrintout && printout ? renderPrintout(printout) : null}
+        {hasContent && content ? renderContent(content, depth, theme) : null}
+        {children}
+      </>
+    )}
+  </>
+);
+
 export const Section = (props: SectionProps) => {
   const {
     heading,
@@ -487,12 +618,9 @@ export const Section = (props: SectionProps) => {
   const {
     isMaximized,
     setIsMaximized,
-    position,
-    isDragging,
     handleMaximize,
-    handleMinimize,
+    handleClose,
     closePoppedOutWindow,
-    handleMouseDown,
     windowRef,
     inlineWindowRef,
     isMinimized,
@@ -502,6 +630,10 @@ export const Section = (props: SectionProps) => {
   const { markAsExpanded } = useSectionContext();
 
   // isMinimized comes from the useWindow hook (checks minimizedSections context)
+  // When true the entire window is hidden (closed via the X button) and can be
+  // restored from the "unhide" menu. The minimize button uses a separate local
+  // iconified state so it only hides the window-body while keeping the title.
+  const [isIconified, setIsIconified] = useState(false);
 
   const clearPostSlugFromUrl = () => {
     if (typeof window === "undefined") {
@@ -519,11 +651,19 @@ export const Section = (props: SectionProps) => {
     window.history.replaceState({}, "", nextUrl);
   };
 
-  // handleClose uses closePoppedOutWindow from the hook, with clearPostSlugFromUrl as callback
-  const handleClose = () => {
+  // Wrap the hook's handleClose to also clear the blog post URL slug.
+  const handleCloseWithUrl = () => {
     if (isMaximized) {
       closePoppedOutWindow(clearPostSlugFromUrl);
+    } else {
+      handleClose();
     }
+    playSound();
+  };
+
+  // Minimizing toggles iconify: hides/shows the window-body, keeps the title.
+  const handleMinimizeToggle = () => {
+    setIsIconified((prev) => !prev);
     playSound();
   };
 
@@ -536,6 +676,14 @@ export const Section = (props: SectionProps) => {
 
   const handlePrimaryAction = () => {
     if (hasLink && (isValidHttpUrl(link) || isRootOffsetUrl(link))) {
+      // Stamp the current URL with this section's hash before navigating so
+      // that pressing "back" returns to the right scroll position.
+      if (typeof window !== "undefined" && sectionId) {
+        const { pathname, search, hash } = window.location;
+        if (hash !== `#${sectionId}`) {
+          window.history.replaceState({}, "", `${pathname}${search}#${sectionId}`);
+        }
+      }
       window.location.assign(link);
       return;
     }
@@ -590,89 +738,74 @@ export const Section = (props: SectionProps) => {
       className={`window ${className || ""}`}
       onContextMenu={handleExperimentalContextMenu}
     >
-      {hasHeading ? (
-        <div className="title-bar">
-          <a href={hasLink ? link : undefined}>
-            <div className="title-bar-text">{heading}</div>
-          </a>
-          <div className="title-bar-controls">
-            <button aria-label="Minimize" onClick={handleMinimize}></button>
-            {depth !== 0 && (
-              <button aria-label="Maximize" onClick={handleMaximize}></button>
-            )}
-            <button aria-label="Close" onClick={handleClose}></button>
-          </div>
+      {hasHeading && typeof heading === "string" ? (
+        <TitleBar
+          heading={heading}
+          link={hasLink ? link : undefined}
+          showMaximize={depth !== 0}
+          onMinimize={handleMinimizeToggle}
+          onMaximize={handleMaximize}
+          onClose={handleCloseWithUrl}
+        />
+      ) : null}
+      {!isIconified ? (
+        <div className="window-body">
+          <SectionBody
+            isCollapsed={isCollapsedResolved}
+            hasHeading={hasHeading}
+            hasContent={hasContent}
+            hasPrintout={hasPrintout}
+            shouldShowCollapsedContent={shouldShowCollapsedContent}
+            shouldShowCollapsedOkButton={shouldShowCollapsedOkButton}
+            showPermalink={false}
+            content={content}
+            printout={printout}
+            children={children}
+            depth={depth}
+            theme={theme}
+            sectionUUID={sectionUUID}
+            onPrimaryAction={handlePrimaryAction}
+            onPermalinkClick={handlePermalinkClick}
+          />
         </div>
       ) : null}
-      <div className="window-body">
-        {isCollapsedResolved ? (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              gap: "0.75rem",
-              flexWrap: "wrap",
-            }}
-          >
-            {shouldShowCollapsedContent && hasContent
-              ? renderContent(content, depth, theme)
-              : null}
-            {shouldShowCollapsedOkButton ? (
-              <OkButton
-                data-section-uuid={sectionUUID}
-                onClick={handlePrimaryAction}
-              />
-            ) : null}
-          </div>
-        ) : (
-          <>
-            {hasPrintout ? renderPrintout(printout) : null}
-            {hasContent ? renderContent(content, depth, theme) : null}
-            {children}
-          </>
-        )}
-      </div>
     </div>
   );
 
   return (
     <>
       {!isMinimized && !isMaximized && windowContent}
-      {!isMinimized &&
-        isMaximized &&
+      {!isMinimized && isMaximized &&
         typeof document !== "undefined" &&
         createPortal(
           <div
+            ref={windowRef}
             style={{
-              position: "fixed",
-              top: "var(--menu-bar-height, 24px)",
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: "rgba(0, 0, 0, 0.3)",
-              zIndex: 9998,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-            onClick={(e) => {
-              // Close when clicking backdrop
-              if (e.target === e.currentTarget) {
-                setIsMaximized(false);
-              }
+              zIndex: 9999,
+              // Fill the available area below the menu bar, centred.
+              width: "min(768px, 100vw)",
+              maxWidth: "calc(100vw - 32px)",
+              maxHeight: "calc(100vh - var(--menu-bar-height, 24px) - 32px)",
             }}
           >
             <div
-              ref={windowRef}
               style={{
                 position: "fixed",
-                left: `${position.x}px`,
-                top: `${position.y}px`,
-                zIndex: 9999,
-                maxWidth: "90vw",
-                maxHeight: "90vh",
-                cursor: isDragging ? "grabbing" : "default",
+                top: "var(--menu-bar-height, 24px)",
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: "rgba(0, 0, 0, 0.3)",
+                zIndex: 9998,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              onClick={(e) => {
+                // Close when clicking backdrop
+                if (e.target === e.currentTarget) {
+                  setIsMaximized(false);
+                }
               }}
             >
               <div
@@ -681,76 +814,57 @@ export const Section = (props: SectionProps) => {
                     ? sectionId
                     : undefined
                 }
-                className={`window ${className || ""}`}
+                className={`maximized window ${className || ""}`}
                 style={{
                   cursor: "default",
                   maxWidth: "100%",
                   maxHeight: "100%",
                   boxSizing: "border-box",
+                  // Scroll internally if content overflows instead of
+                  // expanding beyond the screen.
+                  overflow: "hidden",
+                  display: "flex",
+                  flexDirection: "column",
                 }}
               >
-                {hasHeading ? (
+                {hasHeading && typeof heading === "string" ? (
+                  <TitleBar
+                    heading={heading}
+                    link={hasLink ? link : undefined}
+                    showMaximize={true}
+                    onMinimize={handleMinimizeToggle}
+                    onMaximize={handleMaximize}
+                    onClose={handleCloseWithUrl}
+                  />
+                ) : null}
+                {!isIconified ? (
                   <div
-                    className="title-bar"
-                    style={{ cursor: "grab" }}
-                    onMouseDown={handleMouseDown}
+                    className="window-body"
+                    style={{
+                      overflow: "auto",
+                      flex: 1,
+                      minHeight: 0,
+                    }}
                   >
-                    <div className="title-bar-text">
-                      <a href={hasLink ? link : undefined}>{heading}</a>
-                    </div>
-                    <div className="title-bar-controls">
-                      <button
-                        aria-label="Minimize"
-                        onClick={handleMinimize}
-                      ></button>
-                      <button
-                        aria-label="Maximize"
-                        onClick={handleMaximize}
-                      ></button>
-                      <button aria-label="Close" onClick={handleClose}></button>
-                    </div>
+                    <SectionBody
+                      isCollapsed={isCollapsedResolved}
+                      hasHeading={hasHeading}
+                      hasContent={hasContent}
+                      hasPrintout={hasPrintout}
+                      shouldShowCollapsedContent={shouldShowCollapsedContent}
+                      shouldShowCollapsedOkButton={shouldShowCollapsedOkButton}
+                      showPermalink={hasHeading && typeof heading === "string"}
+                      content={content}
+                      printout={printout}
+                      children={children}
+                      depth={depth}
+                      theme={theme}
+                      sectionUUID={sectionUUID}
+                      onPrimaryAction={handlePrimaryAction}
+                      onPermalinkClick={handlePermalinkClick}
+                    />
                   </div>
                 ) : null}
-                <div className="window-body" style={{ overflow: "auto" }}>
-                  {hasHeading && typeof heading === "string" ? (
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "flex-end",
-                        marginBottom: "8px",
-                      }}
-                    >
-                      <button onClick={handlePermalinkClick}>Permalink</button>
-                    </div>
-                  ) : null}
-                  {isCollapsedResolved ? (
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        gap: "0.75rem",
-                        flexWrap: "wrap",
-                      }}
-                    >
-                      {shouldShowCollapsedContent && hasContent
-                        ? renderContent(content, depth, theme)
-                        : null}
-                      {shouldShowCollapsedOkButton ? (
-                        <OkButton
-                          data-section-uuid={sectionUUID}
-                          onClick={handlePrimaryAction}
-                        />
-                      ) : null}
-                    </div>
-                  ) : (
-                    <>
-                      {hasPrintout ? renderPrintout(printout) : null}
-                      {hasContent ? renderContent(content, depth, theme) : null}
-                      {children}
-                    </>
-                  )}
-                </div>
               </div>
             </div>
           </div>,

@@ -500,3 +500,7 @@ body {
   bottom: 6px;
   right: 6px;
 }
+
+.window.maximized {
+  height: 100%;
+}
