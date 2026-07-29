@@ -72,7 +72,7 @@ const contentContainsSectionId = (
       return false;
     }
 
-    const candidateId = item.treeIndex || item.uuid || toPostSlug(item.heading || "");
+    const candidateId = item.treeIndex || toPostSlug(item.heading || "");
     if (candidateId === targetSectionId) {
       return true;
     }
@@ -160,8 +160,12 @@ function normalizePrintoutText(printout: string | string[]): string {
   return Array.isArray(printout) ? printout.join("\n") : printout;
 }
 
+const FENCE = "````";
 function toFencedCodeBlock(content: string): string {
-  return `\`\`\`\n${content}\n\`\`\``;
+  const trimmed = content.replace(/^\n+|\n+$/g, "");
+  // Use a 4-backtick fence so triple-backtick sequences inside the content
+  // don't break the outer code block on multi-line input.
+  return `${FENCE}\n${trimmed}\n${FENCE}`;
 }
 
 function PrintoutContent({ printout }: { printout: string | string[] }) {
@@ -192,7 +196,7 @@ function PrintoutContent({ printout }: { printout: string | string[] }) {
           setMarkdownContent(
             [
               "## Printout unavailable",
-              `Failed to resolve printout path (${message}).`,
+              `Failed to resolve printout path(${message}).`,
               "Please let kine (akinevz) know.",
               toFencedCodeBlock(printout),
             ].join("\n\n"),
@@ -211,7 +215,7 @@ function PrintoutContent({ printout }: { printout: string | string[] }) {
         });
 
         if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
+          throw new Error(`HTTP ${response.status} `);
         }
 
         const fileContent = await response.text();
@@ -225,7 +229,7 @@ function PrintoutContent({ printout }: { printout: string | string[] }) {
           setMarkdownContent(
             [
               "## Printout unavailable",
-              `Failed to fetch printout '${printout}' (${message}).`,
+              `Failed to fetch printout '${printout}'(${message}).`,
               "Please let kine (akinevz) know.",
               toFencedCodeBlock(printout),
             ].join("\n\n"),
@@ -316,7 +320,7 @@ function renderContent(
     <ul>
       {groupedContent.map((item) =>
         item.type === "markdown" ? (
-          <li key={`markdown-${item.key}`}>
+          <li key={`markdown - ${item.key} `}>
             <Markdown
               rehypePlugins={rehypePlugins}
               components={markdownComponents}
@@ -326,7 +330,7 @@ function renderContent(
           </li>
         ) : (
           <Section
-            key={`section-${item.key}`}
+            key={`section - ${item.key} `}
             {...item.section}
             depth={depth + 1}
           />
@@ -525,15 +529,18 @@ export const Section = (props: SectionProps) => {
   // page reloads regardless of randomly generated UUIDs.
   const sectionId = useMemo(() => {
     if (isOnBlogPage) {
-      return `section-${uuid || toPostSlug(heading || "")}`;
+      return `section-${treeIndex || toPostSlug(heading || "")}`;
     }
-    return treeIndex || uuid || toPostSlug(heading || "");
-  }, [heading, uuid, treeIndex, isOnBlogPage]);
+    return treeIndex || toPostSlug(heading || "");
+  }, [heading, treeIndex, isOnBlogPage]);
 
-  // Generate permalink that works on any page
-  const postSlug = toPostSlug(isOnBlogPage && heading ? heading : uuid ?? "");
+  // Generate permalink that works on any page.
+  // On the blog page, only nested sections (depth > 0) with headings are
+  // treated as linkable blog posts — the top-level container is not.
+  const isLinkableBlogPost = isOnBlogPage && depth > 0 && typeof heading === "string";
+  const postSlug = isLinkableBlogPost ? toPostSlug(heading) : "";
   const permalink = useMemo(() => {
-    if (isOnBlogPage && typeof window !== "undefined") {
+    if (isLinkableBlogPost && typeof window !== "undefined") {
       return `${window.location.origin}${BLOG_PATH}/?post=${encodeURIComponent(postSlug)}`;
     } else if (hasHeading && typeof heading === "string") {
       // For non-blog pages, use current URL with hash anchor
@@ -543,10 +550,10 @@ export const Section = (props: SectionProps) => {
       }
     }
     return "";
-  }, [postSlug, hasHeading, heading, sectionId, isOnBlogPage]);
+  }, [isLinkableBlogPost, postSlug, hasHeading, heading, sectionId]);
 
   // Detect whether this section should auto-open from a permalink.
-  // On the blog page we match the ?post=slug query parameter.
+  // On the blog page we match the ?post=slug query parameter (nested posts only).
   // On any other page we match the #sectionId hash fragment.
   const targetHash =
     typeof window !== "undefined" ? window.location.hash.slice(1) : "";
@@ -557,7 +564,7 @@ export const Section = (props: SectionProps) => {
     targetHash === sectionId;
   const shouldOpenFromLink =
     typeof window !== "undefined" &&
-    (isOnBlogPage
+    (isLinkableBlogPost
       ? targetPostSlug === postSlug
       : hasMatchingHash);
   // On the blog page, expand ancestors whose content contains the target slug.
@@ -627,7 +634,7 @@ export const Section = (props: SectionProps) => {
   } = useWindow(heading, sectionUUID);
 
   // Use the local context for other operations that aren't in the hook yet
-  const { markAsExpanded } = useSectionContext();
+  const { markAsExpanded, restoreSection } = useSectionContext();
 
   // isMinimized comes from the useWindow hook (checks minimizedSections context)
   // When true the entire window is hidden (closed via the X button) and can be
@@ -662,9 +669,29 @@ export const Section = (props: SectionProps) => {
   };
 
   // Minimizing toggles iconify: hides/shows the window-body, keeps the title.
+  // Also unmaximizes if the window is currently maximized.
   const handleMinimizeToggle = () => {
+    if (isMaximized) {
+      setIsMaximized(false);
+    }
     setIsIconified((prev) => !prev);
     playSound();
+  };
+
+  // Maximizing expands all content, unminimizes, and toggles the maximized
+  // state. If already maximized, it just unmaximizes.
+  const handleMaximizeToggle = () => {
+    if (!isMaximized) {
+      // Unminimize if hidden via the close button.
+      if (isMinimized && sectionUUID) {
+        restoreSection(sectionUUID);
+      }
+      // Unminify if iconified.
+      setIsIconified(false);
+      // Expand collapsed content.
+      setIsCollapsed(false);
+    }
+    handleMaximize();
   };
 
   const handleExpand = useCallback(() => {
@@ -678,7 +705,8 @@ export const Section = (props: SectionProps) => {
     if (hasLink && (isValidHttpUrl(link) || isRootOffsetUrl(link))) {
       // Stamp the current URL with this section's hash before navigating so
       // that pressing "back" returns to the right scroll position.
-      if (typeof window !== "undefined" && sectionId) {
+      // On the blog page we use ?post=slug for navigation, so don't add a hash.
+      if (typeof window !== "undefined" && sectionId && !isOnBlogPage) {
         const { pathname, search, hash } = window.location;
         if (hash !== `#${sectionId}`) {
           window.history.replaceState({}, "", `${pathname}${search}#${sectionId}`);
@@ -705,9 +733,8 @@ export const Section = (props: SectionProps) => {
 
   // Scroll to element when opening from a permalink (works on any page).
   // On the blog page this is triggered by ?post=slug; on other pages by #sectionId.
-  // We scroll to the closest ancestor .window container (if any) rather than the
-  // target element itself, so the whole parent window is brought into view with
-  // the linked section visible inside it.
+  // Scroll to the closest enclosing .window container so the window's title bar
+  // is in view.
   useEffect(() => {
     if (!shouldOpenFromLink || typeof window === "undefined") {
       return;
@@ -718,13 +745,10 @@ export const Section = (props: SectionProps) => {
       const self = inlineWindowRef.current;
       if (!self) return;
 
-      // Find the nearest ancestor .window (skip the element itself).
-      const scrollTarget =
-        self.parentElement?.closest(".window") ?? self;
-
-      scrollTarget.scrollIntoView({
+      // Scroll to the section's own .window element so its title bar is in view.
+      (self).scrollIntoView({
         behavior: "smooth",
-        block: "start",
+        block: "start"
       });
     }, 100);
 
@@ -744,7 +768,7 @@ export const Section = (props: SectionProps) => {
           link={hasLink ? link : undefined}
           showMaximize={depth !== 0}
           onMinimize={handleMinimizeToggle}
-          onMaximize={handleMaximize}
+          onMaximize={handleMaximizeToggle}
           onClose={handleCloseWithUrl}
         />
       ) : null}
@@ -781,7 +805,7 @@ export const Section = (props: SectionProps) => {
           <div
             ref={windowRef}
             style={{
-              zIndex: 9999,
+              zIndex: 9000,
               // Fill the available area below the menu bar, centred.
               width: "min(768px, 100vw)",
               maxWidth: "calc(100vw - 32px)",
@@ -796,7 +820,7 @@ export const Section = (props: SectionProps) => {
                 right: 0,
                 bottom: 0,
                 background: "rgba(0, 0, 0, 0.3)",
-                zIndex: 9998,
+                zIndex: 8999,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -833,13 +857,13 @@ export const Section = (props: SectionProps) => {
                     link={hasLink ? link : undefined}
                     showMaximize={true}
                     onMinimize={handleMinimizeToggle}
-                    onMaximize={handleMaximize}
+                    onMaximize={handleMaximizeToggle}
                     onClose={handleCloseWithUrl}
                   />
                 ) : null}
                 {!isIconified ? (
                   <div
-                    className="window-body"
+                    className="window-body maximized-window-body"
                     style={{
                       overflow: "auto",
                       flex: 1,
@@ -867,7 +891,7 @@ export const Section = (props: SectionProps) => {
                 ) : null}
               </div>
             </div>
-          </div>,
+          </div >,
           document.body,
         )}
     </>
