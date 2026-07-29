@@ -9,7 +9,7 @@
   --background-color: #000;
   --border-size: 0.25em;
   --gap-size: 0.5em;
-  --menu-bar-height: 3.456em;
+  --menu-bar-height: 2.08em;
   --clippy-border-flash-color: transparent;
   font-size: 16px;
 }
@@ -105,8 +105,6 @@ body {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
-  overflow-x: clip;
 }
 
 #root {
@@ -335,7 +333,7 @@ form#form > label {
   padding: 4px 8px;
   text-decoration: none;
   color: #000 !important;
-  font-size: 14px;
+  font-size: 16px;
   font-family: "Tahoma", "MS Sans Serif", sans-serif;
   white-space: nowrap;
   transition: background-color 0.1s ease;
@@ -361,14 +359,16 @@ form#form > label {
 
 /* Unhide button in the menu bar (top-left) */
 .minimized-menu-container-in-bar {
-  top: 0;
+  top: calc(var(--menu-bar-height) + 3px);
   left: 0;
-  min-width: min(100%, 480px);
+  right: 0;
+  max-width: 100%;
   display: flex;
   align-items: center;
   flex-direction: column;
-  place-self: center;
-  z-index: 9998; /* Above windows (z-index ~9000), below toastify (9999) */
+  place-self: stretch;
+  position: absolute;
+  z-index: 96; /* Above windows (z-index ~9000), below toastify (9999) */
 }
 
 /* Unhide button styling in the menu bar */
@@ -378,13 +378,18 @@ form#form > label {
   background: transparent;
   border: none;
   cursor: pointer;
+  width: 100%;
+  max-width: 100%;
 }
 
 /* Dropdown menu positioned below the button in the top-left corner */
 .minimized-menu-container-in-bar .dropdown-menu {
-  top: calc(var(--menu-bar-height) + 8px);
+  position: absolute;
+  top: calc(100% + 8px);
   left: var(--gap-size);
-  min-width: min(100%, 480px);
+  right: var(--gap-size);
+  min-width: unset;
+  width: calc(100% - (var(--gap-size) * 2));
   background: #fff;
   border: 2px outset #dfdfdf;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
@@ -394,7 +399,7 @@ form#form > label {
   display: flex;
   box-sizing: border-box;
   flex-direction: column;
-  z-index: 9001; /* Above windows (z-index ~9000) */
+  z-index: 58; /* Above windows (z-index ~9000) */
 }
 
 .minimized-menu-container-in-bar .dropdown-item {
@@ -410,7 +415,7 @@ form#form > label {
   cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
-  z-index: 9002;
+  z-index: 120;
   text-overflow: ellipsis;
 }
 
@@ -460,7 +465,7 @@ form#form > label {
   padding: 2px;
   display: flex;
   flex-direction: column;
-  z-index: 1002;
+  z-index: 90;
 }
 
 .minimized-menu-container .dropdown-item {
@@ -476,7 +481,7 @@ form#form > label {
   cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
-  z-index: 9002;
+  z-index: 92;
   text-overflow: ellipsis;
 }
 
@@ -606,10 +611,7 @@ body:has(.minimized-menu-container) {
   }
 
   .minimized-menu-button {
-    min-width: unset;
-    width: 100%;
-    border-radius: 2em;
-    padding: 10px 16px !important;
+    top: var(--menu-bar-height);
     font-size: 14px !important;
     text-align: center;
     z-index: 98;
@@ -631,33 +633,13 @@ body:has(.minimized-menu-container) {
   .page > .window {
     box-sizing: border-box;
     margin: 0 auto;
-    width: fit-content;
+    /* width: fit-content; */
+    width: 100%;
   }
 
   /* Extra small screens - even more compact */
   .menu-bar menu a {
     padding: 5px 10px;
-    font-size: 11px;
-  }
-
-  /* On very small screens, move unhide button to bottom to avoid overlap with menu items */
-  .minimized-menu-container-in-bar {
-    top: auto;
-    left: 0;
-    bottom: 0;
-    right: auto;
-    height: unset;
-    z-index: 9998;
-  }
-
-  .minimized-menu-container-in-bar .dropdown-menu {
-    position: relative;
-    top: 100%;
-    bottom: auto;
-    left: 0;
-    right: auto;
-    max-width: unset;
-    width: calc(100% - (var(--gap-size) * 2));
   }
 }
 
