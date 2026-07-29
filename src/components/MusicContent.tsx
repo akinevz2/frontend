@@ -221,14 +221,14 @@ const toMusicSections = (
   const profiles = Array.isArray(payload.profiles)
     ? payload.profiles
     : [
-        {
-          owner: "akinevz",
-          source: payload.source ?? "https://soundcloud.com/akinevz",
-          profileImageUrl: null,
-          trackCount: payload.trackCount,
-          tracks: payload.tracks,
-        },
-      ];
+      {
+        owner: "akinevz",
+        source: payload.source ?? "https://soundcloud.com/akinevz",
+        profileImageUrl: null,
+        trackCount: payload.trackCount,
+        tracks: payload.tracks,
+      },
+    ];
 
   const favouriteLinkList = favouriteLinks.map((link) =>
     isFavouriteLink(link) ? renderFavouriteLink(link) : link,
@@ -444,7 +444,7 @@ function MusicDebugOverlay({ payload }: { payload: MusicPayload | null }) {
         bottom: 0,
         left: 0,
         right: 0,
-        zIndex: 9999,
+        zIndex: 9000,
         background: "#ffffff",
         color: "#000",
         fontFamily: "monospace",
