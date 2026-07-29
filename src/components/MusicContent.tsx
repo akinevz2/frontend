@@ -120,28 +120,33 @@ const buildSoundCloudEmbedUrl = (trackUrl: string) => {
   embedUrl.searchParams.set("show_comments", "true");
   embedUrl.searchParams.set("show_user", "true");
   embedUrl.searchParams.set("show_reposts", "false");
-  embedUrl.searchParams.set("visual", "false");
+  embedUrl.searchParams.set("visual", "true");
   return embedUrl.toString();
 };
 
-const renderTrackEmbed = (track: MusicTrack) => {
+const createTrackSection = (track: MusicTrack): SectionProps => {
   const embedUrl = buildSoundCloudEmbedUrl(track.url);
 
-  return [
-    `<p class="music-track-title"><a href="${track.url}">${track.title}</a></p>`,
-    `<iframe
-      title="SoundCloud track: ${track.title}"
-      width="100%"
-      height="166"
-      scrolling="no"
-      frameBorder="no"
-      allow="autoplay"
-      loading="lazy"
-      referrerPolicy="strict-origin-when-cross-origin"
-      src="${embedUrl}"
-    ></iframe>`,
-    `[Open on SoundCloud](${track.url})`,
-  ].join("\n\n");
+  return {
+    className: "music-track-window",
+    heading: `Track: ${track.title}`,
+    // link: track.url as `https://${string}` | `http://${string}`,
+    content: [
+      `<p class="music-track-title"><a href="${track.url}">${track.title}</a></p>`,
+      `<iframe
+        title="SoundCloud track: ${track.title}"
+        width="100%"
+        height="250"
+        scrolling="no"
+        frameBorder="no"
+        allow="autoplay"
+        loading="lazy"
+        referrerPolicy="strict-origin-when-cross-origin"
+        src="${embedUrl}"
+      ></iframe>`,
+      `[${track.title} on SoundCloud](${track.url})`,
+    ].join("\n\n"),
+  };
 };
 
 const getSpotifyEmbedUrl = (urlValue: string): string | null => {
@@ -221,14 +226,14 @@ const toMusicSections = (
   const profiles = Array.isArray(payload.profiles)
     ? payload.profiles
     : [
-        {
-          owner: "akinevz",
-          source: payload.source ?? "https://soundcloud.com/akinevz",
-          profileImageUrl: null,
-          trackCount: payload.trackCount,
-          tracks: payload.tracks,
-        },
-      ];
+      {
+        owner: "akinevz",
+        source: payload.source ?? "https://soundcloud.com/akinevz",
+        profileImageUrl: null,
+        trackCount: payload.trackCount,
+        tracks: payload.tracks,
+      },
+    ];
 
   const favouriteLinkList = favouriteLinks.map((link) =>
     isFavouriteLink(link) ? renderFavouriteLink(link) : link,
@@ -241,22 +246,26 @@ const toMusicSections = (
   const asOfUploadingTrackCount =
     payload.asOfUploadingTrackCount ?? combinedTrackCount;
 
-  const profileSections: SectionProps[] = profiles.map((profile) => {
-    const trackEmbeds = profile.tracks.map((track) => renderTrackEmbed(track));
+  const profileSections: SectionProps[] = profiles.flatMap((profile) => {
+    // Create individual windowed sections for each track
+    const trackWindows: SectionProps[] = profile.tracks.map((track) =>
+      createTrackSection(track)
+    );
 
-    return {
-      className: "music-profile-discography",
-      children: [],
-      heading: `@${profile.owner} discography`,
-      content: [
-        `Profile: [${profile.source}](${profile.source})`,
-        profile.profileImageUrl
-          ? `[![${profile.owner} profile image](${profile.profileImageUrl})](${profile.profileImageUrl})`
-          : "Profile image unavailable in cached snapshot.",
-        `Track count: ${profile.trackCount}`,
-        ...trackEmbeds,
-      ],
-    };
+    return [
+      {
+        className: "music-profile-discography",
+        heading: `@${profile.owner} discography`,
+        content: [
+          `Profile: [${profile.source}](${profile.source})`,
+          profile.profileImageUrl
+            ? `[![${profile.owner} profile image](${profile.profileImageUrl})](${profile.profileImageUrl})`
+            : "Profile image unavailable in cached snapshot.",
+          `Track count: ${profile.trackCount}`,
+          ...trackWindows,
+        ],
+      },
+    ];
   });
 
   return [

@@ -9,7 +9,7 @@
   --background-color: #000;
   --border-size: 0.25em;
   --gap-size: 0.5em;
-  --menu-bar-height: 24px;
+  --menu-bar-height: 2em;
   --clippy-border-flash-color: transparent;
   font-size: 16px;
 }
@@ -55,6 +55,7 @@
 .window {
   margin-bottom: var(--gap-size);
   min-width: min(480px, 100%);
+  width: fit-content;
   max-width: 100%;
   box-sizing: border-box;
   /* Leave room for the fixed menu bar when scrolling to a window. */
@@ -269,6 +270,15 @@ form#form > label {
   margin: 0 0 0.35em 0;
 }
 
+.music-track-window .window-body {
+  padding: 0.5em;
+}
+
+.music-track-window iframe {
+  border-radius: 4px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
 /* Menu Bar - Windows XP style */
 .menu-bar {
   position: fixed;
@@ -452,14 +462,13 @@ form#form > label {
 }
 
 body main {
-  margin-top: calc(var(--menu-bar-height) + 3em);
-  margin-bottom: 3em;
+  margin-top: var(--menu-bar-height);
 }
 
 /* Account for the fixed debug bar on the music page (sits below menu bar) */
 body:has([data-debug-bar]) main {
-  margin-top: calc(var(--menu-bar-height) + 3em);
-  padding-bottom: var(--menu-bar-height);
+  margin-top: calc(var(--menu-bar-height) + 4em);
+  padding-bottom: calc(var(--menu-bar-height));
 }
 
 /* Leave room for the fixed unhide chinbar on desktop - same as mobile */

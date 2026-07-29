@@ -1,4 +1,3 @@
-import type React from "react";
 
 export type Heading = string;
 export type HttpUrl = `http://${string}` | `https://${string}`;
