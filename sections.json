@@ -1,13 +1,14 @@
 {
   "heading": "Welcome to kine's website!",
   "content": [
-    {
-      "heading": "psa from kine",
-      "content": "![content_filler](/images/Screenshot%202026-03-10%20143742.png)"
-    },
-    "err, lots of bugs on the internet is like lots of bugs under a rock",
+    "err, there's lots of bugs on the internet like there's lots of bugs under a rock:",
     "there are some on the bottom, and some on the top, but on the bottom",
     "they're digesting most of the bottom-of-rock POLP",
+    {
+      "heading": "for guru wisdom, there's tao of vim",
+      "link": "https://mkaz.blog/working-with-vim/the-tao-of-vim/",
+      "content": "for everything else, stay here:)"
+    },
     {
       "heading": "what is kine",
       "content": [
