@@ -5,16 +5,16 @@ import type { SectionProps } from "../windowing";
 import contacts from "../../contacts.json";
 
 const ContactPage = () => {
-    const { processed, metadata } = useMemo(
-        () => processContent(contacts as SectionProps),
-        [],
-    );
+  const { processed, metadata } = useMemo(
+    () => processContent(contacts as SectionProps),
+    [],
+  );
 
-    return (
-        <main>
-            <PageContent sections={processed} pageMetadata={{ sections: metadata }} />
-        </main>
-    );
+  return (
+    <main>
+      <PageContent sections={processed} pageMetadata={{ sections: metadata }} />
+    </main>
+  );
 };
 
 export default ContactPage;
