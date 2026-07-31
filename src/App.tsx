@@ -11,10 +11,7 @@ import Markdown, { type Options as ReactMarkdownOptions } from "react-markdown";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { ToastContainer } from "react-toastify";
 import { setTheme } from "lightdni-jssas-toggle";
-import {
-  onClippyClick,
-  showClippyHint,
-} from "./lib/keyboardInputUtils";
+import { onClippyClick, showClippyHint } from "./lib/keyboardInputUtils";
 import {
   loadAssistantConfig,
   requestAssistantCompletion,
@@ -270,8 +267,12 @@ export default function App() {
   const showClippy = clippyState.showClippy;
   const showClippyBubble = clippyState.showClippyBubble;
   const clippyBubbleSaysNo = clippyState.clippyBubbleSaysNo;
-  const { state: clippyEffectState, triggerSubmitPulse, setHovered, startConnectionFlash } =
-    useClippyEffect();
+  const {
+    state: clippyEffectState,
+    triggerSubmitPulse,
+    setHovered,
+    startConnectionFlash,
+  } = useClippyEffect();
   const isSubmitPulseActive = clippyEffectState.isSubmitPulseActive;
   const isClippyHovered = clippyEffectState.isClippyHovered;
   const isConnectionFlashActive = clippyEffectState.isConnectionFlashActive;
@@ -596,7 +597,7 @@ export default function App() {
       setAssistantWindowVisible(true);
       setAssistantWindowMinimized(false);
       const readyBeep = new Audio("/Beep.ogg");
-      void readyBeep.play().catch(() => { });
+      void readyBeep.play().catch(() => {});
     } catch (error) {
       setConversationError(
         error instanceof Error
@@ -761,7 +762,7 @@ export default function App() {
         currentPath={path}
         // additionalLinks={showClippy ? TOP_BAR_ADDITIONAL_LINKS : []}
         additionalLinks={[]}
-      // onMenuAction={handleTopMenuAction}
+        // onMenuAction={handleTopMenuAction}
       />
       {content}
       {/* Assistant config modal intentionally disabled. */}

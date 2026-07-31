@@ -3,7 +3,11 @@ import type { ReactNode } from "react";
 
 import { PageContent } from "./Page";
 import { processContent } from "../windowing/utils";
-import { type PageMetadata, type SectionProps, useIsAnyWindowMaximized } from "../windowing";
+import {
+  type PageMetadata,
+  type SectionProps,
+  useIsAnyWindowMaximized,
+} from "../windowing";
 
 const MUSIC_LINKS_URL = "/blog/music-links.json";
 
@@ -275,19 +279,19 @@ const toMusicSections = (
 ): SectionProps[] => {
   const profiles = Array.isArray(payload.profiles)
     ? payload.profiles.map((profile) => ({
-      ...profile,
-      profileImageUrl:
-        getProfileImageUrl(profile.owner) ?? profile.profileImageUrl,
-    }))
+        ...profile,
+        profileImageUrl:
+          getProfileImageUrl(profile.owner) ?? profile.profileImageUrl,
+      }))
     : [
-      {
-        owner: "akinevz",
-        source: payload.source ?? "https://soundcloud.com/akinevz",
-        profileImageUrl: getProfileImageUrl("akinevz"),
-        trackCount: payload.trackCount,
-        tracks: payload.tracks,
-      },
-    ];
+        {
+          owner: "akinevz",
+          source: payload.source ?? "https://soundcloud.com/akinevz",
+          profileImageUrl: getProfileImageUrl("akinevz"),
+          trackCount: payload.trackCount,
+          tracks: payload.tracks,
+        },
+      ];
 
   const favouriteLinkList = favouriteLinks.map((link) =>
     isFavouriteLink(link) ? renderFavouriteLink(link) : link,
@@ -442,9 +446,7 @@ export default function MusicContent() {
     <PageContent
       sections={musicState.sections}
       pageMetadata={musicState.metadata}
-      footer={
-        <MusicDebugOverlay payload={musicState.payload} />
-      }
+      footer={<MusicDebugOverlay payload={musicState.payload} />}
     />
   );
 }
@@ -461,7 +463,7 @@ export function MusicDebugOverlay({
 }: {
   payload: MusicPayload | null;
 }) {
-  const anyMaximized = useIsAnyWindowMaximized()
+  const anyMaximized = useIsAnyWindowMaximized();
   const visible = !anyMaximized;
 
   if (!visible || !payload) {

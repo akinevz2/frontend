@@ -19,8 +19,13 @@ export const useWindow = (heading?: string, uuid?: string) => {
   const windowRef = useRef<HTMLDivElement>(null);
   const inlineWindowRef = useRef<HTMLDivElement>(null);
   const sectionContext = useSectionContext();
-  const { minimizedSections, minimizeSection, restoreSection, registerMaximizedWindow, unregisterMaximizedWindow } =
-    sectionContext;
+  const {
+    minimizedSections,
+    minimizeSection,
+    restoreSection,
+    registerMaximizedWindow,
+    unregisterMaximizedWindow,
+  } = sectionContext;
 
   // UUID must be provided from server-side processing
   const sectionUUID = uuid || (heading ? `fallback-${heading}` : undefined);
@@ -48,7 +53,12 @@ export const useWindow = (heading?: string, uuid?: string) => {
       }
       wasMaximizedRef.current = false;
     };
-  }, [isMaximized, sectionUUID, registerMaximizedWindow, unregisterMaximizedWindow]);
+  }, [
+    isMaximized,
+    sectionUUID,
+    registerMaximizedWindow,
+    unregisterMaximizedWindow,
+  ]);
 
   const handleMaximize = useCallback(() => {
     setIsMaximized((prev) => !prev);

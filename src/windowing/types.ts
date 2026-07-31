@@ -5,14 +5,10 @@ export type HttpUrl = `http://${string}` | `https://${string}`;
 export type LinkUrl = HttpUrl | `/${string}`;
 
 export type Content =
-  | string
-  | SectionProps
-  | ReactNode
-  | (string | SectionProps | ReactNode)[];
+  string | SectionProps | ReactNode | (string | SectionProps | ReactNode)[];
 // export type Content = string | ReactNode | Element | SectionProps[];
 
 export type AddonsPropsMixing = {
-
   // --- Addon extension fields ---
   // `status` renders an italic status line (e.g. "available") in the body.
   status?: string | undefined;
@@ -21,7 +17,7 @@ export type AddonsPropsMixing = {
   // `externalLink` opens the link in a new tab (used by addons) instead of
   // performing in-app navigation.
   externalLink?: boolean | undefined;
-}
+};
 export type SectionProps = {
   className?: string;
   heading?: Heading;

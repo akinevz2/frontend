@@ -22,22 +22,22 @@ export const PageContent = ({ sections, pageMetadata, footer }: PageProps) => {
     return null;
   }
 
-  return (<>
-    <SectionProvider pageMetadata={metadata} isAddonPage={false}>
-
-      <section className="page">
-        {Array.isArray(sections) ? (
-          sections.map((item, index) => (
-            <Section key={item.uuid || index} {...item} />
-          ))
-        ) : (
-          <Section {...sections} />
-        )}
-      </section>
-      <MenuBarWithContext />
-      {footer}
-    </SectionProvider>
-  </>
+  return (
+    <>
+      <SectionProvider pageMetadata={metadata} isAddonPage={false}>
+        <section className="page">
+          {Array.isArray(sections) ? (
+            sections.map((item, index) => (
+              <Section key={item.uuid || index} {...item} />
+            ))
+          ) : (
+            <Section {...sections} />
+          )}
+        </section>
+        <MenuBarWithContext />
+        {footer}
+      </SectionProvider>
+    </>
   );
 };
 

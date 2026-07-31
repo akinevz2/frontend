@@ -1,4 +1,4 @@
-import { } from "react";
+import {} from "react";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 import Markdown, { type Options as ReactMarkdownOptions } from "react-markdown";
@@ -285,10 +285,7 @@ function renderPrintout(printout: string | string[]) {
   return <PrintoutContent printout={printout} />;
 }
 
-function renderContent(
-  content: Content,
-  depth: number,
-) {
+function renderContent(content: Content, depth: number) {
   if (!content || typeof content === "string") {
     if (typeof content !== "string") return null;
 
@@ -542,7 +539,6 @@ const SectionBody = ({
         flex: 1,
       }}
     >
-
       {isCollapsed ? (
         <div
           style={{
@@ -556,7 +552,10 @@ const SectionBody = ({
             ? renderContent(content, depth)
             : null}
           {shouldShowCollapsedOkButton ? (
-            <OkButton data-section-uuid={sectionUUID} onClick={onPrimaryAction} />
+            <OkButton
+              data-section-uuid={sectionUUID}
+              onClick={onPrimaryAction}
+            />
           ) : null}
         </div>
       ) : (
@@ -574,8 +573,11 @@ const SectionBody = ({
         </>
       )}
     </div>
-    <ShowPermalinkButton hasHeading={hasHeading} onPermalinkClick={onPermalinkClick} showPermalink={showPermalink} />
-
+    <ShowPermalinkButton
+      hasHeading={hasHeading}
+      onPermalinkClick={onPermalinkClick}
+      showPermalink={showPermalink}
+    />
   </>
 );
 
@@ -643,7 +645,8 @@ export const Section = (props: SectionProps) => {
   const hasText = typeof text === "string" && text.length > 0;
   const shouldShowCollapsedContent =
     hasHeading && hasStringContent && !hasPrintout;
-  const shouldShowCollapsedOkButton = !shouldShowCollapsedContent || hasValidLink;
+  const shouldShowCollapsedOkButton =
+    !shouldShowCollapsedContent || hasValidLink;
   const isOnBlogPage =
     typeof window !== "undefined" && isBlogPath(window.location.pathname);
   const rawTargetPostSlug =
@@ -771,8 +774,7 @@ export const Section = (props: SectionProps) => {
   const isAddon = isAddonPage;
   // Addons open their links in a new tab (external resources); a section may
   // also opt in explicitly via `externalLink`. Explicit opt-out still wins.
-  const opensInNewTabResolved =
-    isAddon || externalLink === true;
+  const opensInNewTabResolved = isAddon || externalLink === true;
 
   // isMinimized comes from the useWindow hook (checks minimizedSections context)
   // When true the entire window is hidden (closed via the X button) and can be

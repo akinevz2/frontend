@@ -5,16 +5,16 @@ import type { SectionProps } from "../windowing";
 import sections from "../../sections.json";
 
 const HomePage = () => {
-    const { processed, metadata } = useMemo(
-        () => processContent(sections as SectionProps),
-        [],
-    );
+  const { processed, metadata } = useMemo(
+    () => processContent(sections as SectionProps),
+    [],
+  );
 
-    return (
-        <main>
-            <PageContent sections={processed} pageMetadata={{ sections: metadata }} />
-        </main>
-    );
+  return (
+    <main>
+      <PageContent sections={processed} pageMetadata={{ sections: metadata }} />
+    </main>
+  );
 };
 
 export default HomePage;
