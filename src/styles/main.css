@@ -293,6 +293,46 @@ form#form > label {
   min-height: 0;
 }
 
+/* The permalink row should never grow; it stays at its natural size while the
+   content siblings take the remaining height in the maximized window. */
+.maximized-window-body > .permalink-button-container {
+  flex: 0 0 auto;
+  min-height: 0;
+}
+
+/* When a window is maximized, let embedded iframes (SoundCloud/Spotify/blogs)
+   grow to fill the available window-body height instead of staying at their
+   fixed pixel height. Stretches the ancestor chain (ul > li > wrapper) so the
+   flex height propagates down to the iframe. Only applies inside `.maximized`
+   so inline (non-fullscreen) windows keep their natural sizes. */
+.maximized .maximized-window-body:has(iframe) {
+  /* allow the body itself to hand height down to its children */
+  align-items: stretch;
+}
+
+/* The content wrapper (the last child that isn't the permalink row) should
+   grow to fill the window body, and hand its height down to the iframe chain. */
+.maximized
+  .maximized-window-body:has(iframe)
+  > *:not(.permalink-button-container),
+.maximized .maximized-window-body:has(iframe) ul,
+.maximized .maximized-window-body:has(iframe) ul > li {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.maximized .maximized-window-body iframe {
+  /* Fill the available height via flex (NOT height:100%, which resolves to 0
+     against an indefinite flex parent). flex-basis auto + grow stretches the
+     iframe to its share of the parent's resolved height. */
+  flex: 1 1 auto;
+  min-height: 200px;
+  max-height: 100%;
+  box-sizing: border-box;
+}
+
 .debug-printout-scroll {
   width: 100%;
   max-width: 100%;
@@ -382,7 +422,6 @@ form#form > label {
 .menu-bar {
   position: fixed;
   top: 0;
-  height: var(--menu-bar-height);
   left: 0;
   right: 0;
   z-index: 1000;

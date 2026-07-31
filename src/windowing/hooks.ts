@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useContext } from "react";
 import { SectionContext } from "./context";
 
@@ -19,11 +19,31 @@ export const useWindow = (heading?: string, uuid?: string) => {
   const windowRef = useRef<HTMLDivElement>(null);
   const inlineWindowRef = useRef<HTMLDivElement>(null);
   const sectionContext = useSectionContext();
-  const { minimizedSections, minimizeSection, restoreSection } = sectionContext;
+  const {
+    minimizedSections,
+    minimizeSection,
+    restoreSection,
+    registerMaximizedWindow,
+    unregisterMaximizedWindow,
+  } = sectionContext;
 
   // UUID must be provided from server-side processing
   const sectionUUID = uuid || (heading ? `fallback-${heading}` : undefined);
   const isMinimized = sectionUUID ? minimizedSections.has(sectionUUID) : false;
+
+  // Keep the global maximized-windows registry in sync with this window's
+  // state so `useIsAnyWindowMaximized()` (e.g. the music debug bar) can hide
+  // itself while any window is fullscreen.
+  useEffect(() => {
+    if (!isMaximized || !sectionUUID) return;
+    registerMaximizedWindow(sectionUUID);
+    return () => unregisterMaximizedWindow(sectionUUID);
+  }, [
+    isMaximized,
+    sectionUUID,
+    registerMaximizedWindow,
+    unregisterMaximizedWindow,
+  ]);
 
   // Track what we've registered to avoid double-registration
   const handleMaximize = useCallback(() => {
