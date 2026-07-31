@@ -993,6 +993,11 @@ export const Section = (props: SectionProps) => {
               // Fill the available area below the menu bar, centred.
               width: "min(768px, 100vw)",
               maxWidth: "calc(100vw - 32px)",
+              // Use a real height (not just maxHeight) so the maximized
+              // window can stretch to fill and the inner scroll area gets a
+              // bounded height to scroll within. dvh accounts for mobile URL
+              // bars; vh is the fallback.
+              height: "calc(100vh - var(--menu-bar-height, 24px) - 32px)",
               maxHeight: "calc(100vh - var(--menu-bar-height, 24px) - 32px)",
             }}
           >
@@ -1027,9 +1032,10 @@ export const Section = (props: SectionProps) => {
                   cursor: "default",
                   maxWidth: "100%",
                   maxHeight: "100%",
+                  height: "100%",
                   boxSizing: "border-box",
-                  // Scroll internally if content overflows instead of
-                  // expanding beyond the screen.
+                  // Keep the window itself from scrolling; the inner
+                  // window-body below handles overflow.
                   overflow: "hidden",
                   display: "flex",
                   flexDirection: "column",
@@ -1048,26 +1054,39 @@ export const Section = (props: SectionProps) => {
                   />
                 ) : null}
                 {!isIconified ? (
-                  <SectionBody
-                    isCollapsed={isCollapsedResolved}
-                    hasHeading={hasHeading}
-                    hasContent={hasContent}
-                    hasPrintout={hasPrintout}
-                    shouldShowCollapsedContent={shouldShowCollapsedContent}
-                    shouldShowCollapsedOkButton={shouldShowCollapsedOkButton}
-                    showPermalink={hasHeading && typeof heading === "string"}
-                    content={content}
-                    printout={printout}
-                    depth={depth}
-                    sectionUUID={sectionUUID}
-                    onPrimaryAction={handlePrimaryAction}
-                    onPermalinkClick={handlePermalinkClick}
-                    isAddon={isAddon}
-                    status={status}
-                    text={text}
-                    hasStatus={hasStatus}
-                    hasText={hasText}
-                  />
+                  <div
+                    className="window-body maximized-window-body"
+                    style={{
+                      // Fill remaining vertical space below the title bar
+                      // and scroll internally when content overflows instead
+                      // of expanding beyond the screen.
+                      flex: 1,
+                      minHeight: 0,
+                      overflowY: "auto",
+                      overflowX: "hidden",
+                    }}
+                  >
+                    <SectionBody
+                      isCollapsed={isCollapsedResolved}
+                      hasHeading={hasHeading}
+                      hasContent={hasContent}
+                      hasPrintout={hasPrintout}
+                      shouldShowCollapsedContent={shouldShowCollapsedContent}
+                      shouldShowCollapsedOkButton={shouldShowCollapsedOkButton}
+                      showPermalink={hasHeading && typeof heading === "string"}
+                      content={content}
+                      printout={printout}
+                      depth={depth}
+                      sectionUUID={sectionUUID}
+                      onPrimaryAction={handlePrimaryAction}
+                      onPermalinkClick={handlePermalinkClick}
+                      isAddon={isAddon}
+                      status={status}
+                      text={text}
+                      hasStatus={hasStatus}
+                      hasText={hasText}
+                    />
+                  </div>
                 ) : null}
               </div>
             </div>

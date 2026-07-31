@@ -3,6 +3,7 @@
 .title-bar-controls button[aria-label="Maximize"] {
   margin-left: 2px;
 }
+
 :root {
   font-family: "Courier New", Courier, monospace;
   font-synthesis: none;
@@ -12,7 +13,7 @@
   --background-color: #000;
   --border-size: 0.25em;
   --gap-size: 0.5em;
-  --menu-bar-height: calc(2em + 8px);
+  --menu-bar-height: calc(2em + 4px);
   --trailer-tail: 8px;
   --clippy-border-flash-color: transparent;
   font-size: 16px;
@@ -82,8 +83,7 @@
   transform-style: preserve-3d;
   transition:
     transform 120ms ease-out,
-    border-color 120ms ease-out,
-    box-shadow 120ms ease-out;
+    box-shadow 86 ease-out;
   will-change: transform;
 }
 
@@ -119,12 +119,11 @@
 /* Reset XP.css window styling overrides */
 .window {
   min-width: min(480px, 100%);
-  max-width: min-content;
   max-height: 100%;
   height: max-content;
   box-sizing: border-box;
   /* Leave room for the fixed menu bar when scrolling to a window. */
-  scroll-margin-top: calc(var(--menu-bar-height));
+  scroll-margin-top: var(--menu-bar-height);
 }
 
 .window:last-child {
@@ -231,11 +230,11 @@ li {
 }
 
 .window.maximized {
-  max-height: 100%;
+  min-height: 100%;
   min-width: 100%;
-  height: 100%;
-  /* margin: 2em; */
+  margin: 2em;
   box-sizing: content-box;
+  overflow-y: auto;
 }
 
 .menu-item {
@@ -371,6 +370,7 @@ form#form > label {
 .menu-bar {
   position: fixed;
   top: 0;
+  height: var(--menu-bar-height);
   left: 0;
   right: 0;
   z-index: 1000;
@@ -425,9 +425,10 @@ form#form > label {
 
 /* Unhide button in the menu bar (top-left) */
 .unhide-button-container {
-  top: calc(var(--menu-bar-height) + 3px);
+  top: calc(var(--menu-bar-height) + 1px);
   left: 0;
   right: 0;
+  height: var(--menu-bar-height);
   max-width: 100%;
   display: flex;
   align-items: center;
@@ -561,20 +562,30 @@ body main {
   justify-content: center;
   min-height: 0;
   overflow-x: visible;
-  margin-top: var(--menu-bar-height);
-  margin-bottom: var(--trailer-tail);
   height: 100%;
   min-height: 100%;
 }
 
-/* Account for the fixed debug bar on the music page (sits below menu bar) */
-body:has([data-debug-bar]) main {
-  margin-bottom: calc(var(--menu-bar-height) + 4em);
+/* Fixed bars (menu bar, debug bar, unhide chinbar) overlay the viewport.
+   Reserve space on the body itself via padding so every flow descendant —
+   not just main — starts below them. */
+body {
+  padding-top: var(--menu-bar-height);
+  padding-bottom: var(--trailer-tail);
 }
 
-/* Leave room for the fixed unhide chinbar on desktop - same as mobile */
-body:has(.unhide-button-container) main {
-  margin-top: calc(var(--menu-bar-height) + 3em);
+/* Account for the fixed debug bar on the music page (sits below menu bar) */
+body:has([data-debug-bar]) {
+  padding-bottom: calc(var(--menu-bar-height) + 4em);
+}
+
+/* Leave room for the fixed unhide chinbar on desktop */
+body:has(.unhide-button-container) {
+  padding-top: var(--menu-bar-height);
+}
+/* Leave room for the fixed unhide chinbar on desktop */
+body:has(.unhide-button-container) .page {
+  padding-top: var(--menu-bar-height);
 }
 
 .unhide-button-container {
@@ -591,16 +602,11 @@ body:has(.unhide-button-container) main {
   :root {
     --gap-size: 1.26em;
   }
-  body:has([data-debug-bar]) main {
-    margin-top: calc(var(--menu-bar-height) + 3em);
+  body:has([data-debug-bar]) {
+    padding-bottom: calc(var(--menu-bar-height) + 3em);
   }
   .page {
     width: 100%;
-  }
-
-  /* Leave room for the fixed unhide chinbar — only when it's visible. */
-  body:has(.unhide-button-container) {
-    padding-bottom: 48px;
   }
 
   body {

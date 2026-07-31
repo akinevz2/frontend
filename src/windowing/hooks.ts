@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useContext } from "react";
 import { SectionContext } from "./context";
 
@@ -23,8 +23,6 @@ export const useWindow = (heading?: string, uuid?: string) => {
     minimizedSections,
     minimizeSection,
     restoreSection,
-    registerMaximizedWindow,
-    unregisterMaximizedWindow,
   } = sectionContext;
 
   // UUID must be provided from server-side processing
@@ -32,34 +30,6 @@ export const useWindow = (heading?: string, uuid?: string) => {
   const isMinimized = sectionUUID ? minimizedSections.has(sectionUUID) : false;
 
   // Track what we've registered to avoid double-registration
-  const wasMaximizedRef = useRef(false);
-
-  // Sync with global context when maximized state changes
-  useEffect(() => {
-    if (!sectionUUID) return;
-
-    if (isMaximized && !wasMaximizedRef.current) {
-      registerMaximizedWindow(sectionUUID);
-    } else if (!isMaximized && wasMaximizedRef.current) {
-      unregisterMaximizedWindow(sectionUUID);
-    }
-
-    wasMaximizedRef.current = isMaximized;
-
-    // Cleanup on unmount or when sectionUUID changes
-    return () => {
-      if (wasMaximizedRef.current) {
-        unregisterMaximizedWindow(sectionUUID);
-      }
-      wasMaximizedRef.current = false;
-    };
-  }, [
-    isMaximized,
-    sectionUUID,
-    registerMaximizedWindow,
-    unregisterMaximizedWindow,
-  ]);
-
   const handleMaximize = useCallback(() => {
     setIsMaximized((prev) => !prev);
   }, []);
