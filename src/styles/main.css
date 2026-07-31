@@ -504,12 +504,9 @@ body:has([data-debug-bar]) main {
 }
 
 /* Leave room for the fixed unhide chinbar on desktop - same as mobile */
-body:has(.minimized-menu-container) {
-  padding-bottom: 2em;
-}
-
 body:has(.minimized-menu-container) main {
   margin-top: calc(var(--menu-bar-height) + 2em);
+  padding-bottom: 2em;
   background-color: red;
 }
 
