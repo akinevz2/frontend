@@ -8,13 +8,13 @@
   {
     "path": "/resume",
     "menuLabel": "resume",
-    "title": "ui of kine",
-    "description": "look at my UI in wow!"
+    "title": "please hire kine",
+    "description": "kine would like you to see his resume!"
   },
   {
-    "path": "/wow",
-    "menuLabel": "wow",
-    "title": "WoW Config",
+    "path": "/addons",
+    "menuLabel": "addons",
+    "title": "wow addons",
     "description": "Download World of Warcraft configuration files"
   },
   {
@@ -26,19 +26,19 @@
   {
     "path": "/sitemap",
     "menuLabel": "sitemap",
-    "title": "sitemap of kine",
+    "title": "sitemap of kine's website",
     "description": "an immersive map of the site, assets, and crawlable surfaces"
   },
   {
     "path": "/contact",
     "menuLabel": "links",
-    "title": "try contact kine",
+    "title": "please contact kine",
     "description": "contact me!"
   },
   {
-    "path": "/addons",
-    "menuLabel": "addons",
-    "title": "please hire kine",
+    "path": "/wow",
+    "menuLabel": "configs",
+    "title": "kind of work kine likes",
     "description": "hire me!"
   },
   {
