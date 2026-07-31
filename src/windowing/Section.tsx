@@ -579,9 +579,14 @@ export const Section = (props: SectionProps) => {
     printout !== undefined &&
     ((typeof printout === "string" && printout.length > 0) ||
       (Array.isArray(printout) && printout.length > 0));
+  // A section is a section if it has at least one of: heading, content,
+  // printout. A link alone is not enough — if it has a link it must also have
+  // a heading (so the link has something to attach to via the TitleBar).
+  const isSection = hasHeading || hasContent || hasPrintout;
+  const hasValidLink = hasLink && hasHeading;
   const shouldShowCollapsedContent =
     hasHeading && hasStringContent && !hasPrintout;
-  const shouldShowCollapsedOkButton = !shouldShowCollapsedContent || hasLink;
+  const shouldShowCollapsedOkButton = !shouldShowCollapsedContent || hasValidLink;
   const isOnBlogPage =
     typeof window !== "undefined" && isBlogPath(window.location.pathname);
   const rawTargetPostSlug =
@@ -768,7 +773,7 @@ export const Section = (props: SectionProps) => {
   }, [heading, markAsExpanded, setIsCollapsed]);
 
   const handlePrimaryAction = () => {
-    if (hasLink && (isValidHttpUrl(link) || isRootOffsetUrl(link))) {
+    if (hasValidLink && (isValidHttpUrl(link) || isRootOffsetUrl(link))) {
       // Stamp the current URL with this section's hash before navigating so
       // that pressing "back" returns to the right scroll position.
       // On the blog page we use ?post=slug for navigation, so don't add a hash.
@@ -831,7 +836,7 @@ export const Section = (props: SectionProps) => {
     return () => clearTimeout(timer);
   }, [shouldOpenFromLink, inlineWindowRef]);
 
-  const windowContent = !hasContent ? (
+  const windowContent = !isSection ? (
     content
   ) : (
     <div
@@ -844,7 +849,7 @@ export const Section = (props: SectionProps) => {
         <TitleBar
           isIconified={isIconified}
           heading={heading}
-          link={hasLink ? link : undefined}
+          link={hasValidLink ? link : undefined}
           showMaximize={depth !== 0}
           onMinimize={handleMinimizeToggle}
           onMaximize={handleMaximizeToggle}
@@ -934,7 +939,7 @@ export const Section = (props: SectionProps) => {
                   <TitleBar
                     isIconified={isIconified}
                     heading={heading}
-                    link={hasLink ? link : undefined}
+                    link={hasValidLink ? link : undefined}
                     showMaximize={true}
                     onMinimize={handleMinimizeToggle}
                     onMaximize={handleMaximizeToggle}
