@@ -1,8 +1,13 @@
 services:
   - type: web
     name: kirill's home website
+    runtime: static
     envVars:
       - key: NODE_VERSION
-        value: 20.19.2
+        value: 22.22.1
     buildCommand: git submodule update --init --recursive && npm install && npm run build
     staticPublishPath: ./dist
+    routes:
+      - type: redirect
+        source: /404
+        destination: /404.html
