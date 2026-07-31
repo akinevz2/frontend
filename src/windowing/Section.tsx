@@ -11,10 +11,13 @@ import { useSectionContext, useWindow } from "./hooks";
 import { OkButton } from "./OkButton";
 import type { Content, HttpUrl, SectionProps } from "./types";
 import { ShowPermalinkButton } from "./ShowPermalinkButton";
-import { isForceExpandedTheme } from "./themeEngine";
+import { isForceExpandedTheme, normalizeThemes } from "./themeEngine";
 
 const BLOG_PATH = "/blog";
 const BLOG_POSTS_BASE_PATH = "/blog/";
+// sessionStorage key prefix for the blog "return-to page scroll offset"
+// feature. The full key is `${BLOG_SCROLL_OFFSET_KEY}:${postSlug}`.
+const BLOG_SCROLL_OFFSET_KEY = "blog-scroll-offset";
 
 const isBlogPath = (pathname: string) =>
   pathname.replace(/\/+$/, "") === BLOG_PATH;
@@ -711,12 +714,19 @@ export const Section = (props: SectionProps) => {
     !!targetHash &&
     !!content &&
     contentContainsSectionId(content as Content, targetHash);
+
+  // Normalize theme to array and create data-theme attribute value for CSS
+  const normalizedThemes = normalizeThemes(theme);
+  const dataThemeValue = normalizedThemes.join(" ");
+
   const isForcedExpanded =
     shouldOpenFromLink ||
     shouldRevealLinkedPost ||
     shouldRevealLinkedSection ||
     hasPrintout ||
-    isForceExpandedTheme(theme);
+    isForceExpandedTheme(
+      normalizedThemes.length > 0 ? normalizedThemes[0] : undefined,
+    );
 
   const [isCollapsed, setIsCollapsed] = useState(!isForcedExpanded);
   const isCollapsedResolved = isForcedExpanded ? false : isCollapsed;
@@ -796,6 +806,21 @@ export const Section = (props: SectionProps) => {
     const search = params.toString();
     const nextUrl = `${window.location.pathname}${search ? `?${search}` : ""}${window.location.hash}`;
     window.history.replaceState({}, "", nextUrl);
+
+    // Restore the page scroll offset saved when the post was opened so the
+    // user returns to where they were before the permalink scrolled them down.
+    if (postSlug) {
+      const key = `${BLOG_SCROLL_OFFSET_KEY}:${postSlug}`;
+      try {
+        const saved = sessionStorage.getItem(key);
+        if (saved !== null) {
+          window.scrollTo(0, Number(saved));
+          sessionStorage.removeItem(key);
+        }
+      } catch {
+        // sessionStorage unavailable; skip restoration.
+      }
+    }
   };
 
   // Wrap the hook's handleClose to also clear the blog post URL slug.
@@ -879,9 +904,25 @@ export const Section = (props: SectionProps) => {
   // On the blog page this is triggered by ?post=slug; on other pages by #sectionId.
   // Scroll to the closest enclosing .window container so the window's title bar
   // is in view.
+  //
+  // On the blog page we also save the page scroll offset before scrolling so
+  // that closing the post (clearing ?post=slug) can restore the user's prior
+  // position — the "return-to page scroll offset" behaviour.
   useEffect(() => {
     if (!shouldOpenFromLink || typeof window === "undefined") {
       return;
+    }
+
+    // Save the current scroll position once, before we scroll to the target,
+    // so closing the post can restore it. Only stamp on the blog page where
+    // navigation is driven by ?post=slug (a full re-render, not a hash jump).
+    if (isOnBlogPage && targetPostSlug) {
+      const key = `${BLOG_SCROLL_OFFSET_KEY}:${targetPostSlug}`;
+      try {
+        sessionStorage.setItem(key, String(window.scrollY));
+      } catch {
+        // sessionStorage may be unavailable (private mode / disabled); ignore.
+      }
     }
 
     // Small delay to ensure DOM is fully rendered before scrolling.
@@ -897,14 +938,14 @@ export const Section = (props: SectionProps) => {
     }, 100);
 
     return () => clearTimeout(timer);
-  }, [shouldOpenFromLink, inlineWindowRef]);
+  }, [shouldOpenFromLink, inlineWindowRef, isOnBlogPage, targetPostSlug]);
 
   const windowContent = !isSection ? (
     content
   ) : (
     <div
       ref={inlineWindowRef}
-      data-theme={theme}
+      data-theme={dataThemeValue || undefined}
       id={hasHeading && typeof heading === "string" ? sectionId : undefined}
       className={`window ${className || ""}`.trim()}
     >

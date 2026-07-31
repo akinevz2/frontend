@@ -24,7 +24,7 @@ export type SectionProps = {
   content?: Content;
   link?: LinkUrl;
   printout?: string | string[];
-  theme?: string;
+  theme?: string | string[];
   depth?: number;
   uuid?: string;
   treeIndex?: string;

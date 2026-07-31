@@ -9,7 +9,8 @@
   --background-color: #000;
   --border-size: 0.25em;
   --gap-size: 0.5em;
-  --menu-bar-height: 2.08em;
+  --menu-bar-height: calc(2em + 8px);
+  --trailer-tail: 8px;
   --clippy-border-flash-color: transparent;
   font-size: 16px;
 }
@@ -97,6 +98,14 @@
   }
 }
 
+/** The "centered" theme centers child windows with space-around distribution. */
+.window[data-theme~="centered"] .window-body ul li {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 @font-face {
   font-family: "bahnscrift";
   src: url("/BAHNSCHRIFT.TTF");
@@ -106,14 +115,13 @@
 
 /* Reset XP.css window styling overrides */
 .window {
-  margin-bottom: var(--gap-size);
   min-width: min(480px, 100%);
   max-width: min-content;
   max-height: 100%;
   height: max-content;
   box-sizing: border-box;
   /* Leave room for the fixed menu bar when scrolling to a window. */
-  scroll-margin-top: calc(var(--menu-bar-height) + 8px);
+  scroll-margin-top: calc(var(--menu-bar-height));
 }
 
 .window:last-child {
@@ -122,7 +130,7 @@
 
 /* Add extra spacing for nested windows */
 .window-body .window {
-  margin-bottom: 0.5em;
+  margin-bottom: var(--trailer-tail);
 }
 
 .window-body .window:last-child {
@@ -154,12 +162,12 @@ main > .page {
 }
 
 body {
-  margin-bottom: 0;
   margin-top: 0;
   min-height: 100vh;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 }
 
 #root {
@@ -168,16 +176,6 @@ body {
   flex-direction: column;
   place-items: stretch;
   min-height: 0;
-}
-
-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-height: 0;
-  overflow-x: visible;
-  overflow-y: auto;
 }
 
 body,
@@ -553,7 +551,14 @@ form#form > label {
 }
 
 body main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 0;
+  overflow-x: visible;
   margin-top: var(--menu-bar-height);
+  margin-bottom: var(--trailer-tail);
   height: 100%;
   min-height: 100%;
 }

@@ -29,7 +29,7 @@
       "content": [
         {
           "heading": "current occupation",
-          "content": "job search! web dev! data hoarding? continued research!"
+          "content": "[job search](/resume)! web dev! data hoarding? continued research!"
         },
         {
           "heading": "current hobbies",
@@ -61,7 +61,7 @@
         {
           "theme": "experimental",
           "content": [
-            "looking for a job in the IT sector",
+            "looking for a [job](/resume) in the IT sector",
             "planning to make a videogame"
           ]
         },
