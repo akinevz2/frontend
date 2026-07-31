@@ -221,10 +221,11 @@ async function checkRuntimePolicy() {
 }
 
 async function checkContentSchema() {
-    const [pages, contacts, sections, addons, soundcloud, blogPosts, musicLinks] = await Promise.all([
+    const [pages, contacts, sections, characters, addons, soundcloud, blogPosts, musicLinks] = await Promise.all([
         readJson("pages.json"),
         readJson("contacts.json"),
         readJson("sections.json"),
+        readJson("characters.json"),
         readJson("addons.json"),
         readJson("public/soundcloud.json"),
         readJson("public/blog/posts.json"),
@@ -234,6 +235,7 @@ async function checkContentSchema() {
     validatePages(pages);
     validateSectionNode(contacts, "contacts.json");
     validateSectionNode(sections, "sections.json");
+    validateSectionNode(characters, "characters.json");
     validateSectionNode(addons, "addons.json", { allowAddonFields: true });
     validateSoundcloud(soundcloud);
     validateBlogPosts(blogPosts);

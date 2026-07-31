@@ -1,6 +1,10 @@
 {
   "heading": "kine's blog posts",
   "content": [
+    "we're in process of recovering all lost codes!",
+    "please excuse the frequent changes!",
+    "hopefully stable by end of week.",
+    "-kine",
     {
       "heading": "fifteenth post (#very-rare, #windows, #funny)",
       "content": [
@@ -16,17 +20,12 @@
       ]
     },
     {
-      "heading": "fourteenth post (#rarebert, #utilities, #github)",
-      "content": [
-        {
-          "heading": "rarebert utilities is a really fun mental gymnastics exercise!",
-          "content": "i merged the uni utility modules into the top-level rarebert repo and published the result: its somewhat public-ready.",
-          "link": "https://github.com/akinevz2/rarebert/"
-        }
-      ]
+      "heading": "friend spotlight",
+      "content": "check out kaine.sh",
+      "link": "https://kaine.sh"
     },
     {
-      "heading": "devcontainer usage update (#ops, #status)",
+      "heading": "fourteenth post (#devcontainer, #utilities, #github)",
       "content": [
         {
           "printout": "/wsl.1.md"
@@ -34,12 +33,10 @@
       ]
     },
     {
-      "heading": "in spite of my mistakes",
+      "heading": "many many renames later... (#soundcloud, #dynamic, #funnypost, #intermission)",
       "theme": "experimental",
+      "link": "/images/aaaa.png",
       "content": [
-        {
-          "link": "/images/aaaa.png"
-        },
         {
           "content": [
             "![lol](/lol.jpg)",
@@ -49,71 +46,20 @@
       ]
     },
     {
-      "heading": "booger boogie",
+      "heading": "booger boogie intermission",
       "content": "idle your mouse with me",
       "link": "/images/booger_Boogie%20Long.gif"
     },
     {
-      "heading": "friend spotlight",
-      "content": "check out kaine.sh",
-      "link": "https://kaine.sh"
-    },
-    "we're in process of recovering all lost data!",
-    "please excuse the frequent changes!",
-    "-kine",
-    {
-      "heading": "content (see above notice if removed)",
+      "heading": "seventh post (#Lie Theory - NA2000)",
       "content": [
-        "The standard equation is",
-        "Delta E : m x L",
-        "In physics the latent heat has no inherernt property called \"spin\", unlike subatomic patricles.",
-        "This quote of Wikipedia article(s) unknown is referenced by me in song 'Imported Cheesecake'.",
-        "Guys. We have to check that it still holds on the as a sound recording.",
         {
-          "heading": "please do not revoke",
-          "content": "my intellectual property should be still live. follow link next"
+          "heading": "Related papers from the same Cambridge NA group circa 1999–2000 that came up:",
+          "link": "https://akinevz.com/blog/references/NA2000_03.pdf"
         },
-        {
-          "heading": "link, formula, proof, and explanation",
-          "link": "https://soundcloud.com/akinevz/important-cheese?in=akinevz/sets/shivers"
-        },
-        "Claude AI analysis is attached below",
-        {
-          "heading": "Expained by Claude Sonnet 5 Medium",
-          "printout": "final(6).md"
-        }
-      ]
-    },
-    {
-      "heading": "temporary posts",
-      "link": "https://akinevz.com/blog/references/NA2000_03.pdf",
-      "content": [
-        "there is currently a white GTI Golf parked outside my flat's window",
-        "he parked outside of my house while I was asleep",
-        "he has a scratched out EU numberplate",
-        "first time I've seen this car, but many have been using up my property's nearby parking space",
-        "always very suspicious drivers who really invade my privacy",
-        {
-          "heading": "to friends",
-          "content": "sorry if I have sounded very angry lately, its been really hard to reach out IRL"
-        },
-        {
-          "heading": "to online friends",
-          "content": [
-            "I get spammed by some of you occasionally and I generally do not mind",
-            "but please be respectful when either using my direct messages",
-            "or when discussing me amongst yourself within your public group message chats",
-            "> my notifications are very sensitive, please keep that in mind"
-          ]
-        }
-      ]
-    },
-    {
-      "heading": "Related papers from the same Cambridge NA group circa 1999–2000 that came up:",
-      "content": [
         {
           "printout": "7.md",
-          "heading": "повествование"
+          "heading": "повествование - a story"
         },
         {
           "style": "NA.2000.03.pdf",
@@ -127,32 +73,7 @@
       ]
     },
     {
-      "heading": "jumpscare",
-      "link": "https://akinevz.com/lol.jpg"
-    },
-    {
-      "heading": "wisdom from kirill",
-      "link": "https://akinevz.com/images/Screenshot 2026-07-06 120649.png"
-    },
-    {
-      "content": "last post was a joke",
-      "heading": "sixth post (#meta, #blog)"
-    },
-    {
-      "heading": "hastily attached scribble written at midnight (#heredoc)",
-      "content": [
-        {
-          "heading": "does it meow tho",
-          "content": "an introductory write up by Claude on the next blog post"
-        },
-        {
-          "heading": "rough text content for the next post",
-          "printout": "5th.md"
-        }
-      ]
-    },
-    {
-      "heading": "eighth post (#here it gets interesting!)",
+      "heading": "eighth post (#lost in the sauce!)",
       "content": [
         "# Two computers and a cable: running coding LLMs off the cloud",
         "hi all, today i will reveal to you the details of my home ai laboratory development setup composed of two gaming computers stacked one on top of another, with ethernet, stupid amount of intel x64 cores, and many other twists. i've been working on building this stack a really long time now, and its starting to approach completion - so I thought it was time to share!",
@@ -270,49 +191,6 @@
         "> listen to what survives at the very end",
         "",
         "> co-written with style-transfer by Claude Sonnet 4.6"
-      ]
-    },
-    {
-      "heading": "what's kine favourite games (#perma, #super-content)",
-      "content": [
-        {
-          "heading": "world of warcraft character gallery",
-          "content": [
-            {
-              "heading": "rueg",
-              "content": [
-                "<img src=\"https://akinevz.com/images/rueg1.png\" alt=\"rueg\" style=\"width: auto; height: auto; max-height: 600px;\" />",
-                "<img src=\"https://akinevz.com/images/rueg2.png\" alt=\"rueg\" style=\"width: auto; height: auto; max-height: 600px;\" />"
-              ]
-            },
-            {
-              "heading": "ateric",
-              "content": [
-                "<img src=\"https://akinevz.com/images/Ateric1.png\" alt=\"ateric\" style=\"width: auto; height: auto; max-height: 600px;\" />",
-                "<img src=\"https://akinevz.com/images/Ateric2.png\" alt=\"ateric\" style=\"width: auto; height: auto; max-height: 600px;\" />"
-              ]
-            },
-            {
-              "heading": "equal",
-              "content": [
-                "<img src=\"https://akinevz.com/images/equal1.png\" alt=\"equal\" style=\"width: auto; height: auto; max-height: 600px;\" />"
-              ]
-            },
-            {
-              "heading": "kogg",
-              "content": [
-                "<img src=\"/images/kogg1.png\" alt=\"kogg\" style=\"width: auto; height: auto; max-height: 600px;\" />",
-                "<img src=\"/images/kogg2.png\" alt=\"kogg\" style=\"width: auto; height: auto; max-height: 600px;\" />"
-              ]
-            },
-            {
-              "heading": "brúdder",
-              "content": [
-                "<img src=\"/images/brudder.png\" alt=\"brúdder\" style=\"width: auto; height: auto; max-height: 600px;\" />"
-              ]
-            }
-          ]
-        }
       ]
     },
     {

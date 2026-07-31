@@ -11,6 +11,17 @@ export type Content =
   | (string | SectionProps | ReactNode)[];
 // export type Content = string | ReactNode | Element | SectionProps[];
 
+export type AddonsPropsMixing = {
+
+  // --- Addon extension fields ---
+  // `status` renders an italic status line (e.g. "available") in the body.
+  status?: string | undefined;
+  // `text` renders a "Copy to Clipboard" button for the given content.
+  text?: string | undefined;
+  // `externalLink` opens the link in a new tab (used by addons) instead of
+  // performing in-app navigation.
+  externalLink?: boolean | undefined;
+}
 export type SectionProps = {
   className?: string;
   heading?: Heading;
@@ -21,7 +32,7 @@ export type SectionProps = {
   depth?: number;
   uuid?: string;
   treeIndex?: string;
-};
+} & AddonsPropsMixing;
 
 export type SectionMetadata = {
   uuid: string;

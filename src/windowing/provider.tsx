@@ -36,9 +36,12 @@ const getAncestorSectionUuids = (
 export const SectionProvider = ({
   children,
   pageMetadata,
+  isAddonPage = false,
 }: {
   children: ReactNode;
   pageMetadata: PageMetadata;
+  /** When true, sections on this page render with addon behaviour. */
+  isAddonPage?: boolean;
 }) => {
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     new Set(),
@@ -99,6 +102,7 @@ export const SectionProvider = ({
         maximizedWindows,
         registerMaximizedWindow,
         unregisterMaximizedWindow,
+        isAddonPage,
       }}
     >
       {children}

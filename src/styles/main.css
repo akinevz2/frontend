@@ -360,7 +360,7 @@ form#form > label {
 }
 
 /* Unhide button in the menu bar (top-left) */
-.minimized-menu-container-in-bar {
+.unhide-button-container {
   top: calc(var(--menu-bar-height) + 3px);
   left: 0;
   right: 0;
@@ -374,7 +374,7 @@ form#form > label {
 }
 
 /* Unhide button styling in the menu bar */
-.minimized-menu-container-in-bar .menu-button {
+.unhide-button-container .menu-button {
   padding: 4px 8px !important;
   font-size: 13px !important;
   background: transparent;
@@ -385,7 +385,7 @@ form#form > label {
 }
 
 /* Dropdown menu positioned below the button in the top-left corner */
-.minimized-menu-container-in-bar .dropdown-menu {
+.unhide-button-container .dropdown-menu {
   position: absolute;
   top: calc(100% + 8px);
   left: var(--gap-size);
@@ -404,7 +404,7 @@ form#form > label {
   z-index: 58; /* Above windows (z-index ~9000) */
 }
 
-.minimized-menu-container-in-bar .dropdown-item {
+.unhide-button-container .dropdown-item {
   display: block;
   width: 100%;
   padding: 6px 12px;
@@ -421,7 +421,7 @@ form#form > label {
   text-overflow: ellipsis;
 }
 
-.minimized-menu-container-in-bar .dropdown-item:hover {
+.unhide-button-container .dropdown-item:hover {
   background-color: #0a246a;
   color: #fff !important;
 }
@@ -504,13 +504,11 @@ body:has([data-debug-bar]) main {
 }
 
 /* Leave room for the fixed unhide chinbar on desktop - same as mobile */
-body:has(.minimized-menu-container) main {
-  margin-top: calc(var(--menu-bar-height) + 2em);
-  padding-bottom: 2em;
-  background-color: red;
+body:has(.unhide-button-container) main {
+  margin-top: calc(var(--menu-bar-height) + 3em);
 }
 
-.minimized-menu-container-in-bar {
+.unhide-button-container {
   height: 2em;
 }
 
@@ -532,7 +530,7 @@ body:has(.minimized-menu-container) main {
   }
 
   /* Leave room for the fixed unhide chinbar — only when it's visible. */
-  body:has(.minimized-menu-container) {
+  body:has(.unhide-button-container) {
     padding-bottom: 48px;
   }
 

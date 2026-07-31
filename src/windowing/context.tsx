@@ -11,6 +11,8 @@ export type SectionContextType = {
   maximizedWindows: Set<string>; // Set of UUIDs for currently maximized windows
   registerMaximizedWindow: (uuid: string) => void;
   unregisterMaximizedWindow: (uuid: string) => void;
+  /** True when the page is the addons page — sections render as addons. */
+  isAddonPage: boolean;
 };
 
 export const SectionContext = createContext<SectionContextType | undefined>(

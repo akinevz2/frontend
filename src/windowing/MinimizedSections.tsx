@@ -51,7 +51,7 @@ export const MinimizedSections: React.FC = () => {
   };
 
   return (
-    <div className="minimized-menu-container-in-bar" ref={menuRef}>
+    <div className="unhide-button-container" ref={menuRef}>
       <button
         className="menu-button minimized-menu-button"
         style={{
