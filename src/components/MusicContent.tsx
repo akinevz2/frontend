@@ -72,7 +72,9 @@ const UploadingCounter = ({ total }: { total: number }) => (
       padding: "0.35rem 0.5rem",
     }}
   >
-    AS OF UPLOADING: {total} tracks (main and alt)
+    AS OF UPLOADING: {total} tracks
+    <br />
+    (main and alt)
   </div>
 );
 
