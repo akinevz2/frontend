@@ -262,6 +262,7 @@ form#form > label {
 
 .window-body {
   min-width: 0;
+  min-height: 100%;
   max-width: 100%;
   overflow-wrap: anywhere;
   word-break: break-word;
@@ -280,7 +281,7 @@ form#form > label {
 .debug-printout-scroll {
   width: 100%;
   max-width: 100%;
-  overflow-x: auto;
+  height: 100%;
 }
 
 .debug-printout-scroll pre,
@@ -290,7 +291,7 @@ form#form > label {
 }
 
 .debug-printout-scroll pre {
-  overflow-x: auto;
+  overflow-x: hidden;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   word-break: break-word;

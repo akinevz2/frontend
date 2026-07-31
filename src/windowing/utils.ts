@@ -64,7 +64,7 @@ function isSectionPropsObject(item: unknown): item is SectionProps {
     typeof item === "object" &&
     item !== null &&
     !Array.isArray(item) &&
-    ("heading" in item || "content" in item)
+    ("heading" in item || "content" in item || "printout" in item)
   );
 }
 

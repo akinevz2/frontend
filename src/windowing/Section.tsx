@@ -1,4 +1,4 @@
-import {} from "react";
+import { } from "react";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 import Markdown, { type Options as ReactMarkdownOptions } from "react-markdown";
@@ -339,7 +339,7 @@ function renderContent(content: Content, depth: number) {
       typeof item === "object" &&
       item !== null &&
       !Array.isArray(item) &&
-      ("heading" in item || "content" in item || "link" in item)
+      ("heading" in item || "content" in item || "link" in item || "printout" in item)
     );
   };
 
@@ -534,48 +534,39 @@ const SectionBody = ({
   hasText = false,
 }: SectionBodyProps) => (
   <>
-    <div
-      className={"window-body"}
-      style={{
-        overflow: "hidden",
-        overflowY: "auto",
-        flex: 1,
-      }}
-    >
-      {isCollapsed ? (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            flexWrap: "wrap",
-          }}
-        >
-          {shouldShowCollapsedContent && hasContent && content
-            ? renderContent(content, depth)
-            : null}
-          {shouldShowCollapsedOkButton ? (
-            <OkButton
-              data-section-uuid={sectionUUID}
-              onClick={onPrimaryAction}
-            />
-          ) : null}
-        </div>
-      ) : (
-        <>
-          {hasContent && content ? renderContent(content, depth) : null}
-          {hasPrintout && printout ? renderPrintout(printout) : null}
-          {isAddon ? (
-            <AddonExtras
-              status={status}
-              text={text}
-              hasStatus={hasStatus}
-              hasText={hasText}
-            />
-          ) : null}
-        </>
-      )}
-    </div>
+    {isCollapsed ? (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+        }}
+      >
+        {shouldShowCollapsedContent && hasContent && content
+          ? renderContent(content, depth)
+          : null}
+        {shouldShowCollapsedOkButton ? (
+          <OkButton
+            data-section-uuid={sectionUUID}
+            onClick={onPrimaryAction}
+          />
+        ) : null}
+      </div>
+    ) : (
+      <>
+        {hasContent && content ? renderContent(content, depth) : null}
+        {hasPrintout && printout ? renderPrintout(printout) : null}
+        {isAddon ? (
+          <AddonExtras
+            status={status}
+            text={text}
+            hasStatus={hasStatus}
+            hasText={hasText}
+          />
+        ) : null}
+      </>
+    )}
     <ShowPermalinkButton
       hasHeading={hasHeading}
       onPermalinkClick={onPermalinkClick}
