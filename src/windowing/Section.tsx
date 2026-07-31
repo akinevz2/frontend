@@ -339,13 +339,16 @@ function renderContent(
     bufferedLines = [];
   };
 
-  // Helper to check if item is a SectionProps object (not a string or React element)
+  // Helper to check if item is a SectionProps object (not a string or React element).
+  // A section may carry only a `heading` + `link` (no `content`), so we recognise
+  // any object that has `heading`, `content`, or `link`. This mirrors the
+  // isSectionPropsObject guard in utils.ts so the two stay consistent.
   const isSectionPropsObject = (item: unknown): item is SectionProps => {
     return (
       typeof item === "object" &&
       item !== null &&
       !Array.isArray(item) &&
-      "content" in item
+      ("heading" in item || "content" in item || "link" in item)
     );
   };
 
@@ -520,7 +523,7 @@ const SectionBody = ({
 }: SectionBodyProps) => (
   <>
     <div
-      className="window-body maximized-window-body"
+      className={"window-body"}
       style={{
         overflow: "hidden",
         overflowY: "auto",
