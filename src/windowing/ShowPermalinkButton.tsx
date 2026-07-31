@@ -20,6 +20,7 @@ export function ShowPermalinkButton({
 
   return (
     <div
+      className="permalink-button-container"
       style={{
         display: "flex",
         justifyContent: "flex-end",
