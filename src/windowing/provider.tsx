@@ -46,6 +46,9 @@ export const SectionProvider = ({
   const [minimizedSections, setMinimizedSections] = useState<
     Map<string, string>
   >(new Map());
+  const [maximizedWindows, setMaximizedWindows] = useState<Set<string>>(
+    new Set(),
+  );
 
   const markAsExpanded = (heading: string) => {
     setExpandedSections((prev) => new Set(prev).add(heading));
@@ -72,6 +75,18 @@ export const SectionProvider = ({
     });
   };
 
+  const registerMaximizedWindow = (uuid: string) => {
+    setMaximizedWindows((prev) => new Set(prev).add(uuid));
+  };
+
+  const unregisterMaximizedWindow = (uuid: string) => {
+    setMaximizedWindows((prev) => {
+      const newSet = new Set(prev);
+      newSet.delete(uuid);
+      return newSet;
+    });
+  };
+
   return (
     <SectionContext.Provider
       value={{
@@ -81,6 +96,9 @@ export const SectionProvider = ({
         minimizeSection,
         restoreSection,
         pageMetadata,
+        maximizedWindows,
+        registerMaximizedWindow,
+        unregisterMaximizedWindow,
       }}
     >
       {children}

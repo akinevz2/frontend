@@ -2,7 +2,7 @@
 export { Section } from "./Section";
 export { SectionProvider } from "./provider";
 export { SectionContext, type SectionContextType } from "./context";
-export { useSectionContext } from "./hooks";
+export { useSectionContext, useIsAnyWindowMaximized } from "./hooks";
 export { MinimizedSections } from "./MinimizedSections";
 export { OkButton } from "./OkButton";
 export type {
