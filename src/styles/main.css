@@ -575,8 +575,8 @@ body {
 }
 
 /* Account for the fixed debug bar on the music page (sits below menu bar) */
-body:has([data-debug-bar]) {
-  padding-bottom: calc(var(--menu-bar-height) + 4em);
+body:has([data-debug-bar]) .page {
+  padding-bottom: calc(var(--menu-bar-height)+5em);
 }
 
 /* Leave room for the fixed unhide chinbar on desktop */
@@ -602,8 +602,8 @@ body:has(.unhide-button-container) .page {
   :root {
     --gap-size: 1.26em;
   }
-  body:has([data-debug-bar]) {
-    padding-bottom: calc(var(--menu-bar-height) + 3em);
+  body:has([data-debug-bar]) .page {
+    padding-bottom: calc(var(--menu-bar-height) + 2em);
   }
   .page {
     width: 100%;
