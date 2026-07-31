@@ -25,17 +25,19 @@
     },
     {
       "heading": "who is kine",
-      "theme": "experimental",
       "content": [
         {
+          "theme": "experimental",
           "heading": "current occupation",
           "content": "[job search](/resume)! web dev! data hoarding? continued research!"
         },
         {
+          "theme": "experimental",
           "heading": "current hobbies",
           "content": "gaming, programming, music"
         },
         {
+          "theme": "experimental",
           "heading": "current status",
           "content": "hapax proxima search"
         }

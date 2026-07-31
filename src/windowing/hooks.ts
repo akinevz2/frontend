@@ -19,11 +19,7 @@ export const useWindow = (heading?: string, uuid?: string) => {
   const windowRef = useRef<HTMLDivElement>(null);
   const inlineWindowRef = useRef<HTMLDivElement>(null);
   const sectionContext = useSectionContext();
-  const {
-    minimizedSections,
-    minimizeSection,
-    restoreSection,
-  } = sectionContext;
+  const { minimizedSections, minimizeSection, restoreSection } = sectionContext;
 
   // UUID must be provided from server-side processing
   const sectionUUID = uuid || (heading ? `fallback-${heading}` : undefined);
