@@ -6,22 +6,25 @@ import {
   type PageMetadata,
 } from "../windowing";
 import { MenuBarWithContext } from "./MenuBarWithContext";
+import type React from "react";
 
 export type PageProps = {
   sections?: SectionProps | SectionProps[];
   addons?: AddonProps | AddonProps[];
   pageMetadata?: PageMetadata;
+  footer?: React.ReactNode;
 };
 
-export const PageContent = ({ sections, pageMetadata }: PageProps) => {
+export const PageContent = ({ sections, pageMetadata, footer }: PageProps) => {
   const metadata = pageMetadata || { sections: [] };
 
   if (!sections) {
     return null;
   }
 
-  return (
+  return (<>
     <SectionProvider pageMetadata={metadata}>
+
       <MenuBarWithContext />
       <section className="page">
         {Array.isArray(sections) ? (
@@ -32,7 +35,9 @@ export const PageContent = ({ sections, pageMetadata }: PageProps) => {
           <Section {...sections} />
         )}
       </section>
+      {footer}
     </SectionProvider>
+  </>
   );
 };
 

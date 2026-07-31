@@ -1,4 +1,4 @@
-import {} from "react";
+import { } from "react";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 import Markdown, { type Options as ReactMarkdownOptions } from "react-markdown";
@@ -9,6 +9,7 @@ import { playLayeredAudio } from "../lib/audioOverlap";
 import { useSectionContext, useWindow } from "./hooks";
 import { OkButton } from "./OkButton";
 import type { Content, HttpUrl, SectionProps } from "./types";
+import { ShowPermalinkButton } from "./ShowPermalinkButton";
 
 const BLOG_PATH = "/blog";
 const BLOG_POSTS_BASE_PATH = "/blog/";
@@ -511,7 +512,6 @@ const SectionBody = ({
   showPermalink,
   content,
   printout,
-  children,
   depth,
   theme,
   sectionUUID,
@@ -519,41 +519,40 @@ const SectionBody = ({
   onPermalinkClick,
 }: SectionBodyProps) => (
   <>
-    {showPermalink && hasHeading ? (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "flex-end",
-          marginBottom: "8px",
-        }}
-      >
-        <button onClick={onPermalinkClick}>Permalink</button>
-      </div>
-    ) : null}
-    {isCollapsed ? (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: "0.75rem",
-          flexWrap: "wrap",
-        }}
-      >
-        {shouldShowCollapsedContent && hasContent && content
-          ? renderContent(content, depth, theme)
-          : null}
-        {shouldShowCollapsedOkButton ? (
-          <OkButton data-section-uuid={sectionUUID} onClick={onPrimaryAction} />
-        ) : null}
-      </div>
-    ) : (
-      <>
-        {hasPrintout && printout ? renderPrintout(printout) : null}
-        {hasContent && content ? renderContent(content, depth, theme) : null}
-        {children}
-      </>
-    )}
+    <div
+      className="window-body maximized-window-body"
+      style={{
+        overflow: "hidden",
+        overflowY: "auto",
+        flex: 1,
+      }}
+    >
+
+      {isCollapsed ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+          }}
+        >
+          {shouldShowCollapsedContent && hasContent && content
+            ? renderContent(content, depth, theme)
+            : null}
+          {shouldShowCollapsedOkButton ? (
+            <OkButton data-section-uuid={sectionUUID} onClick={onPrimaryAction} />
+          ) : null}
+        </div>
+      ) : (
+        <>
+          {hasContent && content ? renderContent(content, depth, theme) : null}
+          {hasPrintout && printout ? renderPrintout(printout) : null}
+        </>
+      )}
+    </div>
+    <ShowPermalinkButton hasHeading={hasHeading} onPermalinkClick={onPermalinkClick} showPermalink={showPermalink} />
+
   </>
 );
 
@@ -799,6 +798,12 @@ export const Section = (props: SectionProps) => {
     window.location.assign(EXPERIMENTAL_THEME_REDIRECT_URL);
   };
 
+  // useEffect(
+  //   () => {
+  //     if (theme)
+  //       console.log("theme thing not working yet, ", theme)
+  //   }, [theme])
+
   // Scroll to element when opening from a permalink (works on any page).
   // On the blog page this is triggered by ?post=slug; on other pages by #sectionId.
   // Scroll to the closest enclosing .window container so the window's title bar
@@ -934,31 +939,22 @@ export const Section = (props: SectionProps) => {
                   />
                 ) : null}
                 {!isIconified ? (
-                  <div
-                    className="window-body maximized-window-body"
-                    style={{
-                      overflow: "auto",
-                      flex: 1,
-                      minHeight: 0,
-                    }}
-                  >
-                    <SectionBody
-                      isCollapsed={isCollapsedResolved}
-                      hasHeading={hasHeading}
-                      hasContent={hasContent}
-                      hasPrintout={hasPrintout}
-                      shouldShowCollapsedContent={shouldShowCollapsedContent}
-                      shouldShowCollapsedOkButton={shouldShowCollapsedOkButton}
-                      showPermalink={hasHeading && typeof heading === "string"}
-                      content={content}
-                      printout={printout}
-                      depth={depth}
-                      theme={theme}
-                      sectionUUID={sectionUUID}
-                      onPrimaryAction={handlePrimaryAction}
-                      onPermalinkClick={handlePermalinkClick}
-                    />
-                  </div>
+                  <SectionBody
+                    isCollapsed={isCollapsedResolved}
+                    hasHeading={hasHeading}
+                    hasContent={hasContent}
+                    hasPrintout={hasPrintout}
+                    shouldShowCollapsedContent={shouldShowCollapsedContent}
+                    shouldShowCollapsedOkButton={shouldShowCollapsedOkButton}
+                    showPermalink={hasHeading && typeof heading === "string"}
+                    content={content}
+                    printout={printout}
+                    depth={depth}
+                    theme={theme}
+                    sectionUUID={sectionUUID}
+                    onPrimaryAction={handlePrimaryAction}
+                    onPermalinkClick={handlePermalinkClick}
+                  />
                 ) : null}
               </div>
             </div>

@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 import { PageContent } from "./Page";
 import { processContent } from "../windowing/utils";
-import { type PageMetadata, type SectionProps } from "../windowing";
+import { type PageMetadata, type SectionProps, useIsAnyWindowMaximized } from "../windowing";
 
 const MUSIC_LINKS_URL = "/blog/music-links.json";
 
@@ -273,19 +273,19 @@ const toMusicSections = (
 ): SectionProps[] => {
   const profiles = Array.isArray(payload.profiles)
     ? payload.profiles.map((profile) => ({
-        ...profile,
-        profileImageUrl:
-          getProfileImageUrl(profile.owner) ?? profile.profileImageUrl,
-      }))
+      ...profile,
+      profileImageUrl:
+        getProfileImageUrl(profile.owner) ?? profile.profileImageUrl,
+    }))
     : [
-        {
-          owner: "akinevz",
-          source: payload.source ?? "https://soundcloud.com/akinevz",
-          profileImageUrl: getProfileImageUrl("akinevz"),
-          trackCount: payload.trackCount,
-          tracks: payload.tracks,
-        },
-      ];
+      {
+        owner: "akinevz",
+        source: payload.source ?? "https://soundcloud.com/akinevz",
+        profileImageUrl: getProfileImageUrl("akinevz"),
+        trackCount: payload.trackCount,
+        tracks: payload.tracks,
+      },
+    ];
 
   const favouriteLinkList = favouriteLinks.map((link) =>
     isFavouriteLink(link) ? renderFavouriteLink(link) : link,
@@ -437,13 +437,13 @@ export default function MusicContent() {
   }, []);
 
   return (
-    <>
-      <PageContent
-        sections={musicState.sections}
-        pageMetadata={musicState.metadata}
-      />
-      <MusicDebugOverlay payload={musicState.payload} />
-    </>
+    <PageContent
+      sections={musicState.sections}
+      pageMetadata={musicState.metadata}
+      footer={
+        <MusicDebugOverlay payload={musicState.payload} />
+      }
+    />
   );
 }
 
@@ -452,47 +452,15 @@ export default function MusicContent() {
  *
  * Shows the raw track count and profile summary from /soundcloud.json. Hidden
  * when Firefox Developer Tools are open (detected via window.outerWidth/Height
- * changes that devtools introduce).
+ * changes that devtools introduce) or when any window is maximized.
  */
 export function MusicDebugOverlay({
   payload,
 }: {
   payload: MusicPayload | null;
 }) {
-  const [visible, setVisible] = useState(true);
-
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    /**
-     * The "hide on open inspector" behaviour is Firefox-specific as requested.
-     * We detect Firefox from the user agent and then watch for the dimension gap
-     * that appears when devtools are docked to the right or bottom.
-     */
-    const isFirefox = /firefox/i.test(navigator.userAgent);
-    if (!isFirefox) {
-      return;
-    }
-
-    const checkDevtools = () => {
-      const threshold = 200;
-      const widthDiff = window.outerWidth - window.innerWidth;
-      const heightDiff = window.outerHeight - window.innerHeight;
-      const devtoolsOpen = widthDiff > threshold || heightDiff > threshold;
-      setVisible(!devtoolsOpen);
-    };
-
-    checkDevtools();
-    window.addEventListener("resize", checkDevtools);
-    const timeoutId = window.setTimeout(checkDevtools, 1000);
-
-    return () => {
-      window.removeEventListener("resize", checkDevtools);
-      window.clearTimeout(timeoutId);
-    };
-  }, []);
+  const anyMaximized = useIsAnyWindowMaximized()
+  const visible = !anyMaximized;
 
   if (!visible || !payload) {
     return null;
