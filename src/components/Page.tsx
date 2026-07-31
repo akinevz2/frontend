@@ -25,7 +25,6 @@ export const PageContent = ({ sections, pageMetadata, footer }: PageProps) => {
   return (<>
     <SectionProvider pageMetadata={metadata} isAddonPage={false}>
 
-      <MenuBarWithContext />
       <section className="page">
         {Array.isArray(sections) ? (
           sections.map((item, index) => (
@@ -35,6 +34,7 @@ export const PageContent = ({ sections, pageMetadata, footer }: PageProps) => {
           <Section {...sections} />
         )}
       </section>
+      <MenuBarWithContext />
       {footer}
     </SectionProvider>
   </>

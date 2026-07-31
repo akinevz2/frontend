@@ -12,12 +12,8 @@ import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { ToastContainer } from "react-toastify";
 import { setTheme } from "lightdni-jssas-toggle";
 import {
-  attachClippyListener,
-  detachClippyListener,
   onClippyClick,
   showClippyHint,
-  subscribeClippyBubble,
-  subscribeClippyVisibility,
 } from "./lib/keyboardInputUtils";
 import {
   loadAssistantConfig,
@@ -34,6 +30,9 @@ import MenuBar from "./components/MenuBar.tsx";
 import BlogContent from "./components/BlogContent";
 import MusicContent from "./components/MusicContent";
 import SitemapContent from "./components/SitemapContent";
+import { useRouting } from "./utils/routingReducer";
+import { useClippy } from "./utils/clippyReducer";
+import { useClippyEffect } from "./utils/clippyEffectReducer";
 import pages from "../pages.json";
 import { buildMusicGroupSchema, serializeJsonLd } from "./lib/musicSchema.ts";
 import {
@@ -152,7 +151,6 @@ const markdownComponents = {
 //   { label: "admin", href: ASSISTANT_CONFIG_MENU_HREF },
 // ];
 
-const SHADOW_PULSE_MS = 700;
 const BORDER_FLASH_DURATION_MS = 180;
 const CLIPPY_DEFAULT_THEME = "theme-default";
 const CLIPPY_FLASH_THEME = "theme-border-flash";
@@ -263,12 +261,20 @@ const upsertStructuredDataScript = (schema: unknown) => {
 };
 
 export default function App() {
-  const [path, setPath] = useState(() =>
-    normalizePath(window.location.pathname),
-  );
-  const [showClippy, setShowClippy] = useState(() => isMobilePhoneDevice());
-  const [showClippyBubble, setShowClippyBubble] = useState(false);
-  const [clippyBubbleSaysNo, setClippyBubbleSaysNo] = useState(false);
+  const { state: routingState, navigate } = useRouting({
+    normalizePath,
+    isInternalPath,
+  });
+  const path = routingState.path;
+  const { state: clippyState } = useClippy(isMobilePhoneDevice);
+  const showClippy = clippyState.showClippy;
+  const showClippyBubble = clippyState.showClippyBubble;
+  const clippyBubbleSaysNo = clippyState.clippyBubbleSaysNo;
+  const { state: clippyEffectState, triggerSubmitPulse, setHovered, startConnectionFlash } =
+    useClippyEffect();
+  const isSubmitPulseActive = clippyEffectState.isSubmitPulseActive;
+  const isClippyHovered = clippyEffectState.isClippyHovered;
+  const isConnectionFlashActive = clippyEffectState.isConnectionFlashActive;
   // const [showAssistantConfigModal, setShowAssistantConfigModal] = useState(false);
   const [assistantConfig] = useState<AssistantConfig>(() =>
     loadAssistantConfig(),
@@ -287,15 +293,10 @@ export default function App() {
     useState(false);
   const [isAssistantRequestPending, setIsAssistantRequestPending] =
     useState(false);
-  const [isSubmitPulseActive, setIsSubmitPulseActive] = useState(false);
-  const [isClippyHovered, setIsClippyHovered] = useState(false);
-  const [isConnectionFlashActive, setIsConnectionFlashActive] = useState(false);
   const holdTimerRef = useRef<number | null>(null);
   const holdTriggeredRef = useRef(false);
-  const connectionFlashTimerRef = useRef<number | null>(null);
   const borderFlashTimerRef = useRef<number | null>(null);
   const rightClickFlashArmedRef = useRef(true);
-  const wasClippyBubbleVisibleRef = useRef(false);
   // const wisdomPulseClockRef = useRef(new WisdomPulseClock());
 
   useEffect(() => {
@@ -309,67 +310,6 @@ export default function App() {
       },
     });
   }, []);
-
-  useEffect(() => {
-    attachClippyListener();
-    const unsubscribeVisibility = subscribeClippyVisibility(setShowClippy);
-    const unsubscribeBubble = subscribeClippyBubble(setShowClippyBubble);
-
-    return () => {
-      unsubscribeVisibility();
-      unsubscribeBubble();
-      detachClippyListener();
-    };
-  }, []);
-
-  const startConnectionFlash = useCallback(() => {
-    setIsConnectionFlashActive(true);
-
-    if (connectionFlashTimerRef.current !== null) {
-      window.clearTimeout(connectionFlashTimerRef.current);
-    }
-
-    connectionFlashTimerRef.current = window.setTimeout(() => {
-      setIsConnectionFlashActive(false);
-      connectionFlashTimerRef.current = null;
-    }, SHADOW_PULSE_MS);
-  }, []);
-
-  useEffect(() => {
-    const markDisconnected = () => {
-      startConnectionFlash();
-    };
-
-    window.addEventListener("offline", markDisconnected);
-
-    return () => {
-      window.removeEventListener("offline", markDisconnected);
-    };
-  }, [startConnectionFlash]);
-
-  useEffect(() => {
-    const wasVisible = wasClippyBubbleVisibleRef.current;
-    if (!wasVisible && showClippyBubble) {
-      setClippyBubbleSaysNo(false);
-    }
-    wasClippyBubbleVisibleRef.current = showClippyBubble;
-  }, [showClippyBubble]);
-
-  useEffect(() => {
-    const handleCrunchyKickPlayed = () => {
-      if (showClippyBubble) {
-        setClippyBubbleSaysNo(true);
-      }
-    };
-
-    window.addEventListener("crunchy-kick-played", handleCrunchyKickPlayed);
-    return () => {
-      window.removeEventListener(
-        "crunchy-kick-played",
-        handleCrunchyKickPlayed,
-      );
-    };
-  }, [showClippyBubble]);
 
   // Wisdom pulse animation is disabled in production due to unresolved CORS issues.
   // useEffect(() => {
@@ -390,9 +330,6 @@ export default function App() {
     return () => {
       if (holdTimerRef.current !== null) {
         window.clearTimeout(holdTimerRef.current);
-      }
-      if (connectionFlashTimerRef.current !== null) {
-        window.clearTimeout(connectionFlashTimerRef.current);
       }
       if (borderFlashTimerRef.current !== null) {
         window.clearTimeout(borderFlashTimerRef.current);
@@ -454,17 +391,6 @@ export default function App() {
       window.removeEventListener("keydown", handleModalEscape);
     };
   }, [showConversationModal]);
-
-  useEffect(() => {
-    const onPopState = () => {
-      setPath(normalizePath(window.location.pathname));
-    };
-
-    window.addEventListener("popstate", onPopState);
-    return () => {
-      window.removeEventListener("popstate", onPopState);
-    };
-  }, []);
 
   const route = ROUTE_CONFIG[path] ?? DEFAULT_ROUTE;
 
@@ -561,30 +487,6 @@ export default function App() {
     };
   }, [path]);
 
-  const navigate = (href: string) => {
-    if (!isInternalPath(href)) {
-      window.location.assign(href);
-      return;
-    }
-
-    const current = normalizePath(window.location.pathname);
-    const next = normalizePath(href);
-
-    if (current === next && window.location.search === "") {
-      return;
-    }
-
-    // Preserve the current hash in the history entry so pressing "back"
-    // returns to the section the user was viewing.
-    const { pathname, search, hash } = window.location;
-    if (hash) {
-      window.history.replaceState({}, "", `${pathname}${search}${hash}`);
-    }
-
-    window.history.pushState({}, "", href);
-    setPath(next);
-  };
-
   // const handleTopMenuAction = (href: string) => {
   //   if (href !== ASSISTANT_CONFIG_MENU_HREF) {
   //     return false;
@@ -641,11 +543,6 @@ export default function App() {
     () => hasConfiguredAssistant(assistantConfig),
     [assistantConfig],
   );
-
-  const triggerSubmitPulse = () => {
-    setIsSubmitPulseActive(true);
-    window.setTimeout(() => setIsSubmitPulseActive(false), SHADOW_PULSE_MS);
-  };
 
   const submitAssistantPrompt = async (
     prompt: string,
@@ -1057,9 +954,9 @@ export default function App() {
             onMouseUp={clearClippyHoldTimer}
             onMouseLeave={() => {
               clearClippyHoldTimer();
-              setIsClippyHovered(false);
+              setHovered(false);
             }}
-            onMouseEnter={() => setIsClippyHovered(true)}
+            onMouseEnter={() => setHovered(true)}
             onContextMenu={(event) => {
               event.preventDefault();
               event.stopPropagation();
