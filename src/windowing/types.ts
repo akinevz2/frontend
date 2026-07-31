@@ -8,7 +8,7 @@ export type Content =
   | string
   | SectionProps
   | ReactNode
-  | (string | React.ReactNode | SectionProps)[];
+  | (string | SectionProps | ReactNode)[];
 // export type Content = string | ReactNode | Element | SectionProps[];
 
 export type SectionProps = {
