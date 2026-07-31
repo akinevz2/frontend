@@ -87,9 +87,15 @@
   will-change: transform;
 }
 
-.window[data-theme="experimental"]:hover,
+@media (hover: hover) {
+  .window[data-theme="experimental"]:hover {
+    /* Bob up and down (translateY) in the page's 3D space. */
+    animation: theme-experimental-wobble 0.6s ease-in-out;
+  }
+}
+
 .window[data-theme="experimental"]:focus-within {
-  /* Bob up and down (translateY) in the page's 3D space. */
+  /* Keyboard focus also triggers the wobble (a11y). */
   animation: theme-experimental-wobble 0.6s ease-in-out;
 }
 
@@ -101,10 +107,20 @@
   }
 }
 
+/* Touch devices (Android Firefox, etc.) don't expose a real hover pointer.
+   Strip the raise/wobble transitions there so the sticky-hover state can't
+   leave a window stuck mid-hover when the user scrolls past it. */
+@media (hover: none) {
+  .window[data-theme="experimental"] {
+    transition: none;
+    will-change: auto;
+  }
+}
+
 /** The "centered" theme centers child windows with space-around distribution. */
 .window[data-theme~="centered"] .window-body ul li {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
   flex-wrap: wrap;
 }
@@ -225,7 +241,6 @@ li {
      being clipped by the page's own box. */
   perspective: 800px;
   /* Let a raised window overflow the page bounds without clipping. */
-  overflow: visible;
   transform-style: preserve-3d;
 }
 
@@ -234,7 +249,6 @@ li {
   min-width: 100%;
   margin: 2em;
   box-sizing: content-box;
-  overflow-y: auto;
 }
 
 .menu-item {
@@ -266,7 +280,6 @@ form#form > label {
   min-width: 0;
   min-height: 100%;
   max-width: 100%;
-  overflow-wrap: anywhere;
   word-break: break-word;
 }
 
@@ -293,7 +306,6 @@ form#form > label {
 }
 
 .debug-printout-scroll pre {
-  overflow-x: hidden;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   word-break: break-word;
@@ -405,8 +417,10 @@ form#form > label {
   transition: background-color 0.1s ease;
 }
 
-.menu-bar menu a:hover {
-  background-color: rgba(51, 153, 255, 0.2);
+@media (hover: hover) {
+  .menu-bar menu a:hover {
+    background-color: rgba(51, 153, 255, 0.2);
+  }
 }
 
 .menu-bar menu a:active {
@@ -461,7 +475,6 @@ form#form > label {
   border: 2px outset #dfdfdf;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
   max-height: 400px;
-  overflow-y: auto;
   padding: 2px;
   display: flex;
   box-sizing: border-box;
@@ -480,13 +493,14 @@ form#form > label {
   font-family: "Tahoma", "MS Sans Serif", sans-serif;
   cursor: pointer;
   white-space: nowrap;
-  overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.unhide-button-container .dropdown-item:hover {
-  background-color: #0a246a;
-  color: #fff !important;
+@media (hover: hover) {
+  .unhide-button-container .dropdown-item:hover {
+    background-color: #0a246a;
+    color: #fff !important;
+  }
 }
 
 .minimized-menu {
@@ -509,8 +523,10 @@ form#form > label {
   bottom: 0;
 }
 
-.minimized-menu .menu-button:hover {
-  background-color: rgba(51, 153, 255, 0.2);
+@media (hover: hover) {
+  .minimized-menu .menu-button:hover {
+    background-color: rgba(51, 153, 255, 0.2);
+  }
 }
 
 .minimized-menu .menu-button:active {
@@ -526,7 +542,6 @@ form#form > label {
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
   min-width: 250px;
   max-height: 400px;
-  overflow-y: auto;
   padding: 2px;
   display: flex;
   flex-direction: column;
@@ -545,14 +560,15 @@ form#form > label {
   font-family: "Tahoma", "MS Sans Serif", sans-serif;
   cursor: pointer;
   white-space: nowrap;
-  overflow: hidden;
   z-index: 92;
   text-overflow: ellipsis;
 }
 
-.minimized-menu-container .dropdown-item:hover {
-  background-color: #0a246a;
-  color: #fff !important;
+@media (hover: hover) {
+  .minimized-menu-container .dropdown-item:hover {
+    background-color: #0a246a;
+    color: #fff !important;
+  }
 }
 
 body main {
@@ -561,7 +577,6 @@ body main {
   flex-direction: column;
   justify-content: center;
   min-height: 0;
-  overflow-x: visible;
   height: 100%;
   min-height: 100%;
 }
@@ -570,7 +585,7 @@ body main {
    Reserve space on the body itself via padding so every flow descendant —
    not just main — starts below them. */
 body {
-  padding-top: var(--menu-bar-height);
+  padding-top: calc(var(--menu-bar-height) + var(--trailer-tail));
   padding-bottom: var(--trailer-tail);
 }
 
@@ -617,8 +632,6 @@ body:has(.unhide-button-container) .page {
     width: 100%;
     max-width: 100vw;
     box-sizing: border-box;
-    overflow-x: hidden;
-    overflow-x: clip;
     padding: 0;
     margin: 0;
   }
@@ -643,7 +656,6 @@ body:has(.unhide-button-container) .page {
   /* Mobile-friendly menu bar */
   .menu-bar {
     overflow-x: auto;
-    overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
     scrollbar-color: #888 #f0f0f0;
