@@ -46,5 +46,11 @@
     "menuLabel": "blog",
     "title": "blog of kine",
     "description": "posts and notes from kine"
+  },
+  {
+    "path": "/404",
+    "title": "not found",
+    "description": "that page does not exist",
+    "hidden": true
   }
 ]

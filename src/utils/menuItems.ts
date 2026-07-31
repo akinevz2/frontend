@@ -5,10 +5,11 @@
 export interface MenuItem {
   label: string;
   href: string;
+  hidden?: boolean;
 }
 
 export function generateMenuItems(
-  pages: Array<{ url?: string; label?: string }>,
+  pages: Array<{ url?: string; label?: string; hidden?: boolean }>,
   additionalLinks: MenuItem[] = [],
 ): MenuItem[] {
   const pageItems: MenuItem[] = pages
@@ -20,14 +21,15 @@ export function generateMenuItems(
         normalizedUrl === "/"
           ? "home"
           : normalizedUrl
-              .replace(/^\//, "")
-              .replace(/\/$/, "")
-              .replace(/-/g, " ");
+            .replace(/^\//, "")
+            .replace(/\/$/, "")
+            .replace(/-/g, " ");
       const label = page.label ?? fallbackLabel;
 
       return {
         label,
         href: normalizedUrl,
+        ...(page.hidden ? { hidden: true } : {}),
       };
     })
     .filter((item): item is NonNullable<typeof item> => item !== null);

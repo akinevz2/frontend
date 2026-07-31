@@ -15,12 +15,13 @@ type Props = {
   currentPath?: string;
 };
 
-const PAGE_LINKS = (pages as Array<{ path: string; menuLabel?: string }>).map(
-  (page) => ({
-    url: page.path,
-    ...(page.menuLabel ? { label: page.menuLabel } : {}),
-  }),
-);
+const PAGE_LINKS = (
+  pages as Array<{ path: string; menuLabel?: string; hidden?: boolean }>
+).map((page) => ({
+  url: page.path,
+  ...(page.menuLabel ? { label: page.menuLabel } : {}),
+  ...(page.hidden ? { hidden: true } : {}),
+}));
 
 const isTypingTarget = (target: EventTarget | null) => {
   if (!(target instanceof HTMLElement)) {
@@ -61,11 +62,14 @@ const filterHiddenMenuItems = (menuItems: MenuItem[], currentPath?: string) => {
     ? menuItems
     : menuItems.filter((item) => !hide(item.href));
 
+  // Remove items marked hidden in pages.json (e.g. /404).
+  const withoutHidden = withoutAddons.filter((item) => !item.hidden);
+
   if (hasAdminCookie()) {
-    return withoutAddons;
+    return withoutHidden;
   }
 
-  return withoutAddons.filter((item) => item.href !== SITEMAP_HREF);
+  return withoutHidden.filter((item) => item.href !== SITEMAP_HREF);
 };
 
 export default function MenuBar({
