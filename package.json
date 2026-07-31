@@ -1,14 +1,14 @@
 {
   "name": "website-xp-phone",
-  "version": "1.5.1i",
+  "version": "1.5.1l",
   "license": "GPL v2",
   "author": "Kirill <kine> Nevzorov <akinevz@outlook.com>",
   "type": "module",
   "packageManager": "npm@10.8.2",
   "engines": {
-    "node": "^22.22.1",
-    "npm": "^9.2.0",
-    "clippy": "1"
+    "node": ">=20.19.2",
+    "npm": ">=9.2.0",
+    "clippy": "^1"
   },
   "scripts": {
     "dev": "vite",
@@ -52,6 +52,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.3"
   }
 }
