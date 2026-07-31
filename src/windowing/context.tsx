@@ -8,6 +8,9 @@ export type SectionContextType = {
   minimizeSection: (uuid: string, heading: string) => void;
   restoreSection: (uuid: string) => void;
   pageMetadata: PageMetadata;
+  maximizedWindows: Set<string>; // Set of UUIDs for currently maximized windows
+  registerMaximizedWindow: (uuid: string) => void;
+  unregisterMaximizedWindow: (uuid: string) => void;
 };
 
 export const SectionContext = createContext<SectionContextType | undefined>(
