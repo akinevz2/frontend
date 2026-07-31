@@ -1,5 +1,8 @@
 @import "../../public/loading.css";
 
+.title-bar-controls button[aria-label="Maximize"] {
+  margin-left: 2px;
+}
 :root {
   font-family: "Courier New", Courier, monospace;
   font-synthesis: none;

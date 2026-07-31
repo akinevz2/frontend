@@ -143,10 +143,10 @@ function validatePages(value) {
     value.forEach((page, index) => {
         const context = `pages.json[${index}]`;
         assert(page && typeof page === "object" && !Array.isArray(page), `${context}: must be object`);
-        assertAllowedKeys(page, new Set(["path", "menuLabel", "title", "description"]), context);
+        assertAllowedKeys(page, new Set(["path", "menuLabel", "title", "description", "hidden"]), context);
         assert(typeof page.path === "string", `${context}.path must be string`);
         assert(page.path.startsWith("/"), `${context}.path must start with '/'`);
-        assert(typeof page.menuLabel === "string", `${context}.menuLabel must be string`);
+        assert(typeof page.menuLabel === "string" || page.hidden, `${context}.menuLabel must be string or hidden must be set`);
         assert(typeof page.title === "string", `${context}.title must be string`);
         assert(typeof page.description === "string", `${context}.description must be string`);
     });
