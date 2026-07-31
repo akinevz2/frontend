@@ -44,6 +44,59 @@
   box-shadow: 0 0 15px 4px #feef69 !important;
 }
 
+/* --- Experimental theme: raise-and-wobble effect ----------------------------
+ * Sections marked with the "experimental" theme bob up and down gently on
+ * hover/focus, and gain a thick double border (2px solid) layered with the
+ * 98.css raised-window bevel. The 3D perspective is provided by .page.
+ * Driven by the `raiseWobble` flag on the theme definition.
+ */
+@keyframes theme-experimental-wobble {
+  0% {
+    transform: translateY(0);
+  }
+  20% {
+    transform: translateY(-6px);
+  }
+  40% {
+    transform: translateY(-3px);
+  }
+  60% {
+    transform: translateY(-6px);
+  }
+  80% {
+    transform: translateY(-2px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.window[data-theme="experimental"] {
+  /* The 3D perspective is provided by the .page ancestor so the raise/wobble
+     isn't clipped by this element's own box; here we just preserve the 3D
+     context and animate the transform. */
+  transform-style: preserve-3d;
+  transition:
+    transform 120ms ease-out,
+    border-color 120ms ease-out,
+    box-shadow 120ms ease-out;
+  will-change: transform;
+}
+
+.window[data-theme="experimental"]:hover,
+.window[data-theme="experimental"]:focus-within {
+  /* Bob up and down (translateY) in the page's 3D space. */
+  animation: theme-experimental-wobble 0.6s ease-in-out;
+}
+
+/* Respect reduced-motion: skip the wobble animation, keep the raise. */
+@media (prefers-reduced-motion: reduce) {
+  .window[data-theme="experimental"]:hover,
+  .window[data-theme="experimental"]:focus-within {
+    animation: none;
+  }
+}
+
 @font-face {
   font-family: "bahnscrift";
   src: url("/BAHNSCHRIFT.TTF");
@@ -55,7 +108,9 @@
 .window {
   margin-bottom: var(--gap-size);
   min-width: min(480px, 100%);
-  max-width: 100%;
+  max-width: min-content;
+  max-height: 100%;
+  height: max-content;
   box-sizing: border-box;
   /* Leave room for the fixed menu bar when scrolling to a window. */
   scroll-margin-top: calc(var(--menu-bar-height) + 8px);
@@ -165,6 +220,13 @@ li {
   flex-direction: column;
   place-items: center;
   min-height: 100%;
+  /* Establish the 3D viewing space for themed windows so their raise/wobble
+     transforms (translateZ, scale) render relative to the page rather than
+     being clipped by the page's own box. */
+  perspective: 800px;
+  /* Let a raised window overflow the page bounds without clipping. */
+  overflow: visible;
+  transform-style: preserve-3d;
 }
 
 .window.maximized {

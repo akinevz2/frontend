@@ -11,11 +11,10 @@ import { useSectionContext, useWindow } from "./hooks";
 import { OkButton } from "./OkButton";
 import type { Content, HttpUrl, SectionProps } from "./types";
 import { ShowPermalinkButton } from "./ShowPermalinkButton";
+import { isForceExpandedTheme } from "./themeEngine";
 
 const BLOG_PATH = "/blog";
 const BLOG_POSTS_BASE_PATH = "/blog/";
-const EXPERIMENTAL_THEME = "experimental";
-const EXPERIMENTAL_THEME_REDIRECT_URL = "https://akinevz.dev";
 
 const isBlogPath = (pathname: string) =>
   pathname.replace(/\/+$/, "") === BLOG_PATH;
@@ -144,10 +143,6 @@ const markdownSanitizeSchema: unknown = {
 const markdownRehypePlugins = [
   rehypeRaw,
   [rehypeSanitize, markdownSanitizeSchema],
-] as ReactMarkdownOptions["rehypePlugins"];
-
-const experimentalMarkdownRehypePlugins = [
-  rehypeRaw,
 ] as ReactMarkdownOptions["rehypePlugins"];
 
 function resolvePrintoutUrl(printoutPath: string): string {
@@ -293,8 +288,6 @@ function renderPrintout(printout: string | string[]) {
 function renderContent(
   content: Content,
   depth: number,
-  sectionTheme?: string,
-  allowedTheme: string = EXPERIMENTAL_THEME,
 ) {
   if (!content || typeof content === "string") {
     if (typeof content !== "string") return null;
@@ -314,10 +307,7 @@ function renderContent(
     );
   }
 
-  const isExperimental = sectionTheme === allowedTheme;
-  const rehypePlugins = isExperimental
-    ? experimentalMarkdownRehypePlugins
-    : markdownRehypePlugins;
+  const rehypePlugins = markdownRehypePlugins;
 
   const groupedContent: Array<
     | { type: "markdown"; key: number; text: string }
@@ -512,7 +502,6 @@ type SectionBodyProps = {
   printout?: string | string[] | undefined;
   children?: React.ReactNode;
   depth: number;
-  theme?: string | undefined;
   sectionUUID: string;
   onPrimaryAction: () => void;
   onPermalinkClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
@@ -535,7 +524,6 @@ const SectionBody = ({
   content,
   printout,
   depth,
-  theme,
   sectionUUID,
   onPrimaryAction,
   onPermalinkClick,
@@ -565,7 +553,7 @@ const SectionBody = ({
           }}
         >
           {shouldShowCollapsedContent && hasContent && content
-            ? renderContent(content, depth, theme)
+            ? renderContent(content, depth)
             : null}
           {shouldShowCollapsedOkButton ? (
             <OkButton data-section-uuid={sectionUUID} onClick={onPrimaryAction} />
@@ -573,7 +561,7 @@ const SectionBody = ({
         </div>
       ) : (
         <>
-          {hasContent && content ? renderContent(content, depth, theme) : null}
+          {hasContent && content ? renderContent(content, depth) : null}
           {hasPrintout && printout ? renderPrintout(printout) : null}
           {isAddon ? (
             <AddonExtras
@@ -724,7 +712,8 @@ export const Section = (props: SectionProps) => {
     shouldOpenFromLink ||
     shouldRevealLinkedPost ||
     shouldRevealLinkedSection ||
-    hasPrintout;
+    hasPrintout ||
+    isForceExpandedTheme(theme);
 
   const [isCollapsed, setIsCollapsed] = useState(!isForcedExpanded);
   const isCollapsedResolved = isForcedExpanded ? false : isCollapsed;
@@ -878,18 +867,6 @@ export const Section = (props: SectionProps) => {
     handleExpand();
   };
 
-  const handleExperimentalContextMenu = (
-    event: React.MouseEvent<HTMLDivElement>,
-  ) => {
-    if (theme !== EXPERIMENTAL_THEME) {
-      return;
-    }
-
-    event.preventDefault();
-    event.stopPropagation();
-    window.location.assign(EXPERIMENTAL_THEME_REDIRECT_URL);
-  };
-
   // useEffect(
   //   () => {
   //     if (theme)
@@ -925,9 +902,9 @@ export const Section = (props: SectionProps) => {
   ) : (
     <div
       ref={inlineWindowRef}
+      data-theme={theme}
       id={hasHeading && typeof heading === "string" ? sectionId : undefined}
       className={`window ${className || ""}`.trim()}
-      onContextMenu={handleExperimentalContextMenu}
     >
       {hasHeading && typeof heading === "string" ? (
         <TitleBar
@@ -954,7 +931,6 @@ export const Section = (props: SectionProps) => {
             content={content}
             printout={printout}
             depth={depth}
-            theme={theme}
             sectionUUID={sectionUUID}
             onPrimaryAction={handlePrimaryAction}
             onPermalinkClick={handlePermalinkClick}
@@ -1012,7 +988,7 @@ export const Section = (props: SectionProps) => {
                     ? sectionId
                     : undefined
                 }
-                className={`maximized window ${className || ""}`}
+                className={`maximized window ${className || ""}`.trim()}
                 style={{
                   cursor: "default",
                   maxWidth: "100%",
@@ -1049,7 +1025,6 @@ export const Section = (props: SectionProps) => {
                     content={content}
                     printout={printout}
                     depth={depth}
-                    theme={theme}
                     sectionUUID={sectionUUID}
                     onPrimaryAction={handlePrimaryAction}
                     onPermalinkClick={handlePermalinkClick}
