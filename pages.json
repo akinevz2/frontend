@@ -13,8 +13,8 @@
   },
   {
     "path": "/wow",
-    "menuLabel": "wow config",
-    "title": "WoW Config - kine",
+    "menuLabel": "wow",
+    "title": "WoW Config",
     "description": "Download World of Warcraft configuration files"
   },
   {

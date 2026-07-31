@@ -6,6 +6,7 @@ import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { toast } from "react-toastify";
 import { playLayeredAudio } from "../lib/audioOverlap";
+import { CopyToClipboardButton } from "../components/CopyToClipboardButton";
 import { useSectionContext, useWindow } from "./hooks";
 import { OkButton } from "./OkButton";
 import type { Content, HttpUrl, SectionProps } from "./types";
@@ -458,6 +459,7 @@ type TitleBarProps = {
   isIconified: boolean;
   heading: string;
   link?: string | undefined;
+  opensInNewTab?: boolean | undefined;
   showMaximize: boolean;
   onMinimize: () => void;
   onMaximize: () => void;
@@ -468,6 +470,7 @@ const TitleBar = ({
   isIconified,
   heading,
   link,
+  opensInNewTab,
   showMaximize,
   onMinimize,
   onMaximize,
@@ -475,7 +478,17 @@ const TitleBar = ({
 }: TitleBarProps) => (
   <div className="title-bar">
     <div className="title-bar-text">
-      <a href={link}>{heading}</a>
+      {link ? (
+        <a
+          href={link}
+          target={opensInNewTab ? "_blank" : undefined}
+          rel={opensInNewTab ? "noopener noreferrer" : undefined}
+        >
+          {heading}
+        </a>
+      ) : (
+        heading
+      )}
     </div>
     <WindowControls
       showMaximize={isIconified ? isIconified : showMaximize}
@@ -503,6 +516,12 @@ type SectionBodyProps = {
   sectionUUID: string;
   onPrimaryAction: () => void;
   onPermalinkClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  // --- Addon extension ---
+  isAddon?: boolean;
+  status?: string | undefined;
+  text?: string | undefined;
+  hasStatus?: boolean;
+  hasText?: boolean;
 };
 
 const SectionBody = ({
@@ -520,6 +539,11 @@ const SectionBody = ({
   sectionUUID,
   onPrimaryAction,
   onPermalinkClick,
+  isAddon = false,
+  status,
+  text,
+  hasStatus = false,
+  hasText = false,
 }: SectionBodyProps) => (
   <>
     <div
@@ -551,6 +575,14 @@ const SectionBody = ({
         <>
           {hasContent && content ? renderContent(content, depth, theme) : null}
           {hasPrintout && printout ? renderPrintout(printout) : null}
+          {isAddon ? (
+            <AddonExtras
+              status={status}
+              text={text}
+              hasStatus={hasStatus}
+              hasText={hasText}
+            />
+          ) : null}
         </>
       )}
     </div>
@@ -558,6 +590,37 @@ const SectionBody = ({
 
   </>
 );
+
+/** Renders the addon-specific extras: a status line and a copy-to-clipboard. */
+function AddonExtras({
+  status,
+  text,
+  hasStatus,
+  hasText,
+}: {
+  status?: string | undefined;
+  text?: string | undefined;
+  hasStatus: boolean;
+  hasText: boolean;
+}) {
+  if (!hasStatus && !hasText) {
+    return null;
+  }
+  return (
+    <ul>
+      {hasStatus && status ? (
+        <li className="addon">
+          status: <em>{status}</em>
+        </li>
+      ) : null}
+      {hasText && text ? (
+        <li className="addon">
+          <CopyToClipboardButton content={text} />
+        </li>
+      ) : null}
+    </ul>
+  );
+}
 
 export const Section = (props: SectionProps) => {
   const {
@@ -570,6 +633,9 @@ export const Section = (props: SectionProps) => {
     uuid,
     treeIndex,
     theme,
+    status,
+    text,
+    externalLink,
   } = props;
   const hasHeading = !!heading;
   const hasContent = !!content;
@@ -584,6 +650,9 @@ export const Section = (props: SectionProps) => {
   // a heading (so the link has something to attach to via the TitleBar).
   const isSection = hasHeading || hasContent || hasPrintout;
   const hasValidLink = hasLink && hasHeading;
+  // Addon extension fields: status line + clipboard copy button in the body.
+  const hasStatus = typeof status === "string" && status.length > 0;
+  const hasText = typeof text === "string" && text.length > 0;
   const shouldShowCollapsedContent =
     hasHeading && hasStringContent && !hasPrintout;
   const shouldShowCollapsedOkButton = !shouldShowCollapsedContent || hasValidLink;
@@ -705,7 +774,16 @@ export const Section = (props: SectionProps) => {
   } = useWindow(heading, sectionUUID);
 
   // Use the local context for other operations that aren't in the hook yet
-  const { markAsExpanded, restoreSection } = useSectionContext();
+  const { markAsExpanded, restoreSection, isAddonPage } = useSectionContext();
+
+  // Whether this section renders as an addon is determined by the page it is
+  // defined on (the addons page opts in via SectionProvider's isAddonPage),
+  // not by the presence of addon-specific fields.
+  const isAddon = isAddonPage;
+  // Addons open their links in a new tab (external resources); a section may
+  // also opt in explicitly via `externalLink`. Explicit opt-out still wins.
+  const opensInNewTabResolved =
+    isAddon || externalLink === true;
 
   // isMinimized comes from the useWindow hook (checks minimizedSections context)
   // When true the entire window is hidden (closed via the X button) and can be
@@ -774,6 +852,12 @@ export const Section = (props: SectionProps) => {
 
   const handlePrimaryAction = () => {
     if (hasValidLink && (isValidHttpUrl(link) || isRootOffsetUrl(link))) {
+      // Addon-style external links open in a new tab and skip in-app
+      // navigation/history stamping.
+      if (opensInNewTabResolved) {
+        window.open(link, "_blank", "noopener,noreferrer");
+        return;
+      }
       // Stamp the current URL with this section's hash before navigating so
       // that pressing "back" returns to the right scroll position.
       // On the blog page we use ?post=slug for navigation, so don't add a hash.
@@ -850,6 +934,7 @@ export const Section = (props: SectionProps) => {
           isIconified={isIconified}
           heading={heading}
           link={hasValidLink ? link : undefined}
+          opensInNewTab={opensInNewTabResolved}
           showMaximize={depth !== 0}
           onMinimize={handleMinimizeToggle}
           onMaximize={handleMaximizeToggle}
@@ -873,6 +958,11 @@ export const Section = (props: SectionProps) => {
             sectionUUID={sectionUUID}
             onPrimaryAction={handlePrimaryAction}
             onPermalinkClick={handlePermalinkClick}
+            isAddon={isAddon}
+            status={status}
+            text={text}
+            hasStatus={hasStatus}
+            hasText={hasText}
           />
         </div>
       ) : null}
@@ -940,6 +1030,7 @@ export const Section = (props: SectionProps) => {
                     isIconified={isIconified}
                     heading={heading}
                     link={hasValidLink ? link : undefined}
+                    opensInNewTab={opensInNewTabResolved}
                     showMaximize={true}
                     onMinimize={handleMinimizeToggle}
                     onMaximize={handleMaximizeToggle}
@@ -962,6 +1053,11 @@ export const Section = (props: SectionProps) => {
                     sectionUUID={sectionUUID}
                     onPrimaryAction={handlePrimaryAction}
                     onPermalinkClick={handlePermalinkClick}
+                    isAddon={isAddon}
+                    status={status}
+                    text={text}
+                    hasStatus={hasStatus}
+                    hasText={hasText}
                   />
                 ) : null}
               </div>

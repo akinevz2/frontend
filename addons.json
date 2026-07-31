@@ -1,6 +1,11 @@
 {
   "heading": "Welcome to Rueg's UI homepage",
+  "theme": "open",
   "content": [
+    {
+      "heading": "more addons coming after I finish my work",
+      "link": "https://akinevz.dev/hire-me"
+    },
     {
       "heading": "Rueg WeakAura Rogue (v5.0.1)",
       "content": "Weak Aura tracker for GCD, energy tickrate, and range",
@@ -60,10 +65,6 @@
       "content": "Profile for Plater with Blizzard-like nameplates.",
       "status": "available",
       "link": "/addons/rueg-plater-smol.txt"
-    },
-    {
-      "heading": "more addons coming after I finish my work",
-      "link": "https://akinevz.dev/hire-me"
     },
     {
       "heading": "Rueg WeakAura Paladin (coming soon)",

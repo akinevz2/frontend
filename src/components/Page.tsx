@@ -23,7 +23,7 @@ export const PageContent = ({ sections, pageMetadata, footer }: PageProps) => {
   }
 
   return (<>
-    <SectionProvider pageMetadata={metadata}>
+    <SectionProvider pageMetadata={metadata} isAddonPage={false}>
 
       <MenuBarWithContext />
       <section className="page">
@@ -49,7 +49,7 @@ export const PageWithAddons = ({ addons, pageMetadata }: PageProps) => {
   }
 
   return (
-    <SectionProvider pageMetadata={metadata}>
+    <SectionProvider pageMetadata={metadata} isAddonPage={true}>
       <MenuBarWithContext />
       <section className="page">
         {Array.isArray(addons) ? (

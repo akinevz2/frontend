@@ -1,4 +1,8 @@
 import { useMemo, useState, type SubmitEvent } from "react";
+import { PageContent } from "../components/Page";
+import { processContent } from "../windowing/utils.ts";
+import type { SectionProps } from "../windowing";
+import characters from "../../characters.json";
 
 const WowPage = () => {
     const [username, setUsername] = useState("");
@@ -7,6 +11,11 @@ const WowPage = () => {
     const [messageType, setMessageType] = useState<"error" | "success" | "">("");
 
     const today = useMemo(() => new Date().toISOString().split("T")[0], []);
+
+    const { processed, metadata } = useMemo(
+        () => processContent(characters as SectionProps),
+        [],
+    );
 
     const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -53,6 +62,7 @@ const WowPage = () => {
 
     return (
         <main>
+
             <div style={{ maxWidth: "600px", margin: "2rem auto", padding: "1rem" }}>
                 <div
                     className="window"
@@ -145,7 +155,9 @@ const WowPage = () => {
                     </form>
                 </div>
             </div>
+            <PageContent sections={processed} pageMetadata={{ sections: metadata }} />
         </main>
+
     );
 };
 
