@@ -435,7 +435,7 @@ form#form > label {
   flex-direction: column;
   place-self: stretch;
   position: absolute;
-  z-index: 9001;
+  z-index: 999;
 }
 
 /* Unhide button styling in the menu bar */
