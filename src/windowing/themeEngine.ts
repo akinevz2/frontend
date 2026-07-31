@@ -30,13 +30,14 @@ import type { Options as ReactMarkdownOptions } from "react-markdown";
  *  - `open`          — `addons.json` (root section, line 3). Not yet wired
  *                      up as a real theme; currently falls back to default.
  */
-export type ThemeName = "default" | "experimental" | "open";
+export type ThemeName = "default" | "experimental" | "centered" | "open";
 
 /** The default (no-theme) theme name. Sections without `theme` use this. */
 export const DEFAULT_THEME: ThemeName = "default";
 
 /** Known theme names. Keep in sync with the entries in `THEMES`. */
 export const EXPERIMENTAL_THEME: ThemeName = "experimental";
+export const CENTERED_THEME: ThemeName = "centered";
 
 /**
  * The URL the "experimental" theme navigates to on right-click. Centralised
@@ -105,6 +106,8 @@ export interface ThemeDefinition {
    * as `data-theme` on the section's `.window` element, not as a class).
    */
   raiseWobble?: boolean;
+
+  centered?: boolean;
 }
 
 /**
@@ -124,6 +127,12 @@ export const THEMES: Record<string, ThemeDefinition> = {
     contextMenuRedirectUrl: EXPERIMENTAL_THEME_REDIRECT_URL,
     raiseWobble: true,
   },
+  [CENTERED_THEME]: {
+    name: CENTERED_THEME,
+    className: "centered",
+    rehypePlugins: defaultRehypePlugins,
+    centered: true,
+  },
   /** The "open" theme: content is always revealed. */
   open: {
     name: "open",
@@ -133,16 +142,42 @@ export const THEMES: Record<string, ThemeDefinition> = {
   },
 };
 
+/** Normalizes a theme input (string | string[] | undefined) to an array of strings. */
+export function normalizeThemes(
+  theme: string | string[] | undefined,
+): string[] {
+  if (!theme) return [];
+  return Array.isArray(theme) ? theme : [theme];
+}
+
 /**
- * Resolve a (possibly undefined) `theme` string to a `ThemeDefinition`.
- * Unknown theme names fall back to the default theme rather than throwing, so
- * content files can introduce new theme names without breaking the build.
+ * Resolve a (possibly undefined or array of) `theme` name(s) to ThemeDefinition(s).
+ * Unknown theme names fall back to the default theme rather than throwing.
  */
-export function resolveTheme(theme: string | undefined): ThemeDefinition {
-  if (theme && Object.prototype.hasOwnProperty.call(THEMES, theme)) {
-    return THEMES[theme]!;
+export function resolveTheme(
+  theme: string | string[] | undefined,
+): ThemeDefinition {
+  const themes = normalizeThemes(theme);
+  // Return the first valid theme (or default if none)
+  for (const t of themes) {
+    if (Object.prototype.hasOwnProperty.call(THEMES, t)) {
+      return THEMES[t]!;
+    }
   }
   return THEMES[DEFAULT_THEME]!;
+}
+
+/** Resolve all themes to an array of ThemeDefinitions. */
+export function resolveAllThemes(
+  theme: string | string[] | undefined,
+): ThemeDefinition[] {
+  const themes = normalizeThemes(theme);
+  if (themes.length === 0) return [THEMES[DEFAULT_THEME]!];
+  return themes.map((t) =>
+    Object.prototype.hasOwnProperty.call(THEMES, t)
+      ? THEMES[t]!
+      : THEMES[DEFAULT_THEME]!,
+  );
 }
 
 /** Returns true if `theme` is a recognised theme name (besides the default). */
@@ -165,8 +200,11 @@ export function contextMenuRedirectUrlFor(
  * (content revealed). Driven by the `forceExpanded` flag on the theme
  * definition. The `open` theme opts in.
  */
-export function isForceExpandedTheme(theme: string | undefined): boolean {
-  return resolveTheme(theme).forceExpanded === true;
+export function isForceExpandedTheme(
+  theme: string | string[] | undefined,
+): boolean {
+  const themes = resolveAllThemes(theme);
+  return themes.some((t) => t.forceExpanded === true);
 }
 
 /**
@@ -202,6 +240,8 @@ export function postProcessTheme<TPayload>(
       return postProcessExperimental(context);
     case "open":
       return postProcessOpen(context);
+    case "centered":
+      return context;
     default: {
       // Exhaustiveness check: if a new ThemeName is added without a
       // branch above, this line fails to type-check.
