@@ -1,4 +1,4 @@
-import { } from "react";
+import {} from "react";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 import Markdown, { type Options as ReactMarkdownOptions } from "react-markdown";
@@ -339,7 +339,10 @@ function renderContent(content: Content, depth: number) {
       typeof item === "object" &&
       item !== null &&
       !Array.isArray(item) &&
-      ("heading" in item || "content" in item || "link" in item || "printout" in item)
+      ("heading" in item ||
+        "content" in item ||
+        "link" in item ||
+        "printout" in item)
     );
   };
 
@@ -547,10 +550,7 @@ const SectionBody = ({
           ? renderContent(content, depth)
           : null}
         {shouldShowCollapsedOkButton ? (
-          <OkButton
-            data-section-uuid={sectionUUID}
-            onClick={onPrimaryAction}
-          />
+          <OkButton data-section-uuid={sectionUUID} onClick={onPrimaryAction} />
         ) : null}
       </div>
     ) : (
