@@ -44,31 +44,32 @@ const contentContainsPostSlug = (
   content: Content,
   targetPostSlug: string,
 ): boolean => {
-  if (typeof content === "string") {
-    return false;
-  }
+  if (!content) return false;
+  if (!Array.isArray(content)) return false;
 
-  return content.some((item): boolean => {
+  return content.some((item: unknown): boolean => {
     if (typeof item === "string") {
       return false;
     }
 
-    // Check if it's a SectionProps object with heading/content
-    if (typeof item === "object" && item !== null) {
-      const sectionItem = item as SectionProps;
-      if (
-        typeof sectionItem.heading === "string" &&
-        toPostSlug(sectionItem.heading) === targetPostSlug
-      ) {
-        return true;
-      }
+    if (typeof item !== "object" || item === null) {
+      return false;
+    }
 
-      if (sectionItem.content) {
-        return contentContainsPostSlug(
-          sectionItem.content as Content,
-          targetPostSlug,
-        );
-      }
+    const sectionItem = item as SectionProps;
+
+    if (
+      typeof sectionItem.heading === "string" &&
+      toPostSlug(sectionItem.heading) === targetPostSlug
+    ) {
+      return true;
+    }
+
+    if (sectionItem.content) {
+      return contentContainsPostSlug(
+        sectionItem.content as Content,
+        targetPostSlug,
+      );
     }
 
     // ReactNode items don't have nested sections to check
@@ -86,33 +87,31 @@ const contentContainsSectionId = (
   content: Content,
   targetSectionId: string,
 ): boolean => {
-  if (typeof content === "string") {
+  if (!content || typeof content === "string") {
     return false;
   }
 
-  return content.some((item): boolean => {
-    if (typeof item === "string") {
+  const contentArray = Array.isArray(content) ? content : [];
+
+  return contentArray.some((item: unknown): boolean => {
+    if (typeof item !== "object" || item === null) {
       return false;
     }
 
-    // Check if it's a SectionProps object with treeIndex/heading/content
-    if (typeof item === "object" && item !== null) {
-      const sectionItem = item as SectionProps;
-      const candidateId =
-        sectionItem.treeIndex || toPostSlug(sectionItem.heading || "");
-      if (candidateId === targetSectionId) {
-        return true;
-      }
-
-      if (sectionItem.content) {
-        return contentContainsSectionId(
-          sectionItem.content as Content,
-          targetSectionId,
-        );
-      }
+    const sectionItem = item as SectionProps;
+    const candidateId =
+      sectionItem.treeIndex || toPostSlug(sectionItem.heading || "");
+    if (candidateId === targetSectionId) {
+      return true;
     }
 
-    // ReactNode items don't have nested sections to check
+    if (sectionItem.content) {
+      return contentContainsSectionId(
+        sectionItem.content as Content,
+        targetSectionId,
+      );
+    }
+
     return false;
   });
 };
@@ -295,12 +294,10 @@ function renderContent(
   sectionTheme?: string,
   allowedTheme: string = EXPERIMENTAL_THEME,
 ) {
-  const isExperimental = sectionTheme === allowedTheme;
-  const rehypePlugins = isExperimental
-    ? experimentalMarkdownRehypePlugins
-    : markdownRehypePlugins;
+  if (!content || typeof content === "string") {
+    if (typeof content !== "string") return null;
 
-  if (typeof content === "string")
+    const rehypePlugins = markdownRehypePlugins;
     return (
       <ul>
         <li>
@@ -313,6 +310,12 @@ function renderContent(
         </li>
       </ul>
     );
+  }
+
+  const isExperimental = sectionTheme === allowedTheme;
+  const rehypePlugins = isExperimental
+    ? experimentalMarkdownRehypePlugins
+    : markdownRehypePlugins;
 
   const groupedContent: Array<
     | { type: "markdown"; key: number; text: string }
@@ -345,7 +348,7 @@ function renderContent(
     );
   };
 
-  content.forEach((item, index) => {
+  (content as Array<string | SectionProps>).forEach((item, index) => {
     if (typeof item === "string") {
       if (bufferedLines.length === 0) {
         bufferStartIndex = index;

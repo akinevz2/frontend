@@ -1,20 +1,26 @@
+import type { ReactNode } from "react";
+
 export type Heading = string;
 export type HttpUrl = `http://${string}` | `https://${string}`;
 export type LinkUrl = HttpUrl | `/${string}`;
 
-export type Content = string | (React.ReactNode | string | SectionProps)[];
+export type Content =
+  | string
+  | SectionProps
+  | ReactNode
+  | (string | React.ReactNode | SectionProps)[];
 // export type Content = string | ReactNode | Element | SectionProps[];
 
 export type SectionProps = {
-  className?: string | undefined;
-  heading?: Heading | undefined;
-  content?: Content | undefined;
-  link?: LinkUrl | undefined;
-  printout?: string | string[] | undefined;
-  theme?: string | undefined;
-  depth?: number | undefined;
-  uuid?: string | undefined;
-  treeIndex?: string | undefined;
+  className?: string;
+  heading?: Heading;
+  content?: Content;
+  link?: LinkUrl;
+  printout?: string | string[];
+  theme?: string;
+  depth?: number;
+  uuid?: string;
+  treeIndex?: string;
 };
 
 export type SectionMetadata = {
