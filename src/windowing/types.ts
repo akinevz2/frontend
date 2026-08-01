@@ -4,8 +4,28 @@ export type Heading = string;
 export type HttpUrl = `http://${string}` | `https://${string}`;
 export type LinkUrl = HttpUrl | `/${string}`;
 
+// Providers supported by `MusicTrack`. The track's source is either declared
+// explicitly via `source` or inferred from its `url` host.
+export type MusicSource = "soundcloud" | "spotify";
+
+// A `MusicTrack` is a small data object (not a SectionProps) that can appear
+// as a nested item inside any Section's `content` array. The Section renderer
+// recognises it by the absence of SectionProps discriminator fields and
+// renders it as a windowed `MusicTrackSection`.
+export type MusicTrack = {
+  owner?: string;
+  path: string;
+  title: string;
+  url: string;
+  source?: MusicSource;
+};
+
 export type Content =
-  string | SectionProps | ReactNode | (string | SectionProps | ReactNode)[];
+  | string
+  | SectionProps
+  | MusicTrack
+  | ReactNode
+  | (string | SectionProps | MusicTrack | ReactNode)[];
 // export type Content = string | ReactNode | Element | SectionProps[];
 
 export type AddonsPropsMixing = {

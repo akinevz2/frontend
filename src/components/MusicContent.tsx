@@ -1,22 +1,15 @@
-import { useEffect, useState } from "react";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import { PageContent } from "./Page";
 import { processContent } from "../windowing/utils";
 import {
+  type MusicTrack,
   type PageMetadata,
   type SectionProps,
   useIsAnyWindowMaximized,
 } from "../windowing";
 
 const MUSIC_LINKS_URL = "/blog/music-links.json";
-
-type MusicTrack = {
-  owner?: string;
-  path: string;
-  title: string;
-  url: string;
-};
 
 type MusicProfile = {
   owner: string;
@@ -167,44 +160,18 @@ const fetchFavouriteLinks = async (): Promise<FavouriteLinkContent[]> => {
   return payload.filter(isValidContentFavLink);
 };
 
-const buildSoundCloudEmbedUrl = (trackUrl: string) => {
-  const embedUrl = new URL("https://w.soundcloud.com/player/");
-  embedUrl.searchParams.set("url", trackUrl);
-  embedUrl.searchParams.set("color", "ff5500");
-  embedUrl.searchParams.set("auto_play", "false");
-  embedUrl.searchParams.set("hide_related", "false");
-  embedUrl.searchParams.set("show_comments", "true");
-  embedUrl.searchParams.set("show_user", "true");
-  embedUrl.searchParams.set("show_reposts", "false");
-  embedUrl.searchParams.set("visual", "true");
-  return embedUrl.toString();
-};
+const SPOTIFY_RESOURCE_TYPES = new Set([
+  "track",
+  "playlist",
+  "album",
+  "artist",
+  "episode",
+  "show",
+]);
 
-const createTrackSection = (track: MusicTrack): SectionProps => {
-  const embedUrl = buildSoundCloudEmbedUrl(track.url);
-
-  return {
-    className: "music-track-window",
-    heading: `Track: ${track.title}`,
-    // link: track.url as `https://${string}` | `http://${string}`,
-    content: [
-      `<iframe
-        title="SoundCloud track: ${track.title}"
-        width="100%"
-        height="250"
-        scrolling="no"
-        frameBorder="no"
-        allow="autoplay"
-        loading="lazy"
-        referrerPolicy="strict-origin-when-cross-origin"
-        src="${embedUrl}"
-      ></iframe>`,
-      `[${track.title} on SoundCloud](${track.url})`,
-    ].join("\n\n"),
-  };
-};
-
-const getSpotifyEmbedUrl = (urlValue: string): string | null => {
+const getSpotifyEmbedInfo = (
+  urlValue: string,
+): { embedUrl: string; resourceType: string } | null => {
   try {
     const parsed = new URL(urlValue);
     if (parsed.hostname !== "open.spotify.com") {
@@ -222,55 +189,106 @@ const getSpotifyEmbedUrl = (urlValue: string): string | null => {
       return null;
     }
 
-    const allowedTypes = new Set([
-      "track",
-      "playlist",
-      "album",
-      "artist",
-      "episode",
-      "show",
-    ]);
-    if (!allowedTypes.has(resourceType)) {
+    if (!SPOTIFY_RESOURCE_TYPES.has(resourceType)) {
       return null;
     }
 
-    return `https://open.spotify.com/embed/${resourceType}/${resourceId}`;
+    return {
+      embedUrl: `https://open.spotify.com/embed/${resourceType}/${resourceId}`,
+      resourceType,
+    };
   } catch {
     return null;
   }
 };
 
-const renderFavouriteLink = (link: FavouriteLink) => {
-  // If it's already a SectionProps, return it as-is
-  if ("content" in link) {
-    // Convert SectionProps to string representation
-    const section = link as SectionProps;
-    return section;
+/** Single fixed height for all Spotify embeds (compact player). */
+const SPOTIFY_IFRAME_HEIGHT = 152;
+
+/**
+ * Renders a single favourite link as a real DOM element (Spotify iframe
+ * when possible, otherwise a plain anchor link). Used both as a top-level
+ * item inside a Section's `content` array and as the leaf node when a
+ * favourite-links JSON entry is itself a nested `SectionProps`.
+ */
+export const FavouriteLinkItem = ({
+  title,
+  url,
+}: {
+  title: string;
+  url: string;
+}) => {
+  const spotify = getSpotifyEmbedInfo(url);
+
+  if (!spotify) {
+    return (
+      <p className="music-track-title">
+        <a href={url}>{title}</a>
+      </p>
+    );
   }
 
-  // Otherwise, it's a simple link
-  const favouriteLink = link as { title: string; url: string };
+  return (
+    <>
 
-  const embedUrl = getSpotifyEmbedUrl(favouriteLink.url);
-  if (!embedUrl) {
-    return `- [${favouriteLink.title}](${favouriteLink.url})`;
+      <iframe
+        title={`Spotify item: ${title}`}
+        style={{ borderRadius: "12px" }}
+        src={spotify.embedUrl}
+        width="100%"
+        height={SPOTIFY_IFRAME_HEIGHT}
+        allowFullScreen
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        loading="lazy"
+        referrerPolicy="strict-origin-when-cross-origin"
+      />
+    </>
+  );
+};
+
+/**
+ * Convert a single favourite-link payload entry into a fully-rendered
+ * `SectionProps`. A raw `{title, url}` becomes a `SectionProps` whose
+ * `content` is a `<FavouriteLinkItem>`; an already-`SectionProps` entry is
+ * returned with its own nested `content` recursively normalised, so any
+ * raw `{title, url}` items nested inside it become `<FavouriteLinkItem>`s
+ * too. This is what lets a JSON entry like
+ *   { heading: "Warning", content: [ { title, url }, ... ] }
+ * render as a real Section with first-class Spotify iframe children.
+ */
+const favouriteLinkToSectionProps = (
+  link: FavouriteLinkContent,
+): SectionProps => {
+  if (isSectionProps(link)) {
+    const nested = Array.isArray(link.content) ? link.content : [];
+    return {
+      ...link,
+      content: nested.map((item) =>
+        isFavouriteLink(item) ? (
+          <FavouriteLinkItem
+            key={`${item.title}-${item.url}`}
+            title={item.title}
+            url={item.url}
+          />
+        ) : (
+          item
+        ),
+      ),
+    };
   }
 
-  return [
-    `<p class="music-track-title"><a href="${favouriteLink.url}">${favouriteLink.title}</a></p>`,
-    `<iframe
-      title="Spotify item: ${favouriteLink.title}"
-      style="border-radius:12px"
-      src="${embedUrl}"
-      width="100%"
-      height="152"
-      frameborder="0"
-      allowfullscreen=""
-      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-      loading="lazy"
-      referrerpolicy="strict-origin-when-cross-origin"
-    ></iframe>`,
-  ].join("\n\n");
+  return {
+    className: "music-favourite-link-window",
+    heading: link.title,
+    link: link.url as `https://${string}`,
+    // `theme: "open"` keeps this per-link window always revealed so the
+    // embedded Spotify iframe is visible without an extra click. The
+    // "Favourite Links" wrapper stays collapsed by default.
+    theme: "open",
+    content: [
+      <FavouriteLinkItem key={`${link.title}-${link.url}`} {...link} />,
+    ],
+  };
 };
 
 const toMusicSections = (
@@ -279,22 +297,22 @@ const toMusicSections = (
 ): SectionProps[] => {
   const profiles = Array.isArray(payload.profiles)
     ? payload.profiles.map((profile) => ({
-        ...profile,
-        profileImageUrl:
-          getProfileImageUrl(profile.owner) ?? profile.profileImageUrl,
-      }))
+      ...profile,
+      profileImageUrl:
+        getProfileImageUrl(profile.owner) ?? profile.profileImageUrl,
+    }))
     : [
-        {
-          owner: "akinevz",
-          source: payload.source ?? "https://soundcloud.com/akinevz",
-          profileImageUrl: getProfileImageUrl("akinevz"),
-          trackCount: payload.trackCount,
-          tracks: payload.tracks,
-        },
-      ];
+      {
+        owner: "akinevz",
+        source: payload.source ?? "https://soundcloud.com/akinevz",
+        profileImageUrl: getProfileImageUrl("akinevz"),
+        trackCount: payload.trackCount,
+        tracks: payload.tracks,
+      },
+    ];
 
-  const favouriteLinkList = favouriteLinks.map((link) =>
-    isFavouriteLink(link) ? renderFavouriteLink(link) : link,
+  const favouriteLinkList: SectionProps[] = favouriteLinks.map(
+    favouriteLinkToSectionProps,
   );
 
   const combinedTrackCount = profiles.reduce(
@@ -305,11 +323,10 @@ const toMusicSections = (
     payload.asOfUploadingTrackCount ?? combinedTrackCount;
 
   const profileSections: SectionProps[] = profiles.flatMap((profile) => {
-    // Create individual windowed sections for each track
-    const trackWindows: SectionProps[] = profile.tracks.map((track) =>
-      createTrackSection(track),
-    );
-
+    // Embed `MusicTrack` items directly in the section's `content` array.
+    // `Section`'s renderer recognises them and turns each into a windowed
+    // `MusicTrackSection` (SoundCloud or Spotify, inferred from `source`
+    // or the URL host) — exactly the same way a nested `SectionProps` does.
     return [
       {
         className: "music-profile-discography",
@@ -323,7 +340,7 @@ const toMusicSections = (
             <br />
             {`Total uploads: ${profile.trackCount}`}
           </ArtistProfileBackground>,
-          ...trackWindows,
+          ...profile.tracks,
         ],
       },
     ];

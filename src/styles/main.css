@@ -173,6 +173,15 @@
 main > .page {
   border: none;
 }
+
+/* Pin all root-level windows to the same width so a window with wider
+   inner content (e.g. a Spotify iframe) can't push itself past the rest
+   of the page. Defaults to 768px to match the website's compact reading
+   width; only grows when the viewport is narrower than that. */
+.page > .window {
+  width: min(768px, 100% - (var(--gap-size) * 2));
+  max-width: min(768px, 100% - (var(--gap-size) * 2));
+}
 /* Add more vertical padding to title bars */
 .title-bar {
   padding-top: 0.25em !important;
@@ -395,6 +404,27 @@ form#form > label {
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
+/* Favourite-link windows mirror the per-track styling so their Spotify
+   iframe doesn't push the window wider than the rest of the page. */
+.music-favourite-link-window .window-body {
+  padding: 0.5em;
+}
+
+.music-favourite-link-window ul {
+  min-width: 100%;
+}
+
+.music-favourite-link-window p {
+  width: max-content;
+}
+
+.music-favourite-link-window iframe {
+  display: block;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+}
+
 /* Artist Profile Picture - 1:1 aspect ratio background image */
 .artist-profile-picture {
   width: 80px;
@@ -410,7 +440,7 @@ form#form > label {
 /* Artist Profile Background - stretched background under text */
 .artist-profile-background {
   width: 100%;
-  min-height: 12em;
+  min-height: 36em;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
