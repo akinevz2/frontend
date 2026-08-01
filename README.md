@@ -54,31 +54,6 @@ Dependency audit:
 npm run check:audit
 ```
 
-## Notes
-
-Most content is managed through JSON, rendered into components in the browser.
-
-This keeps content updates straightforward while still allowing rich UI behavior.
-
-### Clippy Interaction
-
-- Clicking Clippy triggers the assistant click handler and a short border flash.
-- The border flash uses the `theme-border-flash` class and flashes yellow (`#FEEF69`) briefly before returning to default.
-
-### Post Manipulation Ignore Rules
-
-When editing or generating blog post content, treat operational notes as out of scope.
-
-- Ignore memory notes and memory paths (for example `/memories/` and session scratch notes).
-- Ignore Nix store paths (`/nix/store/...`) and any generated derivation content.
-- Ignore personal-directory notes outside this website project (for example `/home/kine/development/personal/*` except this repository).
-
-Some pages rely on raw github user content to serve the json so that a full website-rebuild is not necessary for updating content on those pages, such as blog.
-
-External media/profile links may be removed or replaced over time when distribution or licensing terms change.
-
-Dependency release note: `lightdni-jssas-toggle` `1.0.2` is present on GitHub (`akinevz2/lightdni-jssas-toggle`), but npm publication is pending authenticated `npm publish` from a trusted maintainer session.
-
 ## Contact
 
 If you are here to learn more about me professionally, the website includes my resume and contact details.
