@@ -1,0 +1,13 @@
+# Build outputs
+wwwroot/
+data/
+bin/
+obj/
+frontend/node_modules/
+frontend/dist/
+
+# Dev files
+*.md
+deploy/
+.git/
+.vscode/
