@@ -151,8 +151,7 @@ type ResolvedMusicTrack = {
 };
 
 const resolveMusicTrack = (track: MusicTrack): ResolvedMusicTrack | null => {
-  const source =
-    track.source ?? detectMusicSource(track.url) ?? "soundcloud";
+  const source = track.source ?? detectMusicSource(track.url) ?? "soundcloud";
   if (source === "spotify") {
     const spotify = buildSpotifyEmbedUrl(track.url);
     if (!spotify) return null;
@@ -392,17 +391,9 @@ function normalizePrintoutText(printout: string | string[]): string {
   return Array.isArray(printout) ? printout.join("\n") : printout;
 }
 
-const FENCE = "````";
-function toFencedCodeBlock(content: string): string {
-  const trimmed = content.replace(/^\n+|\n+$/g, "");
-  // Use a 4-backtick fence so triple-backtick sequences inside the content
-  // don't break the outer code block on multi-line input.
-  return `${FENCE}\n${trimmed}\n${FENCE}`;
-}
-
 function PrintoutContent({ printout }: { printout: string | string[] }) {
   const [markdownContent, setMarkdownContent] = useState(() =>
-    toFencedCodeBlock(normalizePrintoutText(printout)),
+    normalizePrintoutText(printout),
   );
 
   useEffect(() => {
@@ -411,9 +402,7 @@ function PrintoutContent({ printout }: { printout: string | string[] }) {
     const loadPrintout = async () => {
       if (typeof printout !== "string") {
         if (!cancelled) {
-          setMarkdownContent(
-            toFencedCodeBlock(normalizePrintoutText(printout)),
-          );
+          setMarkdownContent(normalizePrintoutText(printout));
         }
         return;
       }
@@ -430,7 +419,6 @@ function PrintoutContent({ printout }: { printout: string | string[] }) {
               "## Printout unavailable",
               `Failed to resolve printout path(${message}).`,
               "Please let kine (akinevz) know.",
-              toFencedCodeBlock(printout),
             ].join("\n\n"),
           );
         }
@@ -452,7 +440,7 @@ function PrintoutContent({ printout }: { printout: string | string[] }) {
 
         const fileContent = await response.text();
         if (!cancelled) {
-          setMarkdownContent(toFencedCodeBlock(fileContent));
+          setMarkdownContent(fileContent);
         }
       } catch (fetchError) {
         const message =
@@ -463,7 +451,6 @@ function PrintoutContent({ printout }: { printout: string | string[] }) {
               "## Printout unavailable",
               `Failed to fetch printout '${printout}'(${message}).`,
               "Please let kine (akinevz) know.",
-              toFencedCodeBlock(printout),
             ].join("\n\n"),
           );
         }
@@ -546,7 +533,9 @@ function renderContent(content: Content, depth: number) {
     );
   };
 
-  (content as Array<string | React.ReactNode | SectionProps | MusicTrack>).forEach((item, index) => {
+  (
+    content as Array<string | React.ReactNode | SectionProps | MusicTrack>
+  ).forEach((item, index) => {
     if (typeof item === "string") {
       if (bufferedLines.length === 0) {
         bufferStartIndex = index;
@@ -597,10 +586,7 @@ function renderContent(content: Content, depth: number) {
         }
         if (item.type === "musicTrack") {
           return (
-            <MusicTrackSection
-              key={`music - ${item.key}`}
-              track={item.track}
-            />
+            <MusicTrackSection key={`music - ${item.key}`} track={item.track} />
           );
         }
         // ReactNode items render directly without wrapper. Unknown plain
