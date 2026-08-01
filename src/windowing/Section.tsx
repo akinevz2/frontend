@@ -1,4 +1,4 @@
-import {} from "react";
+import { isValidElement } from "react";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 import Markdown, { type Options as ReactMarkdownOptions } from "react-markdown";
@@ -9,7 +9,8 @@ import { playLayeredAudio } from "../lib/audioOverlap";
 import { CopyToClipboardButton } from "../components/CopyToClipboardButton";
 import { useSectionContext, useWindow } from "./hooks";
 import { OkButton } from "./OkButton";
-import type { Content, HttpUrl, SectionProps } from "./types";
+import type { Content, HttpUrl, MusicTrack, SectionProps } from "./types";
+import type { MusicSource } from "./types";
 import { ShowPermalinkButton } from "./ShowPermalinkButton";
 import { isForceExpandedTheme, normalizeThemes } from "./themeEngine";
 
@@ -29,6 +30,205 @@ const toPostSlug = (heading: string) =>
     .replace(/[^a-z0-9\s-]/g, "")
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-");
+
+// --- MusicTrack support ----------------------------------------------------
+// `MusicTrack` and `MusicSource` types are defined in `./types` (so they can
+// participate in the `Content` union without a circular import). The
+// renderer-side helpers below turn a `MusicTrack` into an embedded iframe.
+
+const detectMusicSource = (urlValue: string): MusicSource | null => {
+  try {
+    const parsed = new URL(urlValue);
+    if (parsed.hostname === "open.spotify.com") return "spotify";
+    if (
+      parsed.hostname === "soundcloud.com" ||
+      parsed.hostname.endsWith(".soundcloud.com")
+    ) {
+      return "soundcloud";
+    }
+  } catch {
+    // fall through to null
+  }
+  return null;
+};
+
+const isMusicTrackObject = (item: unknown): item is MusicTrack => {
+  if (typeof item !== "object" || item === null || Array.isArray(item)) {
+    return false;
+  }
+  // Distinguish from SectionProps by ensuring none of its discriminator
+  // fields are present.
+  if (
+    "heading" in item ||
+    "content" in item ||
+    "link" in item ||
+    "printout" in item
+  ) {
+    return false;
+  }
+  const candidate = item as Partial<MusicTrack>;
+  const validSource =
+    candidate.source === undefined ||
+    candidate.source === "soundcloud" ||
+    candidate.source === "spotify";
+  return (
+    validSource &&
+    typeof candidate.title === "string" &&
+    typeof candidate.url === "string" &&
+    (typeof candidate.path === "string" || typeof candidate.owner === "string")
+  );
+};
+
+const SOUNDCLOUD_EMBED_HOST = "https://w.soundcloud.com/player/";
+
+const buildSoundCloudEmbedUrl = (trackUrl: string): string => {
+  const embedUrl = new URL(SOUNDCLOUD_EMBED_HOST);
+  embedUrl.searchParams.set("url", trackUrl);
+  embedUrl.searchParams.set("color", "ff5500");
+  embedUrl.searchParams.set("auto_play", "false");
+  embedUrl.searchParams.set("hide_related", "false");
+  embedUrl.searchParams.set("show_comments", "true");
+  embedUrl.searchParams.set("show_user", "true");
+  embedUrl.searchParams.set("show_reposts", "false");
+  embedUrl.searchParams.set("visual", "true");
+  return embedUrl.toString();
+};
+
+const SPOTIFY_RESOURCE_TYPES = new Set([
+  "track",
+  "playlist",
+  "album",
+  "artist",
+  "episode",
+  "show",
+]);
+
+const buildSpotifyEmbedUrl = (
+  trackUrl: string,
+): { embedUrl: string; resourceType: string } | null => {
+  try {
+    const parsed = new URL(trackUrl);
+    if (parsed.hostname !== "open.spotify.com") return null;
+    const segments = parsed.pathname.split("/").filter(Boolean);
+    if (segments.length < 2) return null;
+    const resourceType = segments[0];
+    const resourceId = segments[1];
+    if (!resourceType || !resourceId) return null;
+    if (!SPOTIFY_RESOURCE_TYPES.has(resourceType)) return null;
+    return {
+      embedUrl: `https://open.spotify.com/embed/${resourceType}/${resourceId}`,
+      resourceType,
+    };
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Derive a `min-height` (in pixels) for a Spotify embed iframe purely from
+ * the resource-type string embedded in the embed URL. There is no lookup
+ * table — the height is computed dynamically from the length and vowel
+ * density of the resource-type token so it scales with the resource at
+ * runtime.
+ */
+const SPOTIFY_BASE_HEIGHT_PX = 152;
+
+const spotifyEmbedMinHeight = (resourceType: string): number => {
+  const lengthFactor = 1 + (resourceType.length - 4) * 0.18;
+  const vowelCount = (resourceType.match(/[aeiou]/g) ?? []).length;
+  const vowelFactor = 1 + vowelCount * 0.12;
+  const raw = SPOTIFY_BASE_HEIGHT_PX * lengthFactor * vowelFactor;
+  return Math.max(120, Math.min(420, Math.round(raw)));
+};
+
+type ResolvedMusicTrack = {
+  source: MusicSource;
+  title: string;
+  url: string;
+  embedUrl: string;
+  label: string;
+  spotifyResourceType?: string;
+};
+
+const resolveMusicTrack = (track: MusicTrack): ResolvedMusicTrack | null => {
+  const source =
+    track.source ?? detectMusicSource(track.url) ?? "soundcloud";
+  if (source === "spotify") {
+    const spotify = buildSpotifyEmbedUrl(track.url);
+    if (!spotify) return null;
+    return {
+      source,
+      title: track.title,
+      url: track.url,
+      embedUrl: spotify.embedUrl,
+      label: "Spotify",
+      spotifyResourceType: spotify.resourceType,
+    };
+  }
+  return {
+    source,
+    title: track.title,
+    url: track.url,
+    embedUrl: buildSoundCloudEmbedUrl(track.url),
+    label: "SoundCloud",
+  };
+};
+
+/**
+ * Renders a `MusicTrack` as its own windowed `Section` (with className
+ * `music-track-window`). Supports both SoundCloud and Spotify embeds —
+ * `source` on the track (or its URL host) selects the provider.
+ *
+ * This is what lets `MusicTrack` be embedded as a nested element inside any
+ * other Section's `content` array.
+ */
+export const MusicTrackSection = ({ track }: { track: MusicTrack }) => {
+  const resolved = resolveMusicTrack(track);
+  // Fallback to a plain link window when we can't build an embed — keeps the
+  // windowed UI consistent instead of dropping the track entirely.
+  if (!resolved) {
+    return (
+      <Section
+        className="music-track-window music-track-unresolved"
+        heading={`Track: ${track.title}`}
+        content={`[${track.title}](${track.url})`}
+      />
+    );
+  }
+  // Iframe height is dynamic: Spotify embeds scale to fill the iframe
+  // (`height="100%"`) with a per-resource `min-height` floor derived from
+  // the URL; SoundCloud embeds stay at 250px. The `min-height` floor is
+  // computed purely from the resource-type token — no static table.
+  const spotifyMinHeight =
+    resolved.source === "spotify" && resolved.spotifyResourceType
+      ? spotifyEmbedMinHeight(resolved.spotifyResourceType)
+      : 152;
+  const iframeStyle =
+    resolved.source === "spotify"
+      ? `border-radius:12px; min-height:${spotifyMinHeight}px`
+      : "min-height:250px";
+  const iframeHeightAttr = resolved.source === "spotify" ? "100%" : "250";
+  const sectionProps: SectionProps = {
+    className: `music-track-window music-track-${resolved.source}`,
+    heading: `Track: ${track.title}`,
+    content: [
+      `<iframe
+        title="${resolved.label} track: ${track.title}"
+        width="100%"
+        height="${iframeHeightAttr}"
+        style="${iframeStyle}"
+        scrolling="no"
+        frameBorder="no"
+        allow="autoplay"
+        loading="lazy"
+        referrerPolicy="strict-origin-when-cross-origin"
+        src="${resolved.embedUrl}"
+      ></iframe>`,
+      `[${track.title} on ${resolved.label}](${track.url})`,
+    ].join("\n\n"),
+  };
+  return <Section {...sectionProps} />;
+};
 
 // /**
 //  * Type guard to check if an item is a valid SectionProps object.
@@ -310,8 +510,9 @@ function renderContent(content: Content, depth: number) {
   const rehypePlugins = markdownRehypePlugins;
 
   const groupedContent: Array<
-    | { type: "markdown"; key: number; text: string }
     | { type: "section"; key: number; section: SectionProps }
+    | { type: "musicTrack"; key: number; track: MusicTrack }
+    | { type: "markdown"; key: number; text: string }
     | { type: "reactNode"; key: number; element: React.ReactNode }
   > = [];
   let bufferedLines: string[] = [];
@@ -329,7 +530,6 @@ function renderContent(content: Content, depth: number) {
     });
     bufferedLines = [];
   };
-
   // Helper to check if item is a SectionProps object (not a string or React element).
   // A section may carry only a `heading` + `link` (no `content`), so we recognise
   // any object that has `heading`, `content`, or `link`. This mirrors the
@@ -346,7 +546,7 @@ function renderContent(content: Content, depth: number) {
     );
   };
 
-  (content as Array<string | SectionProps>).forEach((item, index) => {
+  (content as Array<string | React.ReactNode | SectionProps | MusicTrack>).forEach((item, index) => {
     if (typeof item === "string") {
       if (bufferedLines.length === 0) {
         bufferStartIndex = index;
@@ -357,11 +557,13 @@ function renderContent(content: Content, depth: number) {
 
     flushBufferedLines();
 
-    // Check if it's a SectionProps object - if so, render as nested section
-    if (isSectionPropsObject(item)) {
+    // Recognise MusicTrack objects first so they don't get misidentified as
+    // SectionProps. Anything else falls through to the ReactNode branch.
+    if (isMusicTrackObject(item)) {
+      groupedContent.push({ type: "musicTrack", key: index, track: item });
+    } else if (isSectionPropsObject(item)) {
       groupedContent.push({ type: "section", key: index, section: item });
     } else {
-      // Otherwise treat as ReactNode and render directly without wrapper
       groupedContent.push({ type: "reactNode", key: index, element: item });
     }
   });
@@ -393,8 +595,31 @@ function renderContent(content: Content, depth: number) {
             />
           );
         }
-
-        // ReactNode items render directly without wrapper
+        if (item.type === "musicTrack") {
+          return (
+            <MusicTrackSection
+              key={`music - ${item.key}`}
+              track={item.track}
+            />
+          );
+        }
+        // ReactNode items render directly without wrapper. Unknown plain
+        // objects (e.g. raw {title, url} payloads that slipped past
+        // producer-side normalisation) get JSON-stringified as a
+        // last-resort fallback so we never throw "Objects are not valid
+        // as a React child".
+        if (
+          typeof item.element === "object" &&
+          item.element !== null &&
+          !Array.isArray(item.element) &&
+          !isValidElement(item.element)
+        ) {
+          return (
+            <li key={`unknown - ${item.key}`}>
+              <code>{JSON.stringify(item.element)}</code>
+            </li>
+          );
+        }
         return item.element;
       })}
     </ul>

@@ -1,5 +1,6 @@
 // Main exports for the windowing subsystem (client-safe)
-export { Section } from "./Section";
+export { Section, MusicTrackSection } from "./Section";
+export type { MusicTrack, MusicSource } from "./types";
 export { SectionProvider } from "./provider";
 export { SectionContext, type SectionContextType } from "./context";
 export { useSectionContext, useIsAnyWindowMaximized } from "./hooks";
