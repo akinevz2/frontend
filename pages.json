@@ -18,12 +18,6 @@
     "description": "Download World of Warcraft configuration files"
   },
   {
-    "path": "/music",
-    "menuLabel": "music",
-    "title": "glitchbox tracks",
-    "description": "my featured uploads from SoundCloud"
-  },
-  {
     "path": "/sitemap",
     "menuLabel": "sitemap",
     "title": "sitemap of kine's website",
@@ -40,6 +34,12 @@
     "menuLabel": "configs",
     "title": "kind of work kine likes",
     "description": "hire me!"
+  },
+  {
+    "path": "/music",
+    "menuLabel": "music",
+    "title": "glitchbox tracks",
+    "description": "my featured uploads from SoundCloud"
   },
   {
     "path": "/blog",
