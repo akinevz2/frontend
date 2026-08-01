@@ -1,0 +1,27 @@
+[Unit]
+Description=Admin Control Panel (.NET 9)
+After=network.target
+
+[Service]
+Type=simple
+# Adjust the working directory and user as needed for WS-VISION
+WorkingDirectory=/opt/admin
+ExecStart=/usr/bin/dotnet /opt/admin/Admin.dll
+Restart=always
+RestartSec=5
+
+# Environment variables - override via /etc/admin/admin.env
+EnvironmentFile=/etc/admin/admin.env
+# Kestrel is configured in Program.cs (ConfigureKestrel) — do NOT set ASPNETCORE_URLS
+
+# Security hardening
+User=www-data
+Group=www-data
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/admin/data
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

@@ -79,6 +79,8 @@ const ROUTE_CONFIG = Object.fromEntries(
   ]),
 ) as Record<string, RouteConfig>;
 
+const ADMIN_LOGIN_REDIRECT = "https://ws-vision:8443/login";
+
 const normalizePath = (path: string) => {
   if (!path || path === "/") {
     return "/";
@@ -95,6 +97,16 @@ const normalizePath = (path: string) => {
   }
 
   const [firstSegment] = segments;
+
+  // Preserve /blog/login as a distinct route (don't collapse to /blog)
+  // so it can redirect to the admin panel on WS-VISION.
+  if (
+    segments.length === 2 &&
+    firstSegment?.toLowerCase() === "blog" &&
+    segments[1]?.toLowerCase() === "login"
+  ) {
+    return "/blog/login";
+  }
 
   if (firstSegment && TOP_LEVEL_ROUTES.has(firstSegment.toLowerCase())) {
     return `/${firstSegment.toLowerCase()}`;
@@ -394,6 +406,13 @@ export default function App() {
   }, [showConversationModal]);
 
   const route = ROUTE_CONFIG[path] ?? DEFAULT_ROUTE;
+
+  // Redirect /blog/login to the admin panel on WS-VISION (Tailscale)
+  useEffect(() => {
+    if (path === "/blog/login" && typeof window !== "undefined") {
+      window.location.href = ADMIN_LOGIN_REDIRECT;
+    }
+  }, [path]);
 
   useEffect(() => {
     document.title = route.title;
@@ -723,6 +742,16 @@ export default function App() {
       content = (
         <main>
           <BlogContent />
+        </main>
+      );
+      break;
+    case "/blog/login":
+      // Redirects to admin panel on WS-VISION via useEffect above
+      content = (
+        <main>
+          <p style={{ textAlign: "center", marginTop: "2rem" }}>
+            Redirecting to admin panel...
+          </p>
         </main>
       );
       break;

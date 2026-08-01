@@ -1,0 +1,132 @@
+body {
+  font-family: "Courier New", Courier, monospace;
+  background: var(--background-color, #000);
+  color: #eee;
+  margin: 0;
+  padding: 1rem;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+}
+
+#root {
+  width: 100%;
+  max-width: 900px;
+}
+
+.title-bar-text,
+.title-bar-text a {
+  color: #eee !important;
+  font-size: 0.85rem;
+}
+
+.window {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.window-body {
+  color: #eee;
+}
+
+a {
+  color: #6db3ff;
+}
+
+.login-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  margin: 0.5rem 0;
+}
+
+.link-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.link-row input,
+.link-row textarea {
+  flex: 1;
+}
+
+.sc-section {
+  margin-bottom: 1rem;
+}
+
+.sc-section summary {
+  cursor: pointer;
+  font-weight: bold;
+  padding: 0.5rem;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  margin-bottom: 0.5rem;
+}
+
+.sc-data {
+  font-size: 0.8rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 400px;
+  overflow-y: auto;
+  background: #111;
+  border: 1px solid #333;
+  padding: 0.5rem;
+}
+
+.sc-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 4px;
+  vertical-align: middle;
+  margin-right: 0.5rem;
+}
+
+.error-msg {
+  color: #ff6b6b;
+  padding: 0.5rem;
+  background: #2a1111;
+  border: 1px solid #ff6b6b;
+  margin: 0.5rem 0;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.admin-header h1 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.nav-tabs button {
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+}
+
+.nav-tabs button.active {
+  font-weight: bold;
+  background: #333;
+  color: #eee;
+}
