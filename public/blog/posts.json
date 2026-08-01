@@ -7,6 +7,15 @@
     "hopefully stable by end of week.",
     "-kine",
     {
+      "heading": "Runisch Glossary (#russian, #glossary, #tool)",
+      "content": [
+        {
+          "content": "An interactive SQLite-backed REPL for storing and retrieving Runisch terms, with translation, usage examples, and tags.",
+          "printout": "/blog/рунисч-глоссарий.md"
+        }
+      ]
+    },
+    {
       "heading": "sixteenth post (#meta, #fantasy, #blog)",
       "content": [
         "I've been holding onto this graphic for so many ages",

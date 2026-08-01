@@ -348,6 +348,11 @@ form#form > label {
   height: 100%;
 }
 
+.debug-printout-scroll,
+.debug-printout-scroll * {
+  font-family: "Fira Code", "Courier New", Courier, monospace !important;
+}
+
 .debug-printout-scroll pre,
 .debug-printout-scroll code {
   max-width: 100%;

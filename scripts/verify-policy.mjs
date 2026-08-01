@@ -94,6 +94,7 @@ function validateSectionNode(node, context, options = {}) {
     const allowed = new Set([
         ...SECTION_PROPS_KEYS,
         ...(options.allowAddonFields ? ["status", "text"] : []),
+        ...(options.allowMusicLinks ? ["title", "url"] : []),
     ]);
     assertAllowedKeys(node, allowed, context);
 
@@ -111,6 +112,12 @@ function validateSectionNode(node, context, options = {}) {
     }
     if ("link" in node) {
         assertSafeLink(node.link, `${context}.link`);
+    }
+    if ("url" in node) {
+        assertSafeLink(node.url, `${context}.url`);
+    }
+    if ("title" in node) {
+        assert(typeof node.title === "string", `${context}.title must be string`);
     }
     if ("printout" in node) {
         const value = node.printout;
@@ -132,7 +139,14 @@ function validateSectionNode(node, context, options = {}) {
             if (typeof item === "string") {
                 return;
             }
-            validateSectionNode(item, `${context}.content[${index}]`, options);
+            const itemContext = `${context}.content[${index}]`;
+            if (options.allowMusicLinks && "title" in item && "url" in item) {
+                assertAllowedKeys(item, new Set(["title", "url"]), itemContext);
+                assert(typeof item.title === "string", `${itemContext}.title must be string`);
+                assertSafeLink(item.url, `${itemContext}.url`);
+                return;
+            }
+            validateSectionNode(item, itemContext, options);
         });
     }
 }
@@ -192,7 +206,7 @@ function validateMusicLinks(value) {
             return;
         }
 
-        validateSectionNode(item, context, { allowAddonFields: true });
+        validateSectionNode(item, context, { allowAddonFields: true, allowMusicLinks: true });
     });
 }
 
