@@ -2,178 +2,486 @@
 <html>
 
 <head>
+  <meta charset="UTF-8" />
   <link rel="stylesheet" href="./style.css">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> Resume of Kirill Nevzorov </title>
-  <script>
-  </script>
+  <meta http-equiv="refresh" content="8; url=https://akinevz.com/">
+  <link rel="canonical" href="https://akinevz.dev/">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" />
+  <title> home of kine — moved </title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 3em 5em 6em;
+      background:
+        radial-gradient(rgba(0, 88, 238, 0.06) 1px, transparent 1px),
+        linear-gradient(160deg, #fdfbf5 0%, #f2f5fa 60%, #e8eef7 100%);
+      background-size: 22px 22px, 100% 100%;
+      font-family: "Fira Code", ui-monospace, "Cascadia Code", monospace;
+      color: #222;
+      min-height: 100vh;
+    }
+
+    .card {
+      background: #ece9d8;
+      border: 1px solid #0831d9;
+      border-radius: 4px 4px 0 0;
+      box-shadow: 4px 6px 18px rgba(20, 40, 90, 0.18);
+      max-width: 720px;
+      margin: 1.5em auto 3.5em;
+      overflow: hidden;
+    }
+
+    .titlebar {
+      background: linear-gradient(90deg, #0058ee 0%, #2893ff 100%);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 7px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+
+    .titlebar .tabs {
+      display: flex;
+      gap: 4px;
+    }
+
+    .titlebar button {
+      width: 20px;
+      height: 18px;
+      font-size: 10px;
+      line-height: 1;
+      border: 1px solid #fff;
+      background: linear-gradient(#fff 0%, #e8e8e8 100%);
+      color: #222;
+      border-radius: 2px;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .titlebar button:hover {
+      background: #ffe2b0;
+    }
+
+    .winbody {
+      padding: 18px 22px 20px;
+    }
+
+    .type {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0 0 6px;
+      min-height: 1.4em;
+    }
+
+    .type::after {
+      content: "▋";
+      color: #0058ee;
+      animation: blink 1s steps(1) infinite;
+    }
+
+    @keyframes blink {
+      50% {
+        opacity: 0;
+      }
+    }
+
+    .sub {
+      font-size: 14px;
+      color: #444;
+      margin: 0 0 14px;
+    }
+
+    .meter {
+      margin: 18px 0 12px;
+    }
+
+    .meter .label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #555;
+      margin-bottom: 5px;
+    }
+
+    .track {
+      height: 16px;
+      border: 2px solid #0831d9;
+      background: repeating-linear-gradient(90deg, #b5d3f7 0 8px, #dfe9f7 8px 10px);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .fill {
+      height: 100%;
+      background: linear-gradient(180deg, #7fd17f 0%, #3c9c3c 100%);
+      border-right: 1px solid #0831d9;
+      width: 0%;
+    }
+
+    .go {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 8px 18px;
+      border: 1px solid #0831d9;
+      border-radius: 3px;
+      background: linear-gradient(180deg, #fff 0%, #e3e9f5 100%);
+      color: #0831d9;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 1px 2px 0 rgba(8, 49, 217, 0.35);
+    }
+
+    .go:hover {
+      background: linear-gradient(180deg, #ffe9c4 0%, #ffd9a0 100%);
+    }
+
+    .stay {
+      margin-left: 14px;
+      font-size: 12px;
+      color: #0831d9;
+      background: none;
+      border: none;
+      font-family: inherit;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .paused {
+      font-size: 12px;
+      color: #7a1f1f;
+      margin-top: 8px;
+      display: none;
+    }
+
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .online h2 {
+      margin-top: 0;
+    }
+
+    .online ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .online li {
+      padding: 7px 12px;
+      border: 1px solid #c9d4e8;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 4px;
+      margin: 6px 0;
+    }
+
+    .online a {
+      color: #0058ee;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .online a:hover {
+      text-decoration: underline;
+      color: #c55a11;
+    }
+
+    .online .tag {
+      display: inline-block;
+      min-width: 96px;
+      color: #666;
+      font-weight: 400;
+    }
+
+    .online .tag::after {
+      content: " →";
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 3.5em;
+      font-size: 12px;
+      color: #666;
+    }
+
+    @media screen and (max-width: 750px) {
+      body {
+        padding: 1.5em 1.2em 4em;
+      }
+
+      .type {
+        font-size: 16px;
+      }
+    }
+  </style>
 </head>
 
 <body>
-  <section class="hasFlex hasColumns hasSpread">
-    <section>
-      <h2> what is kine doing now </h2>
-      <ul>
-        <li>
-          <h5>
-            writing a blogpost about ECS
-          </h5>
-        </li>
-        <li>
-          <h5>
-            writing a blogpost about Docker, Maven, and Java
-          </h5>
-        </li>
-        <li>
-          <h5>
-            thinking about how to best publish a blog
-          </h5>
-        </li>
-        <li>
-          <h5> working for a client
-          </h5>
-        </li>
-        <li>
-          <h5> finishing university
-          </h5>
-        </li>
-        <li>
-          <h5> looking for work
-          </h5>
-        </li>
-        <li>
-          <h5> building a backend for this website
-          </h5>
-        </li>
-      </ul>
-    </section>
-    <section>
-      <h1> who is kine </h1>
-      <ul>
-        <li>
-          <h5> current occupation: a student </h5>
-        </li>
-        <li>
-          <h5> current hobbies: computing </h5>
-        </li>
-        <li>
-          <h5> current location: England</h5>
-        </li>
-      </ul>
-    </section>
-  </section>
+  <div class="card" role="note" aria-label="you are being redirected">
+    <div class="titlebar">
+      <span>kine.exe — old home</span>
+      <span class="tabs">
+        <button type="button" aria-hidden="true">–</button>
+        <button type="button" aria-hidden="true">□</button>
+        <button type="button" aria-hidden="true">✕</button>
+      </span>
+    </div>
+    <div class="winbody">
+      <p class="type" id="typeLine"></p>
+      <p class="sub">the good stuff now lives at <a href="https://akinevz.com/" style="color:#0058ee;font-weight:700;">akinevz.com</a>.</p>
+      <div class="meter">
+        <div class="label"><span>redirecting you now</span><span id="count">8s</span></div>
+        <div class="track"><div class="fill" id="fill"></div></div>
+      </div>
+      <a class="go" href="https://akinevz.com/">take me there →</a>
+      <button class="stay" id="stay" type="button">stay a while</button>
+      <p class="paused" id="paused">ok, no rush. the door stays open →</p>
+    </div>
+  </div>
 
-  <section class="hasFlex hasColumns hasSpread">
-
-    <section>
-      <h2> what is kine interested in </h2>
+  <main>
+    <section class="hasFlex hasColumns hasSpread">
       <section>
-        <section>
-          <h5> programming
-          </h5>
-          <ul>
-            <li>
-              Java
-              <ul>
-                <li>Swing</li>
-                <li>JavaFX</li>
-                <li>OpenGL</li>
-              </ul>
-            </li>
-            <li>
-              Scala
-            </li>
-            <li>
-              Python
-            </li>
-            <li>
-              C++
-            </li>
-            <li>
-              Rust
-            </li>
-            <li>
-              Typescript
-            </li>
-          </ul>
-        </section>
-        <section>
-          <h5> system administration
-          </h5>
-          <ul>
-            <li>
-              Docker
-            </li>
-            <li>
-              Pandoc
-            </li>
-            <li>
-              Linux
-            </li>
-            <li>
-              Scripting
-            </li>
-          </ul>
-        </section>
-        <section>
-          <h5>teaching and tutoring
-          </h5>
-          <ul>
-            <li>
-              Linux
-            </li>
-            <li>
-              Programming
-            </li>
-            <li>
-              English Language
-            </li>
-          </ul>
-        </section>
-        <section>
-          <h5> machine learning
-          </h5>
-        </section>
-        <section>
-          <h5> web design
-          </h5>
-        </section>
-        <section>
-          <h5> electronics
-          </h5>
-        </section>
-        <section>
-          <h5> music
-          </h5>
-        </section>
-      </section>
-    </section>
-    <section>
-      <h2> where has kine been </h2>
-      <section>
-        <h5>for studies</h5>
+        <h2> what is kine doing now </h2>
         <ul>
           <li>
-            at University of Sussex
+            <h5>
+              writing a blogpost about ECS
+            </h5>
+          </li>
+          <li>
+            <h5>
+              writing a blogpost about Docker, Maven, and Java
+            </h5>
+          </li>
+          <li>
+            <h5>
+              thinking about how to best publish a blog
+            </h5>
+          </li>
+          <li>
+            <h5> working for a client
+            </h5>
+          </li>
+          <li>
+            <h5> finishing university
+            </h5>
+          </li>
+          <li>
+            <h5> looking for work
+            </h5>
+          </li>
+          <li>
+            <h5> building a backend for this website
+            </h5>
           </li>
         </ul>
       </section>
       <section>
-        <h5> for work </h5>
+        <h1> who is kine </h1>
         <ul>
           <li>
-            at Revolent Group (Salesforce)
+            <h5> current occupation: a student </h5>
           </li>
           <li>
-            in the wild (freelance)
+            <h5> current hobbies: computing </h5>
           </li>
           <li>
-            at CMS
+            <h5> current location: England</h5>
           </li>
         </ul>
       </section>
     </section>
-  </section>
-  <div id="root"></div>
-  <script type="module" src="/src/main.tsx"></script>
+
+    <section class="hasFlex hasColumns hasSpread">
+
+      <section>
+        <h2> what is kine interested in </h2>
+        <section>
+          <section>
+            <h5> programming
+            </h5>
+            <ul>
+              <li>
+                Java
+                <ul>
+                  <li>Swing</li>
+                  <li>JavaFX</li>
+                  <li>OpenGL</li>
+                </ul>
+              </li>
+              <li>
+                Scala
+              </li>
+              <li>
+                Python
+              </li>
+              <li>
+                C++
+              </li>
+              <li>
+                Rust
+              </li>
+              <li>
+                Typescript
+              </li>
+            </ul>
+          </section>
+          <section>
+            <h5> system administration
+            </h5>
+            <ul>
+              <li>
+                Docker
+              </li>
+              <li>
+                Pandoc
+              </li>
+              <li>
+                Linux
+              </li>
+              <li>
+                Scripting
+              </li>
+            </ul>
+          </section>
+          <section>
+            <h5>teaching and tutoring
+            </h5>
+            <ul>
+              <li>
+                Linux
+              </li>
+              <li>
+                Programming
+              </li>
+              <li>
+                English Language
+              </li>
+            </ul>
+          </section>
+          <section>
+            <h5> machine learning
+            </h5>
+          </section>
+          <section>
+            <h5> web design
+            </h5>
+          </section>
+          <section>
+            <h5> electronics
+            </h5>
+          </section>
+          <section>
+            <h5> music
+            </h5>
+          </section>
+        </section>
+      </section>
+      <section>
+        <h2> where has kine been </h2>
+        <section>
+          <h5>for studies</h5>
+          <ul>
+            <li>
+              at University of Sussex
+            </li>
+          </ul>
+        </section>
+        <section>
+          <h5> for work </h5>
+          <ul>
+            <li>
+              at Revolent Group (Salesforce)
+            </li>
+            <li>
+              in the wild (freelance)
+            </li>
+            <li>
+              at CMS
+            </li>
+          </ul>
+        </section>
+      </section>
+    </section>
+
+    <section class="online">
+      <h2> where you can find kine online </h2>
+      <ul>
+        <li><span class="tag">the new home</span><a href="https://akinevz.com/">akinevz.com</a></li>
+        <li><span class="tag">github</span><a href="https://github.com/akinevz2">github.com/akinevz2</a></li>
+        <li><span class="tag">github archive</span><a href="https://github.com/akinevz">github.com/akinevz</a></li>
+        <li><span class="tag">youtube</span><a href="https://www.youtube.com/@akinevz">youtube.com/@akinevz</a></li>
+        <li><span class="tag">soundcloud</span><a href="https://soundcloud.com/akinevz">soundcloud.com/akinevz</a></li>
+        <li><span class="tag">linkedin</span><a href="https://www.linkedin.com/in/akinevz/">linkedin.com/in/akinevz</a></li>
+        <li><span class="tag">instagram</span><a href="https://www.instagram.com/akinevz2/">instagram.com/akinevz2</a></li>
+        <li><span class="tag">x / twitter</span><a href="https://x.com/akinevz">x.com/akinevz</a></li>
+        <li><span class="tag">email</span><a href="mailto:akinevz@gmail.com">akinevz@gmail.com</a> · <a href="mailto:akinevz@outlook.com">akinevz@outlook.com</a></li>
+      </ul>
+    </section>
+
+    <footer>
+      this was the last version of the site hosted here (nov 2024). it auto-redirects to the new home.
+    </footer>
+  </main>
+
+  <script>
+    (function () {
+      var TARGET = "https://akinevz.com/";
+      var SECONDS = 8;
+
+      var line = document.getElementById("typeLine");
+      var countEl = document.getElementById("count");
+      var fillEl = document.getElementById("fill");
+      var stayBtn = document.getElementById("stay");
+      var pausedEl = document.getElementById("paused");
+
+      var text = "psst — this old home has moved.";
+      var i = 0;
+      var typeTimer = setInterval(function () {
+        line.textContent = text.slice(0, ++i);
+        if (i >= text.length) clearInterval(typeTimer);
+      }, 42);
+
+      var remaining = SECONDS;
+      var paused = false;
+      var timer = setInterval(function () {
+        if (paused) return;
+        remaining -= 0.1;
+        if (remaining <= 0) {
+          clearInterval(timer);
+          window.location.href = TARGET;
+          return;
+        }
+        countEl.textContent = Math.ceil(remaining) + "s";
+        fillEl.style.width = (100 - (remaining / SECONDS) * 100) + "%";
+      }, 100);
+
+      stayBtn.addEventListener("click", function () {
+        paused = true;
+        stayBtn.style.display = "none";
+        pausedEl.style.display = "block";
+        countEl.textContent = "paused";
+        fillEl.style.width = "100%";
+      });
+
+      document.querySelectorAll(".go, .stay").forEach(function () { });
+    })();
+  </script>
 </body>
+
+</html>
