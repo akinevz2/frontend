@@ -202,14 +202,55 @@ const getSpotifyEmbedInfo = (
   }
 };
 
+const YOUTUBE_EMBED_HOST = "https://www.youtube.com/embed/";
+
+/**
+ * Detects if a URL is a YouTube video and returns its embed info.
+ * Supports both youtube.com/watch?v=ID and youtu.be/ID formats.
+ */
+const getYouTubeEmbedInfo = (
+  urlValue: string,
+): { embedUrl: string; resourceType: "video" } | null => {
+  try {
+    const parsed = new URL(urlValue);
+
+    // Handle youtube.com URLs
+    if (
+      parsed.hostname === "www.youtube.com" ||
+      parsed.hostname === "youtube.com"
+    ) {
+      const videoId = parsed.searchParams.get("v");
+      if (!videoId) return null;
+      return {
+        embedUrl: `${YOUTUBE_EMBED_HOST}${videoId}`,
+        resourceType: "video",
+      };
+    }
+
+    // Handle youtu.be short URLs (e.g., https://youtu.be/VIDEO_ID)
+    if (parsed.hostname === "youtu.be") {
+      const videoId = parsed.pathname.slice(1); // Remove leading /
+      if (!videoId) return null;
+      return {
+        embedUrl: `${YOUTUBE_EMBED_HOST}${videoId}`,
+        resourceType: "video",
+      };
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+};
+
 /** Single fixed height for all Spotify embeds (compact player). */
 const SPOTIFY_IFRAME_HEIGHT = 152;
 
 /**
- * Renders a single favourite link as a real DOM element (Spotify iframe
- * when possible, otherwise a plain anchor link). Used both as a top-level
- * item inside a Section's `content` array and as the leaf node when a
- * favourite-links JSON entry is itself a nested `SectionProps`.
+ * Renders a single favourite link as a real DOM element (Spotify or YouTube iframe
+ * when possible, otherwise a plain anchor link). Used both as a top-level item inside
+ * a Section's `content` array and as the leaf node when a favourite-links JSON entry
+ * is itself a nested `SectionProps`.
  */
 export const FavouriteLinkItem = ({
   title,
@@ -219,29 +260,33 @@ export const FavouriteLinkItem = ({
   url: string;
 }) => {
   const spotify = getSpotifyEmbedInfo(url);
+  const youtube = getYouTubeEmbedInfo(url);
 
-  if (!spotify) {
+  // Determine which embed to use (prefer Spotify over YouTube)
+  if (spotify || youtube) {
+    const embedUrl = spotify?.embedUrl ?? youtube!.embedUrl;
+    const label = spotify ? "Spotify" : "YouTube";
     return (
-      <p className="music-track-title">
-        <a href={url}>{title}</a>
-      </p>
+      <>
+        <iframe
+          title={`${label} item: ${title}`}
+          style={{ borderRadius: "12px" }}
+          src={embedUrl}
+          width="100%"
+          height={SPOTIFY_IFRAME_HEIGHT}
+          allowFullScreen
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+          referrerPolicy="strict-origin-when-cross-origin"
+        />
+      </>
     );
   }
 
   return (
-    <>
-      <iframe
-        title={`Spotify item: ${title}`}
-        style={{ borderRadius: "12px" }}
-        src={spotify.embedUrl}
-        width="100%"
-        height={SPOTIFY_IFRAME_HEIGHT}
-        allowFullScreen
-        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-        loading="lazy"
-        referrerPolicy="strict-origin-when-cross-origin"
-      />
-    </>
+    <p className="music-track-title">
+      <a href={url}>{title}</a>
+    </p>
   );
 };
 
@@ -296,19 +341,19 @@ const toMusicSections = (
 ): SectionProps[] => {
   const profiles = Array.isArray(payload.profiles)
     ? payload.profiles.map((profile) => ({
-        ...profile,
-        profileImageUrl:
-          getProfileImageUrl(profile.owner) ?? profile.profileImageUrl,
-      }))
+      ...profile,
+      profileImageUrl:
+        getProfileImageUrl(profile.owner) ?? profile.profileImageUrl,
+    }))
     : [
-        {
-          owner: "akinevz",
-          source: payload.source ?? "https://soundcloud.com/akinevz",
-          profileImageUrl: getProfileImageUrl("akinevz"),
-          trackCount: payload.trackCount,
-          tracks: payload.tracks,
-        },
-      ];
+      {
+        owner: "akinevz",
+        source: payload.source ?? "https://soundcloud.com/akinevz",
+        profileImageUrl: getProfileImageUrl("akinevz"),
+        trackCount: payload.trackCount,
+        tracks: payload.tracks,
+      },
+    ];
 
   const favouriteLinkList: SectionProps[] = favouriteLinks.map(
     favouriteLinkToSectionProps,
