@@ -23,6 +23,9 @@ public class SessionStore
 
     public void Remove(string id) => _sessions.TryRemove(id, out _);
 
+    /// <summary>Clear all sessions (force-logout everyone).</summary>
+    public void RemoveAll() => _sessions.Clear();
+
     public bool IsValid(string id)
     {
         if (!_sessions.TryGetValue(id, out var s)) return false;
