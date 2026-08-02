@@ -5,7 +5,9 @@
   <meta charset="UTF-8" />
   <link rel="stylesheet" href="./style.css">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="refresh" content="8; url=https://akinevz.com/">
+  <noscript>
+    <meta http-equiv="refresh" content="8; url=https://akinevz.com/">
+  </noscript>
   <link rel="canonical" href="https://akinevz.dev/">
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -487,10 +489,16 @@
 
       var remaining = SECONDS;
       var paused = false;
+
+      var redirectTimer = setTimeout(function () {
+        window.location.href = TARGET;
+      }, SECONDS * 1000);
+
       var timer = setInterval(function () {
         if (paused) return;
         remaining -= 0.1;
         if (remaining <= 0) {
+          clearTimeout(redirectTimer);
           clearInterval(timer);
           window.location.href = TARGET;
           return;
@@ -501,6 +509,8 @@
 
       stayBtn.addEventListener("click", function () {
         paused = true;
+        clearTimeout(redirectTimer);
+        clearInterval(timer);
         stayBtn.style.display = "none";
         pausedEl.style.display = "block";
         countEl.textContent = "paused";
