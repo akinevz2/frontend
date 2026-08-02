@@ -18,8 +18,7 @@ RUN dotnet publish -c Release -o /app/publish --no-restore
 # ── Stage 3: Runtime image ────────────────────────────────────────────
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 WORKDIR /app
-# 8443 = HTTPS (main), 8080 = HTTP (redirects to HTTPS)
-EXPOSE 8443
+# 8080 = HTTP (behind a TLS-terminating reverse proxy such as `tailscale serve`)
 EXPOSE 8080
 # Kestrel is configured in Program.cs (ConfigureKestrel), so no ASPNETCORE_URLS needed
 VOLUME /app/data
@@ -27,5 +26,7 @@ VOLUME /app/data/certs
 
 COPY --from=backend-build /app/publish ./
 COPY --from=frontend-build /wwwroot ./wwwroot
+# Allowed user IDs list (one per line; # comments allowed). Rebuild to apply changes.
+COPY .allowed-users ./
 
 ENTRYPOINT ["dotnet", "Admin.dll"]

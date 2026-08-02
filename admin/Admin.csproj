@@ -5,4 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Admin</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Fido2" Version="5.0.0-preview.3" />
+    <PackageReference Include="PeterO.Cbor" Version="5.0.0-alpha2" />
+  </ItemGroup>
 </Project>

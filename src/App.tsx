@@ -79,7 +79,7 @@ const ROUTE_CONFIG = Object.fromEntries(
   ]),
 ) as Record<string, RouteConfig>;
 
-const ADMIN_LOGIN_REDIRECT = "https://ws-vision:8443/login";
+const ADMIN_LOGIN_REDIRECT = "http://ws-vision/login";
 
 const normalizePath = (path: string) => {
   if (!path || path === "/") {

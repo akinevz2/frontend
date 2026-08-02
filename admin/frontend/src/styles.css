@@ -4,7 +4,6 @@ body {
   color: #eee;
   margin: 0;
   padding: 1rem;
-  min-height: 100vh;
   display: flex;
   justify-content: center;
 }
@@ -26,7 +25,7 @@ body {
 }
 
 .window-body {
-  color: #eee;
+  color: #2a2a2a;
 }
 
 a {
