@@ -341,19 +341,19 @@ const toMusicSections = (
 ): SectionProps[] => {
   const profiles = Array.isArray(payload.profiles)
     ? payload.profiles.map((profile) => ({
-      ...profile,
-      profileImageUrl:
-        getProfileImageUrl(profile.owner) ?? profile.profileImageUrl,
-    }))
+        ...profile,
+        profileImageUrl:
+          getProfileImageUrl(profile.owner) ?? profile.profileImageUrl,
+      }))
     : [
-      {
-        owner: "akinevz",
-        source: payload.source ?? "https://soundcloud.com/akinevz",
-        profileImageUrl: getProfileImageUrl("akinevz"),
-        trackCount: payload.trackCount,
-        tracks: payload.tracks,
-      },
-    ];
+        {
+          owner: "akinevz",
+          source: payload.source ?? "https://soundcloud.com/akinevz",
+          profileImageUrl: getProfileImageUrl("akinevz"),
+          trackCount: payload.trackCount,
+          tracks: payload.tracks,
+        },
+      ];
 
   const favouriteLinkList: SectionProps[] = favouriteLinks.map(
     favouriteLinkToSectionProps,

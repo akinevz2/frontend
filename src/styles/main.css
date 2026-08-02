@@ -15,6 +15,11 @@
   --gap-size: 0.5em;
   --menu-bar-height: calc(2em + 4px);
   --trailer-tail: 8px;
+  /* Height of the music page's fixed debug bar (fontSize 0.85rem + 2 * 0.5rem
+     padding + 2px border, with a little slack for the generatedAt timestamp
+     wrapping). Used to reserve space below .page so the bar never overlaps
+     the last row of content. */
+  --debug-bar-height: 2.5em;
   --clippy-border-flash-color: transparent;
   font-size: 16px;
 }
@@ -665,7 +670,7 @@ body {
 
 /* Account for the fixed debug bar on the music page (sits below menu bar) */
 body:has([data-debug-bar]) .page {
-  padding-bottom: calc(var(--menu-bar-height)+5em);
+  padding-bottom: calc(var(--debug-bar-height) + var(--trailer-tail));
 }
 
 /* Leave room for the fixed unhide chinbar on desktop */
@@ -690,9 +695,10 @@ body:has(.unhide-button-container) .page {
 @media screen and (max-width: 768px) {
   :root {
     --gap-size: 1.26em;
+    --debug-bar-height: 3.25em;
   }
   body:has([data-debug-bar]) .page {
-    padding-bottom: calc(var(--menu-bar-height) + 2em);
+    padding-bottom: calc(var(--debug-bar-height) + var(--trailer-tail));
   }
   .page {
     width: 100%;
