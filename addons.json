@@ -3,6 +3,12 @@
   "theme": "open",
   "content": [
     {
+      "heading": "Rueg Distributable Config (dist.7z)",
+      "content": "Full distributable World of Warcraft configuration archive — addons, WeakAuras, and profiles, packaged for easy install.",
+      "status": "available",
+      "link": "/dist.7z"
+    },
+    {
       "heading": "more addons coming after I finish my work",
       "link": "https://akinevz.dev/hire-me"
     },

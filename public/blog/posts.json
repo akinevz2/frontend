@@ -2,10 +2,15 @@
   "theme": "open",
   "heading": "kine's blog posts",
   "content": [
-    "we're in process of recovering all lost codes!",
-    "please excuse the frequent changes!",
-    "hopefully stable by end of week.",
-    "-kine",
+    "blog operating normally! :D",
+    {
+      "heading": "Rueg Config published!",
+      "content": [
+        "Packed up the full Rueg configuration into a distributable archive — addons, WeakAuras, and profiles in one drop.",
+        "Grab it from the [addons page](/addons) or [direct download](/dist.7z)."
+      ],
+      "link": "/dist.7z"
+    },
     {
       "heading": "Runisch Glossary (#russian, #glossary, #tool)",
       "content": [
