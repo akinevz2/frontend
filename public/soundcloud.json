@@ -1,13 +1,31 @@
 {
   "source": "https://soundcloud.com/akinevz",
-  "generatedAt": "2026-08-02T02:27:04.273Z",
-  "asOfUploadingTrackCount": 80,
-  "trackCount": 80,
+  "generatedAt": "2026-08-05T04:57:06.042Z",
+  "asOfUploadingTrackCount": 84,
+  "trackCount": 84,
   "tracks": [
     {
       "owner": "akinevz",
+      "path": "/akinevz/thing",
+      "title": "Thing",
+      "url": "https://soundcloud.com/akinevz/thing"
+    },
+    {
+      "owner": "akinevz",
+      "path": "/akinevz/hoppa",
+      "title": "Hoppa",
+      "url": "https://soundcloud.com/akinevz/hoppa"
+    },
+    {
+      "owner": "akinevz",
+      "path": "/akinevz/ebrst",
+      "title": "Ebrst",
+      "url": "https://soundcloud.com/akinevz/ebrst"
+    },
+    {
+      "owner": "akinevz",
       "path": "/akinevz/bloody-bits",
-      "title": "Bloody Tekk HQ",
+      "title": "Bloody Trek HQ",
       "url": "https://soundcloud.com/akinevz/bloody-bits"
     },
     {
@@ -19,7 +37,7 @@
     {
       "owner": "akinevz",
       "path": "/akinevz/constant-diagonality",
-      "title": "Constantly Diagonal HQ",
+      "title": "Counterspell HQ",
       "url": "https://soundcloud.com/akinevz/constant-diagonality"
     },
     {
@@ -205,7 +223,7 @@
     {
       "owner": "akinevz",
       "path": "/akinevz/wat",
-      "title": "Er HQ",
+      "title": "Er",
       "url": "https://soundcloud.com/akinevz/wat"
     },
     {
@@ -285,6 +303,12 @@
       "path": "/akinevz/u-dont-know-gabber",
       "title": "They Were Laid to Rest Cont.",
       "url": "https://soundcloud.com/akinevz/u-dont-know-gabber"
+    },
+    {
+      "owner": "kirill_nevzorov",
+      "path": "/kirill_nevzorov/somewhat-ebrsting",
+      "title": "Somewhat Ebrsting",
+      "url": "https://soundcloud.com/kirill_nevzorov/somewhat-ebrsting"
     },
     {
       "owner": "kirill_nevzorov",
@@ -490,12 +514,30 @@
       "owner": "akinevz",
       "source": "https://soundcloud.com/akinevz",
       "profileImageUrl": "https://i1.sndcdn.com/avatars-eI6ppszSrGTnxwcJ-uK7pyw-large.jpg",
-      "trackCount": 47,
+      "trackCount": 50,
       "tracks": [
         {
           "owner": "akinevz",
+          "path": "/akinevz/thing",
+          "title": "Thing",
+          "url": "https://soundcloud.com/akinevz/thing"
+        },
+        {
+          "owner": "akinevz",
+          "path": "/akinevz/hoppa",
+          "title": "Hoppa",
+          "url": "https://soundcloud.com/akinevz/hoppa"
+        },
+        {
+          "owner": "akinevz",
+          "path": "/akinevz/ebrst",
+          "title": "Ebrst",
+          "url": "https://soundcloud.com/akinevz/ebrst"
+        },
+        {
+          "owner": "akinevz",
           "path": "/akinevz/bloody-bits",
-          "title": "Bloody Tekk HQ",
+          "title": "Bloody Trek HQ",
           "url": "https://soundcloud.com/akinevz/bloody-bits"
         },
         {
@@ -507,7 +549,7 @@
         {
           "owner": "akinevz",
           "path": "/akinevz/constant-diagonality",
-          "title": "Constantly Diagonal HQ",
+          "title": "Counterspell HQ",
           "url": "https://soundcloud.com/akinevz/constant-diagonality"
         },
         {
@@ -693,7 +735,7 @@
         {
           "owner": "akinevz",
           "path": "/akinevz/wat",
-          "title": "Er HQ",
+          "title": "Er",
           "url": "https://soundcloud.com/akinevz/wat"
         },
         {
@@ -780,8 +822,14 @@
       "owner": "kirill_nevzorov",
       "source": "https://soundcloud.com/kirill_nevzorov",
       "profileImageUrl": "https://i1.sndcdn.com/avatars-vsMwMrUzrKWAJP7N-Cdzr9w-large.jpg",
-      "trackCount": 33,
+      "trackCount": 34,
       "tracks": [
+        {
+          "owner": "kirill_nevzorov",
+          "path": "/kirill_nevzorov/somewhat-ebrsting",
+          "title": "Somewhat Ebrsting",
+          "url": "https://soundcloud.com/kirill_nevzorov/somewhat-ebrsting"
+        },
         {
           "owner": "kirill_nevzorov",
           "path": "/kirill_nevzorov/has",
