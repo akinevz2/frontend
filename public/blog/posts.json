@@ -7,9 +7,12 @@
       "heading": "Rueg Config published!",
       "content": [
         "Packed up the full Rueg configuration into a distributable archive — addons, WeakAuras, and profiles in one drop.",
-        "Grab it from the [addons page](/addons) or [direct download](/dist.7z)."
-      ],
-      "link": "/dist.7z"
+        "Grab it from the [addons page](/addons) or click below.",
+        {
+          "headind": "Download",
+          "link": "/dist.7z"
+        }
+      ]
     },
     {
       "heading": "Runisch Glossary (#russian, #glossary, #tool)",
