@@ -10,6 +10,7 @@
 # Other:
 #     make add ID=kine-phone      # append a user ID, then apply
 #     make remove ID=kine-phone   # remove a user ID, then apply
+#     make pull                   # quick redeploy (runs make apply)
 #     make sync-fqdn              # resolve FQDN, commit + push it into the frontend repo if changed
 #     make logs | status | stop | start | shell
 
@@ -32,7 +33,7 @@ RUN_ARGS = -d --name $(CONTAINER) -p 8080:8080 -p 80:1337 \
           $(if $(PASSKEY_DEBUG),-e PASSKEY_DEBUG=1) \
           --restart unless-stopped $(IMAGE)
 
-.PHONY: help edit apply sync-fqdn add remove logs status stop start shell
+.PHONY: help edit apply pull sync-fqdn add remove logs status stop start shell
 
 # Default target: `make` shows this file in a pager.
 help:
@@ -62,6 +63,10 @@ apply:
 	@echo "✓ http://ws-vision/login  -> https://$(FQDN):8443/login  (via host port 80)"
 	@cd $(ADMIN_DIR) && git add -A
 	@echo "✓ staged admin changes (git add -A)"
+
+# Shorthand for a quick redeploy — just runs `make apply`.
+pull: apply
+	@true
 
 # Re-resolve the FQDN and sync it into the frontend repo (commit + push if
 # changed), without rebuilding/restarting the container.
