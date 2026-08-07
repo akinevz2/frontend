@@ -51,10 +51,7 @@ dist-ssr
 
 docker
 
-1st.fmt.json
-2nd.fmt.json
 .cache/
 tsconfig.tsbuildinfo
 */**/soundcloud.json
-1st.fmt.json
-2nd.fmt.json
+admin/wwwroot/

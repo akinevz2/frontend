@@ -1,5 +1,7 @@
 # Admin panel — operations Makefile.
 #
+#     make help      # (default) read this file in a pager (less)
+#
 # Edit the allow-list, then apply:
 #
 #     make edit      # open .allowed-users in $EDITOR
@@ -28,7 +30,11 @@ RUN_ARGS = -d --name $(CONTAINER) -p 8080:8080 -p 80:1337 \
           $(if $(PASSKEY_DEBUG),-e PASSKEY_DEBUG=1) \
           --restart unless-stopped $(IMAGE)
 
-.PHONY: edit apply add remove logs status stop start shell
+.PHONY: help edit apply add remove logs status stop start shell
+
+# Default target: `make` shows this file in a pager.
+help:
+	@less $(MAKEFILE_LIST)
 
 edit:
 	$${EDITOR:-nano} $(ALLOWED)
