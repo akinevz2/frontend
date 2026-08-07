@@ -297,7 +297,7 @@ if (!string.IsNullOrEmpty(devPassword))
             CreatedAt = DateTimeOffset.UtcNow,
         };
         await EstablishSessionAsync(ctx, store, session);
-        return Results.Redirect("/landing");
+        return Results.Redirect("/panel");
     }).AllowAnonymous();
 }
 
@@ -427,7 +427,7 @@ app.MapPost("/auth/passkey/enroll/complete", async (
     };
     await EstablishSessionAsync(ctx, store, session);
 
-    return Results.Ok(new { success = true, redirect = "/landing" });
+    return Results.Ok(new { success = true, redirect = "/panel" });
 }).AllowAnonymous();
 
 // ── Passkey: Authentication options ───────────────────────────────────
@@ -473,7 +473,7 @@ app.MapPost("/auth/passkey/login/complete", async (
 
     ctx.Session.Remove("passkey_auth_challenge");
 
-    return Results.Ok(new { success = true, redirect = "/landing" });
+    return Results.Ok(new { success = true, redirect = "/panel" });
 }).AllowAnonymous();
 
 // ── Passkey: List credentials ─────────────────────────────────────────
@@ -619,7 +619,7 @@ app.MapGet("/auth/soundcloud/callback", async (
     };
     await EstablishSessionAsync(ctx, store, session);
 
-    return Results.Redirect("/landing");
+    return Results.Redirect("/panel");
 });
 
 // ── Auth: initiate Google login ──────────────────────────────────────
@@ -679,7 +679,7 @@ app.MapGet("/auth/google/callback", async (
     };
     await EstablishSessionAsync(ctx, store, session);
 
-    return Results.Redirect("/landing");
+    return Results.Redirect("/panel");
 });
 
 // ── Auth: logout ──────────────────────────────────────────────────────
@@ -819,7 +819,10 @@ if (Directory.Exists(staticDir))
     app.UseStaticFiles();
 }
 
-// Fallback for SPA routes — serve index.html for non-API, non-auth paths
+// Fallback for SPA routes — serve index.html for non-API, non-auth paths.
+// The admin has separate pages at separate paths: "/" is the public landing
+// viewer (embedded as an iframe on the site), "/login" is the auth page
+// (opened in its own tab), and "/panel" is the authenticated control panel.
 app.MapFallback(context =>
 {
     // Don't intercept API or auth routes
@@ -830,15 +833,20 @@ app.MapFallback(context =>
         return Task.CompletedTask;
     }
 
-    var store = context.RequestServices.GetRequiredService<SessionStore>();
-    var sid = context.Request.Cookies["admin_sid"];
-    var isAdmin = sid is not null && store.IsValid(sid);
-
-    // Redirect unauthenticated users to login (except the login page itself)
-    if (!isAdmin && context.Request.Path != "/login")
+    // The control panel requires an authenticated session; the landing and
+    // login pages stay public (the landing viewer is embedded cross-site, and
+    // the login page is opened top-level for the passkey ceremony).
+    if (context.Request.Path.StartsWithSegments("/panel")
+        || context.Request.Path.Equals("/landing"))
     {
-        context.Response.Redirect("/login");
-        return Task.CompletedTask;
+        var store = context.RequestServices.GetRequiredService<SessionStore>();
+        var sid = context.Request.Cookies["admin_sid"];
+        var isAdmin = sid is not null && store.IsValid(sid);
+        if (!isAdmin)
+        {
+            context.Response.Redirect("/login");
+            return Task.CompletedTask;
+        }
     }
 
     var index = Path.Combine(staticDir, "index.html");
