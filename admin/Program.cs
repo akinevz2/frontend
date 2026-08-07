@@ -97,7 +97,11 @@ builder.Services.AddAuthentication("Cookies")
         o.Cookie.Name = "admin_session";
         o.Cookie.HttpOnly = true;
         o.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        o.Cookie.SameSite = SameSiteMode.Lax;
+        // None so the session works when the admin mini-site is embedded as a
+        // cross-site iframe from akinevz.com. (Lax is withheld on cross-site
+        // iframe requests, which breaks both the passkey challenge round-trip
+        // and the logged-in session inside the iframe.)
+        o.Cookie.SameSite = SameSiteMode.None;
         o.LoginPath = "/auth/login";
         o.ExpireTimeSpan = TimeSpan.FromDays(7);
     });
@@ -116,7 +120,10 @@ builder.Services.AddSession(o =>
 {
     o.Cookie.HttpOnly = true;
     o.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    o.Cookie.SameSite = SameSiteMode.Lax;
+    // None — see the admin_session cookie note: the session must round-trip
+    // for the cross-site iframe (holds the passkey challenge between begin
+    // and complete).
+    o.Cookie.SameSite = SameSiteMode.None;
     o.IdleTimeout = TimeSpan.FromMinutes(10);
 });
 
@@ -199,7 +206,9 @@ async Task EstablishSessionAsync(HttpContext ctx, SessionStore store, Session se
     ctx.Response.Cookies.Append("admin_sid", session.Id, new CookieOptions
     {
         HttpOnly = true,
-        SameSite = SameSiteMode.Lax,
+        // None so the SessionStore id travels with cross-site iframe requests
+        // (same rationale as admin_session).
+        SameSite = SameSiteMode.None,
         MaxAge = TimeSpan.FromDays(7),
         Secure = opts.UseHttps,
     });

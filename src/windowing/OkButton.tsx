@@ -3,6 +3,7 @@ import {
   useEffect,
   useRef,
   type ButtonHTMLAttributes,
+  type ReactNode,
 } from "react";
 
 /**
@@ -205,12 +206,11 @@ const removeDocumentHandlers = (): void => {
   }
 };
 
-export type OkButtonProps = Omit<
-  ButtonHTMLAttributes<HTMLButtonElement>,
-  "children"
-> & {
+export type OkButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   /** Optional click handler — the button always renders the text "OK". */
   onClick?: ButtonHTMLAttributes<HTMLButtonElement>["onClick"];
+  /** Optional label — defaults to "OK". */
+  children?: ReactNode;
 };
 
 /**
@@ -236,7 +236,7 @@ export type OkButtonProps = Omit<
  *    lives on the module, not in React state, because the keydown
  *    handler reads/writes it synchronously without re-renders.
  */
-export const OkButton = ({ onClick, ...rest }: OkButtonProps) => {
+export const OkButton = ({ children, onClick, ...rest }: OkButtonProps) => {
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
   // Install/remove the document-level Tab handler based on whether any
@@ -271,7 +271,7 @@ export const OkButton = ({ onClick, ...rest }: OkButtonProps) => {
 
   return (
     <button {...rest} ref={setButtonRef} onClick={onClick}>
-      OK
+      {children ?? "OK"}
     </button>
   );
 };

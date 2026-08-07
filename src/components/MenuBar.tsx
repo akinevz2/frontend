@@ -41,6 +41,21 @@ const isInternalPath = (href: string) => href.startsWith("/");
 const SITEMAP_HREF = "/sitemap";
 const HIDDEN_HREFS = ["/addons", "/resume", "/documents"];
 
+// Hidden easter egg: dropping the Clippy PNG onto the home menu item
+// navigates to the WS-VISION doors page.
+export const CLIPPY_DRAG_MIME = "application/x-kine-clippy";
+export const CLIPPY_DROP_HREF = "/blog/login";
+const CLIPPY_HOME_HREF = "/";
+
+const isClippyDrop = (dataTransfer: DataTransfer): boolean => {
+  const types = Array.from(dataTransfer.types);
+  if (types.includes(CLIPPY_DRAG_MIME)) {
+    return true;
+  }
+  const uriList = dataTransfer.getData("text/uri-list");
+  return uriList.toLowerCase().includes("clippy.png");
+};
+
 const normalizePath = (path: string) => {
   if (!path || path === "/") {
     return "/";
@@ -142,6 +157,27 @@ export default function MenuBar({
               href={item.href}
               role="menuitem"
               data-key={item.label.charAt(0).toLowerCase()}
+              data-clippy-drop-target={
+                item.href === CLIPPY_HOME_HREF ? "true" : undefined
+              }
+              onDragOver={(event) => {
+                if (item.href !== CLIPPY_HOME_HREF) {
+                  return;
+                }
+                event.preventDefault();
+                event.dataTransfer.dropEffect = "link";
+              }}
+              onDrop={(event) => {
+                if (item.href !== CLIPPY_HOME_HREF) {
+                  return;
+                }
+                event.preventDefault();
+                if (!isClippyDrop(event.dataTransfer)) {
+                  return;
+                }
+                event.stopPropagation();
+                onNavigate?.(CLIPPY_DROP_HREF);
+              }}
               onClick={(event) => {
                 if (
                   event.defaultPrevented ||
