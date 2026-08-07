@@ -138,14 +138,18 @@ bash deploy/deploy.sh
 
 ## Routes
 
-The admin panel runs on WS-VISION at `http://ws-vision:8443`. The main site's
-`/blog/login` route redirects there automatically.
+The admin panel runs on WS-VISION behind `tailscale serve` at
+`https://<fqdn>:8443`. Each page lives at its own path: the landing viewer is
+public (the main site embeds it cross-site in an iframe), the login page is
+opened in a top-level tab only when authenticating (the passkey ceremony needs
+a real tab), and the control panel requires a session.
 
 | Route (on WS-VISION)        | Auth              | Description                                 |
 | --------------------------- | ----------------- | ------------------------------------------- |
-| `/login`                    | No                | Login page with SoundCloud + Google buttons |
-| `/landing`                  | Yes               | Configurable hyperlinks landing page        |
-| `/soundcloud`               | Yes (SC)          | SoundCloud profile data explorer            |
+| `/`                         | No                | Public landing page viewer (embedded iframe)|
+| `/login`                    | No                | Login page (passkey + OAuth)                |
+| `/panel`                    | Yes               | Admin control panel (landing/tweaks/devices)|
+| `/landing`                  | Yes               | Legacy alias for `/panel`                   |
 | `/auth/soundcloud`          | No                | Initiates SoundCloud OAuth flow             |
 | `/auth/soundcloud/callback` | No                | SoundCloud OAuth callback                   |
 | `/auth/google`              | No                | Initiates Google OAuth flow                 |
@@ -155,9 +159,6 @@ The admin panel runs on WS-VISION at `http://ws-vision:8443`. The main site's
 | `/api/landing`              | GET: No, PUT: Yes | Landing page data (hyperlinks)              |
 | `/api/soundcloud/me/{path}` | Yes (SC)          | Proxies to SoundCloud `/me/*` API           |
 | `/status`                   | No                | Health check                                |
-
-On the main site (akinevz.com), `/blog/login` redirects to
-`http://ws-vision:8443/login`.
 
 ## SoundCloud API Explorer
 

@@ -949,8 +949,22 @@ function DevicesPanel() {
 // ── Main App ──────────────────────────────────────────────────────────
 
 type Page = "landing" | "tweaks" | "devices" | "soundcloud";
+type Route = "login" | "panel" | "landing";
+
+// The admin backend serves each page at its own path: "/" is the public
+// landing viewer (embedded cross-site in an iframe), "/login" is the auth
+// page (opened in a top-level tab for the passkey ceremony), and "/panel" is
+// the authenticated control panel. "/landing" stays as an alias for the panel
+// so old post-login redirects still land somewhere useful.
+function getRoute(): Route {
+    const p = window.location.pathname;
+    if (p === "/login" || p.startsWith("/login")) return "login";
+    if (p === "/panel" || p.startsWith("/panel") || p === "/landing") return "panel";
+    return "landing";
+}
 
 export default function App() {
+    const [route] = useState<Route>(getRoute);
     const [user, setUser] = useState<UserInfo | null>(null);
     const [authChecked, setAuthChecked] = useState(false);
     const [page, setPage] = useState<Page>("landing");
@@ -962,7 +976,15 @@ export default function App() {
             .catch(() => { })
             .finally(() => setAuthChecked(true));
 
-    useEffect(() => { void checkAuth(); }, []);
+    // Only the control panel needs to know who's logged in; the landing and
+    // login pages are public and render without an auth round-trip.
+    useEffect(() => {
+        if (route !== "panel") {
+            setAuthChecked(true);
+            return;
+        }
+        void checkAuth();
+    }, [route]);
 
     const logout = async () => {
         await fetch("/auth/logout", { method: "POST", credentials: "include" });
@@ -970,12 +992,39 @@ export default function App() {
         window.location.href = "/login";
     };
 
+    const renderLogin = () => (
+        <LoginPage onLoggedIn={() => { window.location.href = "/panel"; }} />
+    );
+
+    if (route === "login") {
+        return renderLogin();
+    }
+
+    if (route === "landing") {
+        return (
+            <>
+                <div className="admin-header">
+                    <h1>ws-vision</h1>
+                    <div className="user-info">
+                        <button
+                            type="button"
+                            onClick={() => window.open("/login", "_blank", "noopener,noreferrer")}
+                        >
+                            Log in
+                        </button>
+                    </div>
+                </div>
+                <LandingPage />
+            </>
+        );
+    }
+
     if (!authChecked) {
         return <p style={{ textAlign: "center", marginTop: "2rem" }}>Loading...</p>;
     }
 
     if (!user) {
-        return <LoginPage onLoggedIn={() => { window.location.href = "/landing"; }} />;
+        return renderLogin();
     }
 
     return (

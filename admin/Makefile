@@ -10,6 +10,7 @@
 # Other:
 #     make add ID=kine-phone      # append a user ID, then apply
 #     make remove ID=kine-phone   # remove a user ID, then apply
+#     make sync-fqdn              # resolve FQDN, commit + push it into the frontend repo if changed
 #     make logs | status | stop | start | shell
 
 ADMIN_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
@@ -18,6 +19,7 @@ IMAGE     := admin-panel
 CONTAINER := admin
 DATA_VOL  := admin-data
 DevPassword ?= test123
+FQDN_SYNC  := $(ADMIN_DIR)sync-fqdn.sh
 
 # Recursive (not :=) so $(FQDN) is expanded at recipe time, after the
 # `apply` target resolves it via Resolve-DnsName.
@@ -30,7 +32,7 @@ RUN_ARGS = -d --name $(CONTAINER) -p 8080:8080 -p 80:1337 \
           $(if $(PASSKEY_DEBUG),-e PASSKEY_DEBUG=1) \
           --restart unless-stopped $(IMAGE)
 
-.PHONY: help edit apply add remove logs status stop start shell
+.PHONY: help edit apply sync-fqdn add remove logs status stop start shell
 
 # Default target: `make` shows this file in a pager.
 help:
@@ -51,6 +53,8 @@ apply:
 		echo "ERROR: Resolve-DnsName -Type CNAME failed to resolve 'ws-vision'. Aborting."; exit 2; \
 	fi
 	@echo "  ws-vision -> $(FQDN)"
+	@echo "  sync frontend FQDN copy (commit + push if changed)..."
+	@$(FQDN_SYNC) "$(FQDN)"
 	docker build -t $(IMAGE) $(ADMIN_DIR)
 	-docker rm -f $(CONTAINER)
 	docker run $(RUN_ARGS) >/dev/null
@@ -58,6 +62,17 @@ apply:
 	@echo "✓ http://ws-vision/login  -> https://$(FQDN):8443/login  (via host port 80)"
 	@cd $(ADMIN_DIR) && git add -A
 	@echo "✓ staged admin changes (git add -A)"
+
+# Re-resolve the FQDN and sync it into the frontend repo (commit + push if
+# changed), without rebuilding/restarting the container.
+sync-fqdn:
+	@echo "Resolving ws-vision FQDN via Resolve-DnsName -Type CNAME..."
+	@$(eval FQDN := $(shell powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "(Resolve-DnsName -Name ws-vision -Type CNAME -ErrorAction SilentlyContinue).NameHost.TrimEnd('.')" 2>/dev/null | tr -d '\r\n'))
+	@if [ -z "$(FQDN)" ]; then \
+		echo "ERROR: Resolve-DnsName -Type CNAME failed to resolve 'ws-vision'. Aborting."; exit 2; \
+	fi
+	@echo "  ws-vision -> $(FQDN)"
+	@$(FQDN_SYNC) "$(FQDN)"
 
 # Append a user ID (if not already present) and apply.
 add:
