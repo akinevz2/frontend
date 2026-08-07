@@ -99,7 +99,7 @@ const TAILNET_ID = ["tail", "ac72a7"].join("");
 const ADMIN_FQDN = ["ws-vision", TAILNET_ID, TS_DOMAIN].join(".");
 const DEV_WINDOW_IFRAME_SRC = `https://${ADMIN_FQDN}:8443/`;
 // Shown in the dev window when the tailnet host is unreachable.
-const DEV_WINDOW_FALLBACK_SRC = "https://akinev.dev/";
+const DEV_WINDOW_FALLBACK_SRC = "https://akinevz.dev/";
 // How long to wait for the tailnet host before falling back. AbortController
 // is what enforces the timeout — no-cors resolves with an opaque response when
 // the host answers and rejects (TypeError) when it's unreachable.
@@ -482,7 +482,7 @@ export default function App() {
 
   // The dev door: probe the tailnet host with a timeout before showing the
   // iframe. Only on-tailnet clients can reach it, so a failed probe falls back
-  // to showing akinev.dev and re-arms the decoy redirect once that has loaded.
+  // to showing akinevz.dev and re-arms the decoy redirect once that has loaded.
   const handleDevDoorClick = () => {
     cancelAdminLoginRedirect();
 
