@@ -10,7 +10,7 @@
 # Other:
 #     make add ID=kine-phone      # append a user ID, then apply
 #     make remove ID=kine-phone   # remove a user ID, then apply
-#     make pull                   # quick redeploy (runs make apply)
+#     make pull                   # git pull, then quick redeploy (make apply)
 #     make sync-fqdn              # resolve FQDN, commit + push it into the frontend repo if changed
 #     make logs | status | stop | start | shell
 
@@ -64,9 +64,10 @@ apply:
 	@cd $(ADMIN_DIR) && git add -A
 	@echo "✓ staged admin changes (git add -A)"
 
-# Shorthand for a quick redeploy — just runs `make apply`.
-pull: apply
-	@true
+# Pull the latest frontend repo changes, then quick redeploy (runs make apply).
+pull:
+	@cd $(ADMIN_DIR) && git pull
+	@$(MAKE) --no-print-directory apply
 
 # Re-resolve the FQDN and sync it into the frontend repo (commit + push if
 # changed), without rebuilding/restarting the container.
