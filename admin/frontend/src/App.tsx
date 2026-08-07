@@ -92,6 +92,57 @@ function bufToB64u(buf: ArrayBuffer | Uint8Array): string {
     return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
+// Message type posted to the embedding site (akinevz.com) when a passkey
+// login cannot complete inside the cross-origin iframe; the site then opens
+// the admin in its own tab. Mirrors src/App.tsx.
+const IFRAME_FAILED_MSG = "kine:passkey-iframe-failed";
+
+// In a cross-origin iframe (the site's "dev" door), Firefox's Enhanced
+// Tracking Protection isolates the admin's cookies unless it opts in via the
+// Storage Access API. Best-effort; browsers that don't need it just no-op.
+// Must be called from a click handler so a user gesture is present.
+async function ensureStorageAccess(): Promise<void> {
+    if (window.self === window.top) return;
+    if (typeof document.requestStorageAccess !== "function") return;
+    try {
+        await document.requestStorageAccess();
+    } catch {
+        // Denied here — the flow may still succeed anyway.
+    }
+}
+
+// Normalize an unknown rejection into name/message and keep the original as
+// `cause` so the error chain survives wrapping. navigator.credentials rejects
+// with a DOMException, which is not `instanceof Error`.
+function describeError(e: unknown): { name: string; message: string; cause: unknown } {
+    if (e instanceof Error || e instanceof DOMException) {
+        return { name: e.name, message: e.message, cause: e };
+    }
+    if (typeof e === "string") {
+        return { name: "Error", message: e, cause: e };
+    }
+    return { name: "UnknownError", message: String(e), cause: e };
+}
+
+// Distinguish a deliberate cancel (don't fall back) from a real failure.
+function isUserCancellation(e: unknown): boolean {
+    const { name, message } = describeError(e);
+    if (name === "NotAllowedError" && /cancel|abort/i.test(message)) return true;
+    if (/passkey (login|creation) canceled/i.test(message)) return true;
+    return false;
+}
+
+// Notify the embedding site when login fails inside the iframe.
+function notifyIframeFailure(e: unknown): void {
+    if (window.self === window.top) return;
+    if (isUserCancellation(e)) return;
+    try {
+        window.parent.postMessage({ type: IFRAME_FAILED_MSG }, "*");
+    } catch {
+        // Parent may not be reachable; ignore.
+    }
+}
+
 // ── Passkey enroll + login flows ──────────────────────────────────────
 
 async function enrollPasskey(userId: string, deviceName: string): Promise<void> {
@@ -121,7 +172,13 @@ async function enrollPasskey(userId: string, deviceName: string): Promise<void> 
         attestation: "none",
     };
 
-    const credential = await navigator.credentials.create({ publicKey }) as PublicKeyCredential | null;
+    let credential: PublicKeyCredential | null;
+    try {
+        credential = await navigator.credentials.create({ publicKey }) as PublicKeyCredential | null;
+    } catch (err) {
+        const { name, message } = describeError(err);
+        throw new Error(`webAuthn:${name}:${message}`, { cause: err });
+    }
     if (!credential) throw new Error("Passkey creation canceled");
 
     const raw = credential.response as AuthenticatorAttestationResponse;
@@ -155,7 +212,13 @@ async function loginWithPasskey(): Promise<void> {
         timeout: beginResp.timeout,
     };
 
-    const assertion = await navigator.credentials.get({ publicKey }) as PublicKeyCredential | null;
+    let assertion: PublicKeyCredential | null;
+    try {
+        assertion = await navigator.credentials.get({ publicKey }) as PublicKeyCredential | null;
+    } catch (err) {
+        const { name, message } = describeError(err);
+        throw new Error(`webAuthn:${name}:${message}`, { cause: err });
+    }
     if (!assertion) throw new Error("Passkey login canceled");
 
     const raw = assertion.response as AuthenticatorAssertionResponse;
@@ -193,10 +256,13 @@ function LoginPage({ onLoggedIn }: { onLoggedIn: () => void }) {
         setBusy(true);
         setError(null);
         try {
+            await ensureStorageAccess();
             await loginWithPasskey();
             onLoggedIn();
         } catch (e) {
-            setError(e instanceof Error ? e.message : "Login failed");
+            const message = e instanceof Error ? e.message : "Login failed";
+            setError(message);
+            notifyIframeFailure(e);
         } finally {
             setBusy(false);
         }
@@ -208,10 +274,13 @@ function LoginPage({ onLoggedIn }: { onLoggedIn: () => void }) {
         setBusy(true);
         setError(null);
         try {
+            await ensureStorageAccess();
             await enrollPasskey(userId.trim(), deviceName.trim());
             onLoggedIn();
         } catch (e) {
-            setError(e instanceof Error ? e.message : "Enrollment failed");
+            const message = e instanceof Error ? e.message : "Enrollment failed";
+            setError(message);
+            notifyIframeFailure(e);
         } finally {
             setBusy(false);
         }
@@ -767,7 +836,13 @@ function DevicesPanel() {
         }
     };
 
-    useEffect(() => { void reload(); }, []);
+    useEffect(() => {
+        api<AllowedUserRow[]>("/auth/users")
+            .then(setUsers)
+            .catch((e: unknown) =>
+                setError(e instanceof Error ? e.message : "Failed to load users"),
+            );
+    }, []);
 
     const revoke = async (userId: string) => {
         if (!confirm(`Revoke "${userId}"? This deletes their passkey and logs them out. ` +

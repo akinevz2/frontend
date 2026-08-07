@@ -87,16 +87,41 @@ const ADMIN_LOGIN_REDIRECT = "https://akinevz.com/404";
 const ADMIN_LOGIN_REDIRECT_DELAY_MS = 6000;
 
 // The "dev" door opens this in an iframe window below the secret page.
-// Must be HTTPS (the host page is HTTPS) and the Tailscale FQDN (the admin
-// passkeys are registered against this origin/RP), so http://ws-vision:8080
-// (which only 302s here) cannot be used directly.
-const DEV_WINDOW_IFRAME_SRC = "https://ws-vision.tailac72a7.ts.net:8443/login";
+// Must be HTTPS (the host page is HTTPS) and end up on the tailnet FQDN: the
+// admin passkeys are registered against that origin/RP, and only the FQDN has
+// a browser-trusted cert (the short name ws-vision has none, and plain HTTP
+// http://ws-vision:8080 only 302s here). The FQDN is reassembled at runtime
+// from fragments so it never appears as a contiguous literal in the bundle.
+const TS_DOMAIN = ["ts", "net"].join(".");
+const TAILNET_ID = ["tail", "ac72a7"].join("");
+const ADMIN_FQDN = ["ws-vision", TAILNET_ID, TS_DOMAIN].join(".");
+const DEV_WINDOW_IFRAME_SRC = `https://${ADMIN_FQDN}:8443/login`;
 // Shown in the dev window when the tailnet host is unreachable.
 const DEV_WINDOW_FALLBACK_SRC = "https://akinev.dev/";
 // How long to wait for the tailnet host before falling back. AbortController
 // is what enforces the timeout — no-cors resolves with an opaque response when
 // the host answers and rejects (TypeError) when it's unreachable.
 const DEV_PROBE_TIMEOUT_MS = 4000;
+
+// WebAuthn inside a cross-origin iframe is flaky across browsers, and a
+// separate top-level tab always lets the passkey ceremony run natively, so
+// the admin is opened in its own tab on Safari and Chromium (Chrome/Edge —
+// Edge's UA also contains "Chrome/"). Firefox keeps the embedded window: its
+// storage-access recipe works, and a runtime fallback still opens a tab if
+// the embedded login fails.
+const browserUA = typeof navigator !== "undefined" ? navigator.userAgent : "";
+const IFRAME_WEBAUTHN_OK =
+  !/Chrome\//.test(browserUA) &&
+  !(
+    /Safari\//.test(browserUA) &&
+    !/Chrome\//.test(browserUA) &&
+    !/Chromium\//.test(browserUA) &&
+    !/Edg\//.test(browserUA)
+  );
+
+// Message the embedded admin posts when it can't complete a passkey login
+// inside the iframe (see admin/frontend); the site then falls back to a tab.
+const ADMIN_IFRAME_FAILED_MSG = "kine:passkey-iframe-failed";
 
 const CLIPPY_DRAG_THRESHOLD_PX = 10;
 const CLIPPY_DROP_TARGET_SELECTOR = "[data-clippy-drop-target]";
@@ -330,6 +355,7 @@ export default function App() {
   const [devWindowChecking, setDevWindowChecking] = useState(false);
   const [devWindowSrc, setDevWindowSrc] = useState<string | null>(null);
   const [devWindowFallback, setDevWindowFallback] = useState(false);
+  const [devWindowNewTab, setDevWindowNewTab] = useState(false);
   const [conversationInput, setConversationInput] = useState("");
   const [conversationError, setConversationError] = useState("");
   const [assistantWindowText, setAssistantWindowText] = useState("");
@@ -478,6 +504,19 @@ export default function App() {
   // to showing akinev.dev and re-arms the decoy redirect once that has loaded.
   const handleDevDoorClick = () => {
     cancelAdminLoginRedirect();
+
+    if (!IFRAME_WEBAUTHN_OK) {
+      // Safari/Firefox can't reliably use passkeys inside a cross-origin
+      // iframe, so open the admin in its own tab and note it in the window.
+      setDevWindowChecking(false);
+      setDevWindowFallback(false);
+      setDevWindowNewTab(true);
+      setDevWindowSrc(null);
+      setShowDevWindow(true);
+      window.open(DEV_WINDOW_IFRAME_SRC, "_blank", "noopener,noreferrer");
+      return;
+    }
+
     setDevWindowFallback(false);
     setDevWindowChecking(true);
     setDevWindowSrc(null);
@@ -511,6 +550,20 @@ export default function App() {
       reEnableAdminLoginRedirect();
     }
   };
+
+  // If the embedded admin can't complete a passkey login in the iframe (e.g.
+  // Firefox with strict cookie isolation, or an old build), it posts a message
+  // and the admin is opened in its own tab instead.
+  useEffect(() => {
+    const onAdminMessage = (e: MessageEvent) => {
+      if (e.origin !== new URL(DEV_WINDOW_IFRAME_SRC).origin) return;
+      if (e.data?.type !== ADMIN_IFRAME_FAILED_MSG) return;
+      setShowDevWindow(false);
+      window.open(DEV_WINDOW_IFRAME_SRC, "_blank", "noopener,noreferrer");
+    };
+    window.addEventListener("message", onAdminMessage);
+    return () => window.removeEventListener("message", onAdminMessage);
+  }, []);
 
   // Redirect /blog/login to a decoy 404 after a delay, unless a door is used.
   // Uses replace so the secret page is dropped from the history stack.
@@ -1078,11 +1131,27 @@ export default function App() {
                   >
                     Checking connection...
                   </p>
+                ) : devWindowNewTab ? (
+                  <div
+                    style={{
+                      textAlign: "center",
+                      padding: "2rem",
+                      margin: 0,
+                    }}
+                  >
+                    <p style={{ margin: "0 0 0.5rem" }}>
+                      Opened ws-vision in a new tab.
+                    </p>
+                    <p style={{ fontSize: "0.8rem", margin: 0, opacity: 0.7 }}>
+                      This browser can&apos;t use passkeys inside an embedded
+                      frame.
+                    </p>
+                  </div>
                 ) : devWindowSrc ? (
                   <iframe
                     src={devWindowSrc}
                     title="ws-vision"
-                    allow="publickey-credentials-get"
+                    allow="publickey-credentials-get; publickey-credentials-create; storage-access"
                     onLoad={handleDevWindowLoad}
                     style={{
                       width: "100%",
