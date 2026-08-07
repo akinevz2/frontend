@@ -496,6 +496,11 @@ form#form > label {
   transition: background-color 0.1s ease;
 }
 
+.menu-bar menu a.clippy-drop-active {
+  background-color: #feef69;
+  outline: 2px dashed #808080;
+}
+
 @media (hover: hover) {
   .menu-bar menu a:hover {
     background-color: rgba(51, 153, 255, 0.2);

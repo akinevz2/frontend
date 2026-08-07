@@ -23,10 +23,14 @@ import {
   type AssistantPromptOptions,
 } from "./lib/assistantStateMachine";
 
-import MenuBar from "./components/MenuBar.tsx";
+import MenuBar, {
+  CLIPPY_DROP_HREF,
+  CLIPPY_DRAG_MIME,
+} from "./components/MenuBar.tsx";
 import BlogContent from "./components/BlogContent";
 import MusicContent from "./components/MusicContent";
 import SitemapContent from "./components/SitemapContent";
+import { OkButton } from "./windowing/OkButton";
 import { useRouting } from "./utils/routingReducer";
 import { useClippy } from "./utils/clippyReducer";
 import { useClippyEffect } from "./utils/clippyEffectReducer";
@@ -79,7 +83,31 @@ const ROUTE_CONFIG = Object.fromEntries(
   ]),
 ) as Record<string, RouteConfig>;
 
-const ADMIN_LOGIN_REDIRECT = "http://ws-vision/login";
+const ADMIN_LOGIN_REDIRECT = "https://akinevz.com/404";
+const ADMIN_LOGIN_REDIRECT_DELAY_MS = 6000;
+
+// The "dev" door opens this in an iframe window below the secret page.
+// Must be HTTPS (the host page is HTTPS) and the Tailscale FQDN (the admin
+// passkeys are registered against this origin/RP), so http://ws-vision:8080
+// (which only 302s here) cannot be used directly.
+const DEV_WINDOW_IFRAME_SRC = "https://ws-vision.tailac72a7.ts.net:8443/login";
+// Shown in the dev window when the tailnet host is unreachable.
+const DEV_WINDOW_FALLBACK_SRC = "https://akinev.dev/";
+// How long to wait for the tailnet host before falling back. AbortController
+// is what enforces the timeout — no-cors resolves with an opaque response when
+// the host answers and rejects (TypeError) when it's unreachable.
+const DEV_PROBE_TIMEOUT_MS = 4000;
+
+const CLIPPY_DRAG_THRESHOLD_PX = 10;
+const CLIPPY_DROP_TARGET_SELECTOR = "[data-clippy-drop-target]";
+
+type ClippyTouchDragState = {
+  pointerId: number;
+  startX: number;
+  startY: number;
+  dragging: boolean;
+  ghost: HTMLImageElement | null;
+};
 
 const normalizePath = (path: string) => {
   if (!path || path === "/") {
@@ -297,6 +325,11 @@ export default function App() {
   // const [isDiscoveringAssistantModels, setIsDiscoveringAssistantModels] =
   //   useState(false);
   const [showConversationModal, setShowConversationModal] = useState(false);
+  const [showDevWindow, setShowDevWindow] = useState(false);
+  const devWindowRef = useRef<HTMLDivElement | null>(null);
+  const [devWindowChecking, setDevWindowChecking] = useState(false);
+  const [devWindowSrc, setDevWindowSrc] = useState<string | null>(null);
+  const [devWindowFallback, setDevWindowFallback] = useState(false);
   const [conversationInput, setConversationInput] = useState("");
   const [conversationError, setConversationError] = useState("");
   const [assistantWindowText, setAssistantWindowText] = useState("");
@@ -308,6 +341,9 @@ export default function App() {
     useState(false);
   const holdTimerRef = useRef<number | null>(null);
   const holdTriggeredRef = useRef(false);
+  const clippyTouchDragRef = useRef<ClippyTouchDragState | null>(null);
+  const clippyTouchMovedRef = useRef(false);
+  const clippyDropTargetRef = useRef<HTMLElement | null>(null);
   const borderFlashTimerRef = useRef<number | null>(null);
   const rightClickFlashArmedRef = useRef(true);
   // const wisdomPulseClockRef = useRef(new WisdomPulseClock());
@@ -407,12 +443,102 @@ export default function App() {
 
   const route = ROUTE_CONFIG[path] ?? DEFAULT_ROUTE;
 
-  // Redirect /blog/login to the admin panel on WS-VISION (Tailscale)
-  useEffect(() => {
-    if (path === "/blog/login" && typeof window !== "undefined") {
-      window.location.href = ADMIN_LOGIN_REDIRECT;
+  // Timer for the /blog/login decoy redirect; cleared when a door is used.
+  const adminLoginRedirectTimerRef = useRef<number | null>(null);
+
+  const cancelAdminLoginRedirect = () => {
+    if (adminLoginRedirectTimerRef.current !== null) {
+      window.clearTimeout(adminLoginRedirectTimerRef.current);
+      adminLoginRedirectTimerRef.current = null;
     }
+  };
+
+  const navigateAway = (url: string, replace = false) => {
+    cancelAdminLoginRedirect();
+    if (replace) {
+      // Replace the current entry (the secret /blog/login page) so it never
+      // reappears via the back button after the decoy navigation.
+      window.location.replace(url);
+    } else {
+      window.location.href = url;
+    }
+  };
+
+  const reEnableAdminLoginRedirect = () => {
+    if (adminLoginRedirectTimerRef.current !== null) {
+      return;
+    }
+    adminLoginRedirectTimerRef.current = window.setTimeout(() => {
+      window.location.replace(ADMIN_LOGIN_REDIRECT);
+    }, ADMIN_LOGIN_REDIRECT_DELAY_MS);
+  };
+
+  // The dev door: probe the tailnet host with a timeout before showing the
+  // iframe. Only on-tailnet clients can reach it, so a failed probe falls back
+  // to showing akinev.dev and re-arms the decoy redirect once that has loaded.
+  const handleDevDoorClick = () => {
+    cancelAdminLoginRedirect();
+    setDevWindowFallback(false);
+    setDevWindowChecking(true);
+    setDevWindowSrc(null);
+    setShowDevWindow(true);
+
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(
+      () => controller.abort(),
+      DEV_PROBE_TIMEOUT_MS,
+    );
+    void fetch(DEV_WINDOW_IFRAME_SRC, {
+      mode: "no-cors",
+      signal: controller.signal,
+    })
+      .then(() => {
+        window.clearTimeout(timeoutId);
+        setDevWindowChecking(false);
+        setDevWindowSrc(DEV_WINDOW_IFRAME_SRC);
+      })
+      .catch(() => {
+        window.clearTimeout(timeoutId);
+        setDevWindowChecking(false);
+        setDevWindowSrc(DEV_WINDOW_FALLBACK_SRC);
+        setDevWindowFallback(true);
+      });
+  };
+
+  const handleDevWindowLoad = () => {
+    // In fallback mode, hide the secret page once the decoy content has loaded.
+    if (devWindowFallback) {
+      reEnableAdminLoginRedirect();
+    }
+  };
+
+  // Redirect /blog/login to a decoy 404 after a delay, unless a door is used.
+  // Uses replace so the secret page is dropped from the history stack.
+  useEffect(() => {
+    if (path !== "/blog/login" || typeof window === "undefined") {
+      return;
+    }
+    adminLoginRedirectTimerRef.current = window.setTimeout(() => {
+      window.location.replace(ADMIN_LOGIN_REDIRECT);
+    }, ADMIN_LOGIN_REDIRECT_DELAY_MS);
+    return () => {
+      if (adminLoginRedirectTimerRef.current !== null) {
+        window.clearTimeout(adminLoginRedirectTimerRef.current);
+        adminLoginRedirectTimerRef.current = null;
+      }
+    };
   }, [path]);
+
+  // Scroll the dev iframe window into view once it appears below the secret
+  // page window.
+  useEffect(() => {
+    if (showDevWindow && devWindowRef.current) {
+      devWindowRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [showDevWindow]);
 
   useEffect(() => {
     document.title = route.title;
@@ -667,8 +793,9 @@ export default function App() {
   };
 
   const handleClippyClick = () => {
-    if (holdTriggeredRef.current) {
+    if (holdTriggeredRef.current || clippyTouchMovedRef.current) {
       holdTriggeredRef.current = false;
+      clippyTouchMovedRef.current = false;
       return;
     }
 
@@ -678,6 +805,126 @@ export default function App() {
 
   const handleClippyDoubleClick = () => {
     // Wisdom-on-double-click is intentionally disabled.
+  };
+
+  const handleClippyDragStart = (event: React.DragEvent<HTMLImageElement>) => {
+    clearClippyHoldTimer();
+    holdTriggeredRef.current = false;
+    const clippyUrl = `${window.location.origin}/Clippy.png`;
+    event.dataTransfer.setData("text/uri-list", clippyUrl);
+    event.dataTransfer.setData("text/plain", clippyUrl);
+    event.dataTransfer.setData(CLIPPY_DRAG_MIME, "1");
+    event.dataTransfer.effectAllowed = "link";
+  };
+
+  const getClippyDropTargetAt = (x: number, y: number) =>
+    document.elementFromPoint(x, y)?.closest(CLIPPY_DROP_TARGET_SELECTOR) ??
+    null;
+
+  const createClippyGhost = (): HTMLImageElement => {
+    const ghost = document.createElement("img");
+    ghost.src = "/Clippy.png";
+    ghost.alt = "";
+    ghost.style.position = "fixed";
+    ghost.style.pointerEvents = "none";
+    ghost.style.zIndex = "20000";
+    ghost.style.width = "90px";
+    ghost.style.opacity = "0.9";
+    ghost.style.transform = "translate(-50%, -50%)";
+    document.body.appendChild(ghost);
+    return ghost;
+  };
+
+  const updateClippyDropHighlight = (x: number, y: number) => {
+    const currentTarget = getClippyDropTargetAt(x, y);
+    if (clippyDropTargetRef.current === currentTarget) {
+      return;
+    }
+    clippyDropTargetRef.current?.classList.remove("clippy-drop-active");
+    clippyDropTargetRef.current = currentTarget as HTMLElement | null;
+    currentTarget?.classList.add("clippy-drop-active");
+  };
+
+  const clearClippyDropHighlight = () => {
+    clippyDropTargetRef.current?.classList.remove("clippy-drop-active");
+    clippyDropTargetRef.current = null;
+  };
+
+  const handleClippyPointerDown = (
+    event: React.PointerEvent<HTMLImageElement>,
+  ) => {
+    if (event.pointerType === "mouse") {
+      return;
+    }
+    clippyTouchMovedRef.current = false;
+    clippyTouchDragRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      dragging: false,
+      ghost: null,
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const handleClippyPointerMove = (
+    event: React.PointerEvent<HTMLImageElement>,
+  ) => {
+    const drag = clippyTouchDragRef.current;
+    if (!drag || event.pointerId !== drag.pointerId) {
+      return;
+    }
+    if (!drag.dragging) {
+      const distance = Math.hypot(
+        event.clientX - drag.startX,
+        event.clientY - drag.startY,
+      );
+      if (distance < CLIPPY_DRAG_THRESHOLD_PX) {
+        return;
+      }
+      drag.dragging = true;
+      clippyTouchMovedRef.current = true;
+      clearClippyHoldTimer();
+      holdTriggeredRef.current = false;
+      drag.ghost = createClippyGhost();
+    }
+    if (drag.ghost) {
+      drag.ghost.style.left = `${event.clientX}px`;
+      drag.ghost.style.top = `${event.clientY}px`;
+    }
+    updateClippyDropHighlight(event.clientX, event.clientY);
+  };
+
+  const handleClippyPointerUp = (
+    event: React.PointerEvent<HTMLImageElement>,
+  ) => {
+    const drag = clippyTouchDragRef.current;
+    if (!drag || event.pointerId !== drag.pointerId) {
+      return;
+    }
+    clippyTouchDragRef.current = null;
+    if (drag.ghost) {
+      drag.ghost.remove();
+    }
+    const dropTarget = getClippyDropTargetAt(event.clientX, event.clientY);
+    clearClippyDropHighlight();
+    if (drag.dragging && dropTarget) {
+      navigate(CLIPPY_DROP_HREF);
+    }
+  };
+
+  const handleClippyPointerCancel = (
+    event: React.PointerEvent<HTMLImageElement>,
+  ) => {
+    const drag = clippyTouchDragRef.current;
+    if (!drag || event.pointerId !== drag.pointerId) {
+      return;
+    }
+    clippyTouchDragRef.current = null;
+    if (drag.ghost) {
+      drag.ghost.remove();
+    }
+    clearClippyDropHighlight();
   };
 
   const handleDismissAssistantWindow = () => {
@@ -746,12 +993,108 @@ export default function App() {
       );
       break;
     case "/blog/login":
-      // Redirects to admin panel on WS-VISION via useEffect above
+      // Hidden doors to WS-VISION services; decoy-redirects to 404 via
+      // the useEffect above unless one of the doors is used.
       content = (
-        <main>
-          <p style={{ textAlign: "center", marginTop: "2rem" }}>
-            Redirecting to admin panel...
-          </p>
+        <main
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "1.5rem",
+            paddingTop: "2rem",
+          }}
+        >
+          <div className="window" style={{ width: "min(460px, 92vw)" }}>
+            <div className="title-bar">
+              <div className="title-bar-text">Secret page!</div>
+              <div className="title-bar-controls">
+                <button aria-label="Minimize"></button>
+                <button aria-label="Maximize"></button>
+                <button
+                  aria-label="Close"
+                  onClick={() => navigateAway(ADMIN_LOGIN_REDIRECT, true)}
+                ></button>
+              </div>
+            </div>
+            <div
+              className="window-body"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "1rem",
+                alignItems: "center",
+                padding: "1.25rem",
+              }}
+            >
+              <section>
+                <OkButton
+                  onClick={() => {
+                    navigateAway("http://ws-vision:3000");
+                  }}
+                >
+                  3000
+                </OkButton>
+              </section>
+              <section>
+                <OkButton
+                  onClick={() => {
+                    navigateAway("http://ws-vision:8080/login");
+                  }}
+                >
+                  8080
+                </OkButton>
+              </section>
+              <section>
+                <OkButton onClick={handleDevDoorClick}>dev</OkButton>
+              </section>
+            </div>
+          </div>
+          {showDevWindow ? (
+            <div
+              ref={devWindowRef}
+              className="window"
+              style={{ width: "min(720px, 94vw)" }}
+            >
+              <div className="title-bar">
+                <div className="title-bar-text">ws-vision</div>
+                <div className="title-bar-controls">
+                  <button aria-label="Minimize"></button>
+                  <button aria-label="Maximize"></button>
+                  <button
+                    aria-label="Close"
+                    onClick={() => setShowDevWindow(false)}
+                  ></button>
+                </div>
+              </div>
+              <div className="window-body" style={{ padding: 0 }}>
+                {devWindowChecking ? (
+                  <p
+                    style={{
+                      textAlign: "center",
+                      padding: "2rem",
+                      margin: 0,
+                    }}
+                  >
+                    Checking connection...
+                  </p>
+                ) : devWindowSrc ? (
+                  <iframe
+                    src={devWindowSrc}
+                    title="ws-vision"
+                    allow="publickey-credentials-get"
+                    onLoad={handleDevWindowLoad}
+                    style={{
+                      width: "100%",
+                      height: "560px",
+                      border: 0,
+                      display: "block",
+                    }}
+                  />
+                ) : null}
+              </div>
+            </div>
+          ) : null}
         </main>
       );
       break;
@@ -978,10 +1321,16 @@ export default function App() {
           <img
             src="/Clippy.png"
             alt=""
+            draggable
             onClick={handleClippyClick}
             onDoubleClick={handleClippyDoubleClick}
             onMouseDown={handleClippyMouseDown}
             onMouseUp={clearClippyHoldTimer}
+            onDragStart={handleClippyDragStart}
+            onPointerDown={handleClippyPointerDown}
+            onPointerMove={handleClippyPointerMove}
+            onPointerUp={handleClippyPointerUp}
+            onPointerCancel={handleClippyPointerCancel}
             onMouseLeave={() => {
               clearClippyHoldTimer();
               setHovered(false);
@@ -1008,6 +1357,7 @@ export default function App() {
               filter: clippyFilter,
               cursor: "pointer",
               transition: "filter 160ms ease",
+              touchAction: "none",
             }}
           />
         </div>

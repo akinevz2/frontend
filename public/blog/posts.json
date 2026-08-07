@@ -4,7 +4,7 @@
   "content": [
     "blog operating normally! :D",
     {
-      "heading": "Rueg Config published!",
+      "heading": "Rueg Config published! (#world of warcraft, #addons)",
       "content": [
         "Packed up the full Rueg configuration into a distributable archive — addons, WeakAuras, and profiles in one drop.",
         "Grab it from the [addons page](/addons) or click below.",
@@ -41,6 +41,7 @@
         "bottom one",
         {
           "heading": "what are you doing up there??",
+          "theme": "experimental",
           "content": "![floating](/images/Screenshot%202026-07-23%20074101.png)"
         }
       ]
@@ -61,7 +62,6 @@
     },
     {
       "heading": "many many renames later... (#soundcloud, #dynamic, #funnypost, #intermission)",
-      "theme": "experimental",
       "link": "/images/aaaa.png",
       "content": [
         {
@@ -75,6 +75,7 @@
     {
       "heading": "booger boogie intermission",
       "content": "idle your mouse with me",
+      "theme": "experimental",
       "link": "/images/booger_Boogie%20Long.gif"
     },
     {
