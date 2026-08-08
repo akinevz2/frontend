@@ -98,10 +98,13 @@ export function useClippy(isMobilePhoneDevice: IsMobilePhoneDevice) {
     wasBubbleVisibleRef.current = state.showClippyBubble;
   }, [state.showClippyBubble]);
 
-  // A crunchy-kick event while the bubble is up flips it to "said no".
+  // A crunchy-kick event while the bubble is up flips it to "said no" and, on
+  // the first one per bubble episode, cancels the event so the window that
+  // triggered it doesn't close on that first click.
   useEffect(() => {
-    const handleCrunchyKickPlayed = () => {
-      if (state.showClippyBubble) {
+    const handleCrunchyKickPlayed = (event: Event) => {
+      if (state.showClippyBubble && !state.clippyBubbleSaysNo) {
+        event.preventDefault();
         dispatch({ type: "SAY_NO" });
       }
     };
@@ -113,7 +116,7 @@ export function useClippy(isMobilePhoneDevice: IsMobilePhoneDevice) {
         handleCrunchyKickPlayed,
       );
     };
-  }, [state.showClippyBubble]);
+  }, [state.showClippyBubble, state.clippyBubbleSaysNo]);
 
   return { state };
 }

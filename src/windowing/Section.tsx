@@ -6,6 +6,7 @@ import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { toast } from "react-toastify";
 import { playLayeredAudio } from "../lib/audioOverlap";
+import { onClippyTriggerClick } from "../lib/keyboardInputUtils";
 import { CopyToClipboardButton } from "../components/CopyToClipboardButton";
 import { useSectionContext, useWindow } from "./hooks";
 import { OkButton } from "./OkButton";
@@ -373,6 +374,11 @@ function resolvePrintoutUrl(printoutPath: string): string {
   return trimmed;
 }
 
+// Sentinel href used by the "[fuckingclippy](#fuckingclippy)" trigger word on
+// the links page. Rendered as a clickable span wired to the Clippy click-repeat
+// summon sequence instead of a real anchor.
+const CLIPPY_TRIGGER_HREF = "#fuckingclippy";
+
 const markdownComponents = {
   img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
     <img
@@ -385,6 +391,43 @@ const markdownComponents = {
       }}
     />
   ),
+  a: ({
+    node,
+    children,
+    href,
+    ...rest
+  }: React.AnchorHTMLAttributes<HTMLAnchorElement> & {
+    node?: unknown;
+  }) => {
+    void node;
+    if (href === CLIPPY_TRIGGER_HREF) {
+      return (
+        <span
+          role="button"
+          tabIndex={0}
+          onClick={onClippyTriggerClick}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              onClippyTriggerClick();
+            }
+          }}
+          style={{
+            cursor: "pointer",
+            textDecoration: "underline",
+            userSelect: "none",
+          }}
+        >
+          {children}
+        </span>
+      );
+    }
+    return (
+      <a href={href} {...rest}>
+        {children}
+      </a>
+    );
+  },
 };
 
 function normalizePrintoutText(printout: string | string[]): string {
@@ -628,7 +671,11 @@ function isRootOffsetUrl(link: string): boolean {
 
 const playSound = () => {
   playLayeredAudio("/crunchy_kick.ogg");
-  window.dispatchEvent(new CustomEvent("crunchy-kick-played"));
+  const event = new CustomEvent("crunchy-kick-played", { cancelable: true });
+  window.dispatchEvent(event);
+  // Clippy cancels the first crunchy-kick per bubble episode ("haha it said
+  // no"); when it does, the triggering window should stay open.
+  return !event.defaultPrevented;
 };
 
 // --- Shared sub-components --------------------------------------------------
@@ -1027,12 +1074,15 @@ export const Section = (props: SectionProps) => {
 
   // Wrap the hook's handleClose to also clear the blog post URL slug.
   const handleCloseWithUrl = () => {
+    if (!playSound()) {
+      // Clippy said no — leave the window open on this first close click.
+      return;
+    }
     if (isMaximized) {
       closePoppedOutWindow(clearPostSlugFromUrl);
     } else {
       handleClose();
     }
-    playSound();
   };
 
   // Minimizing toggles iconify: hides/shows the window-body, keeps the title.
