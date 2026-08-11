@@ -20,7 +20,7 @@ const ResumePage = () => {
   const resumeIframeRef = useRef<HTMLIFrameElement | null>(null);
 
   const resumeDocumentPath =
-    resumeAccessMode === "pdf" ? "/resume.pdf" : "/documents/resume.html";
+    resumeAccessMode === "pdf" ? "/documents/resume.pdf" : "/resume.html";
   const hasResolvedInterestSubmission = resumeAccessMode !== null;
   const shouldBlurResume = !hasResolvedInterestSubmission;
 

@@ -795,6 +795,11 @@ const SectionBody = ({
   hasText = false,
 }: SectionBodyProps) => (
   <>
+    <ShowPermalinkButton
+      hasHeading={hasHeading}
+      onPermalinkClick={onPermalinkClick}
+      showPermalink={showPermalink}
+    />
     {isCollapsed ? (
       <div
         style={{
@@ -825,11 +830,6 @@ const SectionBody = ({
         ) : null}
       </>
     )}
-    <ShowPermalinkButton
-      hasHeading={hasHeading}
-      onPermalinkClick={onPermalinkClick}
-      showPermalink={showPermalink}
-    />
   </>
 );
 
