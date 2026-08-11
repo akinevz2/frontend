@@ -42,33 +42,36 @@ let bubbleTimeout: ReturnType<typeof setTimeout> | null = null;
 const CLIPPY_CLICK_THRESHOLD = 8;
 const CLIPPY_CLICK_WINDOW_MS = 10_000;
 const BUBBLE_DISMISS_MS = 8_000;
-const TRIGGER_CLICK_THRESHOLD = 7;
+// Total active clicking time required to summon Clippy, in ms.
+const TRIGGER_SUMMON_MS = 3_960;
 // Assumed length of /yooh.mp3; used to budget the blip cut-off curve.
-const TRIGGER_AUDIO_LENGTH_MS = 2_000;
+const TRIGGER_AUDIO_LENGTH_MS = 5_000;
 const TRIGGER_BLIP_FADE_MS = 400;
-// Blip roll runs from here (first audible tap) up to the full audio length
-// minus the fade, so roll + fade-out for the final tap spans the whole 2s.
-const TRIGGER_FIRST_BLIP_MS = 400;
+// The first audible cutoff (shortest blip) in ms. Each subsequent click
+// extends the roll so the audio plays longer the more the user keeps clicking.
+const TRIGGER_FIRST_BLIP_MS = 350;
 const TRIGGER_LAST_BLIP_MS = TRIGGER_AUDIO_LENGTH_MS - TRIGGER_BLIP_FADE_MS;
 
-let triggerClickCount = 0;
+// Cumulative active clicking time across the current burst. When this reaches
+// TRIGGER_SUMMON_MS, Clippy is summoned. Reset to 0 whenever clicking stops.
+let triggerActiveMs = 0;
+// Wall-clock timestamp of the click that opened the current blip, so we can
+// accumulate how much of the audio has actually played.
+let triggerBlipStartTs = 0;
 let triggerBlipTimeout: ReturnType<typeof setTimeout> | null = null;
 let triggerBlipFadeInterval: ReturnType<typeof setInterval> | null = null;
 let triggerBlipFadeStart = 0;
 let triggerBlipFadeVolume = 0;
 
-// Roll duration for a non-summoning tap, on a logarithmic curve: it grows with
-// the click count but with diminishing increments, so the portion of the 2s
-// audio that gets cut off gets smaller as the summon approaches.
-const triggerBlipRollMs = (count: number): number => {
-  const startIndex = 2;
-  const endIndex = TRIGGER_CLICK_THRESHOLD - 1;
-  const x = count - startIndex + 1;
-  const xMax = endIndex - startIndex + 1;
-  const ratio = Math.log(x) / Math.log(xMax);
+// Roll duration for a non-summoning tap. Grows on a logarithmic curve from
+// TRIGGER_FIRST_BLIP_MS up to the full audio length minus the fade, based on
+// how much active clicking time has accumulated so far.
+const triggerBlipRollMs = (activeMs: number): number => {
+  const ratio = Math.min(1, activeMs / TRIGGER_SUMMON_MS);
+  const logRatio = Math.log(1 + ratio * (Math.E - 1)); // 0 → 1 log curve
   return Math.round(
     TRIGGER_FIRST_BLIP_MS +
-      (TRIGGER_LAST_BLIP_MS - TRIGGER_FIRST_BLIP_MS) * ratio,
+    (TRIGGER_LAST_BLIP_MS - TRIGGER_FIRST_BLIP_MS) * logRatio,
   );
 };
 
@@ -151,8 +154,9 @@ const triggerBlipFadeStep = () => {
       triggerBlipFadeInterval = null;
     }
     // The audio has cut out, so the partial sequence is abandoned: clear the
-    // click counter so the next attempt has to be built up from scratch.
-    triggerClickCount = 0;
+    // accumulated active time so the next attempt starts from scratch.
+    triggerActiveMs = 0;
+    triggerBlipStartTs = 0;
     audio.pause();
     audio.currentTime = 0;
     audio.volume = 0;
@@ -185,28 +189,31 @@ export const onClippyClick = () => {
 
 /**
  * The "fuckingclippy" trigger-word alternative sequence: each tap advances a
- * counter, and the 7th tap summons Clippy at full volume with the audio cue.
- * The first tap is silent, the next few play short blips that get longer with
- * each tap, and if the audio cuts out before the 7th tap the counter resets.
+ * cumulative active-time counter. The audio cutoff grows with each click
+ * (starting at 350ms) so fewer clicks cut it off faster. When the accumulated
+ * active clicking reaches 3.960s, Clippy is summoned at full volume. If the
+ * user stops clicking, the fade-out fires and the counter resets.
  */
 export const onClippyTriggerClick = () => {
   clearTriggerBlipCutoff();
 
-  triggerClickCount += 1;
+  // Accumulate the time the previous blip actually played before this click.
+  if (triggerBlipStartTs > 0) {
+    triggerActiveMs += Date.now() - triggerBlipStartTs;
+  }
 
-  if (triggerClickCount >= TRIGGER_CLICK_THRESHOLD) {
-    triggerClickCount = 0;
+  if (triggerActiveMs >= TRIGGER_SUMMON_MS) {
+    triggerActiveMs = 0;
+    triggerBlipStartTs = 0;
     summonClippy();
     return;
   }
 
-  if (triggerClickCount === 1) {
-    // First tap of a burst: deliberately silent ("click once, see nothing").
-    return;
-  }
-
-  startOrUpdateAudio(triggerClickCount);
-  scheduleTriggerBlipCutoff(triggerBlipRollMs(triggerClickCount));
+  triggerBlipStartTs = Date.now();
+  const rollMs = triggerBlipRollMs(triggerActiveMs);
+  const volumeRatio = Math.min(1, triggerActiveMs / TRIGGER_SUMMON_MS);
+  startOrUpdateAudio(volumeRatio);
+  scheduleTriggerBlipCutoff(rollMs);
 };
 
 let currentVisibility =
@@ -233,7 +240,8 @@ const summonClippy = () => {
   clearTriggerBlipCutoff();
   setVisible(true);
   sequenceProgress = 0;
-  triggerClickCount = 0;
+  triggerActiveMs = 0;
+  triggerBlipStartTs = 0;
   if (audio.paused) {
     audio.currentTime = 0;
   }
@@ -254,11 +262,11 @@ const resetAudio = () => {
   audio.volume = 0;
 };
 
-const startOrUpdateAudio = (matched: number) => {
+const startOrUpdateAudio = (volumeRatio: number) => {
   if (audio.paused) {
     audio.currentTime = 0;
   }
-  audio.volume = Math.min(1, Math.max(0, matched / CLIPPY_SEQUENCE_LENGTH));
+  audio.volume = Math.min(1, Math.max(0, volumeRatio));
   void audio.play().catch(() => {
     // Autoplay may be blocked before the first user gesture.
   });
@@ -299,7 +307,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
 
   if (key === CLIPPY_SEQUENCE[sequenceProgress]) {
     sequenceProgress += 1;
-    startOrUpdateAudio(sequenceProgress);
+    startOrUpdateAudio(sequenceProgress / CLIPPY_SEQUENCE_LENGTH);
 
     if (sequenceProgress === CLIPPY_SEQUENCE_LENGTH) {
       summonClippy();
@@ -310,7 +318,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
 
   sequenceProgress = key === CLIPPY_SEQUENCE[0] ? 1 : 0;
   if (sequenceProgress > 0) {
-    startOrUpdateAudio(sequenceProgress);
+    startOrUpdateAudio(sequenceProgress / CLIPPY_SEQUENCE_LENGTH);
     return;
   }
 
@@ -331,7 +339,8 @@ export const detachClippyListener = () => {
   audio.removeEventListener("ended", onAudioEnded);
   listenerAttached = false;
   allowFullVolumeTail = false;
-  triggerClickCount = 0;
+  triggerActiveMs = 0;
+  triggerBlipStartTs = 0;
   clearTriggerBlipCutoff();
   resetAudio();
 };
