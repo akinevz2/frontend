@@ -43,13 +43,13 @@ const CLIPPY_CLICK_THRESHOLD = 8;
 const CLIPPY_CLICK_WINDOW_MS = 10_000;
 const BUBBLE_DISMISS_MS = 8_000;
 // Total active clicking time required to summon Clippy, in ms.
-const TRIGGER_SUMMON_MS = 3_960;
+const TRIGGER_SUMMON_MS = 3_690;
 // Assumed length of /yooh.mp3; used to budget the blip cut-off curve.
-const TRIGGER_AUDIO_LENGTH_MS = 5_000;
-const TRIGGER_BLIP_FADE_MS = 400;
+const TRIGGER_AUDIO_LENGTH_MS = 3_220;
+const TRIGGER_BLIP_FADE_MS = 650;
 // The first audible cutoff (shortest blip) in ms. Each subsequent click
 // extends the roll so the audio plays longer the more the user keeps clicking.
-const TRIGGER_FIRST_BLIP_MS = 350;
+const TRIGGER_FIRST_BLIP_MS = 120;
 const TRIGGER_LAST_BLIP_MS = TRIGGER_AUDIO_LENGTH_MS - TRIGGER_BLIP_FADE_MS;
 
 // Cumulative active clicking time across the current burst. When this reaches
