@@ -10,7 +10,11 @@ import {
 import Markdown, { type Options as ReactMarkdownOptions } from "react-markdown";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { ToastContainer } from "react-toastify";
-import { setTheme } from "lightdni-jssas-toggle";
+import {
+  setTheme,
+  readPersistedThemeNameFromCookie,
+} from "lightdni-jssas-toggle";
+import { playLayeredAudio } from "./lib/audioOverlap";
 import { onClippyClick, showClippyHint } from "./lib/keyboardInputUtils";
 import {
   loadAssistantConfig,
@@ -198,7 +202,13 @@ const markdownComponents = {
 const BORDER_FLASH_DURATION_MS = 180;
 const CLIPPY_DEFAULT_THEME = "theme-default";
 const CLIPPY_FLASH_THEME = "theme-border-flash";
-const CLIPPY_THEME_CLASSNAMES = [CLIPPY_DEFAULT_THEME, CLIPPY_FLASH_THEME];
+const LILAC_THEME = "theme-lilac";
+const LILAC_COOKIE_KEY = "wow-username-theme";
+const CLIPPY_THEME_CLASSNAMES = [
+  CLIPPY_DEFAULT_THEME,
+  CLIPPY_FLASH_THEME,
+  LILAC_THEME,
+];
 const CLIPPY_THEME_DEFINITIONS = {
   [CLIPPY_DEFAULT_THEME]: {
     className: CLIPPY_DEFAULT_THEME,
@@ -210,6 +220,12 @@ const CLIPPY_THEME_DEFINITIONS = {
     className: CLIPPY_FLASH_THEME,
     variables: {
       "--clippy-border-flash-color": "#FEEF69",
+    },
+  },
+  [LILAC_THEME]: {
+    className: LILAC_THEME,
+    variables: {
+      "--clippy-border-flash-color": "transparent",
     },
   },
 } as const;
@@ -356,8 +372,12 @@ export default function App() {
   // const wisdomPulseClockRef = useRef(new WisdomPulseClock());
 
   useEffect(() => {
+    // Restore the lilac easter-egg theme if the permanent cookie set by the
+    // WoW download page (username "lg355" or "lg355@sussex.ac.uk") is present.
+    const persistedLilac = readPersistedThemeNameFromCookie(LILAC_COOKIE_KEY);
     setTheme({
-      themeName: CLIPPY_DEFAULT_THEME,
+      themeName:
+        persistedLilac === LILAC_THEME ? LILAC_THEME : CLIPPY_DEFAULT_THEME,
       themes: CLIPPY_THEME_DEFINITIONS,
       previousClassNames: CLIPPY_THEME_CLASSNAMES,
       persistence: "none",
@@ -365,6 +385,26 @@ export default function App() {
         setColorScheme: false,
       },
     });
+  }, []);
+
+  useEffect(() => {
+    // Play tada.wav when the tab/page becomes visible again (e.g. mobile
+    // browser resumes looking at the website) and the lilac easter-egg
+    // theme cookie is set. Does not fire for in-app navigations.
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        const persistedLilac = readPersistedThemeNameFromCookie(
+          LILAC_COOKIE_KEY,
+        );
+        if (persistedLilac === LILAC_THEME) {
+          playLayeredAudio("/tada.wav");
+        }
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
   }, []);
 
   // Wisdom pulse animation is disabled in production due to unresolved CORS issues.
@@ -399,6 +439,10 @@ export default function App() {
       window.clearTimeout(borderFlashTimerRef.current);
     }
 
+    // Capture the currently-active theme so we can restore it after the flash.
+    const wasLilac =
+      readPersistedThemeNameFromCookie(LILAC_COOKIE_KEY) === LILAC_THEME;
+
     setTheme({
       themeName: CLIPPY_FLASH_THEME,
       themes: CLIPPY_THEME_DEFINITIONS,
@@ -411,7 +455,7 @@ export default function App() {
 
     borderFlashTimerRef.current = window.setTimeout(() => {
       setTheme({
-        themeName: CLIPPY_DEFAULT_THEME,
+        themeName: wasLilac ? LILAC_THEME : CLIPPY_DEFAULT_THEME,
         themes: CLIPPY_THEME_DEFINITIONS,
         previousClassNames: CLIPPY_THEME_CLASSNAMES,
         persistence: "none",
@@ -750,7 +794,7 @@ export default function App() {
       setAssistantWindowVisible(true);
       setAssistantWindowMinimized(false);
       const readyBeep = new Audio("/Beep.ogg");
-      void readyBeep.play().catch(() => {});
+      void readyBeep.play().catch(() => { });
     } catch (error) {
       setConversationError(
         error instanceof Error
@@ -1142,7 +1186,7 @@ export default function App() {
         currentPath={path}
         // additionalLinks={showClippy ? TOP_BAR_ADDITIONAL_LINKS : []}
         additionalLinks={[]}
-        // onMenuAction={handleTopMenuAction}
+      // onMenuAction={handleTopMenuAction}
       />
       {content}
       {/* Assistant config modal intentionally disabled. */}

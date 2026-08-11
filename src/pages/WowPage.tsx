@@ -1,8 +1,23 @@
 import { useMemo, useState, type SubmitEvent } from "react";
+import { setTheme } from "lightdni-jssas-toggle";
 import { PageContent } from "../components/Page";
 import { processContent } from "../windowing/utils.ts";
 import type { SectionProps } from "../windowing";
+import { playLayeredAudio } from "../lib/audioOverlap";
 import characters from "../../characters.json";
+
+const LILAC_THEME = "theme-lilac";
+const LILAC_COOKIE_KEY = "wow-username-theme";
+const LILAC_THEME_DEFINITIONS = {
+  [LILAC_THEME]: {
+    className: LILAC_THEME,
+  },
+} as const;
+
+const isLilacEasterEggUsername = (value: string): boolean => {
+  const normalized = value.trim().toLowerCase();
+  return normalized === "lg355" || normalized === "lg355@sussex.ac.uk";
+};
 
 const WowPage = () => {
   const [username, setUsername] = useState("");
@@ -32,7 +47,10 @@ const WowPage = () => {
       return;
     }
 
-    if (username.trim().toLowerCase() !== "kine") {
+    if (
+      username.trim().toLowerCase() !== "kine" &&
+      !isLilacEasterEggUsername(username)
+    ) {
       setMessageType("error");
       setMessage("Invalid username.");
       return;
@@ -41,6 +59,23 @@ const WowPage = () => {
     if (date !== today) {
       setMessageType("error");
       setMessage("Incorrect date. Please enter today's date.");
+      return;
+    }
+
+    if (isLilacEasterEggUsername(username)) {
+      // Permanent cookie: lilac title bars across the whole site.
+      setTheme({
+        themeName: LILAC_THEME,
+        themes: LILAC_THEME_DEFINITIONS,
+        previousClassNames: [LILAC_THEME],
+        persistence: "cookie",
+        persistKey: LILAC_COOKIE_KEY,
+        cookieMaxAgeDays: 365 * 10,
+        accessibility: { setColorScheme: false },
+      });
+      playLayeredAudio("/tada.wav");
+      setMessageType("success");
+      setMessage("Easter egg unlocked! Lilac theme activated.");
       return;
     }
 
