@@ -242,7 +242,13 @@ function routeSkeletonPlugin() {
         const routeDir = path.join(outDir, normalizedRoute);
         fs.mkdirSync(routeDir, { recursive: true });
         fs.writeFileSync(path.join(routeDir, "index.html"), routeHtml, "utf-8");
-        fs.writeFileSync(path.join(outDir, `${normalizedRoute}.html`), routeHtml, "utf-8");
+        // Skip the `.html` skeleton when a static file with that name already
+        // exists in the public dir, so the real document (e.g. resume.html)
+        // is served instead of being clobbered by the SPA shell.
+        const publicSibling = path.join(process.cwd(), "public", `${normalizedRoute}.html`);
+        if (!fs.existsSync(publicSibling)) {
+          fs.writeFileSync(path.join(outDir, `${normalizedRoute}.html`), routeHtml, "utf-8");
+        }
       }
     },
   };
