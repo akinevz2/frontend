@@ -154,7 +154,11 @@ const ResumePage = () => {
             style={{ width: "90vw", height: "90vh", maxWidth: "1200px" }}
           >
             <div className="title-bar">
-              <div className="title-bar-text">Resume</div>
+              <div className="title-bar-text">
+                <a href="/documents/resume.pdf" target="_blank" rel="noopener noreferrer">
+                  Resume
+                </a>
+              </div>
               <div className="title-bar-controls">
                 <button
                   aria-label="Close"
