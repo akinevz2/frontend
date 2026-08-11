@@ -54,6 +54,28 @@
   box-shadow: 0 0 15px 4px #feef69 !important;
 }
 
+/* --- Lilac easter-egg theme: purple title bars ---------------------------
+ * Activated by a permanent cookie set when "lg355" or "lg355@sussex.ac.uk"
+ * is entered as the username on the WoW download page. Turns all window
+ * title-bar backgrounds purple (lilac).
+ */
+:root.theme-lilac .window .title-bar,
+:root.theme-lilac .title-bar {
+  background: #b060b0 !important;
+  background-image: linear-gradient(
+    to right,
+    #9c4f9c,
+    #b060b0,
+    #9c4f9c
+  ) !important;
+}
+
+:root.theme-lilac .window .title-bar-text,
+:root.theme-lilac .window .title-bar a,
+:root.theme-lilac .title-bar-text {
+  color: #fff !important;
+}
+
 /* --- Experimental theme: raise-and-wobble effect ----------------------------
  * Sections marked with the "experimental" theme bob up and down gently on
  * hover/focus, and gain a thick double border (2px solid) layered with the

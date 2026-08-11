@@ -71,7 +71,7 @@ const triggerBlipRollMs = (activeMs: number): number => {
   const logRatio = Math.log(1 + ratio * (Math.E - 1)); // 0 → 1 log curve
   return Math.round(
     TRIGGER_FIRST_BLIP_MS +
-    (TRIGGER_LAST_BLIP_MS - TRIGGER_FIRST_BLIP_MS) * logRatio,
+      (TRIGGER_LAST_BLIP_MS - TRIGGER_FIRST_BLIP_MS) * logRatio,
   );
 };
 

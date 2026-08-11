@@ -155,7 +155,11 @@ const ResumePage = () => {
           >
             <div className="title-bar">
               <div className="title-bar-text">
-                <a href="/documents/resume.pdf" target="_blank" rel="noopener noreferrer">
+                <a
+                  href="/documents/resume.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   Resume
                 </a>
               </div>
