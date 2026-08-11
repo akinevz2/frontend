@@ -24,6 +24,7 @@ const SITE_ASSETS: SectionProps[] = [
   {
     heading: "Crawler assets",
     link: "/robots.txt",
+    theme: "open",
     content: [
       "[robots.txt](/robots.txt)",
       "[XML sitemap](/sitemap.xml)",
@@ -32,6 +33,7 @@ const SITE_ASSETS: SectionProps[] = [
   },
   {
     heading: "Common public files",
+    theme: "open",
     content: [
       "[Resume PDF](/resume.pdf)",
       "[Resume HTML](/documents/resume.html)",
@@ -68,11 +70,13 @@ const SITE_MAP_GROUPS: SitemapSection[] = [
 
 const buildRouteSections = (group: SitemapSection): SectionProps => ({
   heading: group.heading,
+  theme: "open",
   content: [
     group.summary,
     ...group.routes.map((route) => ({
       heading: route.title,
       link: route.path,
+      theme: "open",
       content: [
         `Path: [${route.path}](${route.path})`,
         route.description,
@@ -88,6 +92,7 @@ const buildSitemapSections = (): SectionProps[] => [
   {
     className: "sitemap-intro",
     heading: "Sitemap",
+    theme: "open",
     content: [
       "This page is a human-readable map of the website. It mirrors the crawlable route list and points at the files search engines should use first.",
       "Start with [robots.txt](/robots.txt) and [the XML sitemap](/sitemap.xml), then use the route groups below to jump directly to the part of the site you want.",
@@ -97,6 +102,7 @@ const buildSitemapSections = (): SectionProps[] => [
   {
     className: "sitemap-assets",
     heading: "Assets and references",
+    theme: "open",
     content: [
       "These are the supporting files that help the site load, render, or surface richer snippets.",
       ...SITE_ASSETS,
@@ -105,6 +111,7 @@ const buildSitemapSections = (): SectionProps[] => [
   {
     className: "sitemap-notes",
     heading: "Indexing notes",
+    theme: "open",
     content: [
       "The XML sitemap is generated at build time from the same route registry that drives the navigation menu, so the crawl surface stays aligned with the site structure.",
       "The homepage also publishes MusicGroup structured data so the music profile, social links, and latest SoundCloud releases stay discoverable.",
