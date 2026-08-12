@@ -393,9 +393,8 @@ export default function App() {
     // theme cookie is set. Does not fire for in-app navigations.
     const onVisibilityChange = () => {
       if (document.visibilityState === "visible") {
-        const persistedLilac = readPersistedThemeNameFromCookie(
-          LILAC_COOKIE_KEY,
-        );
+        const persistedLilac =
+          readPersistedThemeNameFromCookie(LILAC_COOKIE_KEY);
         if (persistedLilac === LILAC_THEME) {
           playLayeredAudio("/tada.wav");
         }
@@ -794,7 +793,7 @@ export default function App() {
       setAssistantWindowVisible(true);
       setAssistantWindowMinimized(false);
       const readyBeep = new Audio("/Beep.ogg");
-      void readyBeep.play().catch(() => { });
+      void readyBeep.play().catch(() => {});
     } catch (error) {
       setConversationError(
         error instanceof Error
@@ -1186,7 +1185,7 @@ export default function App() {
         currentPath={path}
         // additionalLinks={showClippy ? TOP_BAR_ADDITIONAL_LINKS : []}
         additionalLinks={[]}
-      // onMenuAction={handleTopMenuAction}
+        // onMenuAction={handleTopMenuAction}
       />
       {content}
       {/* Assistant config modal intentionally disabled. */}
