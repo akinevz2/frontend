@@ -17,6 +17,7 @@ type MusicProfile = {
   source: string;
   profileImageUrl: string | null;
   trackCount: number;
+  theme?: string;
   tracks: MusicTrack[];
 };
 
@@ -26,6 +27,7 @@ type MusicPayload = {
   asOfUploadingTrackCount?: number;
   trackCount: number;
   tracks: MusicTrack[];
+  theme?: string;
   profiles?: MusicProfile[];
 };
 
@@ -69,9 +71,8 @@ const UploadingCounter = ({ total }: { total: number }) => (
       padding: "0.35rem 0.5rem",
     }}
   >
-    AS OF UPLOADING: {total} tracks
+    {total} tracks as of last website rebuild
     <br />
-    (main and alt)
   </div>
 );
 
@@ -357,27 +358,27 @@ const toMusicSections = (
     return { trackCount: artistTracks.length, tracks: artistTracks };
   };
 
-  const profiles =
-    (() => {
-      const main = findArtist(payload, "akinevz");
-      const alt = findArtist(payload, "kirill_nevzorov");
-      return [
-        {
-          owner: "akinevz",
-          source: "https://soundcloud.com/akinevz",
-          profileImageUrl: getProfileImageUrl("akinevz"),
-          trackCount: main.trackCount,
-          tracks: payload.tracks,
-        },
-        {
-          owner: "kirill_nevzorov",
-          source: "https://soundcloud.com/kirill_nevzorov",
-          profileImageUrl: getProfileImageUrl("kirill_nevzorov"),
-          trackCount: alt.trackCount,
-          tracks: [],
-        },
-      ];
-    })();
+  const profiles = (() => {
+    const main = findArtist(payload, "akinevz");
+    const alt = findArtist(payload, "kirill_nevzorov");
+    return [{
+      ...alt,
+      owner: "kirill_nevzorov",
+      source: "https://soundcloud.com/kirill_nevzorov",
+      profileImageUrl: getProfileImageUrl("kirill_nevzorov"),
+      trackCount: alt.trackCount,
+      tracks: [],
+      theme: "open",
+    },
+    {
+      ...main,
+      owner: "akinevz",
+      source: "https://soundcloud.com/akinevz",
+      profileImageUrl: getProfileImageUrl("akinevz"),
+      trackCount: main.trackCount,
+      theme: "open",
+    }];
+  })();
 
   const favouriteLinkList: SectionProps[] = favouriteLinks.map(
     favouriteLinkToSectionProps,
@@ -399,6 +400,7 @@ const toMusicSections = (
       {
         className: "music-profile-discography",
         heading: `@${profile.owner} discography`,
+        theme: profile.theme ?? [],
         content: [
           <ArtistProfileBackground
             imageUrl={profile.profileImageUrl}
@@ -418,6 +420,7 @@ const toMusicSections = (
     {
       className: "music-as-of-uploading",
       heading: "Discography Total",
+      theme: "open",
       content: [
         `Generated: ${new Date(payload.generatedAt).toLocaleString()}`,
         "This total measures main and alt profiles as of uploading.",
