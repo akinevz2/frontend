@@ -363,6 +363,33 @@ export const run = async () => {
     const asOfUploadingTrackCount = enriched.length;
     const source = getProfileUrl(SOUND_CLOUD_OWNERS[0]);
 
+    // Build per-owner track lists in the order: visible (newest first),
+    // then any long-tail entries from the previous snapshot.  The component
+    // groups the discography by `owner`, so emitting a `profiles` array
+    // ensures every owner gets its own section — not just the first one.
+    const tracksByOwner = new Map();
+    for (const owner of SOUND_CLOUD_OWNERS) tracksByOwner.set(owner, []);
+    for (const track of enriched) {
+        const bucket = tracksByOwner.get(track.owner);
+        if (bucket) bucket.push(track);
+    }
+
+    const profiles = SOUND_CLOUD_OWNERS.map((owner) => {
+        const ownerTracks = tracksByOwner.get(owner) ?? [];
+        return {
+            owner,
+            source: getProfileUrl(owner),
+            profileImageUrl: null,
+            trackCount: ownerTracks.length,
+            tracks: ownerTracks.map((track) => ({
+                owner: track.owner,
+                path: track.path,
+                title: track.title,
+                url: track.url,
+            })),
+        };
+    });
+
     const result = {
         source,
         generatedAt: new Date().toISOString(),
@@ -374,9 +401,11 @@ export const run = async () => {
             title: track.title,
             url: track.url,
         })),
+        profiles,
     };
 
     await writeFile(outputFile, `${JSON.stringify(result, null, 2)}\n`, "utf8");
+
 
     process.stdout.write(
         `Refreshed ${result.tracks.length} SoundCloud track(s) into ${outputFile}\n`,
