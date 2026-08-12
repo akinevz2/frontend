@@ -1,12 +1,26 @@
 #!/usr/bin/env node
 /**
- * Generate public/soundcloud.json from the SoundCloud API v2.
+ * ⚠️  LEGACY — no longer invoked by `npm run refresh:content`.
+ *
+ * This script was the previous SoundCloud discography generator.  It hit
+ * `api-v2.soundcloud.com/users/<id>/tracks` directly, which requires a public
+ * `client_id` query parameter that SoundCloud rotates periodically.  As of
+ * August 2026 the embedded client id (`lmRjTI0FqeXygHMXc3hRzS7hth20PNk5`)
+ * returns HTTP 401 and this script aborts on the first request.
+ *
+ * The build now uses `scripts/refresh-soundcloud.mjs`, which scrapes
+ * SoundCloud profile pages via `npx pagerts fetch` and resolves track titles
+ * via the public `oembed` endpoint.  No SoundCloud `client_id` is required.
+ *
+ * This file is kept on disk for reference only.  Do not call it from
+ * automated builds; see refresh-soundcloud.mjs for the active pipeline.
+ */
  *
  * Background:
  * SoundCloud's public profile pages only render a small number of tracks on the
- * server (around 10). To publish the complete discography for akinevz (~43
- * tracks) and kirill_nevzorov (~33 tracks) we query the public API v2 endpoint and
- * paginate through the full track collection.
+  * server(around 10).To publish the complete discography for akinevz(~43
+    * tracks) and kirill_nevzorov(~33 tracks) we query the public API v2 endpoint and
+      * paginate through the full track collection.
  */
 import { copyFile, mkdir, rename, rm, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
