@@ -339,21 +339,45 @@ const toMusicSections = (
   payload: MusicPayload,
   favouriteLinks: FavouriteLinkContent[],
 ): SectionProps[] => {
-  const profiles = Array.isArray(payload.profiles)
-    ? payload.profiles.map((profile) => ({
-        ...profile,
-        profileImageUrl:
-          getProfileImageUrl(profile.owner) ?? profile.profileImageUrl,
-      }))
-    : [
+  /**
+   * Project a `payload`-like object (or any `{ tracks: MusicTrack[] }`) down
+   * to the tracks owned by `artistName`.  Returns the per-artist `trackCount`
+   * and `tracks` slice so callers can drop it straight into a profile-shaped
+   * object literal.  The same helper is intended to back both the unified
+   * (no `payload.profiles`) fallback path and the per-artist "happy path";
+   * the latter is being refactored on the `refactor/two-artists` branch.
+   */
+  const findArtist = (
+    profiles: { tracks?: MusicTrack[] },
+    artistName: string,
+  ): { trackCount: number; tracks: MusicTrack[] } => {
+    const artistTracks = (profiles.tracks ?? []).filter(
+      (track) => track.owner === artistName,
+    );
+    return { trackCount: artistTracks.length, tracks: artistTracks };
+  };
+
+  const profiles =
+    (() => {
+      const main = findArtist(payload, "akinevz");
+      const alt = findArtist(payload, "kirill_nevzorov");
+      return [
         {
           owner: "akinevz",
-          source: payload.source ?? "https://soundcloud.com/akinevz",
+          source: "https://soundcloud.com/akinevz",
           profileImageUrl: getProfileImageUrl("akinevz"),
-          trackCount: payload.trackCount,
+          trackCount: main.trackCount,
           tracks: payload.tracks,
         },
+        {
+          owner: "kirill_nevzorov",
+          source: "https://soundcloud.com/kirill_nevzorov",
+          profileImageUrl: getProfileImageUrl("kirill_nevzorov"),
+          trackCount: alt.trackCount,
+          tracks: [],
+        },
       ];
+    })();
 
   const favouriteLinkList: SectionProps[] = favouriteLinks.map(
     favouriteLinkToSectionProps,
