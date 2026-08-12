@@ -361,23 +361,26 @@ const toMusicSections = (
   const profiles = (() => {
     const main = findArtist(payload, "akinevz");
     const alt = findArtist(payload, "kirill_nevzorov");
-    return [{
-      ...alt,
-      owner: "kirill_nevzorov",
-      source: "https://soundcloud.com/kirill_nevzorov",
-      profileImageUrl: getProfileImageUrl("kirill_nevzorov"),
-      trackCount: alt.trackCount,
-      tracks: [],
-      theme: "open",
-    },
-    {
-      ...main,
-      owner: "akinevz",
-      source: "https://soundcloud.com/akinevz",
-      profileImageUrl: getProfileImageUrl("akinevz"),
-      trackCount: main.trackCount,
-      theme: "open",
-    }];
+    return [
+      {
+        ...alt,
+        owner: "kirill_nevzorov",
+        source: "https://soundcloud.com/kirill_nevzorov",
+        profileImageUrl: getProfileImageUrl("kirill_nevzorov"),
+        trackCount: alt.trackCount,
+        tracks: [],
+        theme: "experimental",
+      },
+      {
+        ...main,
+        owner: "akinevz",
+        source: "https://soundcloud.com/akinevz",
+        profileImageUrl: getProfileImageUrl("akinevz"),
+        trackCount: main.trackCount,
+        tracks: payload.tracks,
+        theme: "open",
+      },
+    ];
   })();
 
   const favouriteLinkList: SectionProps[] = favouriteLinks.map(
@@ -399,7 +402,7 @@ const toMusicSections = (
     return [
       {
         className: "music-profile-discography",
-        heading: `@${profile.owner} discography`,
+        heading: profile.tracks.length ? `@${profile.owner} discography` : `@${profile.owner} profile`,
         theme: profile.theme ?? [],
         content: [
           <ArtistProfileBackground
