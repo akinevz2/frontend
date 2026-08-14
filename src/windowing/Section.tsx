@@ -1192,6 +1192,8 @@ export const Section = (props: SectionProps) => {
     return () => clearTimeout(timer);
   }, [shouldOpenFromLink, inlineWindowRef, isOnBlogPage, targetPostSlug]);
 
+  const isPlain = "nowindow" in normalizedThemes;
+  const decorations = [!isPlain ? "window" : "", className ?? ""];
   const windowContent = !isSection ? (
     content
   ) : (
@@ -1199,7 +1201,7 @@ export const Section = (props: SectionProps) => {
       ref={inlineWindowRef}
       data-theme={dataThemeValue || undefined}
       id={hasHeading && typeof heading === "string" ? sectionId : undefined}
-      className={`window ${className || ""}`.trim()}
+      className={decorations.join(" ").trim()}
     >
       {hasHeading && typeof heading === "string" ? (
         <TitleBar

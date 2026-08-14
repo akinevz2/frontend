@@ -5,9 +5,11 @@ import { processContent } from "../windowing/utils";
 import {
   type MusicTrack,
   type PageMetadata,
+  Section,
   type SectionProps,
   useIsAnyWindowMaximized,
 } from "../windowing";
+import type { Content } from "../windowing/types";
 
 const MUSIC_LINKS_URL = "/blog/music-links.json";
 
@@ -34,6 +36,7 @@ type MusicPayload = {
 type FavouriteLink = {
   title: string;
   url: string;
+  backgroundImage?: string;
 };
 
 type FavouriteLinkContent = FavouriteLink | SectionProps;
@@ -76,45 +79,84 @@ const UploadingCounter = ({ total }: { total: number }) => (
   </div>
 );
 
-const ArtistProfileBackground = ({
+const BackgroundImage = ({
   imageUrl,
+  content,
   children,
-  link,
+  className = "artist-background",
+  url,
 }: {
-  imageUrl?: string | null;
+  imageUrl: string;
+  content?: Content;
   children?: ReactNode;
-  link?: string;
+  className: "artist-background" | "artist-profile-background";
+  url: string;
 }) => {
-  if (!imageUrl) return null;
-
   const containerStyle: React.CSSProperties = {
     backgroundImage: `url('${imageUrl}')`,
   };
 
-  // If a link is provided, make the background clickable via anchor tag
-  if (link) {
-    return (
+  return (
+    <div
+    >
+      {content ? <Section theme="nowindow" content={content} /> : null}
       <a
-        href={link}
+        href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="artist-profile-background"
+        className={className}
         style={{
           ...containerStyle,
           display: "block",
-          textDecoration: "none",
-          color: "inherit",
+          padding: "1em",
+          boxSizing: "border-box"
         }}
       >
         {children}
       </a>
-    );
-  }
-
-  return (
-    <div className="artist-profile-background" style={containerStyle}>
-      {children}
     </div>
+  );
+};
+
+const ArtistProfileBackground = ({
+  imageUrl,
+  content,
+  children,
+  link,
+  url,
+}: {
+  imageUrl?: string | null;
+  content?: Content;
+  children?: ReactNode;
+  link?: string;
+  url?: string;
+}) => {
+  if (!imageUrl) return null;
+  const urlSafe = link ?? url ?? "javascript:alert('not found');";
+
+  const containerStyle: React.CSSProperties = {
+    backgroundImage: `url('${imageUrl}')`,
+  };
+  const className = "artist-profile-background";
+
+  if (!link && !url)
+    return imageUrl ? (
+      <BackgroundImage
+        className={className}
+        imageUrl={imageUrl}
+        url={urlSafe}
+        content={content}
+      />
+    ) : (
+      <div className={className} style={containerStyle}>
+        {children}
+      </div>
+    );
+  // If a link is provided, make the background clickable via anchor tag
+  return (
+    <BackgroundImage className={className} imageUrl={imageUrl} url={urlSafe}>
+      {children}
+    </BackgroundImage>
   );
 };
 
@@ -205,37 +247,64 @@ const getSpotifyEmbedInfo = (
 
 const YOUTUBE_EMBED_HOST = "https://www.youtube.com/embed/";
 
-/**
- * Detects if a URL is a YouTube video and returns its embed info.
- * Supports both youtube.com/watch?v=ID and youtu.be/ID formats.
- */
 const getYouTubeEmbedInfo = (
   urlValue: string,
-): { embedUrl: string; resourceType: "video" } | null => {
+): { embedUrl: string; isPlaylist: boolean } | null => {
   try {
     const parsed = new URL(urlValue);
 
-    // Handle youtube.com URLs
     if (
-      parsed.hostname === "www.youtube.com" ||
-      parsed.hostname === "youtube.com"
+      parsed.hostname !== "www.youtube.com" &&
+      parsed.hostname !== "youtube.com" &&
+      parsed.hostname !== "youtu.be"
     ) {
-      const videoId = parsed.searchParams.get("v");
-      if (!videoId) return null;
-      return {
-        embedUrl: `${YOUTUBE_EMBED_HOST}${videoId}`,
-        resourceType: "video",
-      };
+      return null;
     }
 
     // Handle youtu.be short URLs (e.g., https://youtu.be/VIDEO_ID)
     if (parsed.hostname === "youtu.be") {
-      const videoId = parsed.pathname.slice(1); // Remove leading /
+      const videoId = parsed.pathname.slice(1);
       if (!videoId) return null;
-      return {
-        embedUrl: `${YOUTUBE_EMBED_HOST}${videoId}`,
-        resourceType: "video",
-      };
+      return { embedUrl: `${YOUTUBE_EMBED_HOST}${videoId}`, isPlaylist: false };
+    }
+
+    // Handle youtube.com URLs - extract playlist IDs for thumbnail fallback
+    const listId = parsed.searchParams.get("list");
+    const videoId = parsed.searchParams.get("v");
+
+    if (listId) {
+      return null;
+    }
+
+    if (!videoId) return null;
+    return { embedUrl: `${YOUTUBE_EMBED_HOST}${videoId}`, isPlaylist: false };
+  } catch {
+    return null;
+  }
+};
+
+const getYouTubeThumbnailUrl = (urlValue: string): string | null => {
+  try {
+    const parsed = new URL(urlValue);
+    if (parsed.hostname === "youtu.be") {
+      const videoId = parsed.pathname.slice(1);
+      return `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
+    }
+
+    if (
+      parsed.hostname === "www.youtube.com" ||
+      parsed.hostname === "youtube.com"
+    ) {
+      // Don't attempt to resolve playlist thumbnails - these are often unlisted/private
+      const listId = parsed.searchParams.get("list");
+      if (listId) {
+        return null;
+      }
+
+      const videoId = parsed.searchParams.get("v");
+      if (videoId) {
+        return `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
+      }
     }
 
     return null;
@@ -256,9 +325,11 @@ const SPOTIFY_IFRAME_HEIGHT = 152;
 export const FavouriteLinkItem = ({
   title,
   url,
+  backgroundImage,
 }: {
   title: string;
   url: string;
+  backgroundImage?: string;
 }) => {
   const spotify = getSpotifyEmbedInfo(url);
   const youtube = getYouTubeEmbedInfo(url);
@@ -281,6 +352,32 @@ export const FavouriteLinkItem = ({
           referrerPolicy="strict-origin-when-cross-origin"
         />
       </>
+    );
+  }
+
+  // Use backgroundImage from JSON if provided (for YouTube playlists etc.)
+  if (backgroundImage) {
+    return (
+      <BackgroundImage
+        className="artist-background"
+        imageUrl={backgroundImage}
+        url={url}
+      >
+        {title}
+      </BackgroundImage>
+    );
+  }
+
+  const thumbnailUrl = getYouTubeThumbnailUrl(url);
+  if (thumbnailUrl) {
+    return (
+      <BackgroundImage
+        className="artist-background"
+        imageUrl={thumbnailUrl}
+        url={url}
+      >
+        {title}
+      </BackgroundImage>
     );
   }
 
@@ -314,6 +411,9 @@ const favouriteLinkToSectionProps = (
             key={`${item.title}-${item.url}`}
             title={item.title}
             url={item.url}
+            {...(item.backgroundImage && {
+              backgroundImage: item.backgroundImage,
+            })}
           />
         ) : (
           item
@@ -369,7 +469,7 @@ const toMusicSections = (
         profileImageUrl: getProfileImageUrl("kirill_nevzorov"),
         trackCount: alt.trackCount,
         tracks: [],
-        theme: "experimental",
+        theme: ["experimental"],
       },
       {
         ...main,
@@ -378,7 +478,7 @@ const toMusicSections = (
         profileImageUrl: getProfileImageUrl("akinevz"),
         trackCount: main.trackCount,
         tracks: payload.tracks,
-        theme: "open",
+        theme: ["open"],
       },
     ];
   })();
@@ -402,7 +502,9 @@ const toMusicSections = (
     return [
       {
         className: "music-profile-discography",
-        heading: profile.tracks.length ? `@${profile.owner} discography` : `@${profile.owner} profile`,
+        heading: profile.tracks.length
+          ? `@${profile.owner} discography`
+          : `@${profile.owner} profile`,
         theme: profile.theme ?? [],
         content: [
           <ArtistProfileBackground
@@ -420,10 +522,10 @@ const toMusicSections = (
   });
 
   return [
+
     {
       className: "music-as-of-uploading",
       heading: "Discography Total",
-      theme: "open",
       content: [
         `Generated: ${new Date(payload.generatedAt).toLocaleString()}`,
         "This total measures main and alt profiles as of uploading.",
@@ -445,16 +547,10 @@ const toMusicSections = (
         favouriteLinkList.length > 0
           ? favouriteLinkList
           : ["No favourite links configured yet."],
-    },
-    {
+    }, {
       className: "music-source",
-      heading: "Source",
+      heading: "Surviving Archive",
       content: [
-        "Artist page (main): [soundcloud.com/akinevz](https://soundcloud.com/akinevz)",
-        "Artist page (alt): [soundcloud.com/kirill_nevzorov](https://soundcloud.com/kirill_nevzorov)",
-        "Some other links were removed due to licensing restrictions.",
-        "Unfortunately, I can't collect every piece of music I love on here.",
-        "",
         `<iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/artist/2vy7FXU6dP4OEBiJVjsw7r?utm_source=generator&theme=0&si=0c8005cead7543c5" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`,
       ],
     },
