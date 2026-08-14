@@ -97,8 +97,7 @@ const BackgroundImage = ({
   };
 
   return (
-    <div
-    >
+    <div>
       {content ? <Section theme="nowindow" content={content} /> : null}
       <a
         href={url}
@@ -109,7 +108,7 @@ const BackgroundImage = ({
           ...containerStyle,
           display: "block",
           padding: "1em",
-          boxSizing: "border-box"
+          boxSizing: "border-box",
         }}
       >
         {children}
@@ -522,7 +521,6 @@ const toMusicSections = (
   });
 
   return [
-
     {
       className: "music-as-of-uploading",
       heading: "Discography Total",
@@ -547,7 +545,8 @@ const toMusicSections = (
         favouriteLinkList.length > 0
           ? favouriteLinkList
           : ["No favourite links configured yet."],
-    }, {
+    },
+    {
       className: "music-source",
       heading: "Surviving Archive",
       content: [
