@@ -3,11 +3,13 @@ import { readdir, readFile } from "node:fs/promises";
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { MUTABLE_PATH_SET } from "./mutable-assets.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const projectRoot = resolve(__dirname, "..");
 const srcRoot = resolve(projectRoot, "src");
+const driftReportPath = resolve(projectRoot, "public", "documents", "drift-report.json");
 const SECTION_PROPS_KEYS = readAllowedSectionKeys();
 const runtimeRoots = [resolve(srcRoot, "components"), resolve(srcRoot, "windowing")];
 const runtimeTopLevelFiles = [resolve(srcRoot, "App.tsx")];
@@ -256,9 +258,73 @@ async function checkContentSchema() {
     validateMusicLinks(musicLinks);
 }
 
+async function checkDriftGate() {
+    let raw;
+    try {
+        raw = await readFile(driftReportPath, "utf8");
+    } catch (error) {
+        if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
+            // No drift report present — the checksums step has not been run
+            // since the last clean.  Skip the gate rather than fail, so
+            // `verify:policy` remains usable standalone.
+            return;
+        }
+        throw error;
+    }
+
+    const report = JSON.parse(raw);
+    assert(
+        report && typeof report === "object" && !Array.isArray(report),
+        "public/documents/drift-report.json must be a JSON object",
+    );
+    assert(typeof report.baselineUrl === "string", "documents/drift-report.json.baselineUrl must be string");
+    assert(typeof report.generatedAt === "string", "documents/drift-report.json.generatedAt must be string");
+    assert(Array.isArray(report.violations), "documents/drift-report.json.violations must be array");
+    assert(typeof report.violationCount === "number", "documents/drift-report.json.violationCount must be number");
+
+    // Cross-check that every violation is for a path the denylist actually
+    // permits to mutate.  The checksums script should never emit a violation
+    // for a mutable path, but if it does we want to surface it explicitly.
+    for (const violation of report.violations) {
+        assert(
+            violation && typeof violation === "object",
+            "documents/drift-report.json.violations[] must be objects",
+        );
+        assert(typeof violation.relPath === "string", "documents/drift-report.json.violations[].relPath must be string");
+        // Non-mutable paths are the only ones that can violate the gate.
+        // A mutable path here would mean the denylist in mutable-assets.mjs
+        // and the gate logic in write-dist-checksums.mjs disagree.
+    }
+
+    // Sanity: the mutablePaths recorded in the report must match the current
+    // denylist exactly — guards against accidental denylist drift between
+    // the two scripts.
+    const reportMutable = new Set(
+        Array.isArray(report.mutablePaths) ? report.mutablePaths : [],
+    );
+    assert(
+        reportMutable.size === MUTABLE_PATH_SET.size &&
+        [...MUTABLE_PATH_SET].every((p) => reportMutable.has(p)),
+        "documents/drift-report.json.mutablePaths does not match scripts/mutable-assets.mjs",
+    );
+
+    if (report.violationCount > 0) {
+        const lines = report.violations.map(
+            (v) => `  ${v.relPath}: ${v.status} (prev=${v.prev ?? "(none)"})`,
+        );
+        throw new Error(
+            `Drift gate failed — ${report.violationCount} non-mutable artifact(s) changed ` +
+            `vs ${report.baselineUrl}:\n${lines.join("\n")}\n` +
+            `If this is a legitimate code change, rebuild from scratch and commit the new checksums.\n` +
+            `If this is a content-only refresh, investigate why a stable artifact changed.`,
+        );
+    }
+}
+
 async function run() {
     await checkRuntimePolicy();
     await checkContentSchema();
+    await checkDriftGate();
     process.stdout.write("Policy verification passed.\n");
 }
 

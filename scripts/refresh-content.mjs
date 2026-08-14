@@ -1,12 +1,19 @@
 #!/usr/bin/env node
 import { run as refreshSoundcloud } from "./refresh-soundcloud.mjs";
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile, unlink, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const projectRoot = resolve(__dirname, "..");
+
+/**
+ * Stale documents/drift-report.json is removed at the start of every refresh cycle so
+ * that `verify:policy` (which may run before `checksums`) does not act on a
+ * report produced by a previous build.  The checksums step rewrites it.
+ */
+const driftReportPath = resolve(projectRoot, "public", "documents", "drift-report.json");
 
 const LOCAL_SOURCES = [
     {
@@ -29,6 +36,11 @@ async function freezeBlogContent() {
 }
 
 export async function run() {
+    await unlink(driftReportPath).catch((error) => {
+        if (!(error && typeof error === "object" && "code" in error && error.code === "ENOENT")) {
+            throw error;
+        }
+    });
     await freezeBlogContent();
     await refreshSoundcloud();
 }
