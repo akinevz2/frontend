@@ -26,6 +26,7 @@ import {
 } from "node:fs/promises";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { isMutablePath, MUTABLE_PATH_SET } from "./mutable-assets.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -34,6 +35,14 @@ const distRoot = resolve(projectRoot, "dist");
 const publicRoot = resolve(projectRoot, "public");
 const distChecksumsPath = resolve(distRoot, "checksums.txt");
 const publicChecksumsPath = resolve(publicRoot, "checksums.txt");
+
+/**
+ * Sidecar written next to `checksums.txt` capturing any STABLE-invariant
+ * violations observed during this run.  `verify-policy.mjs` reads it so the
+ * drift gate runs in CI (where the remote baseline is reachable) rather
+ * than only locally.  An empty violations array means "no drift".
+ */
+const driftReportPath = resolve(publicRoot, "documents", "drift-report.json");
 
 /** Where the previous deployment's manifest lives. */
 const REMOTE_CHECKSUMS_URL =
@@ -113,6 +122,7 @@ async function run() {
     const existing = await readRemoteChecksums();
     const rows = [];
     let index = 0;
+    const driftViolations = [];
 
     for (const filePath of files.sort()) {
         // Skip the manifest file itself so it doesn't appear in its own diff.
@@ -128,15 +138,52 @@ async function run() {
             : previous === digest
                 ? "STABLE"
                 : "CHANGED";
+        const mutable = isMutablePath(relPath);
         index += 1;
 
         process.stdout.write(
-            `${String(index).padStart(3, "0")}. [${status}] ${relPath}\n` +
+            `${String(index).padStart(3, "0")}. [${status}] ${relPath}${mutable ? " (mutable)" : ""}\n` +
             `     prev: ${previous ?? "(none)"}\n` +
             `     next: ${digest}\n`,
         );
 
+        // Drift gate: a non-mutable artifact MUST be STABLE relative to the
+        // remote baseline.  A mutable artifact may be STABLE, CHANGED, or NEW.
+        if (!mutable && status !== "STABLE") {
+            driftViolations.push({
+                relPath,
+                status,
+                prev: previous ?? null,
+                next: digest,
+            });
+        }
+
         rows.push(`${digest}  ${relPath}`);
+    }
+
+    // Always emit a drift report so verify-policy can consume a definite
+    // signal rather than relying on file presence.
+    const driftReport = JSON.stringify(
+        {
+            baselineUrl: REMOTE_CHECKSUMS_URL,
+            generatedAt: new Date().toISOString(),
+            mutablePaths: [...MUTABLE_PATH_SET],
+            violationCount: driftViolations.length,
+            violations: driftViolations,
+        },
+        null,
+        2,
+    );
+    await writeFile(driftReportPath, `${driftReport}\n`, "utf8");
+
+    if (driftViolations.length > 0) {
+        const lines = driftViolations.map(
+            (v) => `  ${v.relPath}: ${v.status} (prev=${v.prev ?? "(none)"})`,
+        );
+        process.stderr.write(
+            `Drift gate failed — ${driftViolations.length} non-mutable artifact(s) changed ` +
+            `vs ${REMOTE_CHECKSUMS_URL}:\n${lines.join("\n")}\n`,
+        );
     }
 
     const manifest = `${rows.join("\n")}\n`;
