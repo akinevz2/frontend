@@ -45,15 +45,15 @@
         "url": "https://open.spotify.com/track/6gbmylJ7sB7NFfMfTQHosf"
     },
     {
-        "heading": "Playlists!",
+        "heading": "Playlists from KINE!",
         "content": [
             {
                 "title": "KINE - Amega 3 Atlantic Romanji",
-                "link": "https://www.youtube.com/watch?v=sgJsVfPpjV0&list=PLAOwLA0fz3HQCtJ5seeEkv5x--o9DM-JE"
+                "url": "https://www.youtube.com/watch?v=sgJsVfPpjV0&list=PLAOwLA0fz3HQCtJ5seeEkv5x--o9DM-JE"
             },
             {
                 "title": "KINE - Bass Overdose",
-                "link": "https://www.youtube.com/watch?v=hgISJPPpzxA&list=PLAOwLA0fz3HTUFtCJGmK-TfUBNsqo_42G"
+                "url": "https://www.youtube.com/watch?v=hgISJPPpzxA&list=PLAOwLA0fz3HTUFtCJGmK-TfUBNsqo_42G"
             }
         ]
     },
