@@ -24,6 +24,9 @@ export const MUTABLE_PATHS = Object.freeze([
     "index.html",
     "soundcloud.json",
     "blog/music-links.json",
+    "sitemap.xml",
+    "sitemap.html",
+    "sitemap/index.html",
     "checksums.txt",
 ]);
 
