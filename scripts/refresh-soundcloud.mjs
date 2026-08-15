@@ -267,6 +267,68 @@ const mapWithConcurrency = async (items, concurrency, worker) => {
 };
 
 /**
+ * Check whether a SoundCloud track is still live via the oembed endpoint.
+ * SoundCloud serves a 200 HTML page for deleted tracks, so the track URL
+ * itself is useless for liveness detection.  The oembed endpoint, however,
+ * reliably returns HTTP 404 for deleted/private tracks and 200 for live
+ * ones.  Returns the HTTP status code, or null on network failure (treated
+ * as "keep" — we don't want to trim tracks due to transient errors).
+ */
+const fetchTrackStatus = async (trackUrl) => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), OEMBED_TIMEOUT_MS);
+    try {
+        const response = await fetch(oembedUrl(trackUrl), {
+            method: "HEAD",
+            headers: { "User-Agent": USER_AGENT },
+            signal: controller.signal,
+        });
+        return response.status;
+    } catch {
+        return null;
+    } finally {
+        clearTimeout(timer);
+    }
+};
+
+/**
+ * Check every track for liveness via the oembed endpoint and remove dead
+ * tracks (HTTP 404).  Tracks that return null (network error/timeout) are
+ * kept to avoid false trims from transient failures.  Returns the trimmed
+ * list and logs what was removed.
+ */
+const trim404Tracks = async (tracks) => {
+    const statuses = await mapWithConcurrency(
+        tracks,
+        OEMBED_CONCURRENCY,
+        async (track) => ({ track, status: await fetchTrackStatus(track.url) }),
+    );
+
+    const dead = [];
+    const alive = [];
+
+    for (const { track, status } of statuses) {
+        if (status === 404) {
+            dead.push(track);
+        } else {
+            alive.push(track);
+        }
+    }
+
+    if (dead.length > 0) {
+        process.stdout.write(
+            `Trimmed ${dead.length} dead track(s) (oembed 404):\n` +
+            dead.map((t) => `  - ${t.url} (${t.title})`).join("\n") +
+            "\n",
+        );
+    } else {
+        process.stdout.write("No dead tracks found.\n");
+    }
+
+    return alive;
+};
+
+/**
  * Strip the trailing " by <author>" suffix that oembed adds to titles.
  */
 const stripAuthorSuffix = (title) => {
@@ -358,7 +420,8 @@ export const run = async () => {
 
     const previous = await readPreviousSnapshot();
     const merged = mergeTracks(visibleByOwner, previous);
-    const enriched = await lookupTitles(merged);
+    const titled = await lookupTitles(merged);
+    const enriched = await trim404Tracks(titled);
 
     const asOfUploadingTrackCount = enriched.length;
     const source = getProfileUrl(SOUND_CLOUD_OWNERS[0]);
