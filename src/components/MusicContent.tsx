@@ -50,7 +50,7 @@ type MusicState = {
 const getProfileImageUrl = (owner?: string): string | null => {
   const imageMap: Record<string, string> = {
     akinevz: "/medium.png",
-    kirill_nevzorov: "/avatar.jpg",
+    akinevz2: "/avatar.jpg",
   };
   return owner ? (imageMap[owner] ?? null) : null;
 };
@@ -459,13 +459,13 @@ const toMusicSections = (
 
   const profiles = (() => {
     const main = findArtist(payload, "akinevz");
-    const alt = findArtist(payload, "kirill_nevzorov");
+    const alt = findArtist(payload, "akinevz2");
     return [
       {
         ...alt,
-        owner: "kirill_nevzorov",
-        source: "https://soundcloud.com/kirill_nevzorov",
-        profileImageUrl: getProfileImageUrl("kirill_nevzorov"),
+        owner: "akinevz2",
+        source: "https://soundcloud.com/akinevz2",
+        profileImageUrl: getProfileImageUrl("akinevz2"),
         trackCount: alt.trackCount,
         tracks: [],
         theme: ["experimental"],

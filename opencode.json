@@ -1,0 +1,19 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "ollama/laguna-xs-2.1:safe",
+  "provider": {
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama (ws-rarebox)",
+      "options": {
+        "baseURL": "http://ws-rarebox:11434/v1"
+      },
+      "models": {
+        "laguna-xs-2.1:safe": {
+          "name": "Laguna XS 2.1 (safe)",
+          "tool_call": true
+        }
+      }
+    }
+  }
+}
