@@ -3,6 +3,10 @@
   "heading": "kine's blog posts",
   "content": [
     {
+      "heading": "So I started a youtube channel... its going alright?",
+      "link": "https://youtu.be/hDtPo8Gr9l0"
+    },
+    {
       "heading": "booger boogie intermission",
       "content": "idle your mouse with me",
       "theme": "experimental",
@@ -11,11 +15,16 @@
     "blog operating normally! :D",
     {
       "heading": "Rueg Config published! (#world of warcraft, #addons)",
+      "theme": "open",
       "content": [
         "Packed up the full Rueg configuration into a distributable archive — addons, WeakAuras, and profiles in one drop.",
         "Grab it from the [addons page](/addons) or click below.",
+        "I had a bad copy of the zip stuck in website cache:",
+        "If you downloaded an archive with 2 folders",
+        "Delete it, the correct dist.7z should have 3",
+        "You can skip copying WTF/ and just copy interface",
         {
-          "heading": "Download",
+          "heading": "Big Download Button",
           "link": "/dist.7z"
         }
       ]
@@ -418,10 +427,6 @@
               ]
             }
           ]
-        },
-        {
-          "heading": "first post (#meta, #blog, welcome to my website!)",
-          "content": "this is a placeholder blog post. i suddenly got motivation to start writing text again."
         }
       ]
     }
