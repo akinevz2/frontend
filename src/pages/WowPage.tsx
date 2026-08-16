@@ -16,7 +16,7 @@ const LILAC_THEME_DEFINITIONS = {
 
 const isLilacEasterEggUsername = (value: string): boolean => {
   const normalized = value.trim().toLowerCase();
-  return normalized === "lg355" || normalized === "lg355@sussex.ac.uk";
+  return normalized === "lg355";
 };
 
 const WowPage = () => {
@@ -84,8 +84,8 @@ const WowPage = () => {
 
     window.setTimeout(() => {
       const link = document.createElement("a");
-      link.href = "/RuegConfig.7z";
-      link.download = "RuegConfig.7z";
+      link.href = "/dist.7z";
+      link.download = "dist.7z";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
