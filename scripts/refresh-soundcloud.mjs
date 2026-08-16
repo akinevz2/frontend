@@ -39,7 +39,7 @@ const projectRoot = resolve(__dirname, "..");
 const outputFile = resolve(projectRoot, "public/soundcloud.json");
 
 /** SoundCloud usernames whose discographies should be published. */
-const SOUND_CLOUD_OWNERS = ["akinevz", "kirill_nevzorov"];
+const SOUND_CLOUD_OWNERS = ["akinevz", "akinevz2"];
 
 /** User-Agent sent to pagerts for the outbound HTTP request. */
 const USER_AGENT =
