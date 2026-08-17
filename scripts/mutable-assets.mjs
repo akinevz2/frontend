@@ -22,12 +22,26 @@
  */
 export const MUTABLE_PATHS = Object.freeze([
     "index.html",
-    "soundcloud.json",
-    "blog/music-links.json",
+    "404.html",
+    "404/index.html",
+    "addons.html",
+    "addons/index.html",
+    "blog.html",
+    "blog/index.html",
+    "blog/posts.json",
+    "contact.html",
+    "contact/index.html",
+    "music.html",
+    "music/index.html",
+    "resume/index.html",
     "sitemap.xml",
     "sitemap.html",
     "sitemap/index.html",
+    "soundcloud.json",
+    "wow.html",
+    "wow/index.html",
     "checksums.txt",
+    "assets/index-",
 ]);
 
 export const MUTABLE_PATH_SET = Object.freeze(new Set(MUTABLE_PATHS));
@@ -35,7 +49,18 @@ export const MUTABLE_PATH_SET = Object.freeze(new Set(MUTABLE_PATHS));
 /**
  * Returns true for artifacts that are allowed to change between
  * content-only refresh builds.
+ * Supports prefix matching: paths starting with any pattern in MUTABLE_PATHS
+ * are considered mutable (e.g. assets/index- matches assets/index-D4oX1XA7.js).
  */
 export function isMutablePath(relPath) {
-    return MUTABLE_PATH_SET.has(relPath);
+    if (MUTABLE_PATH_SET.has(relPath)) {
+        return true;
+    }
+    // Check if path starts with any mutable prefix pattern
+    for (const pattern of MUTABLE_PATHS) {
+        if (relPath.startsWith(pattern)) {
+            return true;
+        }
+    }
+    return false;
 }
