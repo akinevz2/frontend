@@ -17,8 +17,7 @@ const MUSIC_GROUP_GENRES = [
 ];
 const MUSIC_GROUP_SAME_AS = [
     "https://soundcloud.com/akinevz",
-    "https://soundcloud.com/akinevz0",
-    ""https://soundcloud.com/akinevz2",
+    "https://soundcloud.com/akinevz2",
     "https://github.com/akinevz2",
 ];
 const MUSIC_GROUP_PRIMARY_ALIAS =

@@ -1,106 +1,29 @@
 {
   "baselineUrl": "https://akinevz.com/checksums.txt",
-  "generatedAt": "2026-08-16T21:00:27.040Z",
+  "generatedAt": "2026-08-17T06:58:34.261Z",
   "mutablePaths": [
     "index.html",
-    "soundcloud.json",
-    "blog/music-links.json",
+    "404.html",
+    "404/index.html",
+    "addons.html",
+    "addons/index.html",
+    "blog.html",
+    "blog/index.html",
+    "blog/posts.json",
+    "contact.html",
+    "contact/index.html",
+    "music.html",
+    "music/index.html",
+    "resume/index.html",
     "sitemap.xml",
     "sitemap.html",
     "sitemap/index.html",
-    "checksums.txt"
+    "soundcloud.json",
+    "wow.html",
+    "wow/index.html",
+    "checksums.txt",
+    "assets/index-"
   ],
-  "violationCount": 15,
-  "violations": [
-    {
-      "relPath": "404.html",
-      "status": "CHANGED",
-      "prev": "f3eb9fae0d9f4795da9f08c99402efa8b8bc350ef0fdcf722fa85e0a9d233162",
-      "next": "3ac2cc4bbc7652ac346f32a6f9da25097634969d456cd94c424537c565501c1c"
-    },
-    {
-      "relPath": "404/index.html",
-      "status": "CHANGED",
-      "prev": "f3eb9fae0d9f4795da9f08c99402efa8b8bc350ef0fdcf722fa85e0a9d233162",
-      "next": "3ac2cc4bbc7652ac346f32a6f9da25097634969d456cd94c424537c565501c1c"
-    },
-    {
-      "relPath": "addons.html",
-      "status": "CHANGED",
-      "prev": "b798fc6beb1346cfc3b351586b941bfe2e3b940d706702e6706b9aa08f99eecb",
-      "next": "e91f8371189a54407102a4337a42a0ca57322ea59eddfc44351af2dfe13ec7fc"
-    },
-    {
-      "relPath": "addons/index.html",
-      "status": "CHANGED",
-      "prev": "b798fc6beb1346cfc3b351586b941bfe2e3b940d706702e6706b9aa08f99eecb",
-      "next": "e91f8371189a54407102a4337a42a0ca57322ea59eddfc44351af2dfe13ec7fc"
-    },
-    {
-      "relPath": "assets/index-CmhTXC_e.js",
-      "status": "NEW",
-      "prev": null,
-      "next": "e516c100abbbe76d4d95d1f83f2db45b087eef419b1d0df8bdbed7a18a431c04"
-    },
-    {
-      "relPath": "blog.html",
-      "status": "CHANGED",
-      "prev": "dfd9f7bcc4b1b2f9c619b8ea1aca591ff519d7855db3ee709acee18d06054bf8",
-      "next": "c2faedb8366138772ec801384c6090ef8295b374e35b5d44a6071e1110eef67c"
-    },
-    {
-      "relPath": "blog/index.html",
-      "status": "CHANGED",
-      "prev": "dfd9f7bcc4b1b2f9c619b8ea1aca591ff519d7855db3ee709acee18d06054bf8",
-      "next": "c2faedb8366138772ec801384c6090ef8295b374e35b5d44a6071e1110eef67c"
-    },
-    {
-      "relPath": "blog/posts.json",
-      "status": "CHANGED",
-      "prev": "8c331687624fd21bbe0e6d83c77b2f7d86296ff9e7ae42983d61467203c00a1a",
-      "next": "61ca4e8845e66ebcf8fa2a91cf64a59b7a040f77b9ee6ffa363b9a2e84a829d6"
-    },
-    {
-      "relPath": "contact.html",
-      "status": "CHANGED",
-      "prev": "d81b951e6af3d6463e5fd925ab6bd21fd1dbf8770af5dc8158e573b874b63c4f",
-      "next": "6a98aedf508424dfd54ac05dea9ab1c3ccc348077bef4e582045844d9aaeff3e"
-    },
-    {
-      "relPath": "contact/index.html",
-      "status": "CHANGED",
-      "prev": "d81b951e6af3d6463e5fd925ab6bd21fd1dbf8770af5dc8158e573b874b63c4f",
-      "next": "6a98aedf508424dfd54ac05dea9ab1c3ccc348077bef4e582045844d9aaeff3e"
-    },
-    {
-      "relPath": "music.html",
-      "status": "CHANGED",
-      "prev": "f7d89df2d93225e11035d2c9f74ac86f44dcf761d7a7d2c2dff78e2f9b957b7a",
-      "next": "c1d65715741d1380d8b8c258f20827e7b46d005fc5f48d60b0c02d51441b60bb"
-    },
-    {
-      "relPath": "music/index.html",
-      "status": "CHANGED",
-      "prev": "f7d89df2d93225e11035d2c9f74ac86f44dcf761d7a7d2c2dff78e2f9b957b7a",
-      "next": "c1d65715741d1380d8b8c258f20827e7b46d005fc5f48d60b0c02d51441b60bb"
-    },
-    {
-      "relPath": "resume/index.html",
-      "status": "CHANGED",
-      "prev": "d251b4c115818e762a018459c5cd5bfb18241fbf98719ff6cd34b992eb2956ae",
-      "next": "cbee56192c522d92992eaad6c4341863ad7217db01a2846f386ea718e5156795"
-    },
-    {
-      "relPath": "wow.html",
-      "status": "CHANGED",
-      "prev": "af7a45e91b1efd01225d4862cc197e7803172b6964461c49e3d54c4d65146fbd",
-      "next": "8523b4844e34c90be2a46c4398f7b26d03526fb10c5a8729a74b87ee98734d4a"
-    },
-    {
-      "relPath": "wow/index.html",
-      "status": "CHANGED",
-      "prev": "af7a45e91b1efd01225d4862cc197e7803172b6964461c49e3d54c4d65146fbd",
-      "next": "8523b4844e34c90be2a46c4398f7b26d03526fb10c5a8729a74b87ee98734d4a"
-    }
-  ]
+  "violationCount": 0,
+  "violations": []
 }
