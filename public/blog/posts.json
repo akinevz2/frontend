@@ -3,8 +3,40 @@
   "heading": "kine's blog posts",
   "content": [
     {
-      "heading": "So I started a youtube channel... its going alright?",
-      "link": "https://youtu.be/hDtPo8Gr9l0"
+      "heading": "Lie Symmetries and the Heat-Mass Transport Homeomorphism",
+      "content": [
+        "Bridging Lie theory with statistical mechanics and thermodynamics allows us to model continuous symmetries in advanced transport phenomena.",
+        "This post breaks down the theoretical framework connecting topological homeomorphisms, particle kinetics, and geometric conservation laws.",
+        {
+          "heading": "1. Lie Groups and Continuous Symmetries",
+          "content": [
+            "Lie theory fundamentally explores continuous symmetries within physical systems.",
+            "In fluid dynamics and thermodynamics, researchers utilize **Lie point symmetries** to simplify systems of partial differential equations (PDEs).",
+            "If a particle or fluid medium treats heat distribution (thermal diffusion) and mass distribution (molecular diffusion) identically under a geometric transformation, a Lie group can map the solution of the heat equation directly onto the mass equation."
+          ]
+        },
+        {
+          "heading": "2. The Heat-Mass Transport Homeomorphism",
+          "content": [
+            "In classical transport phenomena, heat and mass transfer are governed by strikingly parallel mathematical laws:",
+            "* **Fourier's Law** for heat: `J_q = -k ∇T`",
+            "* **Fick's Law** for mass: `J_m = -D ∇c`",
+            "When a strict topological homeomorphism exists between them, the underlying state space allows you to deform the temperature field continuously into the concentration field without tearing or breaking the mathematical structure.",
+            "This is highly relevant in **coupled heat and mass transfer** (such as the Soret and Dufour effects), where temperature gradients drive mass flux, and concentration gradients simultaneously drive heat flux."
+          ]
+        },
+        {
+          "heading": "3. Connecting Back to Kinetic Energy",
+          "content": [
+            "Framing this through Lie theory anchors the system to fundamental geometric conservation laws.",
+            "According to **Noether's Theorem**, every differentiable symmetry of a physical system corresponds to a strict conservation law:",
+            "* **Time translation symmetry** yields the conservation of energy (which microscopic kinetic theory maps directly to temperature).",
+            "* **Spatial translation symmetry** yields the conservation of momentum (mass in motion).",
+            "Reconstructing the kinetic energy formula `1/2 m v²` through these principles highlights the symmetric foundation of how mass and velocity translate into thermal energy."
+          ]
+        },
+        "> Co-authored by akinevz & AI Assistant"
+      ]
     },
     {
       "heading": "booger boogie intermission",
