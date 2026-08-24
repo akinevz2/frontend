@@ -40,6 +40,9 @@ export const MUTABLE_PATHS = Object.freeze([
     "soundcloud.json",
     "wow.html",
     "wow/index.html",
+    // pagerts is a new page - allowed as NEW until baseline is updated
+    "pagerts.html",
+    "pagerts/index.html",
     "checksums.txt",
     "assets/index-",
 ]);
