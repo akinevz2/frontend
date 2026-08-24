@@ -232,7 +232,6 @@ const CLIPPY_THEME_DEFINITIONS = {
 } as const;
 
 const FEEF69_HASH = "#feef69";
-const FEEF69_BACKGROUND = "#FEEF69";
 
 const isMobilePhoneDevice = () => {
   if (typeof navigator === "undefined") {
@@ -423,12 +422,11 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (!isFeef69Page) return;
-    const previousBackground = document.body.style.background;
-    document.body.style.background = FEEF69_BACKGROUND;
-    return () => {
-      document.body.style.background = previousBackground;
-    };
+    if (isFeef69Page) {
+      document.body.classList.add("feef69-page");
+    } else {
+      document.body.classList.remove("feef69-page");
+    }
   }, [isFeef69Page]);
 
   // Wisdom pulse animation is disabled in production due to unresolved CORS issues.
@@ -1056,19 +1054,7 @@ export default function App() {
   let content: ReactElement;
   switch (path) {
     case "/":
-      content = isFeef69Page ? (
-        <main
-          style={{
-            minHeight: "100vh",
-            width: "100vw",
-            background: FEEF69_BACKGROUND,
-            margin: 0,
-            padding: 0,
-          }}
-        />
-      ) : (
-        <HomePage />
-      );
+      content = isFeef69Page ? <main className="feef69-page" /> : <HomePage />;
       break;
     case "/addons":
       content = <AddonsPage />;
