@@ -11,3 +11,14 @@ services:
       - type: redirect
         source: /404
         destination: /404.html
+
+# Domain redirect configuration for pagerts.akinevz.com -> akinevz.com/pagerts
+# Note: To enable this redirect:
+# 1. Add pagerts.akinevz.com as a Custom Domain in Render Dashboard
+#    (Go to Service → Settings → Custom Domains → Add Domain)
+# 2. Configure DNS CNAME record:
+#    pagerts.akinevz.com → CNAME → <your-render-service>.onrender.com
+# 3. The redirect path /pagerts is handled by this website's routing
+#
+# Alternative: Use URL-redirect service record at the registry level:
+# Add SRV record: _url-redirect._tcp.pagerts.akinevz.com → redirect to https://akinevz.com/pagerts

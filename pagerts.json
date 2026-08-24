@@ -1,0 +1,57 @@
+{
+  "heading": "pagerts - TypeScript Page Routing",
+  "content": [
+    "pagerts is a simple, type-safe page routing library for TypeScript applications.",
+    {
+      "heading": "Features",
+      "content": [
+        "Type-safe route definitions",
+        "Nested route support",
+        "Link generation helpers",
+        "Zero runtime dependencies",
+        "Works with any React-like renderer"
+      ]
+    },
+    {
+      "heading": "Installation",
+      "content": [
+        {
+          "heading": "npm",
+          "content": "npm install pagerts"
+        },
+        {
+          "heading": "yarn",
+          "content": "yarn add pagerts"
+        }
+      ]
+    },
+    {
+      "heading": "Usage Example",
+      "content": [
+        "import { createRouter } from 'pagerts';",
+        "",
+        "const routes = createRouter([",
+        "  { path: '/', component: Home },",
+        "  { path: '/about', component: About },",
+        "]);"
+      ]
+    },
+    {
+      "heading": "Links",
+      "content": [
+        {
+          "heading": "npm package",
+          "link": "https://www.npmjs.com/package/pagerts"
+        },
+        {
+          "heading": "GitHub repository",
+          "link": "https://github.com/akinevz2/pagerts"
+        },
+        {
+          "heading": "documentation",
+          "link": "https://akinevz2.github.io/pagerts/"
+        }
+      ]
+    }
+  ]
+}
