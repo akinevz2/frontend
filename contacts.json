@@ -3,7 +3,8 @@
   "theme": "open",
   "content": [
     "[akinevz.com/resume](https://akinevz.com/resume)",
-    "[pagerts](https://akinevz.com/pagerts) - A CLI tool for extracting webpage URLs",
+    "[pagerts](https://akinevz.com/pagerts) - my CLI project",
+    "",
     "[github.com/akinevz2](https://github.com/akinevz2)",
     "[github.com/akinevz (archive)](https://github.com/akinevz)",
     "[youtube.com/@akinevz](https://www.youtube.com/@akinevz)",
@@ -11,12 +12,13 @@
     "[linkedin.com/in/akinevz](https://www.linkedin.com/in/akinevz/)",
     "[instagram.com/akinevz2](https://www.instagram.com/akinevz2/)",
     "[x.com/akinevz](https://x.com/akinevz)",
+    "",
     "[akinevz@gmail.com](mailto:akinevz@gmail.com)",
     "[akinevz@outlook.com](mailto:akinevz@outlook.com)",
     "",
     "",
     {
-      "heading": "content for adults",
+      "heading": "funny within",
       "content": [
         "click here to look at the [fuckingclippy](#fuckingclippy)"
       ]

@@ -81,14 +81,14 @@
           "heading": "GitHub repository",
           "link": "https://github.com/akinevz2/pagerts"
         },
-{
-      "heading": "Source Code",
-      "link": "https://github.com/akinevz2/pagerts/blob/main/src/resource.ts"
-    },
-    {
-      "heading": "CHANGELOG",
-      "link": "https://github.com/akinevz2/pagerts/blob/main/CHANGELOG.md"
-    }
+        {
+          "heading": "Source Code",
+          "link": "https://github.com/akinevz2/pagerts/blob/main/src/resource.ts"
+        },
+        {
+          "heading": "CHANGELOG",
+          "link": "https://github.com/akinevz2/pagerts/blob/main/CHANGELOG.md"
+        }
       ]
     }
   ]
