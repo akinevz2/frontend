@@ -24,7 +24,7 @@ export function ShowPermalinkButton({
       style={{
         display: "flex",
         justifyContent: "flex-end",
-        placeItems: "flex-end",
+        placeItems: "center",
         flexWrap: "wrap",
       }}
     >
