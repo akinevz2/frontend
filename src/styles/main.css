@@ -694,11 +694,12 @@ body {
 }
 
 body.feef69-page {
-  background: #fef69;
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
-  height: 100vh;
+  background: #FEEF69 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 100vh !important;
+  height: 100vh !important;
+  display: block !important;
 }
 
 /* Account for the fixed debug bar on the music page (sits below menu bar) */
