@@ -828,6 +828,12 @@ const SectionBody = ({
             hasText={hasText}
           />
         ) : null}
+        {/* Ok button for link-only sections when focused via hash */}
+        {shouldShowCollapsedOkButton && !hasContent && (
+          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1rem" }}>
+            <OkButton onClick={onPrimaryAction} />
+          </div>
+        )}
       </>
     )}
   </>
