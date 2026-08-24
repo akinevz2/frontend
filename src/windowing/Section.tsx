@@ -980,6 +980,20 @@ export const Section = (props: SectionProps) => {
   const [isCollapsed, setIsCollapsed] = useState(!isForcedExpanded);
   const isCollapsedResolved = isForcedExpanded ? false : isCollapsed;
 
+  // Debug: log when hash-based expansion occurs
+  useEffect(() => {
+    if (shouldOpenFromLink || shouldRevealLinkedSection) {
+      console.log("[Section] Hash expansion triggered:", {
+        heading: heading || "none",
+        sectionId,
+        targetHash,
+        isForcedExpanded,
+        hasContent: !!content,
+        timestamp: new Date().toISOString(),
+      });
+    }
+  }, [heading, sectionId, targetHash, isForcedExpanded, shouldOpenFromLink, shouldRevealLinkedSection, content]);
+
   // Handle permalink click - copy to clipboard and show notification
   const handlePermalinkClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
