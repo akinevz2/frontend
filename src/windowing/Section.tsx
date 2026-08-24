@@ -1116,7 +1116,18 @@ export const Section = (props: SectionProps) => {
     if (heading && typeof heading === "string") {
       markAsExpanded(heading);
     }
-  }, [heading, markAsExpanded, setIsCollapsed]);
+    // Update URL hash to reflect expanded section for permalink support
+    if (typeof window !== "undefined" && sectionId && !isOnBlogPage) {
+      const { pathname, search, hash } = window.location;
+      if (hash !== `#${sectionId}`) {
+        window.history.replaceState(
+          {},
+          "",
+          `${pathname}${search}#${sectionId}`,
+        );
+      }
+    }
+  }, [heading, markAsExpanded, setIsCollapsed, sectionId, isOnBlogPage]);
 
   const handlePrimaryAction = () => {
     if (hasValidLink && (isValidHttpUrl(link) || isRootOffsetUrl(link))) {
