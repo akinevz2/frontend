@@ -1060,7 +1060,10 @@ export default function App() {
         <main
           style={{
             minHeight: "100vh",
+            width: "100vw",
             background: FEEF69_BACKGROUND,
+            margin: 0,
+            padding: 0,
           }}
         />
       ) : (
