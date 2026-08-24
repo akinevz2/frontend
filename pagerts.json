@@ -1,39 +1,73 @@
 {
-  "heading": "pagerts - TypeScript Page Routing",
+  "heading": "pagerts - Webpage URL extractor",
   "content": [
-    "pagerts is a simple, type-safe page routing library for TypeScript applications.",
+    "pagerts is a secure, modern TypeScript CLI tool that transforms URLs into structured JSON objects, extracting all navigable items and resources from webpages.",
     {
       "heading": "Features",
       "content": [
-        "Type-safe route definitions",
-        "Nested route support",
-        "Link generation helpers",
-        "Zero runtime dependencies",
-        "Works with any React-like renderer"
+        "🔒 **Security-First** - Built-in URL validation, rate limiting, and XSS protection",
+        "🚀 **Modern TypeScript** - Strict type checking and modern ES2022 syntax",
+        "⚡ **Fast** - Efficient parsing with LinkeDOM and concurrent request handling",
+        "🧪 **Well-Tested** - Comprehensive test coverage with Jest",
+        "📦 **Easy to Use** - Simple CLI interface with sensible defaults",
+        "🗂️ **Local File Support** - Parses local file paths and file:/// inputs",
+        "🧭 **Request Header Override** - Optional --user-agent flag for sites that behave differently by client"
       ]
     },
     {
       "heading": "Installation",
       "content": [
         {
-          "heading": "npm",
-          "content": "npm install pagerts"
+          "heading": "Global Installation",
+          "content": [
+            "npm install -g pagerts",
+            "",
+            "pagerts ./page.html"
+          ]
         },
         {
-          "heading": "yarn",
-          "content": "yarn add pagerts"
+          "heading": "Using npx (No Installation Required)",
+          "content": "npx pagerts ./page.html"
         }
       ]
     },
     {
-      "heading": "Usage Example",
+      "heading": "Usage",
       "content": [
-        "import { createRouter } from 'pagerts';",
-        "",
-        "const routes = createRouter([",
-        "  { path: '/', component: Home },",
-        "  { path: '/about', component: About },",
-        "]);"
+        {
+          "heading": "Extract from local HTML file",
+          "content": "pagerts ./page.html"
+        },
+        {
+          "heading": "Extract from local file URL",
+          "content": "pagerts file:///path/to/file.html"
+        },
+        {
+          "heading": "Fetch from remote URL",
+          "content": "pagerts fetch https://website.com"
+        },
+        {
+          "heading": "Override user-agent",
+          "content": "pagerts fetch --user-agent 'Mozilla/5.0...' https://example.com"
+        }
+      ]
+    },
+    {
+      "heading": "Output",
+      "content": [
+        "The output is JSON containing:",
+        {
+          "heading": "title",
+          "content": "Page's title from <title> tag"
+        },
+        {
+          "heading": "url",
+          "content": "URL of the page"
+        },
+        {
+          "heading": "resources",
+          "content": "Array of resources (links, meta tags, embeds) with name and url fields"
+        }
       ]
     },
     {
@@ -48,8 +82,12 @@
           "link": "https://github.com/akinevz2/pagerts"
         },
         {
-          "heading": "documentation",
+          "heading": "Documentation",
           "link": "https://akinevz2.github.io/pagerts/"
+        },
+        {
+          "heading": "CHANGELOG",
+          "link": "https://github.com/akinevz2/pagerts/blob/main/CHANGELOG.md"
         }
       ]
     }
