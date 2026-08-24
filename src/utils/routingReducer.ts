@@ -91,11 +91,13 @@ export function useRouting({
       }
 
       const { pathname, search, hash } = window.location;
+      
       if (hash) {
         window.history.replaceState({}, "", `${pathname}${search}${hash}`);
       }
 
-      window.history.pushState({}, "", href);
+      const hrefPath = href.split("#")[0]?.split("?")[0] || href;
+      window.history.pushState({}, "", hrefPath);
       dispatch({ type: "NAVIGATE", href, normalized: next });
     },
     [isInternalPath, normalizePath],
