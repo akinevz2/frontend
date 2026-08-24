@@ -36,6 +36,12 @@
     "description": "hire me!"
   },
   {
+    "path": "/pagerts",
+    "menuLabel": "pagerts",
+    "title": "pagerts - TypeScript Page Router",
+    "description": "A simple, type-safe page routing library for TypeScript"
+  },
+  {
     "path": "/music",
     "menuLabel": "music",
     "title": "glitchbox tracks",

@@ -9,9 +9,10 @@
         "baseURL": "http://ws-rarebox:11434/v1"
       },
       "models": {
-        "laguna-xs-2.1:safe": {
-          "name": "Laguna XS 2.1 (safe)",
-          "tool_call": true
+        "laguna-xs-2.1:latest": {
+          "name": "Laguna XS 2.1",
+          "tool_call": true,
+          "options": {},
         }
       }
     }

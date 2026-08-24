@@ -47,6 +47,7 @@ import {
   ResumePage,
   WowPage,
   NotFoundPage,
+  PagertsPage,
 } from "./pages";
 
 type RouteConfig = {
@@ -230,6 +231,9 @@ const CLIPPY_THEME_DEFINITIONS = {
   },
 } as const;
 
+const FEEF69_HASH = "#feef69";
+const FEEF69_BACKGROUND = "#FEEF69";
+
 const isMobilePhoneDevice = () => {
   if (typeof navigator === "undefined") {
     return false;
@@ -326,6 +330,18 @@ export default function App() {
     isInternalPath,
   });
   const path = routingState.path;
+  const [routeHash, setRouteHash] = useState(() =>
+    typeof window !== "undefined" ? window.location.hash : "",
+  );
+
+  useEffect(() => {
+    const onHashChange = () => setRouteHash(window.location.hash);
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, []);
+
+  const isFeef69Page = path === "/" && routeHash.toLowerCase() === FEEF69_HASH;
+
   const { state: clippyState } = useClippy(isMobilePhoneDevice);
   const showClippy = clippyState.showClippy;
   const showClippyBubble = clippyState.showClippyBubble;
@@ -405,6 +421,15 @@ export default function App() {
       document.removeEventListener("visibilitychange", onVisibilityChange);
     };
   }, []);
+
+  useEffect(() => {
+    if (!isFeef69Page) return;
+    const previousBackground = document.body.style.background;
+    document.body.style.background = FEEF69_BACKGROUND;
+    return () => {
+      document.body.style.background = previousBackground;
+    };
+  }, [isFeef69Page]);
 
   // Wisdom pulse animation is disabled in production due to unresolved CORS issues.
   // useEffect(() => {
@@ -1031,7 +1056,16 @@ export default function App() {
   let content: ReactElement;
   switch (path) {
     case "/":
-      content = <HomePage />;
+      content = isFeef69Page ? (
+        <main
+          style={{
+            minHeight: "100vh",
+            background: FEEF69_BACKGROUND,
+          }}
+        />
+      ) : (
+        <HomePage />
+      );
       break;
     case "/addons":
       content = <AddonsPage />;
@@ -1172,6 +1206,9 @@ export default function App() {
     case "/wow":
       content = <WowPage />;
       break;
+    case "/pagerts":
+      content = <PagertsPage />;
+      break;
     case "/404.html":
     default:
       content = <NotFoundPage />;
@@ -1180,13 +1217,15 @@ export default function App() {
 
   return (
     <>
-      <MenuBar
-        onNavigate={navigate}
-        currentPath={path}
-        // additionalLinks={showClippy ? TOP_BAR_ADDITIONAL_LINKS : []}
-        additionalLinks={[]}
-        // onMenuAction={handleTopMenuAction}
-      />
+      {isFeef69Page ? null : (
+        <MenuBar
+          onNavigate={navigate}
+          currentPath={path}
+          // additionalLinks={showClippy ? TOP_BAR_ADDITIONAL_LINKS : []}
+          additionalLinks={[]}
+          // onMenuAction={handleTopMenuAction}
+        />
+      )}
       {content}
       {/* Assistant config modal intentionally disabled. */}
       {/* {showAssistantConfigModal ? (
