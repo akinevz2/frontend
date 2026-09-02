@@ -5,7 +5,7 @@
  *
  * Strategy
  * --------
- * 1.  `npx --yes pagerts fetch <owner profile URLs>` extracts the visible track
+ * 1.  `pagerts fetch <owner profile URLs>` extracts the visible track
  *     anchors from each SoundCloud profile's server-rendered HTML.  This gives
  *     us track URLs plus the titles that are visible in the SSR'd anchor text
  *     (typically the most recent ~10 tracks per owner).
@@ -29,7 +29,9 @@
  * scraper + oembed combo instead.
  */
 import { readFile, writeFile } from "node:fs/promises";
+import { readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
+import { createRequire } from "node:module";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -62,6 +64,35 @@ const SYSTEM_PATHS = new Set(["likes", "sets", "tracks", "comments", "followers"
 const RESERVED_PATHS = new Set([]);
 
 /**
+ * Timeout (ms) for the pagerts fetch subprocess.  Without this a stalled
+ * npx/pagerts process would hang the whole build forever.
+ */
+const PAGERTS_TIMEOUT_MS = 120_000;
+
+/**
+ * Resolve the pagerts executable.  Prefers the version installed as a
+ * dependency of this package (node_modules), then falls back to whatever
+ * `pagerts` resolves on PATH (e.g. a global install).
+ */
+const resolvePagertsBin = () => {
+    try {
+        const requireFromProject = createRequire(resolve(projectRoot, "package.json"));
+        const pkgJsonPath = requireFromProject.resolve("pagerts/package.json");
+        const pkgJson = JSON.parse(readFileSync(pkgJsonPath, "utf8"));
+        const bin =
+            typeof pkgJson.bin === "string"
+                ? pkgJson.bin
+                : (pkgJson.bin && pkgJson.bin.pagerts);
+        if (!bin) throw new Error("pagerts package.json has no bin entry");
+        return resolve(dirname(pkgJsonPath), bin);
+    } catch {
+        // Not installed locally — defer to a global install (or fail with a
+        // clear ENOENT from spawnSync).
+        return "pagerts";
+    }
+};
+
+/**
  * Build the source URL for an owner's profile.  SoundCloud recently renamed
  * akinevz's display name to "I lied my name isn't actually KINE" but the
  * account handle is still `akinevz`, so we hard-code the handle here.
@@ -69,29 +100,37 @@ const RESERVED_PATHS = new Set([]);
 const getProfileUrl = (owner) => `https://soundcloud.com/${owner}`;
 
 /**
- * Run `npx --yes pagerts fetch <urls>` and return the parsed JSON array of
- * page descriptors.  Throws on non-zero exit or unparsable output.
+ * Run `pagerts fetch <urls>` and return the parsed JSON array of page
+ * descriptors.  Throws on non-zero exit or unparsable output.
  */
 const runPagerts = (urls) => {
     const args = [
-        "--yes",
-        "pagerts",
         "fetch",
         "--user-agent",
         USER_AGENT,
         ...urls,
     ];
 
-    const result = spawnSync("npx", args, {
+    const result = spawnSync(resolvePagertsBin(), args, {
         cwd: projectRoot,
         encoding: "utf8",
         maxBuffer: 32 * 1024 * 1024,
+        timeout: PAGERTS_TIMEOUT_MS,
     });
+
+    if (result.error) {
+        const hint =
+            result.error.code === "ENOENT"
+                ? " — is pagerts installed (npm install) or available globally?"
+                : "";
+        throw new Error(`pagerts fetch could not run: ${result.error.message}${hint}`);
+    }
 
     if (result.status !== 0) {
         const stderr = result.stderr?.trim() ?? "";
+        const timedOut = result.signal === "SIGTERM";
         throw new Error(
-            `pagerts fetch failed (exit ${result.status}): ${stderr || "no stderr"}`,
+            `pagerts fetch failed (${timedOut ? `timed out after ${PAGERTS_TIMEOUT_MS}ms` : `exit ${result.status}`}): ${stderr || "no stderr"}`,
         );
     }
 
