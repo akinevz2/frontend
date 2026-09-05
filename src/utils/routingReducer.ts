@@ -91,7 +91,7 @@ export function useRouting({
       }
 
       const { pathname, search, hash } = window.location;
-      
+
       if (hash) {
         window.history.replaceState({}, "", `${pathname}${search}${hash}`);
       }

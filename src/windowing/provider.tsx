@@ -1,4 +1,4 @@
-import {useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { SectionContext } from "./context";
 import type { PageMetadata, SectionMetadata } from "./types";
 
