@@ -1,4 +1,4 @@
-import { isValidElement } from "react";
+import { Fragment, isValidElement } from "react";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 import Markdown, { type Options as ReactMarkdownOptions } from "react-markdown";
@@ -649,7 +649,7 @@ function renderContent(content: Content, depth: number) {
             </li>
           );
         }
-        return item.element;
+        return <Fragment key={`node - ${item.key}`}>{item.element}</Fragment>;
       })}
     </ul>
   );

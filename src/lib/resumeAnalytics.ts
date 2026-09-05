@@ -1,17 +1,17 @@
-import { getApps, initializeApp, type FirebaseApp } from "firebase/app";
+import { getApps, initializeApp, type FirebaseApp } from "@firebase/app";
 import {
   getAnalytics,
   isSupported,
   logEvent,
   type Analytics,
-} from "firebase/analytics";
+} from "@firebase/analytics";
 import {
   addDoc,
   collection,
   getFirestore,
   serverTimestamp,
   type Firestore,
-} from "firebase/firestore";
+} from "@firebase/firestore";
 import { getFirebasePublicConfig } from "../config/runtimeConfig";
 
 type EventParam = string | number | boolean;
