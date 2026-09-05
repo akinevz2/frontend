@@ -830,7 +830,13 @@ const SectionBody = ({
         ) : null}
         {/* Ok button for link-only sections when focused via hash */}
         {shouldShowCollapsedOkButton && !hasContent && (
-          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1rem" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              marginTop: "1rem",
+            }}
+          >
             <OkButton onClick={onPrimaryAction} />
           </div>
         )}
@@ -998,7 +1004,15 @@ export const Section = (props: SectionProps) => {
         timestamp: new Date().toISOString(),
       });
     }
-  }, [heading, sectionId, targetHash, isForcedExpanded, shouldOpenFromLink, shouldRevealLinkedSection, content]);
+  }, [
+    heading,
+    sectionId,
+    targetHash,
+    isForcedExpanded,
+    shouldOpenFromLink,
+    shouldRevealLinkedSection,
+    content,
+  ]);
 
   // Handle permalink click - copy to clipboard and show notification
   const handlePermalinkClick = useCallback(

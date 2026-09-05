@@ -524,8 +524,10 @@ const toMusicSections = (
     {
       className: "music-as-of-uploading",
       heading: "Discography Total",
+      theme: "open",
       content: [
         `Generated: ${new Date(payload.generatedAt).toLocaleString()}`,
+        "Replaced a few weak mixes and removed a duplicate.",
         "This total measures main and alt profiles as of uploading.",
         <UploadingCounter total={asOfUploadingTrackCount} />,
       ],
@@ -548,9 +550,10 @@ const toMusicSections = (
     },
     {
       className: "music-source",
-      heading: "Surviving Archive",
+      heading: "Uploads to Spotify",
       content: [
         `<iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/artist/2vy7FXU6dP4OEBiJVjsw7r?utm_source=generator&theme=0&si=0c8005cead7543c5" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`,
+        `<iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/artist/3K8SiimFvg1928AlQo1HgF?utm_source=generator&si=f70545367bc341f7" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`,
       ],
     },
   ];

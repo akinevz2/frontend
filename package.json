@@ -1,6 +1,6 @@
 {
   "name": "website-xp-phone",
-  "version": "1.6.6b",
+  "version": "1.6.6c",
   "license": "GPL v2",
   "author": "Kirill <kine> Nevzorov <akinevz@outlook.com>",
   "type": "module",
@@ -15,8 +15,8 @@
     "refresh:content": "node ./scripts/refresh-content.mjs",
     "verify:policy": "node ./scripts/verify-policy.mjs",
     "render": "echo 'https://render.com/'",
-    "build": "npm run refresh:content && vite build && npm run checksums && npm run render",
-    "build:local": "npm run check:all && npm run build && npm run dev && git add -A && git commit",
+    "build": "vite build && npm run checksums && npm run render",
+    "build:local": "npm run refresh:content && npm run check:all && npm run build && npm run dev && git add -A && git commit",
     "build:ready": "git add -A && npm run push",
     "push": "git push origin main",
     "preview": "vite preview --host 127.0.0.1 --port 8086",
@@ -29,10 +29,10 @@
     "checksums": "node ./scripts/write-dist-checksums.mjs"
   },
   "dependencies": {
+    "@firebase/app": "^0.16.1",
     "@vitejs/plugin-react": "^6.0.4",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.3",
-    "firebase": "^12.16.0",
     "globals": "^17.8.0",
     "lightdni-jssas-toggle": "1.0.5",
     "postcss": "^8.5.24",
