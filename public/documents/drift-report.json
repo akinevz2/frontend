@@ -1,0 +1,31 @@
+{
+  "baselineUrl": "https://akinevz.com/checksums.txt",
+  "generatedAt": "2026-09-05T18:01:12.806Z",
+  "mutablePaths": [
+    "index.html",
+    "404.html",
+    "404/index.html",
+    "addons.html",
+    "addons/index.html",
+    "blog.html",
+    "blog/index.html",
+    "blog/posts.json",
+    "contact.html",
+    "contact/index.html",
+    "music.html",
+    "music/index.html",
+    "resume/index.html",
+    "sitemap.xml",
+    "sitemap.html",
+    "sitemap/index.html",
+    "soundcloud.json",
+    "wow.html",
+    "wow/index.html",
+    "pagerts.html",
+    "pagerts/index.html",
+    "checksums.txt",
+    "assets/*.js"
+  ],
+  "violationCount": 0,
+  "violations": []
+}

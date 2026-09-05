@@ -44,7 +44,7 @@ export const MUTABLE_PATHS = Object.freeze([
     "pagerts.html",
     "pagerts/index.html",
     "checksums.txt",
-    "assets/index-",
+    "assets/*.js",
 ]);
 
 export const MUTABLE_PATH_SET = Object.freeze(new Set(MUTABLE_PATHS));
@@ -63,6 +63,12 @@ export function isMutablePath(relPath) {
     for (const pattern of MUTABLE_PATHS) {
         if (relPath.startsWith(pattern)) {
             return true;
+        }
+        if (pattern.includes('*')) {
+            const [prefix, suffix] = pattern.split('*');
+            if (relPath.startsWith(prefix) && relPath.endsWith(suffix)) {
+                return true;
+            }
         }
     }
     return false;

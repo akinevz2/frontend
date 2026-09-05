@@ -1,6 +1,6 @@
 {
   "name": "website-xp-phone",
-  "version": "1.6.6c",
+  "version": "1.6.6d",
   "license": "GPL v2",
   "author": "Kirill <kine> Nevzorov <akinevz@outlook.com>",
   "type": "module",
@@ -29,11 +29,11 @@
     "checksums": "node ./scripts/write-dist-checksums.mjs"
   },
   "dependencies": {
+    "@firebase/analytics": "^0.10.24",
     "@firebase/app": "^0.16.1",
+    "@firebase/firestore": "^4.17.1",
     "@vitejs/plugin-react": "^6.0.4",
-    "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.3",
-    "globals": "^17.8.0",
     "lightdni-jssas-toggle": "1.0.5",
     "postcss": "^8.5.24",
     "react": "^19.2.8",
