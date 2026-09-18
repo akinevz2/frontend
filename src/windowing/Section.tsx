@@ -16,7 +16,6 @@ import { ShowPermalinkButton } from "./ShowPermalinkButton";
 import { isForceExpandedTheme, normalizeThemes } from "./themeEngine";
 
 const BLOG_PATH = "/blog";
-const BLOG_POSTS_BASE_PATH = "/blog/";
 // sessionStorage key prefix for the blog "return-to page scroll offset"
 // feature. The full key is `${BLOG_SCROLL_OFFSET_KEY}:${postSlug}`.
 const BLOG_SCROLL_OFFSET_KEY = "blog-scroll-offset";
@@ -360,16 +359,16 @@ function resolvePrintoutUrl(printoutPath: string): string {
     // Not an absolute URL, fall back to local asset resolution.
   }
 
-  // Use absolute root-path style: ensure path starts with /blog/
-  if (!trimmed.startsWith("/")) {
-    return `${BLOG_POSTS_BASE_PATH}${trimmed}`;
-  }
+  // // Use absolute root-path style: ensure path starts with /blog/
+  // if (!trimmed.startsWith("/")) {
+  //   return `${BLOG_POSTS_BASE_PATH}${trimmed}`;
+  // }
 
-  // Already an absolute path (starts with /), use as-is or prepend blog base
-  // For paths not starting with /blog/, prepend the blog prefix
-  if (!trimmed.startsWith(BLOG_PATH)) {
-    return `${BLOG_POSTS_BASE_PATH}${trimmed.slice(1)}`;
-  }
+  // // Already an absolute path (starts with /), use as-is or prepend blog base
+  // // For paths not starting with /blog/, prepend the blog prefix
+  // if (!trimmed.startsWith(BLOG_PATH)) {
+  //   return `${BLOG_POSTS_BASE_PATH}${trimmed.slice(1)}`;
+  // }
 
   return trimmed;
 }
