@@ -1,6 +1,6 @@
 {
   "baselineUrl": "https://akinevz.com/checksums.txt",
-  "generatedAt": "2026-09-05T18:01:12.806Z",
+  "generatedAt": "2026-09-18T18:56:40.022Z",
   "mutablePaths": [
     "index.html",
     "404.html",
@@ -26,6 +26,19 @@
     "checksums.txt",
     "assets/*.js"
   ],
-  "violationCount": 0,
-  "violations": []
+  "violationCount": 2,
+  "violations": [
+    {
+      "relPath": "dist.7z",
+      "status": "CHANGED",
+      "prev": "bb79532b74f54410660a90d90e8db3dfa447e083d2411133ad9fddc9ded7c949",
+      "next": "12e139ed1731166e54539d9e0baa8031ca797badd7dfe62bd3cfa5a4cafe7694"
+    },
+    {
+      "relPath": "stories/1.md",
+      "status": "NEW",
+      "prev": null,
+      "next": "50ea2795ca3c369e7998efb1cf7afa4345b741364ee1a988b16fce112af6043a"
+    }
+  ]
 }

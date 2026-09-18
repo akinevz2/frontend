@@ -3,6 +3,22 @@
   "heading": "kine's blog posts",
   "content": [
     {
+      "heading": "Stories",
+      "content": [
+        "### Hot Action under a Cold Moon",
+        "A short story set in the Warcraft universe",
+        {
+          "heading": "Click hear to read",
+          "content": [
+            {
+              "heading": "Parts 1-6",
+              "printout": "/stories/1.md"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "heading": "Lie Symmetries and the Heat-Mass Transport Homeomorphism",
       "content": [
         "Bridging Lie theory with statistical mechanics and thermodynamics allows us to model continuous symmetries in advanced transport phenomena.",
