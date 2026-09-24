@@ -1,0 +1,15 @@
+/* PageSpace.css */
+.PageSpace {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: window;
+}
+
+@media screen and (max-width: 768px) {
+  .PageSpace {
+    height: 100dvh;
+  }
+}
