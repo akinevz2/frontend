@@ -1,0 +1,62 @@
+/* NotFoundPage.css */
+.NotFoundPage {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: window;
+}
+
+@media screen and (max-width: 768px) {
+  .NotFoundPage {
+    height: 100dvh;
+  }
+}
+
+.NotFoundWindow {
+  position: relative;
+  background-color: window;
+  width: min(80vw, 1024px);
+  max-width: 1024px;
+  height: min(80vh, 768px);
+  max-height: 768px;
+  display: flex;
+  flex-direction: column;
+  margin: 2rem auto;
+  box-shadow: var(--box-shadow, 0 4px 15px rgba(0, 0, 0, 0.3));
+}
+
+@media screen and (max-width: 768px) {
+  .NotFoundWindow {
+    width: 96vw;
+    height: 96vh;
+    max-width: unset;
+    max-height: unset;
+    margin: 1rem auto;
+  }
+}
+
+.NotFoundBody {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.NotFoundMessage {
+  margin-bottom: 1.5rem;
+  color: graytext;
+}
+
+.NotFoundLink {
+  color: link;
+  text-decoration: underline;
+}
+
+.NotFoundLink:hover {
+  color: visited;
+}

@@ -1,0 +1,62 @@
+/* ContactPage.css */
+.ContactPage {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: window;
+}
+
+@media screen and (max-width: 768px) {
+  .ContactPage {
+    height: 100dvh;
+  }
+}
+
+.ContactWindow {
+  position: relative;
+  background-color: window;
+  width: min(80vw, 1024px);
+  max-width: 1024px;
+  height: min(80vh, 768px);
+  max-height: 768px;
+  display: flex;
+  flex-direction: column;
+  margin: 2rem auto;
+  box-shadow: var(--box-shadow, 0 4px 15px rgba(0, 0, 0, 0.3));
+}
+
+@media screen and (max-width: 768px) {
+  .ContactWindow {
+    width: 96vw;
+    height: 96vh;
+    max-width: unset;
+    max-height: unset;
+    margin: 1rem auto;
+  }
+}
+
+.ContactLink {
+  display: block;
+  padding: 0.5rem 0;
+  color: link;
+  text-decoration: underline;
+}
+
+.ContactLink:hover {
+  color: visited;
+}
+
+.ContactSubheading {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.ContactFooter {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  color: graytext;
+  font-size: 0.9rem;
+  text-align: center;
+}
