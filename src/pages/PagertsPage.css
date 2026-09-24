@@ -1,0 +1,77 @@
+/* PagertsPage.css */
+.PagertsPage {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: window;
+}
+
+@media screen and (max-width: 768px) {
+  .PagertsPage {
+    height: 100dvh;
+  }
+}
+
+.PagertsWindow {
+  position: relative;
+  background-color: window;
+  width: min(80vw, 1024px);
+  max-width: 1024px;
+  height: min(80vh, 768px);
+  max-height: 768px;
+  display: flex;
+  flex-direction: column;
+  margin: 2rem auto;
+  box-shadow: var(--box-shadow, 0 4px 15px rgba(0, 0, 0, 0.3));
+}
+
+@media screen and (max-width: 768px) {
+  .PagertsWindow {
+    width: 96vw;
+    height: 96vh;
+    max-width: unset;
+    max-height: unset;
+    margin: 1rem auto;
+  }
+}
+
+.PagertsFeatureList {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0;
+}
+
+.PagertsFeatureItem {
+  padding: 0.3rem 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.PagertsInstallationCode {
+  font-family: monospace;
+  background-color: menubarexternalkernel;
+  padding: 0.3rem 0.5rem;
+  margin: 0.3rem 0;
+  border-radius: 0.25rem;
+}
+
+.PagertsUsageCode {
+  font-family: monospace;
+  background-color: menubarexternalkernel;
+  padding: 0.3rem 0.5rem;
+  margin: 0.3rem 0;
+  border-radius: 0.25rem;
+}
+
+.PagertsOutputSection {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.PagertsOutputList {
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}

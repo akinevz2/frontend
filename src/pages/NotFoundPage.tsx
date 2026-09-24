@@ -1,17 +1,27 @@
-const NotFoundPage = () => (
-  <main>
-    <section className="page">
-      <div className="window">
+import "xp.css/dist/98.css";
+import "../components/PageSpace.css";
+import "../pages/NotFoundPage.css";
+
+const NotFoundPage = () => {
+  return (
+    <div className="NotFoundPage">
+      <div className="NotFoundWindow">
         <div className="title-bar">
           <div className="title-bar-text">Not Found</div>
         </div>
         <div className="window-body">
-          <p>That page does not exist.</p>
-          <a href="/">Go home</a>
+          <div className="NotFoundBody">
+            <p className="NotFoundMessage">
+              That page does not exist.
+            </p>
+            <a className="NotFoundLink" href="/">
+              Go home
+            </a>
+          </div>
         </div>
       </div>
-    </section>
-  </main>
-);
+    </div>
+  );
+};
 
 export default NotFoundPage;
