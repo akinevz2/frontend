@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test - Random Blog Page</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: #fafafa;
+      color: #333;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    h1 {
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      margin-bottom: 1rem;
+    }
+
+    a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .error {
+      padding: 2rem;
+      background-color: #ffebee;
+      border: 1px solid #ef5350;
+      border-radius: 4px;
+      color: #c62828;
+      margin-top: 2rem;
+    }
+
+    .loading {
+      padding: 2rem;
+      text-align: center;
+      color: #666;
+    }
+
+    code {
+      background-color: #f5f5f5;
+      padding: 0.2em 0.4em;
+      border-radius: 3px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Random Blog Page Test</h1>
+
+    <p>Current URL: <code id="currentPath"></code></p>
+
+    <div id="contentContainer" style={{ marginTop: "2rem" }}>
+      <div class="loading">Loading...</div>
+    </div>
+
+    <div style="margin-top: 2rem; padding: 1rem; background-color: #e3f2fd; border-radius: 4px;">
+      <a href="/blog/">← Back to Blog</a>
+      <span style="margin-left: 1rem;">
+        <a href="/blog/random/">Random Posts</a>
+      </span>
+    </div>
+  </main>
+
+  <script>
+    const path = window.location.pathname;
+    document.getElementById('currentPath').textContent = path;
+
+    const slug = path.replace('/blog/random/', '') || 'cpus';
+    const markdownPath = `/blog/random/${slug}.md`;
+
+    const contentContainer = document.getElementById('contentContainer');
+
+    fetch(markdownPath)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Post not found: ${response.status}`);
+        }
+        return response.text();
+      })
+      .then(md => {
+        contentContainer.innerHTML = '';
+
+        const lines = md.split('\n');
+        let inCodeBlock = false;
+        let codeBlock = '';
+
+        lines.forEach(line => {
+          if (line.trim().startsWith('```')) {
+            if (inCodeBlock) {
+              const codeEl = document.createElement('pre');
+              const codeContent = document.createElement('code');
+              codeContent.textContent = codeBlock;
+              codeEl.appendChild(codeContent);
+              contentContainer.appendChild(codeEl);
+              codeBlock = '';
+              inCodeBlock = false;
+            } else {
+              inCodeBlock = true;
+            }
+          } else if (inCodeBlock) {
+            codeBlock += line + '\n';
+          } else {
+            const paragraph = document.createElement('p');
+            paragraph.textContent = line;
+            contentContainer.appendChild(paragraph);
+          }
+        });
+
+        if (codeBlock) {
+          const codeEl = document.createElement('pre');
+          const codeContent = document.createElement('code');
+          codeContent.textContent = codeBlock;
+          codeEl.appendChild(codeContent);
+          contentContainer.appendChild(codeEl);
+        }
+      })
+      .catch(error => {
+        contentContainer.innerHTML = `
+          <div class="error">
+            <h2>Error Loading Post</h2>
+            <p><strong>Path:</strong> ${markdownPath}</p>
+            <p><strong>Error:</strong> ${error.message}</p>
+            <p style="margin-top: 1rem;">Redirecting to blog...</p>
+          </div>
+        `;
+
+        setTimeout(() => {
+          window.location.href = '/blog/';
+        }, 2000);
+      });
+  </script>
+</body>
+</html>

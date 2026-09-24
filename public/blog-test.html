@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Random Blog Page Test</title>
+</head>
+<body>
+  <h1>Random Blog Page Test</h1>
+  <p>Open browser console to see status messages</p>
+  <p>Current path: <span id="currentPath"></span></p>
+  <a href="/blog/random/cpus">Test: /blog/random/cpus</a>
+  <br>
+  <a href="/blog/random/nonexistent">Test: /blog/random/nonexistent (should show 404)</a>
+  <div id="testContainer"></div>
+
+  <script>
+    const testContainer = document.getElementById('testContainer');
+
+    function log(message) {
+      console.log(message);
+      const div = document.createElement('div');
+      div.textContent = message;
+      div.style.margin = '10px 0';
+      testContainer.insertBefore(div, testContainer.firstChild);
+    }
+
+    const path = window.location.pathname;
+    document.getElementById('currentPath').textContent = path;
+
+    const slug = path.replace('/blog/random/', '') || 'cpus';
+    log(`Slug extracted: "${slug}"`);
+    log(`Attempting to fetch: /blog/random/${slug}.md`);
+
+    fetch(`/blog/random/${slug}.md`)
+      .then(response => {
+        log(`Response status: ${response.status} ${response.statusText}`);
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        return response.text();
+      })
+      .then(md => {
+        log(`Successfully fetched markdown content (${md.length} bytes)`);
+        log('First 500 chars:');
+        console.log(md.substring(0, 500));
+        log('Full content loaded');
+      })
+      .catch(error => {
+        log(`Error: ${error.message}`);
+        log('Will redirect to /blog/ in 3 seconds');
+      });
+  </script>
+</body>
+</html>
