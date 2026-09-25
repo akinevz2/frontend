@@ -1,15 +1,17 @@
 /* PageSpace.css */
+/* Wrapper for scrollable page content area */
 .PageSpace {
-  width: 100vw;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-  left: 0;
-  background-color: window;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  /* Mobile: Use dynamic viewport height */
 }
 
 @media screen and (max-width: 768px) {
   .PageSpace {
-    height: 100dvh;
+    min-height: 100dvh;
+    /* Tablet and mobile responsive adjustments */
   }
 }
