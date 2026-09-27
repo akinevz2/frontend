@@ -21,7 +21,7 @@ export type HashChangeHandler = (newHash: string) => void;
 /**
  * Custom hook for managing route hash state and change events.
  * Provides a centralized way to track and react to hash changes.
- * 
+ *
  * @param initialHash - Optional initial hash value (default: '')
  * @param onChange - Optional callback function called when hash changes
  * @param enabled - Whether to enable hash change tracking (default: true)
@@ -30,7 +30,7 @@ export type HashChangeHandler = (newHash: string) => void;
 export function useRouteHash(
   initialHash: string = "",
   onChange?: HashChangeHandler,
-  enabled: boolean = true
+  enabled: boolean = true,
 ): RouteHashState {
   const [hash, setHash] = useState<string>(initialHash);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -44,7 +44,7 @@ export function useRouteHash(
     const handleHashChange = () => {
       const newHash = window.location.hash;
       setHash(newHash);
-      
+
       if (onChange) {
         onChange(newHash);
       }
@@ -66,7 +66,7 @@ export function useRouteHash(
 
 /**
  * Hook for managing route hash with loading states and validation.
- * 
+ *
  * @param initialHash - Optional initial hash value (default: '')
  * @param options - Hook options including validation and callbacks
  * @returns RouteHashState with hash and additional meta properties
@@ -78,16 +78,16 @@ export function useRouteHashWithValidation(
     onInvalid?: (hash: string) => void;
     onValid?: (hash: string) => void;
     enabled?: boolean;
-  }
+  },
 ): RouteHashState & {
   isValid: boolean;
   validate: () => boolean;
 } {
-  const { 
-    validate = (h: string) => true, 
-    onInvalid, 
+  const {
+    validate = (h: string) => true,
+    onInvalid,
     onValid,
-    enabled = true 
+    enabled = true,
   } = options || {};
 
   const [hash, setHash] = useState<string>(initialHash);
@@ -127,17 +127,17 @@ export function useRouteHashWithValidation(
   const validateLocal = () => validate(hash);
   const isValid = validateLocal();
 
-  return { 
-    hash, 
-    isLoading, 
-    isValid, 
-    validate: validateLocal 
+  return {
+    hash,
+    isLoading,
+    isValid,
+    validate: validateLocal,
   };
 }
 
 /**
  * Hook for managing hash-based navigation with automatic state management.
- * 
+ *
  * @param initialHash - Optional initial hash value (default: '')
  * @param callbacks - Configuration for hash navigation behavior
  * @returns Object with hash state and navigation utilities
@@ -148,13 +148,9 @@ export function useHashNavigation(
     onLoad?: (hash: string) => void;
     onUnload?: (hash: string) => void;
     replace?: boolean;
-  }
+  },
 ) {
-  const { 
-    onLoad, 
-    onUnload,
-    replace = true 
-  } = callbacks || {};
+  const { onLoad, onUnload, replace = true } = callbacks || {};
 
   const [hash, setHash] = useState<string>(initialHash);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -167,7 +163,7 @@ export function useHashNavigation(
 
     const handleHashChange = () => {
       const newHash = window.location.hash;
-      
+
       if (onLoad) {
         onLoad(newHash);
       }
@@ -187,7 +183,7 @@ export function useHashNavigation(
 
     // Listen for hash changes
     window.addEventListener("hashchange", handleHashChange, { passive: true });
-    
+
     // Listen for before unload to clean up
     window.addEventListener("beforeunload", handleUnload);
 

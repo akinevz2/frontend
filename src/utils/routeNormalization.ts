@@ -33,7 +33,7 @@ export type SoundCloudPayload = {
 /**
  * Normalizes URL paths by removing trailing slashes, handling HTML extensions,
  * and preserving special routes like /blog/login.
- * 
+ *
  * @param path - The raw path string to normalize
  * @returns Normalized path string
  */
@@ -73,7 +73,7 @@ export const normalizePath = (path: string) => {
 
 /**
  * Checks if a given href is an internal path (starts with /)
- * 
+ *
  * @param href - The URL to check
  * @returns True if the href is an internal path
  */
@@ -81,14 +81,14 @@ export const isInternalPath = (href: string) => href.startsWith("/");
 
 /**
  * Returns the top level route from a path
- * 
+ *
  * @param path - The path to extract the top level route from
  * @returns Top level route or null if not found
  */
 export const getTopLevelRoute = (path: string) => {
   const segments = path.split("/").filter(Boolean);
   const [firstSegment] = segments;
-  
+
   if (firstSegment && TOP_LEVEL_ROUTES.has(firstSegment.toLowerCase())) {
     return firstSegment.toLowerCase();
   }
@@ -97,7 +97,7 @@ export const getTopLevelRoute = (path: string) => {
 
 /**
  * Checks if a path contains a specific top level route
- * 
+ *
  * @param path - The path to check
  * @param topLevelRoute - The top level route to search for
  * @returns True if the path contains the specified top level route
@@ -110,12 +110,12 @@ export const hasTopLevelRoute = (path: string, topLevelRoute: string) => {
  * Regular expression pattern for matching top level routes
  */
 const TOP_LEVEL_ROUTES_REGEX = new RegExp(
-  `^/(?:${["", "home", "blog", "contact", "resume", "wow", "pagerts"].join("|")})/?$`
+  `^/(?:${["", "home", "blog", "contact", "resume", "wow", "pagerts"].join("|")})/?$`,
 );
 
 /**
  * Checks if a path matches a top level route pattern
- * 
+ *
  * @param path - The path to check
  * @returns True if the path matches a top level route
  */

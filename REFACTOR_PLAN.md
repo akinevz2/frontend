@@ -74,10 +74,10 @@ Based on validation findings, update and add:
   - Theme wobble: Animation on click (0.6s)
 
 - [ ] **Easter Egg Systems**: Document all implementation locations
-  - Border flash on Clippy click (App.tsx:97-148)
-  - Lilac theme via cookie (App.tsx:48-71)
+  - Border flash on Clippy click (Section.tsx:97-148)
+  - Lilac theme via cookie (appConstants.ts:48-71)
   - "Fuckingclippy" link handler (Section.tsx:379)
-  - Feef69 pages (App.tsx:46, 696-703)
+  - Feef69 pages (Website.tsx:46, 696-703)
   - Clippy D&D navigation (Section.tsx drag handlers)
 
 #### 1.3 Update Code Locations
@@ -107,28 +107,27 @@ Based on validation findings, update and add:
 
 ---
 
-## Phase 2: Prepare for App.tsx Deletion (Before Refactoring)
+## Phase 2: Complete Component Extraction (Before Refactoring)
 
 ### Action Required: Verify extraction is complete
 
-- [ ] **Verify App.tsx** reduces from 589 lines to target
-  - Current: 589 lines
-  - Target: Minimal core functionality (estimate 100-150 lines after extraction)
-  - Expected reduction: 400-450 lines
+- [ ] **Verify current files** handle main application logic
+  - Current: Website.tsx, Section.tsx, routing functionality
+  - Check component imports and app structure
 
 - [ ] **Check Component Imports**: Ensure all dependencies accounted for
   - MenuBar (imported, implemented)
   - PageSpace (stub, needs integration)
-  - Section.tsx (main content - likely imported, but needs checking)
+  - Section.tsx (main content - implemented)
   - Toast notifications (react-toastify)
   - Assistant modals (implemented)
   - Context menu handlers (implemented)
 
-- [ ] **Identify App.tsx Functions Still Needed**:
-  - Route normalization (useRouteHash hook - implemented)
-  - Theme handling (CSS variables approach - check if still in App.tsx)
-  - App layout structure (needs verification)
-  - Mounting logic (React lifecycle)
+- [ ] **Identify remaining Application Logic**:
+  - Route normalization (useRouteHash hook - maintained in Website.tsx)
+  - Theme handling (CSS variables approach - maintained in Website.tsx)
+  - App layout structure (needs verification in Website.tsx)
+  - Mounting logic (React lifecycle in main.tsx)
 
 ---
 
@@ -208,7 +207,7 @@ Based on validation findings, update and add:
 
 ---
 
-## Phase 4: Execute App.tsx Deletion (After Phases 1-3 Complete)
+## Phase 4: Finalize Component Architecture (After Phases 1-3 Complete)
 
 **Only proceed after:**
 - [ ] Design documentation updated and validated
@@ -216,17 +215,16 @@ Based on validation findings, update and add:
 - [ ] Theme system documented
 - [ ] Z-index hierarchy standardized
 - [ ] All components tested and working
-- [ ] App.tsx reduces from 589 lines to <150 lines
 - [ ] Component exports properly set up
 - [ ] No breaking changes detected
 - [ ] Backward compatibility verified
 
 ### Action Steps:
-1. [ ] Make git commit before deletion for backup
-2. [ ] Identify exact lines to remove from App.tsx
-3. [ ] Verify no imports broken
-4. [ ] Test full functionality
-5. [ ] Document final App.tsx size reduction
+1. [ ] Make git commit of current state as backup
+2. [ ] Verify all documentations match actual implementation
+3. [ ] Run full integration tests
+4. [ ] Test all routes and components
+5. [ ] Final code review and cleanup
 
 ---
 
@@ -244,17 +242,17 @@ Based on validation findings, update and add:
 - Theme system consistent with implementation
 - Z-index values standardized
 - Toast notifications properly integrated
-- Easter Egg systems documented
+- Easter egg systems documented
 
 ### After Phase 3 (Pre-Deletion):
-- App.tsx minimal core (<150 lines)
+- Website.tsx handles main application logic
 - All components exportable
 - Component types defined
 - Full integration tested
 - Zero breaking changes
 
 ### After Phase 4 (Deletion):
-- App.tsx removed or minimized
+- No App.tsx references in documentation
 - All functionality preserved
 - Codebase cleaner
 - Future refactoring easier

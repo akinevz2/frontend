@@ -1,4 +1,4 @@
-import { useMemo, useState, type SubmitEvent } from "react";
+import { useMemo, useReducer, useCallback, type SubmitEvent } from "react";
 import { setTheme } from "lightdni-jssas-toggle";
 import { PageContent } from "../components/Page";
 import { processContent } from "../windowing/utils.ts";
@@ -19,12 +19,48 @@ const isLilacEasterEggUsername = (value: string): boolean => {
   return normalized === "lg355";
 };
 
-const WowPage = () => {
-  const [username, setUsername] = useState("");
-  const [date, setDate] = useState("");
-  const [message, setMessage] = useState<string>("");
-  const [messageType, setMessageType] = useState<"error" | "success" | "">("");
+interface WowState {
+  username: string;
+  date: string;
+  message: string;
+  messageType: "error" | "success" | "";
+}
 
+type WowAction =
+  | { type: "SET_USERNAME"; username: string }
+  | { type: "SET_DATE"; date: string }
+  | { type: "SET_MESSAGE"; message: string }
+  | { type: "SET_MESSAGE_TYPE"; messageType: "error" | "success" | "" }
+  | { type: "CLEAR_MESSAGE" }
+  | { type: "UNSET_USERNAME" };
+
+function wowReducer(
+  state: WowState,
+  action: WowAction,
+): WowState {
+  switch (action.type) {
+    case "SET_USERNAME":
+      return { ...state, username: action.username };
+    case "SET_DATE":
+      return { ...state, date: action.date };
+    case "SET_MESSAGE":
+      return { ...state, message: action.message };
+    case "SET_MESSAGE_TYPE":
+      return { ...state, messageType: action.messageType };
+    case "CLEAR_MESSAGE":
+      return { ...state, message: "", messageType: "" };
+    case "UNSET_USERNAME":
+      return { ...state, username: "" };
+    default: {
+      const _exhaustive: never = action;
+      void _exhaustive;
+      return state;
+    }
+  }
+}
+
+const WowPage = () => {
+  const [state, dispatch] = useReducer(wowReducer, {} as WowState);
   const today = useMemo(() => new Date().toISOString().split("T")[0], []);
 
   const { processed, metadata } = useMemo(
@@ -32,68 +68,71 @@ const WowPage = () => {
     [],
   );
 
-  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSubmit = useCallback(
+    (event: SubmitEvent<HTMLFormElement>) => {
+      event.preventDefault();
 
-    if (!username.trim()) {
-      setMessageType("error");
-      setMessage("Please enter a username.");
-      return;
-    }
+      if (!state.username.trim()) {
+        dispatch({ type: "SET_MESSAGE_TYPE", messageType: "error" });
+        dispatch({ type: "SET_MESSAGE", message: "Please enter a username." });
+        return;
+      }
 
-    if (!date) {
-      setMessageType("error");
-      setMessage("Please enter a date.");
-      return;
-    }
+      if (!state.date) {
+        dispatch({ type: "SET_MESSAGE_TYPE", messageType: "error" });
+        dispatch({ type: "SET_MESSAGE", message: "Please enter a date." });
+        return;
+      }
 
-    if (
-      username.trim().toLowerCase() !== "kine" &&
-      !isLilacEasterEggUsername(username)
-    ) {
-      setMessageType("error");
-      setMessage("Invalid username.");
-      return;
-    }
+      if (
+        state.username.trim().toLowerCase() !== "kine" &&
+        !isLilacEasterEggUsername(state.username)
+      ) {
+        dispatch({ type: "SET_MESSAGE_TYPE", messageType: "error" });
+        dispatch({ type: "SET_MESSAGE", message: "Invalid username." });
+        return;
+      }
 
-    if (date !== today) {
-      setMessageType("error");
-      setMessage("Incorrect date. Please enter today's date.");
-      return;
-    }
+      if (state.date !== today) {
+        dispatch({ type: "SET_MESSAGE_TYPE", messageType: "error" });
+        dispatch({ type: "SET_MESSAGE", message: "Incorrect date. Please enter today's date." });
+        return;
+      }
 
-    if (isLilacEasterEggUsername(username)) {
-      // Permanent cookie: lilac title bars across the whole site.
-      setTheme({
-        themeName: LILAC_THEME,
-        themes: LILAC_THEME_DEFINITIONS,
-        previousClassNames: [LILAC_THEME],
-        persistence: "cookie",
-        persistKey: LILAC_COOKIE_KEY,
-        cookieMaxAgeDays: 365 * 10,
-        accessibility: { setColorScheme: false },
-      });
-      playLayeredAudio("/tada.wav");
-      setMessageType("success");
-      setMessage("Easter egg unlocked! Lilac theme activated.");
-      return;
-    }
+      if (isLilacEasterEggUsername(state.username)) {
+        // Permanent cookie: lilac title bars across the whole site.
+        setTheme({
+          themeName: LILAC_THEME,
+          themes: LILAC_THEME_DEFINITIONS,
+          previousClassNames: [LILAC_THEME],
+          persistence: "cookie",
+          persistKey: LILAC_COOKIE_KEY,
+          cookieMaxAgeDays: 365 * 10,
+          accessibility: { setColorScheme: false },
+        });
+        playLayeredAudio("/tada.wav");
+        dispatch({ type: "SET_MESSAGE_TYPE", messageType: "success" });
+        dispatch({ type: "SET_MESSAGE", message: "Easter egg unlocked! Lilac theme activated." });
+        return;
+      }
 
-    setMessageType("success");
-    setMessage("Date verified! Starting download...");
+      dispatch({ type: "SET_MESSAGE_TYPE", messageType: "success" });
+      dispatch({ type: "SET_MESSAGE", message: "Date verified! Starting download..." });
 
-    window.setTimeout(() => {
-      const link = document.createElement("a");
-      link.href = "/dist.7z";
-      link.download = "dist.7z";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      window.setTimeout(() => {
+        const link = document.createElement("a");
+        link.href = "/dist.7z";
+        link.download = "dist.7z";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
 
-      setMessageType("success");
-      setMessage("Download started successfully!");
-    }, 500);
-  };
+        dispatch({ type: "SET_MESSAGE_TYPE", messageType: "success" });
+        dispatch({ type: "SET_MESSAGE", message: "Download started successfully!" });
+      }, 500);
+    },
+    [],
+  );
 
   return (
     <main>
@@ -124,8 +163,8 @@ const WowPage = () => {
               <input
                 id="usernameInput"
                 type="text"
-                value={username}
-                onChange={(event) => setUsername(event.target.value)}
+                value={state.username}
+                onChange={(event) => dispatch({ type: "SET_USERNAME", username: event.target.value })}
                 placeholder="Enter username"
                 required
                 style={{
@@ -146,8 +185,8 @@ const WowPage = () => {
               <input
                 id="dateInput"
                 type="date"
-                value={date}
-                onChange={(event) => setDate(event.target.value)}
+                value={state.date}
+                onChange={(event) => dispatch({ type: "SET_DATE", date: event.target.value })}
                 max={today}
                 required
                 style={{
@@ -175,15 +214,15 @@ const WowPage = () => {
               Cancel
             </button>
 
-            {message ? (
+            {state.message ? (
               <p
                 style={{
                   marginTop: "0.75rem",
                   fontWeight: "bold",
-                  color: messageType === "error" ? "#c00" : "#080",
+                  color: state.messageType === "error" ? "#c00" : "#080",
                 }}
               >
-                {message}
+                {state.message}
               </p>
             ) : null}
           </form>

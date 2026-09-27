@@ -13,7 +13,7 @@ export function matchRoute(
         bestMatch = {
           route,
           params: match.params,
-          path: route.path
+          path: route.path,
         };
       }
     }

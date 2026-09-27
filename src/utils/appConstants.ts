@@ -77,7 +77,9 @@ export function isInternalPath(href: string): boolean {
   return href.startsWith("/");
 }
 
-export function isSoundCloudPayload(value: unknown): value is SoundCloudPayload {
+export function isSoundCloudPayload(
+  value: unknown,
+): value is SoundCloudPayload {
   if (!value || typeof value !== "object") return false;
   const candidate = value as Partial<SoundCloudPayload>;
   return (
@@ -109,7 +111,9 @@ export function upsertMeta(
 }
 
 export function upsertCanonicalLink(href: string) {
-  let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+  let canonical = document.querySelector(
+    'link[rel="canonical"]',
+  ) as HTMLLinkElement | null;
   if (!canonical) {
     canonical = document.createElement("link");
     canonical.setAttribute("rel", "canonical");
@@ -123,7 +127,9 @@ export function removeStructuredDataScript() {
 }
 
 export function upsertStructuredDataScript(schema: unknown) {
-  let script = document.getElementById(STRUCTURED_DATA_SCRIPT_ID) as HTMLScriptElement | null;
+  let script = document.getElementById(
+    STRUCTURED_DATA_SCRIPT_ID,
+  ) as HTMLScriptElement | null;
   if (!script) {
     script = document.createElement("script");
     script.id = STRUCTURED_DATA_SCRIPT_ID;

@@ -5,10 +5,10 @@
 import "xp.css/dist/98.css";
 import "./PageSpace.css";
 
-export default function PageSpace({ children }: { children?: React.ReactNode }) {
-  return (
-    <div className="PageSpace">
-      {children}
-    </div>
-  );
+export default function PageSpace({
+  children,
+}: {
+  children?: React.ReactNode;
+}) {
+  return <div className="PageSpace">{children}</div>;
 }

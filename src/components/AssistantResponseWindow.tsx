@@ -28,7 +28,11 @@ const AssistantResponseWindow = ({
     attributes: {
       ...defaultSchema.attributes,
       a: [...(defaultSchema.attributes?.a || []), ["target"], ["rel"]],
-      img: [...(defaultSchema.attributes?.img || []), ["loading"], ["decoding"]],
+      img: [
+        ...(defaultSchema.attributes?.img || []),
+        ["loading"],
+        ["decoding"],
+      ],
       iframe: [
         ["title"],
         ["src"],
@@ -73,22 +77,15 @@ const AssistantResponseWindow = ({
         <div className="title-bar-controls">
           <button
             aria-label={isMinimized ? "Maximize" : "Minimize"}
-            onClick={() =>
-              onMinimize()
-            }
+            onClick={() => onMinimize()}
           ></button>
-          <button
-            aria-label="Close"
-            onClick={() => onClose()}
-          ></button>
+          <button aria-label="Close" onClick={() => onClose()}></button>
         </div>
       </div>
       {!isMinimized ? (
         <div className="window-body" style={{ whiteSpace: "pre-wrap" }}>
           <Markdown
-            rehypePlugins={[
-              [rehypeSanitize, markdownSanitizeSchema],
-            ]}
+            rehypePlugins={[[rehypeSanitize, markdownSanitizeSchema]]}
             components={markdownComponents}
           >
             {text}
