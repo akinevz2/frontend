@@ -44,16 +44,24 @@ const PagertsPage = () => {
           <div className="PagertsUsageCode">npx pagerts ./page.html</div>
           <h3 className="PagertsUsage">Usage</h3>
           <div className="PagertsUsageCode">pagerts ./page.html</div>
-          <div className="PagertsUsageCode">pagerts file:///path/to/file.html</div>
-          <div className="PagertsUsageCode">pagerts fetch https://website.com</div>
+          <div className="PagertsUsageCode">
+            pagerts file:///path/to/file.html
+          </div>
+          <div className="PagertsUsageCode">
+            pagerts fetch https://website.com
+          </div>
           <div className="PagertsUsageCode">
             pagerts fetch --user-agent "Mozilla/5.0..." https://example.com
           </div>
           <h3 className="PagertsOutput">Output</h3>
           <p>The output is JSON containing:</p>
           <ul className="PagertsOutputList">
-            <li><strong>title</strong>: Page's title from &lt;title&gt; tag</li>
-            <li><strong>url</strong>: URL of the page</li>
+            <li>
+              <strong>title</strong>: Page's title from &lt;title&gt; tag
+            </li>
+            <li>
+              <strong>url</strong>: URL of the page
+            </li>
             <li>
               <strong>resources</strong>: Array of resources (links, meta tags,
               embeds) with name and url fields
@@ -62,7 +70,10 @@ const PagertsPage = () => {
           <h3 className="PagertsLinks">Links</h3>
           <ul>
             <li>
-              <a className="PagertsLink" href="https://www.npmjs.com/package/pagerts">
+              <a
+                className="PagertsLink"
+                href="https://www.npmjs.com/package/pagerts"
+              >
                 npm package
               </a>
             </li>

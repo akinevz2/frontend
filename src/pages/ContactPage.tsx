@@ -21,7 +21,9 @@ const ContactPage = () => {
         </div>
         <div className="window-body">
           <div className="ContactContent">
-            <h2 className="ContactSubheading">Where you can find kine online!</h2>
+            <h2 className="ContactSubheading">
+              Where you can find kine online!
+            </h2>
             <ul className="ContactLinks">
               <li className="ContactLink">
                 <a
@@ -117,18 +119,12 @@ const ContactPage = () => {
               </li>
               <li></li>
               <li className="ContactLink">
-                <a
-                  className="ContactLink"
-                  href="mailto:akinevz@gmail.com"
-                >
+                <a className="ContactLink" href="mailto:akinevz@gmail.com">
                   akinevz@gmail.com
                 </a>
               </li>
               <li className="ContactLink">
-                <a
-                  className="ContactLink"
-                  href="mailto:akinevz@outlook.com"
-                >
+                <a className="ContactLink" href="mailto:akinevz@outlook.com">
                   akinevz@outlook.com
                 </a>
               </li>
@@ -137,7 +133,8 @@ const ContactPage = () => {
             </ul>
             <h2 className="ContactSubheading">funny within</h2>
             <p className="ContactFooter">
-              click here to look at the <a href="#fuckingclippy">fuckingclippy</a>
+              click here to look at the{" "}
+              <a href="#fuckingclippy">fuckingclippy</a>
             </p>
           </div>
         </div>

@@ -20,14 +20,17 @@ export type SetAssistantConversationState = {
   setIsAssistantRequestPending: (value: boolean) => void;
 };
 
-function useAssistantConversationState(): AssistantConversationState & SetAssistantConversationState {
+function useAssistantConversationState(): AssistantConversationState &
+  SetAssistantConversationState {
   const [conversationInput, setConversationInput] = useState("");
   const [conversationError, setConversationError] = useState("");
   const [assistantWindowText, setAssistantWindowText] = useState("");
   const [assistantWindowVisible, setAssistantWindowVisible] = useState(false);
   const [assistantWindowFading, setAssistantWindowFading] = useState(false);
-  const [assistantWindowMinimized, setAssistantWindowMinimized] = useState(false);
-  const [isAssistantRequestPending, setIsAssistantRequestPending] = useState(false);
+  const [assistantWindowMinimized, setAssistantWindowMinimized] =
+    useState(false);
+  const [isAssistantRequestPending, setIsAssistantRequestPending] =
+    useState(false);
 
   return {
     conversationInput,

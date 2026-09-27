@@ -1,27 +1,88 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useReducer, type FormEvent } from "react";
 import { submitResumeInterest, trackResumeEvent } from "../lib/resumeAnalytics";
+
+/** Resume modal and user interest state managed via reducer. */
+type ResumeAccessMode = "html" | "pdf";
+
+export interface ResumeState {
+  showResumeModal: boolean;
+  showEmailModal: boolean;
+  interestEmail: string;
+  interestMessage: string;
+  isSubmittingInterest: boolean;
+  printShortcutStep: number;
+  resumeAccessMode: ResumeAccessMode | null;
+}
+
+export interface UseResumeOptions {
+  resumeAccessMode: ResumeAccessMode | null;
+}
+
+export const initialResumeState: ResumeState = {
+  showResumeModal: false,
+  showEmailModal: false,
+  interestEmail: "",
+  interestMessage: "",
+  isSubmittingInterest: false,
+  printShortcutStep: 0,
+  resumeAccessMode: null,
+};
+
+export type ResumeAction =
+  | { type: "SET_SHOW_RESUME_MODAL"; value: boolean }
+  | { type: "SET_SHOW_EMAIL_MODAL"; value: boolean }
+  | { type: "SET_INTEREST_EMAIL"; value: string }
+  | { type: "SET_INTEREST_MESSAGE"; value: string }
+  | { type: "SET_IS_SUBMITTING_INTEREST"; value: boolean }
+  | { type: "SET_PRINT_SHORTCUT_STEP"; value: number }
+  | { type: "SET_RESUME_ACCESS_MODE"; value: ResumeAccessMode | null };
+
+export function resumeReducer(
+  state: ResumeState,
+  action: ResumeAction,
+): ResumeState {
+  switch (action.type) {
+    case "SET_SHOW_RESUME_MODAL":
+      return { ...state, showResumeModal: action.value };
+    case "SET_SHOW_EMAIL_MODAL":
+      return { ...state, showEmailModal: action.value };
+    case "SET_INTEREST_EMAIL":
+      return { ...state, interestEmail: action.value };
+    case "SET_INTEREST_MESSAGE":
+      return { ...state, interestMessage: action.value };
+    case "SET_IS_SUBMITTING_INTEREST":
+      return { ...state, isSubmittingInterest: action.value };
+    case "SET_PRINT_SHORTCUT_STEP":
+      return { ...state, printShortcutStep: action.value };
+    case "SET_RESUME_ACCESS_MODE":
+      return { ...state, resumeAccessMode: action.value };
+    default: {
+      const _exhaustive: never = action;
+      void _exhaustive;
+      return state;
+    }
+  }
+}
 
 const ResumePage = () => {
   const RESUME_ACCESS_MODE_KEY = "resumeAccessMode";
-  type ResumeAccessMode = "html" | "pdf";
-  const [showResumeModal, setShowResumeModal] = useState(false);
-  const [showEmailModal, setShowEmailModal] = useState(false);
-  const [interestEmail, setInterestEmail] = useState("");
-  const [interestMessage, setInterestMessage] = useState("");
-  const [isSubmittingInterest, setIsSubmittingInterest] = useState(false);
-  const [printShortcutStep, setPrintShortcutStep] = useState(0);
-  const [resumeAccessMode, setResumeAccessMode] =
-    useState<ResumeAccessMode | null>(() => {
-      const persistedMode = window.localStorage.getItem(RESUME_ACCESS_MODE_KEY);
-      return persistedMode === "html" || persistedMode === "pdf"
-        ? persistedMode
-        : null;
-    });
   const resumeIframeRef = useRef<HTMLIFrameElement | null>(null);
 
+  const [state, dispatch] = useReducer(
+    resumeReducer,
+    {
+      ...initialResumeState,
+      resumeAccessMode: (() => {
+        const persistedMode = window.localStorage.getItem(RESUME_ACCESS_MODE_KEY);
+        return persistedMode === "html" || persistedMode === "pdf"
+          ? persistedMode
+          : null;
+      })(),
+    }
+  );
   const resumeDocumentPath =
-    resumeAccessMode === "pdf" ? "/documents/resume.pdf" : "/resume.html";
-  const hasResolvedInterestSubmission = resumeAccessMode !== null;
+    state.resumeAccessMode === "pdf" ? "/documents/resume.pdf" : "/resume.html";
+  const hasResolvedInterestSubmission = state.resumeAccessMode !== null;
   const shouldBlurResume = !hasResolvedInterestSubmission;
 
   useEffect(() => {
@@ -29,7 +90,7 @@ const ResumePage = () => {
   }, []);
 
   useEffect(() => {
-    if (!showResumeModal) {
+    if (!state.showResumeModal) {
       return;
     }
 
@@ -44,13 +105,13 @@ const ResumePage = () => {
       event.preventDefault();
       event.stopPropagation();
 
-      if (printShortcutStep === 0) {
+      if (state.printShortcutStep === 0) {
         const iframeWindow = resumeIframeRef.current?.contentWindow;
         if (iframeWindow) {
           iframeWindow.focus();
           iframeWindow.print();
         }
-        setPrintShortcutStep(1);
+        dispatch({ type: "SET_PRINT_SHORTCUT_STEP", value: 1 });
         return;
       }
 
@@ -61,32 +122,34 @@ const ResumePage = () => {
     return () => {
       window.removeEventListener("keydown", handlePrintShortcut, true);
     };
-  }, [printShortcutStep, resumeDocumentPath, showResumeModal]);
+  }, [state.printShortcutStep, resumeDocumentPath, state.showResumeModal]);
 
   const handleInterestSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const trimmedEmail = interestEmail.trim();
+    const trimmedEmail = state.interestEmail.trim();
 
     if (!trimmedEmail) {
-      setInterestMessage("Please provide an email address.");
+      dispatch({ type: "SET_INTEREST_MESSAGE", value: "Please provide an email address." });
       return;
     }
 
-    setIsSubmittingInterest(true);
-    setInterestMessage("");
+    dispatch({ type: "SET_IS_SUBMITTING_INTEREST", value: true });
+    dispatch({ type: "SET_INTEREST_MESSAGE", value: "" });
 
     try {
       await submitResumeInterest(trimmedEmail);
-      setInterestMessage("Thanks. Your interest has been recorded.");
-      setInterestEmail("");
-      setResumeAccessMode("html");
+      dispatch({ type: "SET_INTEREST_MESSAGE", value: "Thanks. Your interest has been recorded." });
+      dispatch({ type: "SET_INTEREST_EMAIL", value: "" });
+      dispatch({ type: "SET_RESUME_ACCESS_MODE", value: "html" });
+      dispatch({ type: "SET_SHOW_EMAIL_MODAL", value: false });
       window.localStorage.setItem(RESUME_ACCESS_MODE_KEY, "html");
     } catch {
-      setInterestMessage(
-        "Could not submit interest right now. Please try again shortly.",
-      );
+      dispatch({
+        type: "SET_INTEREST_MESSAGE",
+        value: "Could not submit interest right now. Please try again shortly.",
+      });
     } finally {
-      setIsSubmittingInterest(false);
+      dispatch({ type: "SET_IS_SUBMITTING_INTEREST", value: false });
     }
   };
 
@@ -116,20 +179,20 @@ const ResumePage = () => {
             <button
               onClick={() => {
                 void trackResumeEvent("resume_open_click");
-                setPrintShortcutStep(0);
-                setShowResumeModal(true);
+                dispatch({ type: "SET_PRINT_SHORTCUT_STEP", value: 0 });
+                dispatch({ type: "SET_SHOW_RESUME_MODAL", value: true });
               }}
             >
               View My Resume
             </button>
-            <button onClick={() => setShowEmailModal(true)}>
+            <button onClick={() => dispatch({ type: "SET_SHOW_EMAIL_MODAL", value: true })}>
               Share Interest Email
             </button>
           </div>
         </div>
       </section>
 
-      {showResumeModal ? (
+      {state.showResumeModal ? (
         <div
           style={{
             position: "fixed",
@@ -145,7 +208,7 @@ const ResumePage = () => {
           }}
           onClick={(event) => {
             if (event.target === event.currentTarget) {
-              setShowResumeModal(false);
+              dispatch({ type: "SET_SHOW_RESUME_MODAL", value: false });
             }
           }}
         >
@@ -153,8 +216,7 @@ const ResumePage = () => {
             className="window"
             style={{ width: "90vw", height: "90vh", maxWidth: "1200px" }}
           >
-            <div className="title-bar">
-              <div className="title-bar-text">
+            <div className="title-bar-text">
                 <a
                   href="/documents/resume.pdf"
                   target="_blank"
@@ -166,7 +228,7 @@ const ResumePage = () => {
               <div className="title-bar-controls">
                 <button
                   aria-label="Close"
-                  onClick={() => setShowResumeModal(false)}
+                  onClick={() => dispatch({ type: "SET_SHOW_RESUME_MODAL", value: false })}
                 ></button>
               </div>
             </div>
@@ -210,7 +272,7 @@ const ResumePage = () => {
                   <p style={{ margin: 0 }}>
                     Submit your interest email to unblur this preview.
                   </p>
-                  <button onClick={() => setShowEmailModal(true)}>
+                  <button onClick={() => dispatch({ type: "SET_SHOW_EMAIL_MODAL", value: true })}>
                     Share Interest Email
                   </button>
                 </div>
@@ -220,7 +282,7 @@ const ResumePage = () => {
         </div>
       ) : null}
 
-      {showEmailModal ? (
+      {state.showEmailModal ? (
         <div
           style={{
             position: "fixed",

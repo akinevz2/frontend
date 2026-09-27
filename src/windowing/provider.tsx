@@ -1,6 +1,51 @@
-import { useState, type ReactNode } from "react";
+import { useReducer, useCallback, type ReactNode } from "react";
 import { SectionContext } from "./context";
 import type { PageMetadata, SectionMetadata } from "./types";
+
+export interface SectionState {
+  expandedSections: Set<string>;
+  minimizedSections: Map<string, string>;
+  maximizedWindows: Set<string>;
+}
+
+export type SectionAction =
+  | { type: "MARK_AS_EXPANDED"; heading: string }
+  | { type: "MINIMIZE_SECTION"; uuid: string; heading: string }
+  | { type: "RESTORE_SECTION"; uuid: string }
+  | { type: "REGISTER_MAXIMIZED_WINDOW"; uuid: string }
+  | { type: "UNREGISTER_MAXIMIZED_WINDOW"; uuid: string };
+
+export function sectionReducer(
+  state: SectionState,
+  action: SectionAction,
+  pageMetadata: PageMetadata,
+): SectionState {
+  switch (action.type) {
+    case "MARK_AS_EXPANDED":
+      return { ...state, expandedSections: new Set(state.expandedSections).add(action.heading) };
+    case "MINIMIZE_SECTION":
+      return { ...state, minimizedSections: new Map(state.minimizedSections).set(action.uuid, action.heading) };
+    case "RESTORE_SECTION":
+      const newMinimizedSections = new Map(state.minimizedSections);
+      newMinimizedSections.delete(action.uuid);
+      const ancestors = getAncestorSectionUuids(action.uuid, pageMetadata.sections);
+      ancestors.forEach((ancestorUuid) => {
+        newMinimizedSections.delete(ancestorUuid);
+      });
+      return { ...state, minimizedSections: newMinimizedSections };
+    case "REGISTER_MAXIMIZED_WINDOW":
+      return { ...state, maximizedWindows: new Set(state.maximizedWindows).add(action.uuid) };
+    case "UNREGISTER_MAXIMIZED_WINDOW":
+      const newMaximizedWindows = new Set(state.maximizedWindows);
+      newMaximizedWindows.delete(action.uuid);
+      return { ...state, maximizedWindows: newMaximizedWindows };
+    default: {
+      const _exhaustive: never = action;
+      void _exhaustive;
+      return state;
+    }
+  }
+}
 
 const getAncestorSectionUuids = (
   uuid: string,
@@ -33,6 +78,67 @@ const getAncestorSectionUuids = (
   return ancestors;
 };
 
+const sectionReducerWrapper = (state: SectionState, action: SectionAction, pageMetadata: PageMetadata) => {
+  return sectionReducer(state, action, pageMetadata);
+};
+
+const useSectionState = (pageMetadata: PageMetadata) => {
+  const [state, dispatch] = useReducer(
+    (state, action) =>
+      sectionReducer(state, action, pageMetadata),
+    {
+      expandedSections: new Set(),
+      minimizedSections: new Map(),
+      maximizedWindows: new Set(),
+    },
+  );
+
+  const markAsExpanded = useCallback(
+    (heading: string) => {
+      dispatch({ type: "MARK_AS_EXPANDED", heading });
+    },
+    [],
+  );
+
+  const minimizeSection = useCallback(
+    (uuid: string, heading: string) => {
+      dispatch({ type: "MINIMIZE_SECTION", uuid, heading });
+    },
+    [],
+  );
+
+  const restoreSection = useCallback(
+    (uuid: string) => {
+      dispatch({ type: "RESTORE_SECTION", uuid });
+    },
+    [],
+  );
+
+  const registerMaximizedWindow = useCallback(
+    (uuid: string) => {
+      dispatch({ type: "REGISTER_MAXIMIZED_WINDOW", uuid });
+    },
+    [],
+  );
+
+  const unregisterMaximizedWindow = useCallback(
+    (uuid: string) => {
+      dispatch({ type: "UNREGISTER_MAXIMIZED_WINDOW", uuid });
+    },
+    [],
+  );
+
+  return {
+    state,
+    dispatch,
+    markAsExpanded,
+    minimizeSection,
+    restoreSection,
+    registerMaximizedWindow,
+    unregisterMaximizedWindow,
+  };
+};
+
 export const SectionProvider = ({
   children,
   pageMetadata,
@@ -43,63 +149,25 @@ export const SectionProvider = ({
   /** When true, sections on this page render with addon behaviour. */
   isAddonPage?: boolean;
 }) => {
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(
-    new Set(),
-  );
-  const [minimizedSections, setMinimizedSections] = useState<
-    Map<string, string>
-  >(new Map());
-  const [maximizedWindows, setMaximizedWindows] = useState<Set<string>>(
-    new Set(),
-  );
-
-  const markAsExpanded = (heading: string) => {
-    setExpandedSections((prev) => new Set(prev).add(heading));
-  };
-
-  const minimizeSection = (uuid: string, heading: string) => {
-    setMinimizedSections((prev) => new Map(prev).set(uuid, heading));
-  };
-
-  const restoreSection = (uuid: string) => {
-    setMinimizedSections((prev) => {
-      const newMap = new Map(prev);
-      const ancestorUuids = getAncestorSectionUuids(
-        uuid,
-        pageMetadata.sections,
-      );
-
-      newMap.delete(uuid);
-      ancestorUuids.forEach((ancestorUuid) => {
-        newMap.delete(ancestorUuid);
-      });
-
-      return newMap;
-    });
-  };
-
-  const registerMaximizedWindow = (uuid: string) => {
-    setMaximizedWindows((prev) => new Set(prev).add(uuid));
-  };
-
-  const unregisterMaximizedWindow = (uuid: string) => {
-    setMaximizedWindows((prev) => {
-      const newSet = new Set(prev);
-      newSet.delete(uuid);
-      return newSet;
-    });
-  };
+  const {
+    state,
+    markAsExpanded,
+    minimizeSection,
+    restoreSection,
+    registerMaximizedWindow,
+    unregisterMaximizedWindow,
+  } = useSectionState(pageMetadata);
 
   return (
     <SectionContext.Provider
       value={{
-        expandedSections,
+        expandedSections: state.expandedSections,
         markAsExpanded,
-        minimizedSections,
+        minimizedSections: state.minimizedSections,
         minimizeSection,
         restoreSection,
         pageMetadata,
-        maximizedWindows,
+        maximizedWindows: state.maximizedWindows,
         registerMaximizedWindow,
         unregisterMaximizedWindow,
         isAddonPage,

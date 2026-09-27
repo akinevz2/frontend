@@ -45,25 +45,16 @@ const AssistantConversationModal = ({
         <div className="title-bar">
           <div className="title-bar-text">Assistant Conversation</div>
           <div className="title-bar-controls">
-            <button
-              aria-label="Close"
-              onClick={() => onClose()}
-            ></button>
+            <button aria-label="Close" onClick={() => onClose()}></button>
           </div>
         </div>
-        <div
-          className="window-body"
-          style={{ display: "grid", gap: "0.6rem" }}
-        >
-          <label htmlFor="assistant-prompt-input">
-            Prompt (max 256 chars)
-          </label>
+        <div className="window-body" style={{ display: "grid", gap: "0.6rem" }}>
+          <label htmlFor="assistant-prompt-input">Prompt (max 256 chars)</label>
           <textarea
             id="assistant-prompt-input"
             value={conversationInput}
             maxLength={256}
-            onChange={(event) => {
-            }}
+            onChange={(event) => {}}
             onKeyDown={(event) => {
               if (event.key !== "Enter") {
                 return;
@@ -88,9 +79,7 @@ const AssistantConversationModal = ({
             <button
               type="button"
               onClick={() => onSubmit()}
-              disabled={
-                isAssistantRequestPending || !conversationInput.trim()
-              }
+              disabled={isAssistantRequestPending || !conversationInput.trim()}
             >
               {isAssistantRequestPending ? "Sending..." : "Send"}
             </button>

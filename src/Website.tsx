@@ -1,10 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouting } from "./utils/routingReducer";
 
 type RouteConfig = {
@@ -74,7 +68,7 @@ export default function Website() {
     isInternalPath,
   });
   const path = routingState.path;
-  
+
   const route = ROUTE_CONFIG[path] ?? DEFAULT_ROUTE;
 
   // Route rendering logic - extracted from App.tsx

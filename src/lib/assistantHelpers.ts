@@ -5,14 +5,18 @@ export interface AssistantPromptOptions {
 export async function submitAssistantPrompt(
   prompt: string,
   assistantConfig: any,
-  options?: AssistantPromptOptions
+  options?: AssistantPromptOptions,
 ): Promise<string> {
   const trimmedPrompt = prompt.trim();
   if (!trimmedPrompt) {
     throw new Error("Prompt cannot be empty");
   }
 
-  if (!assistantConfig || !assistantConfig.endpoint || !assistantConfig.apiKey) {
+  if (
+    !assistantConfig ||
+    !assistantConfig.endpoint ||
+    !assistantConfig.apiKey
+  ) {
     throw new Error("Please configure endpoint and model first.");
   }
 

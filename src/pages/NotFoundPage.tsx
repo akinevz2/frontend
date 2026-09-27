@@ -11,9 +11,7 @@ const NotFoundPage = () => {
         </div>
         <div className="window-body">
           <div className="NotFoundBody">
-            <p className="NotFoundMessage">
-              That page does not exist.
-            </p>
+            <p className="NotFoundMessage">That page does not exist.</p>
             <a className="NotFoundLink" href="/">
               Go home
             </a>

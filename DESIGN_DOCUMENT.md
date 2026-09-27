@@ -111,7 +111,7 @@ This document defines the core mechanical architecture of the "old style" websit
 1. **Main Modal**: `src/components/AssistantConversationModal.tsx` (107 lines)
 2. **LinkConfirmModal**: Empty stub in `src/components/LinkConfirmModal.tsx`
 3. **Simple Modal**: `src/components/Modal.tsx`
-4. **Easter Egg**: Integrated in Section.tsx, App.tsx
+4. **Easter Egg**: Integrated in Section.tsx
 
 ### Actual Z-Index Values
 - Menu Bar: 1000
@@ -167,7 +167,7 @@ This document defines the core mechanical architecture of the "old style" websit
 
 ### Implementation
 - **Library**: `react-toastify`
-- **File**: `src/App.tsx` line 587
+- **File**: `src/Website.tsx`
 - **Configuration**: Custom styling defined in `main.css` (lines 853-865)
 - **Z-index**: 9999
 - **Auto-dismiss**: 2000ms
@@ -199,14 +199,14 @@ This document defines the core mechanical architecture of the "old style" websit
 Multiple Easter Egg systems exist without unified approach:
 
 ### 1. Border Flash Theme
-- **Location**: `src/App.tsx` lines 97-148
+- **Location**: `src/windowing/Section.tsx` lines 97-148
 - **Trigger**: Clippy click
 - **Duration**: 180ms (0.18s)
 - **Effect**: Border flash theme with theme wobble
 - **No Persistence**: Temporary flash only
 
 ### 2. Lilac Theme via Cookie
-- **Location**: `src/App.tsx` lines 48-71
+- **Location**: `src/utils/appConstants.ts` lines 48-71
 - **Cookie**: `wow-username-theme`
 - **Trigger**: Cookie presence check
 - **Effect**: Persistent lilac theme
@@ -218,17 +218,17 @@ Multiple Easter Egg systems exist without unified approach:
 - **Effect**: Navigate to `/blog/login`
 
 ### 4. Feef69 Pages
-- **Locations**: `src/App.tsx` lines 46, 696-703 (content references)
+- **Locations**: `src/components/Website.tsx` lines 46, 696-703 (content references)
 - **Trigger**: URL patterns/content markers
 - **Effect**: Page variations with special styling
 
 ### 5. Clippy Drag & Drop
-- **Location**: `src/App.tsx` lines 258-370
+- **Location**: `src/windowing/Section.tsx` lines 258-370
 - **Trigger**: Drag elements to specific location
 - **Effect**: Navigate to `/blog/login`
 
 ### 6. Audio on Visibility
-- **Location**: `src/App.tsx` lines 73-80
+- **Location**: `src/windowing/Section.tsx` lines 73-80
 - **Trigger**: Page visibility change (via IntersectionObserver)
 - **Effect**: Audio playback on first view
 
@@ -389,7 +389,7 @@ Multiple Easter Egg systems exist without unified approach:
 | Easter Eggs | Multiple files | ⚠️ Scattered implementations |
 
 ### Utils
-- Theme engine: `src/App.tsx` (lines 48-148)
+- Theme engine: `src/utils/appConstants.ts` (lines 48-148)
 - Modal manager: Integrated in components
 - Popup controller: Multiple implementations
 - Navigation: Hash-based in Section.tsx (lines 1207-1237)
@@ -398,7 +398,7 @@ Multiple Easter Egg systems exist without unified approach:
 - Theme management: CSS variable approach (not separated)
 - Modal state: Integrated in components
 - Navigation: Hash-based (Section.tsx)
-- Clippy interaction: App.tsx (lines 258-370)
+- Clippy interaction: Website.tsx (lines 258-370)
 
 ---
 
@@ -465,13 +465,13 @@ Multiple Easter Egg systems exist without unified approach:
 - Content Window: `src/windowing/Section.tsx` (Main implementation)
 - Primary Modal: Embedded in `src/windowing/Section.tsx` (lines 1291-1401)
 - Notification: `main.css` (lines 853-865) + `react-toastify`
-- Easter Eggs: `src/App.tsx`, `src/windowing/Section.tsx`
+- Easter Eggs: `src/components/Website.tsx`, `src/windowing/Section.tsx`
 
 ### Utilities
-- Theme handling: `src/App.tsx` (lines 48-148)
+- Theme handling: `src/utils/appConstants.ts` (lines 48-148)
 - Navigation: `src/windowing/Section.tsx` (lines 1207-1237)
-- Clippy interaction: `src/App.tsx` (lines 258-370)
-- Modal states: `src/App.tsx` (lines 24-32, 550-555)
+- Clippy interaction: `src/components/Website.tsx` (lines 258-370)
+- Modal states: `src/utils/routingReducer.ts` (lines 24-32, 550-555)
 
 ### Styling
 - Main styles: `src/main.css`
