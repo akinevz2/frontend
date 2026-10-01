@@ -1,4 +1,4 @@
-import { Section, type SectionProps } from "../windowing";
+import { Section, type SectionProps } from "../windows";
 
 /**
  * AddonProps is a section with the addon extension fields. Since these fields

@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import { PageWithAddons } from "../components/Page";
-import { processContent } from "../windowing/utils.ts";
+import { processContent } from "../windows/utils";
 import type { AddonProps } from "../components/Addon";
-import addons from "../../addons.json";
+import addons from "./structure/addons.json";
 
 const AddonsPage = () => {
   const { processed, metadata } = useMemo(

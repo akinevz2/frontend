@@ -1,10 +1,10 @@
 import { useMemo, useReducer, useCallback, type SubmitEvent } from "react";
 import { setTheme } from "lightdni-jssas-toggle";
 import { PageContent } from "../components/Page";
-import { processContent } from "../windowing/utils.ts";
-import type { SectionProps } from "../windowing";
+import { processContent } from "../windows/utils";
+import type { SectionProps } from "../windows";
 import { playLayeredAudio } from "../lib/audioOverlap";
-import characters from "../../characters.json";
+import characters from "./structure/characters.json";
 
 const LILAC_THEME = "theme-lilac";
 const LILAC_COOKIE_KEY = "wow-username-theme";
@@ -34,10 +34,7 @@ type WowAction =
   | { type: "CLEAR_MESSAGE" }
   | { type: "UNSET_USERNAME" };
 
-function wowReducer(
-  state: WowState,
-  action: WowAction,
-): WowState {
+function wowReducer(state: WowState, action: WowAction): WowState {
   switch (action.type) {
     case "SET_USERNAME":
       return { ...state, username: action.username };
@@ -68,71 +65,80 @@ const WowPage = () => {
     [],
   );
 
-  const handleSubmit = useCallback(
-    (event: SubmitEvent<HTMLFormElement>) => {
-      event.preventDefault();
+  const handleSubmit = useCallback((event: SubmitEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
-      if (!state.username.trim()) {
-        dispatch({ type: "SET_MESSAGE_TYPE", messageType: "error" });
-        dispatch({ type: "SET_MESSAGE", message: "Please enter a username." });
-        return;
-      }
+    if (!state.username.trim()) {
+      dispatch({ type: "SET_MESSAGE_TYPE", messageType: "error" });
+      dispatch({ type: "SET_MESSAGE", message: "Please enter a username." });
+      return;
+    }
 
-      if (!state.date) {
-        dispatch({ type: "SET_MESSAGE_TYPE", messageType: "error" });
-        dispatch({ type: "SET_MESSAGE", message: "Please enter a date." });
-        return;
-      }
+    if (!state.date) {
+      dispatch({ type: "SET_MESSAGE_TYPE", messageType: "error" });
+      dispatch({ type: "SET_MESSAGE", message: "Please enter a date." });
+      return;
+    }
 
-      if (
-        state.username.trim().toLowerCase() !== "kine" &&
-        !isLilacEasterEggUsername(state.username)
-      ) {
-        dispatch({ type: "SET_MESSAGE_TYPE", messageType: "error" });
-        dispatch({ type: "SET_MESSAGE", message: "Invalid username." });
-        return;
-      }
+    if (
+      state.username.trim().toLowerCase() !== "kine" &&
+      !isLilacEasterEggUsername(state.username)
+    ) {
+      dispatch({ type: "SET_MESSAGE_TYPE", messageType: "error" });
+      dispatch({ type: "SET_MESSAGE", message: "Invalid username." });
+      return;
+    }
 
-      if (state.date !== today) {
-        dispatch({ type: "SET_MESSAGE_TYPE", messageType: "error" });
-        dispatch({ type: "SET_MESSAGE", message: "Incorrect date. Please enter today's date." });
-        return;
-      }
+    if (state.date !== today) {
+      dispatch({ type: "SET_MESSAGE_TYPE", messageType: "error" });
+      dispatch({
+        type: "SET_MESSAGE",
+        message: "Incorrect date. Please enter today's date.",
+      });
+      return;
+    }
 
-      if (isLilacEasterEggUsername(state.username)) {
-        // Permanent cookie: lilac title bars across the whole site.
-        setTheme({
-          themeName: LILAC_THEME,
-          themes: LILAC_THEME_DEFINITIONS,
-          previousClassNames: [LILAC_THEME],
-          persistence: "cookie",
-          persistKey: LILAC_COOKIE_KEY,
-          cookieMaxAgeDays: 365 * 10,
-          accessibility: { setColorScheme: false },
-        });
-        playLayeredAudio("/tada.wav");
-        dispatch({ type: "SET_MESSAGE_TYPE", messageType: "success" });
-        dispatch({ type: "SET_MESSAGE", message: "Easter egg unlocked! Lilac theme activated." });
-        return;
-      }
+    if (isLilacEasterEggUsername(state.username)) {
+      // Permanent cookie: lilac title bars across the whole site.
+      setTheme({
+        themeName: LILAC_THEME,
+        themes: LILAC_THEME_DEFINITIONS,
+        previousClassNames: [LILAC_THEME],
+        persistence: "cookie",
+        persistKey: LILAC_COOKIE_KEY,
+        cookieMaxAgeDays: 365 * 10,
+        accessibility: { setColorScheme: false },
+      });
+      playLayeredAudio("/tada.wav");
+      dispatch({ type: "SET_MESSAGE_TYPE", messageType: "success" });
+      dispatch({
+        type: "SET_MESSAGE",
+        message: "Easter egg unlocked! Lilac theme activated.",
+      });
+      return;
+    }
+
+    dispatch({ type: "SET_MESSAGE_TYPE", messageType: "success" });
+    dispatch({
+      type: "SET_MESSAGE",
+      message: "Date verified! Starting download...",
+    });
+
+    window.setTimeout(() => {
+      const link = document.createElement("a");
+      link.href = "/dist.7z";
+      link.download = "dist.7z";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
 
       dispatch({ type: "SET_MESSAGE_TYPE", messageType: "success" });
-      dispatch({ type: "SET_MESSAGE", message: "Date verified! Starting download..." });
-
-      window.setTimeout(() => {
-        const link = document.createElement("a");
-        link.href = "/dist.7z";
-        link.download = "dist.7z";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-        dispatch({ type: "SET_MESSAGE_TYPE", messageType: "success" });
-        dispatch({ type: "SET_MESSAGE", message: "Download started successfully!" });
-      }, 500);
-    },
-    [],
-  );
+      dispatch({
+        type: "SET_MESSAGE",
+        message: "Download started successfully!",
+      });
+    }, 500);
+  }, []);
 
   return (
     <main>
@@ -164,7 +170,12 @@ const WowPage = () => {
                 id="usernameInput"
                 type="text"
                 value={state.username}
-                onChange={(event) => dispatch({ type: "SET_USERNAME", username: event.target.value })}
+                onChange={(event) =>
+                  dispatch({
+                    type: "SET_USERNAME",
+                    username: event.target.value,
+                  })
+                }
                 placeholder="Enter username"
                 required
                 style={{
@@ -186,7 +197,9 @@ const WowPage = () => {
                 id="dateInput"
                 type="date"
                 value={state.date}
-                onChange={(event) => dispatch({ type: "SET_DATE", date: event.target.value })}
+                onChange={(event) =>
+                  dispatch({ type: "SET_DATE", date: event.target.value })
+                }
                 max={today}
                 required
                 style={{

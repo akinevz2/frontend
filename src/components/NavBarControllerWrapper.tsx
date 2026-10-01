@@ -1,4 +1,4 @@
-import { SectionProvider } from "../windowing";
+import { SectionProvider } from "../windows";
 import { NavBarController } from "./NavBarController";
 
 export const NavBarControllerWrapper = () => {

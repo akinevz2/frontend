@@ -68,18 +68,15 @@ const ResumePage = () => {
   const RESUME_ACCESS_MODE_KEY = "resumeAccessMode";
   const resumeIframeRef = useRef<HTMLIFrameElement | null>(null);
 
-  const [state, dispatch] = useReducer(
-    resumeReducer,
-    {
-      ...initialResumeState,
-      resumeAccessMode: (() => {
-        const persistedMode = window.localStorage.getItem(RESUME_ACCESS_MODE_KEY);
-        return persistedMode === "html" || persistedMode === "pdf"
-          ? persistedMode
-          : null;
-      })(),
-    }
-  );
+  const [state, dispatch] = useReducer(resumeReducer, {
+    ...initialResumeState,
+    resumeAccessMode: (() => {
+      const persistedMode = window.localStorage.getItem(RESUME_ACCESS_MODE_KEY);
+      return persistedMode === "html" || persistedMode === "pdf"
+        ? persistedMode
+        : null;
+    })(),
+  });
   const resumeDocumentPath =
     state.resumeAccessMode === "pdf" ? "/documents/resume.pdf" : "/resume.html";
   const hasResolvedInterestSubmission = state.resumeAccessMode !== null;
@@ -129,7 +126,10 @@ const ResumePage = () => {
     const trimmedEmail = state.interestEmail.trim();
 
     if (!trimmedEmail) {
-      dispatch({ type: "SET_INTEREST_MESSAGE", value: "Please provide an email address." });
+      dispatch({
+        type: "SET_INTEREST_MESSAGE",
+        value: "Please provide an email address.",
+      });
       return;
     }
 
@@ -138,7 +138,10 @@ const ResumePage = () => {
 
     try {
       await submitResumeInterest(trimmedEmail);
-      dispatch({ type: "SET_INTEREST_MESSAGE", value: "Thanks. Your interest has been recorded." });
+      dispatch({
+        type: "SET_INTEREST_MESSAGE",
+        value: "Thanks. Your interest has been recorded.",
+      });
       dispatch({ type: "SET_INTEREST_EMAIL", value: "" });
       dispatch({ type: "SET_RESUME_ACCESS_MODE", value: "html" });
       dispatch({ type: "SET_SHOW_EMAIL_MODAL", value: false });
@@ -185,7 +188,11 @@ const ResumePage = () => {
             >
               View My Resume
             </button>
-            <button onClick={() => dispatch({ type: "SET_SHOW_EMAIL_MODAL", value: true })}>
+            <button
+              onClick={() =>
+                dispatch({ type: "SET_SHOW_EMAIL_MODAL", value: true })
+              }
+            >
               Share Interest Email
             </button>
           </div>
@@ -217,67 +224,72 @@ const ResumePage = () => {
             style={{ width: "90vw", height: "90vh", maxWidth: "1200px" }}
           >
             <div className="title-bar-text">
-                <a
-                  href="/documents/resume.pdf"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Resume
-                </a>
-              </div>
-              <div className="title-bar-controls">
-                <button
-                  aria-label="Close"
-                  onClick={() => dispatch({ type: "SET_SHOW_RESUME_MODAL", value: false })}
-                ></button>
-              </div>
+              <a
+                href="/documents/resume.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Resume
+              </a>
             </div>
-            <div
-              className="window-body"
+            <div className="title-bar-controls">
+              <button
+                aria-label="Close"
+                onClick={() =>
+                  dispatch({ type: "SET_SHOW_RESUME_MODAL", value: false })
+                }
+              ></button>
+            </div>
+          </div>
+          <div
+            className="window-body"
+            style={{
+              padding: 0,
+              height: "calc(100% - 2rem)",
+              overflow: "hidden",
+              position: "relative",
+            }}
+          >
+            <iframe
+              ref={resumeIframeRef}
+              src={resumeDocumentPath}
+              title="Resume"
               style={{
-                padding: 0,
-                height: "calc(100% - 2rem)",
-                overflow: "hidden",
-                position: "relative",
+                width: "100%",
+                height: "100%",
+                border: "none",
+                filter: shouldBlurResume ? "blur(7px)" : "none",
+                transition: "filter 180ms ease",
               }}
-            >
-              <iframe
-                ref={resumeIframeRef}
-                src={resumeDocumentPath}
-                title="Resume"
+            />
+            {shouldBlurResume ? (
+              <div
                 style={{
-                  width: "100%",
-                  height: "100%",
-                  border: "none",
-                  filter: shouldBlurResume ? "blur(7px)" : "none",
-                  transition: "filter 180ms ease",
+                  position: "absolute",
+                  inset: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.75rem",
+                  background: "rgba(255, 255, 255, 0.2)",
+                  backdropFilter: "blur(1px)",
+                  padding: "1rem",
+                  textAlign: "center",
                 }}
-              />
-              {shouldBlurResume ? (
-                <div
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "0.75rem",
-                    background: "rgba(255, 255, 255, 0.2)",
-                    backdropFilter: "blur(1px)",
-                    padding: "1rem",
-                    textAlign: "center",
-                  }}
+              >
+                <p style={{ margin: 0 }}>
+                  Submit your interest email to unblur this preview.
+                </p>
+                <button
+                  onClick={() =>
+                    dispatch({ type: "SET_SHOW_EMAIL_MODAL", value: true })
+                  }
                 >
-                  <p style={{ margin: 0 }}>
-                    Submit your interest email to unblur this preview.
-                  </p>
-                  <button onClick={() => dispatch({ type: "SET_SHOW_EMAIL_MODAL", value: true })}>
-                    Share Interest Email
-                  </button>
-                </div>
-              ) : null}
-            </div>
+                  Share Interest Email
+                </button>
+              </div>
+            ) : null}
           </div>
         </div>
       ) : null}

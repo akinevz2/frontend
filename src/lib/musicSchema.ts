@@ -1,30 +1,3 @@
-export type MusicSchemaTrack = {
-  title: string;
-  url: string;
-};
-
-export type MusicRecordingSchema = {
-  "@type": "MusicRecording";
-  name: string;
-  url: string;
-  byArtist: {
-    "@type": "MusicGroup";
-    name: string;
-  };
-};
-
-export type MusicGroupSchema = {
-  "@context": "https://schema.org";
-  "@type": "MusicGroup";
-  name: string;
-  alternateName: string[];
-  url: string;
-  genre: string[];
-  description: string;
-  sameAs: string[];
-  track: MusicRecordingSchema[];
-};
-
 const MUSIC_GROUP_NAME = "akinevz";
 const MUSIC_GROUP_URL = "https://akinevz.com";
 const MUSIC_GROUP_DESCRIPTION =
@@ -51,11 +24,36 @@ const MUSIC_GROUP_SAME_AS = [
 const MUSIC_GROUP_PRIMARY_ALIAS =
   MUSIC_GROUP_ALTERNATE_NAMES[0] ?? MUSIC_GROUP_NAME;
 
-export const serializeJsonLd = (value: unknown): string =>
-  JSON.stringify(value).replace(/</g, "\\u003c");
+
+type Track = {
+  title: string;
+  url: string;
+};
+
+type MusicRecordingSchema = {
+  "@type": "MusicRecording";
+  name: string;
+  url: string;
+  byArtist: {
+    "@type": "MusicGroup";
+    name: string;
+  };
+};
+
+type MusicGroupSchema = {
+  "@context": "https://schema.org";
+  "@type": "MusicGroup";
+  name: string;
+  alternateName: string[];
+  url: string;
+  genre: string[];
+  description: string;
+  sameAs: string[];
+  track: MusicRecordingSchema[];
+};
 
 export const buildMusicGroupSchema = (
-  tracks: MusicSchemaTrack[] = [],
+  tracks: Track[] = [],
 ): MusicGroupSchema => ({
   "@context": "https://schema.org",
   "@type": "MusicGroup",
@@ -67,20 +65,20 @@ export const buildMusicGroupSchema = (
   sameAs: MUSIC_GROUP_SAME_AS,
   track: Array.isArray(tracks)
     ? tracks
-        .filter(
-          (track): track is MusicSchemaTrack =>
-            Boolean(track) &&
-            typeof track.title === "string" &&
-            typeof track.url === "string",
-        )
-        .map((track) => ({
-          "@type": "MusicRecording",
-          name: track.title,
-          url: track.url,
-          byArtist: {
-            "@type": "MusicGroup",
-            name: MUSIC_GROUP_PRIMARY_ALIAS,
-          },
-        }))
+      .filter(
+        (track): track is Track =>
+          Boolean(track) &&
+          typeof track.title === "string" &&
+          typeof track.url === "string",
+      )
+      .map((track) => ({
+        "@type": "MusicRecording",
+        name: track.title,
+        url: track.url,
+        byArtist: {
+          "@type": "MusicGroup",
+          name: MUSIC_GROUP_PRIMARY_ALIAS,
+        },
+      }))
     : [],
 });
