@@ -1,4 +1,4 @@
-import type { RouteConfig, RouteMatch } from "./types";
+import type { RouteConfig, RouteMatch } from ".";
 
 export function matchRoute(
   pathname: string,
