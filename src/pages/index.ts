@@ -1,7 +1,17 @@
-export { default as HomePage } from "./HomePage";
-export { default as AddonsPage } from "./AddonsPage";
-export { default as ContactPage } from "./ContactPage";
-export { default as ResumePage } from "./ResumePage";
-export { default as WowPage } from "./WowPage";
-export { default as NotFoundPage } from "./NotFoundPage";
-export { default as PagertsPage } from "./PagertsPage";
+import HomePage from "./HomePage";
+import AddonsPage from "./AddonsPage";
+import ContactPage from "./ContactPage";
+import ResumePage from "./ResumePage";
+import WowPage from "./WowPage";
+import NotFoundPage from "./NotFoundPage";
+import PagertsPage from "./PagertsPage";
+
+export const Pages = {
+  HomePage,
+  AddonsPage,
+  ContactPage,
+  ResumePage,
+  WowPage,
+  PagertsPage,
+  NotFoundPage,
+} as const;
