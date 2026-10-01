@@ -8,10 +8,6 @@ interface PageSpaceProps {
   children: React.ReactNode;
 }
 
-export function PageSpace({ children }: PageSpaceProps) {
-  return <div className="PageSpace">{children}</div>;
-}
-
 const ContactPage = () => {
   return (
     <div className="ContactPage">

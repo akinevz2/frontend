@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
 import { PageContent } from "./Page";
-import { processContent } from "../windowing/utils";
-import type { PageMetadata, SectionProps } from "../windowing";
+import { processContent } from "../windows/utils";
+import type { PageMetadata, SectionProps } from "../windows";
 
 type BlogState = {
   sections: SectionProps | SectionProps[];

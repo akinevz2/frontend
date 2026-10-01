@@ -1,17 +1,35 @@
 import { useEffect, useState, type ReactNode } from "react";
 
 import { PageContent } from "./Page";
-import { processContent } from "../windowing/utils";
+import { processContent } from "../windows/utils";
 import {
   type MusicTrack,
   type PageMetadata,
   Section,
   type SectionProps,
   useIsAnyWindowMaximized,
-} from "../windowing";
-import type { Content } from "../windowing/types";
+} from "../windows";
+import type { Content } from "../windows/types";
+import type { SoundCloudPayload } from "../routing/routeNormalization";
 
 const MUSIC_LINKS_URL = "/blog/music-links.json";
+
+export function isSoundCloudPayload(
+  value: unknown,
+): value is SoundCloudPayload {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as Partial<SoundCloudPayload>;
+  return (
+    Array.isArray(candidate.tracks) &&
+    candidate.tracks.every(
+      (track) =>
+        track &&
+        typeof track.title === "string" &&
+        typeof track.url === "string",
+    )
+  );
+}
+
 
 type MusicProfile = {
   owner: string;

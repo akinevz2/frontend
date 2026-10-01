@@ -4,7 +4,7 @@ import {
   SectionProvider,
   type SectionProps,
   type PageMetadata,
-} from "../windowing";
+} from "../windows";
 import { MenuBarWithContext } from "./MenuBarWithContext";
 import type React from "react";
 

@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import { PageContent } from "../components/Page";
-import { processContent } from "../windowing/utils.ts";
-import type { SectionProps } from "../windowing";
-import sections from "../../sections.json";
+import { processContent } from "../windows/utils";
+import type { SectionProps } from "../windows";
+import sections from "./structure/sections.json";
 
 const HomePage = () => {
   const { processed, metadata } = useMemo(
