@@ -31,7 +31,7 @@
   "dependencies": {
     "@firebase/analytics": "^0.10.24",
     "@firebase/app": "^0.16.1",
-    "@firebase/firestore": "^4.17.1",
+    "@firebase/firestore": "^4.17.2",
     "@vitejs/plugin-react": "^6.1.1",
     "eslint-plugin-react-refresh": "^0.5.3",
     "lightdni-jssas-toggle": "1.0.5",
