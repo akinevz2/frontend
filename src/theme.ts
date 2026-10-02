@@ -292,15 +292,15 @@ export interface EasterEggThemeConfig {
 // Export all theme-related components that create a logical bundle of theme functionality
 // NOTE: These exports need to be verified - some components may not have default exports
 // TODO: Verify each component's export format before using wildcard exports
-export {} from /* default as MenuBar */ "./components/MenuBar";
-export {} from /* default as PageSpace */ "./components/PageSpace";
-export {} from /* default as Modal */ "./components/Modal";
-export {} from /* default as AssistantConversationModal */ "./components/AssistantConversationModal";
-export {} from /* default as LinkConfirmModal */ "./components/LinkConfirmModal";
+export { } from /* default as MenuBar */ "./components/MenuBar";
+export { } from /* default as PageSpace */ "./components/PageSpace";
+export { } from /* default as Modal */ "./components/Modal";
+export { } from /* default as AssistantConversationModal */ "./components/AssistantConversationModal";
+export { } from /* default as LinkConfirmModal */ "./components/LinkConfirmModal";
 export { default as StatsBox } from "./components/StatsBox";
 export { default as Window } from "./components/Window";
-export { default as BlogContent } from "./components/BlogContent";
-export { default as MusicContent } from "./components/MusicContent";
+export { default as BlogContent } from "./components/deprecated/BlogPageREFACTOR_NEEDED";
+export { default as MusicContent } from "./components/deprecated/MusicContent";
 export { default as SitemapContent } from "./components/SitemapContent";
 
 /**
