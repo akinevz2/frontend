@@ -5,9 +5,9 @@ import react from "@vitejs/plugin-react";
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
-import { buildMusicGroupSchema, serializeJsonLd } from "./src/lib/musicSchema";
+// import { buildMusicGroupSchema, serializeJsonLd } from "./src/lib/musicSchema";
 
-const pagesJsonPath = new URL("./src/pages.json", import.meta.url);
+const pagesJsonPath = new URL("./src/pages/pages.json", import.meta.url);
 
 type PageDefinition = {
   path: string;
@@ -95,9 +95,7 @@ function getSoundCloudTracks(): SoundCloudTrack[] {
 }
 
 function withStructuredData(indexHtml: string, tracks: SoundCloudTrack[]): string {
-  const structuredData = `<script type="application/ld+json" id="homepage-music-structured-data">${serializeJsonLd(
-    buildMusicGroupSchema(tracks),
-  )}</script>`;
+  const structuredData = '';
 
   return indexHtml.replace("</head>", `${structuredData}\n  </head>`);
 }
@@ -223,8 +221,18 @@ function routeSkeletonPlugin() {
       }
 
       const indexHtml = fs.readFileSync(indexPath, "utf-8");
-      const soundCloudTracks = getSoundCloudTracks();
-      fs.writeFileSync(path.join(outDir, "sitemap.xml"), generateSitemapXml(), "utf-8");
+
+      const pages: PageDefinition[] = [
+        { path: "/", title: "home of kine", description: "my cozy little personal website" },
+        { path: "/contact", title: "please contact kine", description: "contact me!" },
+        { path: "/wow", title: "kind of work kine likes", description: "hire me to work on your game!" },
+        { path: "/characters", title: "kine's wow characters", description: "look at my characters!" },
+        { path: "/projects", title: "projects", description: "projects page" },
+        { path: "/music", title: "kine's glitchbox tracks", description: "my featured uploads from SoundCloud" },
+        { path: "/blog", title: "blog of kine", description: "posts and notes from kine" },
+        { path: "/resume", title: "please hire kine", description: "kine would like you to see his resume!" },
+        { path: "/404", title: "not found", description: "that page does not exist" },
+      ];
 
       for (const page of pages) {
         const routeHtml =
