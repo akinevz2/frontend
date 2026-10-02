@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 
-import { PageContent } from "./Page";
-import { processContent } from "../windows/utils";
+import { PageContent } from "../../pages/Page";
+import { processContent } from "../../utils";
 import {
   type MusicTrack,
   type PageMetadata,
@@ -9,7 +9,7 @@ import {
   type SectionProps,
   useIsAnyWindowMaximized,
 } from "../windows";
-import type { Content } from "../windows/types";
+import type { SectionContent } from "../../types";
 import type { SoundCloudPayload } from "../routing/routeNormalization";
 
 const MUSIC_LINKS_URL = "/blog/music-links.json";
@@ -29,7 +29,6 @@ export function isSoundCloudPayload(
     )
   );
 }
-
 
 type MusicProfile = {
   owner: string;
@@ -105,7 +104,7 @@ const BackgroundImage = ({
   url,
 }: {
   imageUrl: string;
-  content?: Content;
+  content?: SectionContent;
   children?: ReactNode;
   className: "artist-background" | "artist-profile-background";
   url: string;
@@ -143,7 +142,7 @@ const ArtistProfileBackground = ({
   url,
 }: {
   imageUrl?: string | null;
-  content?: Content;
+  content?: SectionContent;
   children?: ReactNode;
   link?: string;
   url?: string;

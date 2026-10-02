@@ -1,9 +1,14 @@
-import { SectionProvider } from "../windows";
+import { SectionProvider } from "../providers";
 import { NavBarController } from "./NavBarController";
 
 export const NavBarControllerWrapper = () => {
-  // Create empty metadata for navbar context
-  const pageMetadata = { sections: [] };
+  // Create minimal metadata for navbar context - this is just a placeholder
+  // since nav bar doesn't actually need full section state management
+  const pageMetadata = {
+    expandedSections: new Set(),
+    minimizedSections: new Set(),
+    maximizedWindows: new Set(),
+  } as any;
 
   return (
     <SectionProvider pageMetadata={pageMetadata}>

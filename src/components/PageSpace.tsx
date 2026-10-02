@@ -1,67 +1,38 @@
-// PageSpace Component - Layout Wrapper for Content
+// PageSpace Component - Main Layout Wrapper
 // This component provides the scrollable container for page content
-// It wraps page components that render inside it
-// Constructed from Content-typed objects and structured content
+// It integrates PageProvider, BasePage, and the Page rendering pipeline
 
 import "xp.css/dist/98.css";
 import "./PageSpace.css";
-import type {
-  Content,
-  SectionProps,
-  PageMetadata,
-} from "../windows/types.d.ts";
-import { processContent } from "../windows/utils.ts";
-import { SectionProvider } from "../windows/providers.tsx";
+import { PageProvider } from "../pages/PageContext";
+import { SectionProvider } from "../pages/SectionProvider";
+import { BasePage } from "../pages/BasePage";
+import { MenuBarWithContext } from "./MenuBarWithContext";
 import type { ReactNode } from "react";
+import type { PageMetadata } from "../types";
 
 interface PageSpaceProps {
-  content: SectionProps;
+  children?: ReactNode;
+  page?: string;
   metadata?: PageMetadata;
   className?: string;
 }
 
 export function PageSpace({
-  content,
+  children,
   metadata,
-  className = "PageSpace",
+  className = "page-content-container",
 }: Readonly<PageSpaceProps>) {
-  // Process content into structured Content objects
-  const { processed } = processContent(content);
-
-  const pageMetadata: PageMetadata = metadata || { sections: [] };
-
   return (
-    <SectionProvider pageMetadata={pageMetadata.sections}>
-      <div className={className}>
-        {Array.isArray(processed) ? (
-          processed.map((item, index) => {
-            if (
-              item &&
-              typeof item === "object" &&
-              ("heading" in item || "content" in item || "printout" in item)
-            ) {
-              return (
-                <Section
-                  key={`page-section-${index}`}
-                  content={item as unknown as string}
-                />
-              );
-            }
-            return <span key={`page-text-${index}`}>{item as string}</span>;
-          })
-        ) : processed &&
-          typeof processed === "object" &&
-          ("heading" in processed || "content" in processed) ? (
-          <Section content={processed as unknown as string} />
-        ) : (
-          <>{processed as ReactNode}</>
-        )}
-      </div>
-    </SectionProvider>
+    <PageProvider>
+      <main className="page-container">
+        <MenuBarWithContext />
+        <section className={className}>
+          <SectionProvider>
+            {children || <BasePage />}
+          </SectionProvider>
+        </section>
+      </main>
+    </PageProvider>
   );
-}
-
-// Export helper for legacy compatibility
-export function createPageStructure(structuredContent: Content): ReactNode {
-  return <PageSpace content={structuredContent} />;
 }
