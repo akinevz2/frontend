@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
 import pages from "../pages/pages.json";
-import { PageContent } from "./Page";
-import { processContent } from "../windows/utils";
+import { PageContent } from "../pages/Page";
+import { processContent } from "../utils";
 import type { PageMetadata, SectionProps } from "../windows";
 
 type RouteDefinition = {

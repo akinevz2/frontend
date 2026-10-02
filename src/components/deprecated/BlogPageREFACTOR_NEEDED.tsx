@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
-import { PageContent } from "./Page";
-import { processContent } from "../windows/utils";
+import { PageContent } from "../../pages/Page";
+import { processContent } from "../../utils";
 import type { PageMetadata, SectionProps } from "../windows";
 
 type BlogState = {

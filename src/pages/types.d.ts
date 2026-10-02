@@ -4,11 +4,22 @@
  * Phase 1: Complete Type Definitions in src/pages/types.d.ts
  */
 
-import type { SectionProps } from "../windows/types.d.ts";
+import type { SectionContent } from "../types";
 
 // --- Page Type System (Single unified Page type) ---
-export type PageType = "home" | "resume" | "addons" | "blog" | "contact" | "wow" | "pagerts" | "sitemap" | "music" | "notfound" | "admin";
-export type PageContentStructure = SectionProps;
+export type PageType =
+  | "home"
+  | "resume"
+  | "addons"
+  | "blog"
+  | "contact"
+  | "wow"
+  | "pagerts"
+  | "sitemap"
+  | "music"
+  | "notfound"
+  | "admin";
+export type PageContentStructure = SectionContent;
 
 // PageMeta interface for generating meta tags
 export interface PageMeta {

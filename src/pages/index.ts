@@ -1,17 +1,7 @@
-import HomePage from "./HomePage";
-import AddonsPage from "./AddonsPage";
-import ContactPage from "./ContactPage";
-import ResumePage from "./ResumePage";
-import WowPage from "./WowPage";
-import NotFoundPage from "./NotFoundPage";
-import PagertsPage from "./PagertsPage";
-
-export const Pages = {
-  HomePage,
-  AddonsPage,
-  ContactPage,
-  ResumePage,
-  WowPage,
-  PagertsPage,
-  NotFoundPage,
-} as const;
+/**
+ * BasePage - Pure Mapper for Dynamic Page Routing
+ *
+ * This is a placeholder page that will be used by the router
+ * to render appropriate page components based on the current route
+ */
+export { BasePage } from "./BasePage";

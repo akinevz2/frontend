@@ -7,9 +7,9 @@ import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { toast } from "react-toastify";
 import { playLayeredAudio } from "../lib/audioOverlap";
 import { onClippyTriggerClick } from "../lib/keyboardInputUtils";
-import { CopyToClipboardButton } from "../components/CopyToClipboardButton";
+import { CopyToClipboardButton } from "./window/CopyToClipboardButton.tsx";
 import { useSectionContext, useWindow } from "./hooks.ts";
-import { OkButton } from "./OkButton";
+import { OkButton } from "./window/OkButton.tsx";
 import type { Content, HttpUrl, MusicTrack, SectionProps } from "./types";
 import type { MusicSource } from "./types";
 import { ShowPermalinkButton } from "./ShowPermalinkButton";
@@ -380,15 +380,7 @@ const CLIPPY_TRIGGER_HREF = "#fuckingclippy";
 
 const markdownComponents = {
   img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
-    <img
-      {...props}
-      style={{
-        maxWidth: "100%",
-        height: "auto",
-        maxHeight: "24rem",
-        ...(props.style ?? {}),
-      }}
-    />
+    <img {...props} className="section-content-image-container" />
   ),
   a: ({
     node,
@@ -411,11 +403,7 @@ const markdownComponents = {
               onClippyTriggerClick();
             }
           }}
-          style={{
-            cursor: "pointer",
-            textDecoration: "underline",
-            userSelect: "none",
-          }}
+          className="section-clippy-trigger"
         >
           {children}
         </span>
@@ -800,14 +788,7 @@ const SectionBody = ({
       showPermalink={showPermalink}
     />
     {isCollapsed ? (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          flexWrap: "wrap",
-        }}
-      >
+      <div className="section-header-bottom">
         {shouldShowCollapsedContent && hasContent && content
           ? renderContent(content, depth)
           : null}
@@ -829,13 +810,7 @@ const SectionBody = ({
         ) : null}
         {/* Ok button for link-only sections when focused via hash */}
         {shouldShowCollapsedOkButton && !hasContent && (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              marginTop: "1rem",
-            }}
-          >
+          <div className="section-section-action-wrapper">
             <OkButton onClick={onPrimaryAction} />
           </div>
         )}
@@ -1293,34 +1268,9 @@ export const Section = (props: SectionProps) => {
         isMaximized &&
         typeof document !== "undefined" &&
         createPortal(
-          <div
-            ref={windowRef}
-            style={{
-              zIndex: 9000,
-              // Fill the available area below the menu bar, centred.
-              width: "min(768px, 100vw)",
-              maxWidth: "calc(100vw - 32px)",
-              // Use a real height (not just maxHeight) so the maximized
-              // window can stretch to fill and the inner scroll area gets a
-              // bounded height to scroll within. dvh accounts for mobile URL
-              // bars; vh is the fallback.
-              height: "calc(100vh - var(--menu-bar-height, 24px) - 32px)",
-              maxHeight: "calc(100vh - var(--menu-bar-height, 24px) - 32px)",
-            }}
-          >
+          <div ref={windowRef} className="modal-window-container">
             <div
-              style={{
-                position: "fixed",
-                top: "var(--menu-bar-height, 24px)",
-                left: 0,
-                right: 0,
-                bottom: 0,
-                background: "rgba(0, 0, 0, 0.3)",
-                zIndex: 8999,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
+              className="modal-backdrop"
               onClick={(e) => {
                 // Close when clicking backdrop
                 if (e.target === e.currentTarget) {
@@ -1335,18 +1285,7 @@ export const Section = (props: SectionProps) => {
                     : undefined
                 }
                 className={`maximized window ${className || ""}`.trim()}
-                style={{
-                  cursor: "default",
-                  maxWidth: "100%",
-                  maxHeight: "100%",
-                  height: "100%",
-                  boxSizing: "border-box",
-                  // Keep the window itself from scrolling; the inner
-                  // window-body below handles overflow.
-                  overflow: "hidden",
-                  display: "flex",
-                  flexDirection: "column",
-                }}
+                className="section-window-content-wrapper"
               >
                 {hasHeading && typeof heading === "string" ? (
                   <TitleBar

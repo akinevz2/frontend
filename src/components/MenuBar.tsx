@@ -1,5 +1,4 @@
 import { useEffect, useMemo } from "react";
-import pages from "../pages.json";
 
 /**
  * Utility to build and sort menu items from page metadata.
@@ -24,9 +23,9 @@ export function generateMenuItems(
         normalizedUrl === "/"
           ? "home"
           : normalizedUrl
-              .replace(/^\//, "")
-              .replace(/\/$/, "")
-              .replace(/-/g, " ");
+            .replace(/^\//, "")
+            .replace(/\/$/, "")
+            .replace(/-/g, " ");
       const label = page.label ?? fallbackLabel;
 
       return {
