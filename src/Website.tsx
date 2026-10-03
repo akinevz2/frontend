@@ -1,26 +1,9 @@
-import {
-  useLocation,
-  type ReactNode,
-} from "react-router-dom";
-import {
-  PageSpace,
-  type PageProps,
-} from "./components/PageSpace";
-import {
-  MenuBar,
-  type MenuBarProps,
-} from "./components/MenuBar";
-import {
-  ErrorProvider,
-  ErrorDisplay,
-  type ErrorProviderProps,
-  type ErrorDisplayProps,
-} from "./providers";
-import {
-  ErrorBoundary,
-  type ErrorBoundaryProps,
-  type ErrorBoundaryState,
-} from "./components/ErrorBoundary";
+import { useLocation } from "react-router-dom";
+import { PageSpace } from "./components/PageSpace";
+import { MenuBar } from "./components/MenuBar";
+import { ErrorProvider } from "./providers";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import "./components/Error.css";
 import type { PageRoute } from "./pages/usePageRouting";
 
 import "xp.css/dist/98.css";
@@ -41,10 +24,12 @@ export default function Website({ pagesRoutes }: WebsiteProps) {
   }
 
   return (
-    <>
-      <PageSpace page={currentPath}>
-        <MenuBar />
-      </PageSpace>
-    </>
+    <ErrorProvider setError={(error) => console.error("Website error:", error)}>
+      <ErrorBoundary>
+        <PageSpace page={currentPath}>
+          <MenuBar />
+        </PageSpace>
+      </ErrorBoundary>
+    </ErrorProvider>
   );
 }
