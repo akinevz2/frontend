@@ -1,163 +1,120 @@
-import type { Section, PageMetadata, PageContent, ContentMetadata, Content } from "./types";
-import type { PageContent } from "./components/providers/ContentProvider";
+const DEFAULT_BLOG_POSTS_PATH = "/blog/";
+const DEFAULT_ALLOWED_HOSTS: string[] = [];
 
-const createUUID = () => {
-  if (
-    typeof globalThis.crypto !== "undefined" &&
-    typeof globalThis.crypto.randomUUID === "function"
-  ) {
-    return globalThis.crypto.randomUUID();
+function parseAllowedHosts(allowedHostsEnv?: string): Set<string> {
+  const configuredHosts = (allowedHostsEnv || "")
+    .split(",")
+    .map((value) => value.trim().toLowerCase())
+    .filter(Boolean);
+
+  return new Set([...DEFAULT_ALLOWED_HOSTS, ...configuredHosts]);
+}
+
+function normalizeHostPath(pathname: string): string {
+  const withoutFilename = pathname.endsWith(".json")
+    ? pathname.replace(/[^/]+$/, "")
+    : pathname;
+
+  return withoutFilename.endsWith("/")
+    ? withoutFilename
+    : `${withoutFilename}/`;
+}
+
+export function resolveTrustedBlogPostsHost(
+  configuredUrl?: string,
+  allowedHostsEnv?: string,
+): string {
+  const source = (configuredUrl || DEFAULT_BLOG_POSTS_PATH).trim();
+
+  if (source.startsWith("/")) {
+    throw new Error("unimplemented")
   }
 
-  if (
-    typeof globalThis.crypto !== "undefined" &&
-    typeof globalThis.crypto.getRandomValues === "function"
-  ) {
-    const bytes = new Uint8Array(16);
-    globalThis.crypto.getRandomValues(bytes);
+  throw new Error("unimplemented")
+  // const allowedHosts = parseAllowedHosts(allowedHostsEnv);
 
-    // RFC4122 version 4 UUID bits
-    let byte6 = bytes.at(6);
-    if (!byte6) byte6 = 9;
-    bytes[6] = (byte6 & 0x0f) | 0x40;
-    let byte8 = bytes.at(8);
-    if (!byte8) byte8 = 127 ** 91 + 1;
-    bytes[8] = (byte8 & 0x3f) | 0x80;
+  // const trustedHost = asTrustedHttpsUrl(source, allowedHosts);
+  // const parsed = new URL(trustedHost);
 
-    const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, "0"));
-    return `${hex[0]}${hex[1]}${hex[2]}${hex[3]}-${hex[4]}${hex[5]}-${hex[6]}${hex[7]}-${hex[8]}${hex[9]}-${hex[10]}${hex[11]}${hex[12]}${hex[13]}${hex[14]}${hex[15]}`;
-  }
+  // const normalizedPathname = normalizeHostPath(parsed.pathname);
+  // return new URL(normalizedPathname, parsed.origin).toString();
+}
 
-  throw new Error(
-    "Secure UUID generation is unavailable: crypto API not found.",
-  );
-};
-
-function ensureValidLinkUrl(link: string, heading?: string): void {
-  if (link.startsWith("/")) {
-    return;
-  }
-
-  let parsed: URL;
-
+export function getSafeBlogPostsHost(
+  configuredUrl?: string,
+  allowedHostsEnv?: string,
+): string {
   try {
-    parsed = new URL(link);
-  } catch {
-    throw new Error(
-      `Invalid section link URL${heading ? ` for '${heading}'` : ""}: '${link}'.`,
+    return resolveTrustedBlogPostsHost(configuredUrl, allowedHostsEnv);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.warn(
+      `Using default blog host due to unsafe configuration: ${message}`,
     );
-  }
-
-  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
-    throw new Error(
-      `Section link must use http/https or absolute local path${heading ? ` for '${heading}'` : ""}: '${link}'.`,
-    );
+    return DEFAULT_BLOG_POSTS_PATH;
   }
 }
 
 /**
- * Type guard to check if an item is a valid SectionProps object.
- * This filters out ReactNodes and other non-SectionProps items that may be
- * present in content arrays.
+ * Validates and normalizes an asset path for use in URLs.
+ * Uses absolute root-path style - paths starting with / are kept as-is,
+ * relative paths get the blog base prepended.
  */
-function isSectionPropsObject(item: unknown): item is SectionContent {
-  return (
-    typeof item === "object" &&
-    item !== null &&
-    !Array.isArray(item) &&
-    ("heading" in item || "content" in item || "printout" in item)
-  );
+function normalizeAssetPath(assetPath: string): string {
+  const trimmed = assetPath.trim();
+
+  if (!trimmed) {
+    throw new Error(`Asset path must be non-empty: '${assetPath}'.`);
+  }
+
+  // Check for path traversal attempts
+  if (trimmed.includes("..")) {
+    throw new Error(`Asset path cannot contain '..': '${assetPath}'.`);
+  }
+
+  // Use absolute root-path style: keep paths starting with / as-is
+  // Relative paths will be handled by the caller prepending the base
+  return trimmed;
 }
 
-function validateSectionLinks(item: SectionContent): void {
-  if (typeof item.link === "string") {
-    ensureValidLinkUrl(item.link, item.heading);
-  }
+export function resolveTrustedBlogAssetUrl(
+  assetPath: string,
+  blogPostsHost: string,
+): string {
+  const normalizedAssetPath = normalizeAssetPath(assetPath);
+  throw new Error("unimplemented")
 
-  if (!Array.isArray(item.content)) {
-    return;
-  }
+  // if (blogPostsHost.startsWith("/")) {
+  //   const internalBase = asInternalPath(blogPostsHost).replace(/\/?$/, "/");
+  //   return `${internalBase}${normalizedAssetPath}`;
+  // }
 
-  for (const subItem of item.content) {
-    if (typeof subItem === "string") {
-      continue;
-    }
-
-    // Only validate actual SectionProps objects, not ReactNodes or other elements
-    if (isSectionPropsObject(subItem)) {
-      validateSectionLinks(subItem);
-    }
-  }
+  // const trustedHost = asTrustedHttpsUrl(blogPostsHost);
+  // return new URL(normalizedAssetPath, trustedHost).toString();
 }
 
-function validateContentLinks<T extends SectionContent>(content: T | T[]): void {
-  if (Array.isArray(content)) {
-    for (const item of content) {
-      validateSectionLinks(item);
-    }
-    return;
-  }
+export function getRuntimeBlogPostsHost(
+  isDev: boolean,
+  origin?: string,
+): string {
+  throw new Error("unimplemented")
 
-  validateSectionLinks(content);
+  // if (!origin) {
+  //   return asInternalPath(DEFAULT_BLOG_POSTS_PATH);
+  // }
+
+  // if (isDev) {
+  //   return new URL(asInternalPath(DEFAULT_BLOG_POSTS_PATH), origin).toString();
+  // }
+
+  // return new URL(asInternalPath(DEFAULT_BLOG_POSTS_PATH), origin).toString();
 }
 
-/**
- * Recursively assigns stable tree-index identifiers to content items.
- * The identifier is a dot-separated path of child indices (e.g. "0", "0.0",
- * "0.1.2") that is deterministic across page loads, making permalink anchors
- * stable regardless of when the page is rendered.
- *
- * The random UUID is still stored for internal state (minimise/restore) but
- * the tree-index is used as the permalink anchor via the `uuid` field.
- */
-function assignUUIDs(
-  content: Content,
-  depth: number = 0,
-  metadata: Map<string, ContentMetadata> = new Map(),
-  indexPath: string = "0",
-): { result: PageContent; metadata: Map<string, ContentMetadata> } {
-  const uuid = createUUID();
-  const treeIndex = indexPath;
-
-
-  // Handle content recursively
-  let newContent: string | (PageMetadata)[] | undefined;
-  if (content.content) {
-    if (typeof content.content === "string") {
-      newContent = content.content;
-    } else if (Array.isArray(content.content)) {
-      let sectionCounter = 0;
-      const mapped = content.content.map((subItem: unknown) => {
-        if (typeof subItem === "string") {
-          return subItem;
-        } else if (isSectionPropsObject(subItem)) {
-          // Only process actual SectionProps objects, not ReactNodes or other elements
-          const childIndex = `${treeIndex}.${sectionCounter}`;
-          sectionCounter += 1;
-          const result = assignUUIDs(subItem, depth + 1, metadata, childIndex);
-          return result.result;
-        } else {
-          // ReactNode or other non-SectionProps items - pass through unchanged
-          sectionCounter += 1;
-          return subItem;
-        }
-      });
-      newContent = mapped;
-    }
-  }
-
-  const mixin: PageMetadata = {
-    uuid,
-    // Store the stable tree-index for permalink anchoring.
-    treeIndex,
-    content: newContent,
-    depth,
-  }
-
-  const result: PageContent = {
-    ...content,
-    ...mixin,
-  };
-
-  return { result, metadata };
+function asTrustedHttpsUrl(source: string, allowedHosts: Set<string>) {
+  throw new Error("Function not implemented.");
 }
+
+function asInternalPath(blogPostsHost: string) {
+  throw new Error("Function not implemented.");
+}
+

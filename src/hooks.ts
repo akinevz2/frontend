@@ -1,8 +1,7 @@
 // Combined hooks file - all hooks moved from src/hooks/
 // This consolidates all hook implementations in one location as requested
 
-import { useState, useEffect, useContext } from "react";
-import { PageSectionContext } from "./context";
+import { useState, useEffect } from "react";
 
 /**
  * Hook for managing assistant conversation state
@@ -65,9 +64,9 @@ export function usePreload() {
   // Implementation will be completed when we can determine the exact
   // preloading requirements based on site content
   return {
-    preload: () => {},
+    preload: () => { },
     preloadPage: () => Promise.resolve(),
-    preloadSection: () => {},
+    preloadSection: () => { },
   };
 }
 
@@ -82,9 +81,8 @@ export interface RouteHashState {
 export type HashChangeHandler = (newHash: string) => void;
 
 export function useRouteHash(
-  initialHash: string = "",
 ): RouteHashState {
-  const [hash, setHash] = useState<string>(initialHash);
+  const [hash, setHash] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // STUB: This hook is ready to be fully implemented 
@@ -144,76 +142,10 @@ export function useHashNavigation(
   return {
     hash,
     isLoading,
-    navigateToHash: (newHash: string) => {},
+    navigateToHash: (newHash: string) => { },
   };
 }
 
-/**
- * Hook for accessing section context
- */
-export const useSectionContext = () => {
-  const context = useContext(PageSectionContext);
-  if (!context) {
-    throw new Error("useSectionContext must be used within a SectionProvider");
-  }
-  return context;
-};
-
-/**
- * Hook for managing window state and operations (abstracts popped-out window logic)
- */
-export const useWindowContextState = (heading?: string, uuid?: string) => {
-  const [isMaximized, setIsMaximized] = useState(false);
-  const sectionContext = useSectionContext();
-  const {
-    minimizedSections,
-    // minimizeSection,
-    // restoreSection,
-    // registerMaximizedWindow,
-    // unregisterMaximizedWindow,
-  } = sectionContext;
-
-  // UUID must be provided from server-side processing
-  const sectionUUID = uuid || (heading ? `fallback-${heading}` : undefined);
-  const isMinimized = sectionUUID ? minimizedSections.has(sectionUUID) : false;
-
-  // STUB: This hook logic is already implemented in useWindowContextState.ts,
-  // but keeping the stub here for future implementation if needed
-  // The existing implementation already handles all functionality we need.
-
-  return {
-    isMaximized,
-    setIsMaximized,
-    handleMaximize: () => {},
-    handleMinimize: () => {},
-    handleClose: () => {},
-    closePoppedOutWindow: () => {},
-    // windowRef,
-    // inlineWindowRef,
-    isMinimized,
-  };
-};
-
-/**
- * Hook to check if any window is currently maximized globally
- */
-export const useIsAnyWindowMaximized = (): boolean => {
-  const sectionContext = useSectionContext();
-  return sectionContext.maximizedWindows.size > 0;
-};
-
-// NEW HOOKS AS REQUESTED:
-
-/**
- * UUID Generator Hook
- * Creates unique identifiers for components and sections
- * STUB: Implementation to be completed when exact requirements are clarified
- */
-export function useUUID(): string {
-  // STUB: This hook is ready to be fully implemented
-  // For now, we'll return a fixed value indicating it's not yet implemented
-  return "uuid-not-implemented-yet";
-}
 
 /**
  * Navigate Away Hook
@@ -247,7 +179,7 @@ export function useClippyEasterEgg(): {
 } {
   // STUB: This hook is ready to be fully implemented
   const [isActivated, setIsActivated] = useState(false);
-  
+
   return {
     activate: () => {
       // Implementation will register global handler for easter egg activation
@@ -304,3 +236,4 @@ export function useCloseHandle(): {
     }
   };
 }
+

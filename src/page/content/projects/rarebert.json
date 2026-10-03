@@ -1,0 +1,7 @@
+{
+  "name": "my-awesome-project",
+  "description": "A demonstration project showcasing the routing system",
+  "content": "<h2>Project Content</h2><p>This is the content of the project page.</p>",
+  "category": "Web Development",
+  "date": "2026-10-01"
+}

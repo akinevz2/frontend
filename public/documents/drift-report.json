@@ -1,0 +1,86 @@
+{
+  "baselineUrl": "https://akinevz.com/checksums.txt",
+  "generatedAt": "2026-10-03T04:25:57.465Z",
+  "mutablePaths": [
+    "index.html",
+    "404.html",
+    "404/index.html",
+    "addons.html",
+    "addons/index.html",
+    "blog.html",
+    "blog/index.html",
+    "blog/posts.json",
+    "contact.html",
+    "contact/index.html",
+    "music.html",
+    "music/index.html",
+    "resume/index.html",
+    "sitemap.xml",
+    "sitemap.html",
+    "sitemap/index.html",
+    "soundcloud.json",
+    "wow.html",
+    "wow/index.html",
+    "pagerts.html",
+    "pagerts/index.html",
+    "checksums.txt",
+    "assets/*.js"
+  ],
+  "violationCount": 9,
+  "violations": [
+    {
+      "relPath": "assets/index-BziioO2s.css",
+      "status": "NEW",
+      "prev": null,
+      "next": "7d2d9840c47ad302a641502c4d69ded73429351c851e89b7a01907e561cba11f"
+    },
+    {
+      "relPath": "blog-test.html",
+      "status": "NEW",
+      "prev": null,
+      "next": "a039cbd3aacd77c01ec188e5cb5c9b72bd50526483e9425d6d64510510649201"
+    },
+    {
+      "relPath": "blog/random/cpus.md",
+      "status": "NEW",
+      "prev": null,
+      "next": "2df79aa533ce44abafdca53fc6d47461ee9a7badf1ca930387de8bc5f7b534df"
+    },
+    {
+      "relPath": "characters.html",
+      "status": "NEW",
+      "prev": null,
+      "next": "f8cdf24d0adc5ab17adc1193bcc241d95d759c022e49e0ca1c0228a01d0e29f5"
+    },
+    {
+      "relPath": "characters/index.html",
+      "status": "NEW",
+      "prev": null,
+      "next": "f8cdf24d0adc5ab17adc1193bcc241d95d759c022e49e0ca1c0228a01d0e29f5"
+    },
+    {
+      "relPath": "documents/drift-report.json",
+      "status": "CHANGED",
+      "prev": "d16c688f4cd91f11fc34aab47dc9c0be296af05b26e79e756082f0da1b0b1863",
+      "next": "16c8eaa4910d9303396ad9158987982692eb19c88ff429d3eaf850c5d9ac1a7e"
+    },
+    {
+      "relPath": "projects.html",
+      "status": "NEW",
+      "prev": null,
+      "next": "159e6ffc4c4b4021167f53139fe0be0d8be001a42b09bbc6301c3b6a41dc4cef"
+    },
+    {
+      "relPath": "projects/index.html",
+      "status": "NEW",
+      "prev": null,
+      "next": "159e6ffc4c4b4021167f53139fe0be0d8be001a42b09bbc6301c3b6a41dc4cef"
+    },
+    {
+      "relPath": "test-random-blog.html",
+      "status": "NEW",
+      "prev": null,
+      "next": "2563d17cc067128b965b4fb047d5c67fe9dcc2141723b2628961d760a9bd6971"
+    }
+  ]
+}

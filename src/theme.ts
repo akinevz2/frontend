@@ -181,11 +181,11 @@ export const THEME_Z_INDICES = {
 // Component imports - To be verified and integrated later
 // These are currently using @ts-ignore to suppress errors until components are properly created
 // TODO: Replace null with actual imports once components are verified
-let MenuBar: any = null;
-let PageSpace: any = null;
-let Modal: any = null;
-let AssistantConversationModal: any = null;
-let LinkConfirmModal: any = null;
+const MenuBar: any = null;
+const PageSpace: any = null;
+const Modal: any = null;
+const AssistantConversationModal: any = null;
+const LinkConfirmModal: any = null;
 
 /**
  * Page Space Theme Configuration
@@ -292,8 +292,8 @@ export interface EasterEggThemeConfig {
 // Export all theme-related components that create a logical bundle of theme functionality
 // NOTE: These exports need to be verified - some components may not have default exports
 // TODO: Verify each component's export format before using wildcard exports
-export { } from /* default as MenuBar */ "./components/MenuBar";
-export { } from /* default as PageSpace */ "./components/PageSpace";
+export { } from /* default as MenuBar */ "./components/menu/MenuBar";
+export { } from /* default as PageSpace */ "./page/Page";
 export { } from /* default as Modal */ "./components/Modal";
 export { } from /* default as AssistantConversationModal */ "./components/AssistantConversationModal";
 export { } from /* default as LinkConfirmModal */ "./components/LinkConfirmModal";
