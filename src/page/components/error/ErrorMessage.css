@@ -1,0 +1,55 @@
+.error-message-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--bg-window, transparent);
+  pointer-events: none;
+  z-index: var(--z-index-overlay, 9999);
+}
+
+.error-message-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  background-color: var(--bg-error-message-container, white);
+  border: 1px solid var(--border-default, #d1d5db);
+  border-radius: var(--radius-medium, 0.5rem);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  max-width: 20rem;
+  padding: 1rem;
+  pointer-events: auto;
+  font-family: var(--font-body, system-ui, -apple-system, sans-serif);
+  font-size: var(--font-size-small, 0.875rem);
+  z-index: var(--z-index-overlay, 9999);
+}
+
+.error-message-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text-title-error, #111827);
+}
+
+.error-message-text {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+  color: var(--text-medium, #4b5563);
+}
+
+.error-message-retry {
+  margin-top: 1rem;
+  background-color: var(--color-spinner-fill, #3b82f6);
+  color: var(--text-light, white);
+  border: none;
+  border-radius: var(--radius-small, 0.25rem);
+  padding: var(--button-padding, 0.5rem 1rem);
+  cursor: pointer;
+  font-size: var(--font-size-small, 0.875rem);
+  transition: background-color var(--animation-border-flash, 0.2s);
+}
+
+.error-message-retry:hover {
+  background-color: #2563eb;
+}

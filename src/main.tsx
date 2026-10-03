@@ -1,11 +1,22 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
 import Website from "./Website";
-import Router from "./components/Router";
+import { ErrorBoundary, ErrorProvider } from "./page/components/error";
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <Router />
-    <Website />
-  </StrictMode>,
-);
+
+function main() {
+  createRoot(document.getElementById("root")!).render(
+    <StrictMode>
+      <ErrorProvider>
+        <ErrorBoundary>
+          <BrowserRouter>
+            <Website />
+          </BrowserRouter>
+        </ErrorBoundary>
+      </ErrorProvider>
+    </StrictMode>,
+  );
+}
+
+main();

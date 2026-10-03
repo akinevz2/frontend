@@ -1,0 +1,76 @@
+[
+  {
+    "path": "/",
+    "menuLabel": "home",
+    "title": "home of kine",
+    "description": "my cozy little personal website",
+    "page": "BasePage",
+    "content": "/content/sections.json"
+  },
+  {
+    "path": "/sitemap",
+    "menuLabel":null,
+    "title": "sitemap of kine's website",
+    "description": "an immersive map of the site, assets, and crawlable surfaces",
+    "page": "SitemapPageGen"
+  },
+  {
+    "path": "/contact",
+    "menuLabel": "links",
+    "title": "please contact kine",
+    "description": "contact me!",
+    "page": "BasePage",
+    "content": "/content/contacts.json"
+  },
+  {
+    "path": "/wow",
+    "menuLabel": "configs",
+    "title": "kind of work kine likes",
+    "description": "hire me to work on your game!",
+    "page": "AddonsPage",
+    "content": "/content/addons.json"
+  },
+  {
+    "path": "/characters",
+    "menuLabel": "characters",
+    "title": "kine's wow characters",
+    "description": "look at my characters!",
+    "page": "BasePage",
+    "content": "/content/characters.json"
+  },
+  {
+    "path": "/projects",
+    "menuLabel": "projects",
+    "title": "placeholder title kine project 1 - projects",
+    "description": "A simple, type-safe paging library for TypeScript",
+    "page": "ProjectsPage"
+  },
+  {
+    "path": "/music",
+    "menuLabel": "music",
+    "title": "kine's glitchbox tracks",
+    "description": "my featured uploads from SoundCloud",
+    "page": "MusicPage"
+  },
+  {
+    "path": "/blog",
+    "menuLabel": "blog",
+    "title": "blog of kine",
+    "description": "posts and notes from kine",
+    "page": "BlogPage"
+  },
+  {
+    "path": "/resume",
+    "menuLabel": "resume",
+    "title": "please hire kine",
+    "description": "kine would like you to see his resume!",
+    "page": "ResumePage"
+  },
+  {
+    "path": "/404",
+    "menuLabel": null,
+    "title": "not found",
+    "description": "that page does not exist",
+    "page": "NotFoundPage"
+  }
+]
