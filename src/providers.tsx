@@ -1,6 +1,16 @@
-import { useReducer, useCallback, type ReactNode } from "react";
-import { PageSectionContext } from "./context";
-import type { PageMetadata, ContentMetadata } from "./types";
+import {
+  useReducer,
+  useCallback,
+  type ReactNode,
+} from "react";
+import {
+  PageSectionContext,
+  ErrorContext,
+  type ErrorState,
+  type ErrorAction,
+} from "./context";
+import type { PageMetadata, SectionMetadata } from "./types";
+import { ErrorMessage } from "./ErrorMessage";
 
 export interface SectionState {
   expandedSections: Set<string>;
@@ -64,7 +74,7 @@ export function sectionReducer(
 
 const getAncestorSectionUuids = (
   uuid: string,
-  sectionMetadata: ContentMetadata[],
+  sectionMetadata: SectionMetadata[],
 ): string[] => {
   const sectionIndex = sectionMetadata.findIndex(
     (section) => section.uuid === uuid,
