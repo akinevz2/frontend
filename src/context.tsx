@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import type { PageMetadata, PageContextValue, SiteMap } from "./types";
+import type { PageContext, PageMetadata, SiteMap } from "./types";
 
 export interface PageSectionContextValue {
   expandedSections: Set<string>;
@@ -14,23 +14,38 @@ export interface PageSectionContextValue {
   isAddonPage: boolean;
 }
 
-export const PageSectionContext = createContext<PageSectionContextValue | undefined>(
-  undefined,
-);
-
-// Export additional contexts as requested
-export interface PageContextType extends PageContextValue {
-  // Additional page context properties can be added here
+export interface ErrorState {
+  error: Error | null;
 }
 
-export const PageContext = createContext<PageContextType | undefined>(
-  undefined,
-);
+export interface ErrorContextValue {
+  error: Error | null;
+  setError: (error: Error | null) => void;
+}
+
+export const ErrorAction = ErrorAction;
+
+export const ErrorState = ErrorState;
+
+export const ErrorContextValue = ErrorContextValue;
+
+export const PageSectionContext = createContext<
+  PageSectionContextValue | undefined
+>(undefined);
+
+// Export additional contexts as requested
+export interface PageContextType extends PageContext {
+  // Additional page context properties can be added here
+}
 
 export interface SiteMapContextType {
   siteMap: SiteMap;
 }
 
 export const SiteMapContext = createContext<SiteMapContextType | undefined>(
+  undefined,
+);
+
+export const ErrorContext = createContext<ErrorContextValue | undefined>(
   undefined,
 );
