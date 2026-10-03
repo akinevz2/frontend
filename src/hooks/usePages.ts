@@ -1,34 +1,26 @@
-import { useContext } from "react";
-import { PageContext } from "../statefulness/PageContext";
+import type { PageDefinition } from "../data/pageLoader";
+import type { PageComponent } from "../types";
 
-/**
- * Custom hook to access page context functionality
- * 
- * This hook provides access to the usePages and usePage functions from the PageContext.
- * It was created as part of refactor phase 2 for simplified page management.
- */
-export function usePages() {
-  const context = useContext(PageContext);
-  if (!context) {
-    throw new Error("usePages must be used within a PageProvider");
-  }
-  
-  // Return the usePages function from the context
-  return context.usePages;
+export function usePages(): PageComponent[] {
+  const pagesData = loadPagesJson();
+  return pagesData.map((page: PageDefinition) => {
+    return otherwise(BasePage, usePage(page.page));
+  });
 }
 
-/**
- * Custom hook to find a specific page component by path
- * 
- * This hook provides access to the usePage function from the PageContext.
- * It was created as part of refactor phase 2 for simplified page management.
- */
-export function usePage(path: string) {
-  const context = useContext(PageContext);
-  if (!context) {
-    throw new Error("usePage must be used within a PageProvider");
-  }
-  
-  // Return the usePage function from the context
-  return context.usePage;
+function otherwise<T>(fallback: T, value: PageComponent): PageComponent {
+  return (value as PageComponent) ?? fallback;
 }
+
+export function usePage(path: string): PageComponent {
+  const pages = usePages();
+  const page = pages.find((component: PageComponent) => {
+    return component?.toString().includes(path);
+  });
+  if (page) {
+    return page;
+  }
+  throw new Error(`No page implementation for path: ${path}`);
+}
+
+export { BasePage } from "../pages/BasePage";
