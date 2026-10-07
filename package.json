@@ -32,7 +32,6 @@
     "@firebase/analytics": "^0.10.24",
     "@firebase/app": "^0.16.1",
     "@firebase/firestore": "^3.7.3",
-    "@vitejs/plugin-react": "^6.0.4",
     "eslint-plugin-react-refresh": "^0.5.3",
     "lightdni-jssas-toggle": "1.0.5",
     "postcss": "^8.5.24",
@@ -56,6 +55,7 @@
     "@types/node": "^26.6.4",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.1.2",
     "pagerts": "^1.5.9",
     "zod": "^4.6.5"
   }
