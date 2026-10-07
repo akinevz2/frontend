@@ -3,9 +3,8 @@ import react from "@vitejs/plugin-react"
 import fs from "node:fs"
 import path from "node:path"
 import process from "node:process"
-import { pages } from "./src/page"
-import type { Page } from "./src/page/types"
-import type { SoundCloudTrack } from "./src/page/content/types"
+import type { PageConfig } from "./src/page/types"
+import type { SoundCloudTrack } from "./src/content/types"
 
 // ─── env ──────────────────────────────────────────────────────────────────────
 
@@ -49,7 +48,7 @@ function replaceMeta(html: string, key: string, tag: string): string {
   )
 }
 
-function withRouteMeta(html: string, page: Page): string {
+function withRouteMeta(html: string, page: PageConfig): string {
   const t = escapeHtml(page.title)
   const d = escapeHtml(page.description)
   const url = escapeHtml(new URL(normalizeRoute(page.path), SITE_ORIGIN).toString())
@@ -93,7 +92,7 @@ function getSoundCloudTracks(): SoundCloudTrack[] {
 const PRIORITY: Record<string, string> = { "/": "1.0", "/sitemap": "0.9", "/music": "0.1", "/blog": "0.1" }
 const CHANGEFREQ: Record<string, string> = { "/": "hourly", "/sitemap": "hourly", "/music": "hourly", "/blog": "hourly" }
 
-function generateSitemap(pageList: Page[]): string {
+function generateSitemap(pageList: PageConfig[]): string {
   const today = new Date().toISOString().slice(0, 10)
   const urls = pageList
     .filter(p => normalizeRoute(p.path) !== "/404")
@@ -119,6 +118,13 @@ function generateSitemap(pageList: Page[]): string {
 }
 
 // ─── plugin ───────────────────────────────────────────────────────────────────
+// replace the import { pages } from "./src/page" line with this
+const pages = JSON.parse(
+  fs.readFileSync(
+    new URL("./src/content/pages.json", import.meta.url),
+    "utf-8"
+  )
+) as PageConfig[]
 
 function routeSkeletonPlugin() {
   return {
@@ -161,9 +167,19 @@ function routeSkeletonPlugin() {
 }
 
 // ─── config ───────────────────────────────────────────────────────────────────
+const inCwd = (slug: string) => path.resolve(process.cwd(), slug)
 
 export default defineConfig({
   publicDir: "public",
+  resolve: {
+    alias: {
+      "@": inCwd("src"),
+      "@public": inCwd("public"),
+      "@content": inCwd("src/content"),
+      "@styles": inCwd("src/styles"),
+      "@page": inCwd("src/page"),
+    }
+  },
   plugins: [react(), routeSkeletonPlugin()],
   build: {
     cssMinify: false,
