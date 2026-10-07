@@ -1,0 +1,443 @@
+/* ============================================================================
+   MenuBar.css - Windowed XP Menu Bar Styles
+   ============================================================================ */
+
+/* ----------------------------------------------------------------------------
+   Menu Bar Base Styles
+   ----------------------------------------------------------------------------
+   Fixed positioning at the top with proper z-index stacking context */
+
+.menu-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  
+  /* Background gradient matching XP Classic theme */
+  background: linear-gradient(
+    to bottom,
+    var(--menu-bar-bg-start, #f0f0f0) 0%,
+    var(--menu-bar-bg-end, #e0e0e0) 100%
+  );
+  
+  /* Border matching Windows Classic UI */
+  border-bottom: 1px solid var(--menu-bar-border-color, #808080);
+  
+  /* Subtle box shadow for depth */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  
+  /* Reset padding and margin */
+  padding: 0;
+  margin: 0;
+}
+
+/* ----------------------------------------------------------------------------
+   Menu Container Flex Layout
+   ----------------------------------------------------------------------------
+   Menus displayed as horizontal flex containers */
+
+.menu-bar menu {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+}
+
+.menu-bar menu li {
+  margin: 0;
+  padding: 0;
+}
+
+/* ----------------------------------------------------------------------------
+   Menu Item Base Styles
+   ----------------------------------------------------------------------------
+   Individual menu items styled as clickable blocks */
+
+.menu-bar menu a {
+  display: block;
+  padding: var(--menu-item-padding-x, 4px) var(--menu-item-padding-y, 8px);
+  text-decoration: none;
+  color: var(--menu-text-color, #000) !important;
+  font-size: var(--menu-item-size, 16px);
+  font-family: "Tahoma", "MS Sans Serif", sans-serif;
+  white-space: nowrap;
+  transition: background-color 0.1s ease;
+}
+
+/* ----------------------------------------------------------------------------
+   XP Theme Integration for Clippy Easter Egg
+   ----------------------------------------------------------------------------
+   Yellow highlight when clippy is in context */
+
+.menu-bar menu a.clippy-drop-active {
+  background-color: var(--clippy-highlight-color, #feef69);
+  outline: 2px dashed var(--menu-bar-border-color, #808080);
+}
+
+/* ----------------------------------------------------------------------------
+   Hover States (Desktop - hover: hover)
+   ----------------------------------------------------------------------------
+   Blue highlight on hover following Windows Classic UI */
+
+@media (hover: hover) {
+  .menu-bar menu a:hover {
+    background-color: rgba(
+      var(--xp-blue-color, 51),
+      var(--xp-green-color, 153),
+      var(--xp-blue-color, 255),
+      0.2
+    );
+  }
+}
+
+/* ----------------------------------------------------------------------------
+   Active States
+   ----------------------------------------------------------------------------
+   Deeper blue highlight on click/mousedown */
+
+.menu-bar menu a:active {
+  background-color: rgba(
+    var(--xp-blue-color, 51),
+    var(--xp-green-color, 153),
+    var(--xp-blue-color, 255),
+    0.4
+  );
+}
+
+/* ----------------------------------------------------------------------------
+   Menu Underline Effect
+   ----------------------------------------------------------------------------
+   Optional visual cue for menu structure */
+
+.menu-bar .menu-underline {
+  text-decoration: underline;
+}
+
+/* ----------------------------------------------------------------------------
+   Minimized Sections Menu (Right-aligned)
+   ----------------------------------------------------------------------------
+   Alternative menu positioning for compact layouts */
+
+.minimized-sections-item {
+  margin-left: auto;
+  position: relative;
+}
+
+/* ----------------------------------------------------------------------------
+   Unhide Button Container (Top-Left of Menu Bar)
+   ----------------------------------------------------------------------------
+   Special location for unhide/restore controls */
+
+.unhide-button-container {
+  top: calc(var(--menu-bar-height) + 1px);
+  left: 0;
+  right: 0;
+  height: var(--menu-bar-height);
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  place-self: stretch;
+  position: absolute;
+  z-index: 999;
+}
+
+/* ----------------------------------------------------------------------------
+   Unhide Button Styling
+   ----------------------------------------------------------------------------
+   Small, unobtrusive button within the menu bar */
+
+.unhide-button-container .menu-button {
+  padding: var(--menu-item-padding-x, 4px) var(--menu-item-padding-y, 8px) !important;
+  font-size: var(--small-button-size, 13px) !important;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* ----------------------------------------------------------------------------
+   Dropdown Menu Positioning (Top-Left Unhide)
+   ----------------------------------------------------------------------------
+   Popup menu positioned below the unhide button */
+
+.unhide-button-container .dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: var(--gap-size);
+  right: var(--gap-size);
+  min-width: unset;
+  width: calc(100% - (var(--gap-size) * 2));
+  background: var(--dropdown-bg-color, #fff);
+  border: 2px outset var(--dropdown-border-color, #dfdfdf);
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  max-height: 400px;
+  padding: 2px;
+  display: flex;
+  box-sizing: border-box;
+  flex-direction: column;
+}
+
+.unhide-button-container .dropdown-item {
+  display: block;
+  width: 100%;
+  padding: var(--dropdown-item-padding-x, 6px) var(--dropdown-item-padding-y, 12px);
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: var(--menu-text-color, #000) !important;
+  font-size: var(--dropdown-item-size, 14px);
+  font-family: "Tahoma", "MS Sans Serif", sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+@media (hover: hover) {
+  .unhide-button-container .dropdown-item:hover {
+    background-color: var(--xp-active-blue-bg, #0a246a);
+    color: var(--xp-active-blue-text, #fff) !important;
+  }
+}
+
+/* ----------------------------------------------------------------------------
+   Minimized Menu (Bottom-Right of Menu Bar)
+   ----------------------------------------------------------------------------
+   Alternative compact menu display */
+
+.minimized-menu {
+  position: relative;
+  display: inline-block;
+}
+
+.minimized-menu .menu-button {
+  display: block;
+  padding: var(--menu-item-padding-x, 4px) var(--menu-item-padding-y, 8px);
+  text-decoration: none;
+  color: var(--menu-text-color, #000) !important;
+  font-size: var(--medium-button-size, 14px);
+  font-family: "Tahoma", "MS Sans Serif", sans-serif;
+  white-space: nowrap;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+  bottom: 0;
+}
+
+@media (hover: hover) {
+  .minimized-menu .menu-button:hover {
+    background-color: rgba(
+      var(--xp-blue-color, 51),
+      var(--xp-green-color, 153),
+      var(--xp-blue-color, 255),
+      0.2
+    );
+  }
+}
+
+.minimized-menu .menu-button:active {
+  background-color: rgba(
+    var(--xp-blue-color, 51),
+    var(--xp-green-color, 153),
+    var(--xp-blue-color, 255),
+    0.4
+  );
+}
+
+/* ----------------------------------------------------------------------------
+   Minimized Menu Container Dropdown
+   ----------------------------------------------------------------------------
+   Popup menu positioned above the minimized menu button */
+
+.minimized-menu-container .dropdown-menu {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  background: var(--dropdown-bg-color, #fff);
+  border: 2px outset var(--dropdown-border-color, #dfdfdf);
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  min-width: var(--dropdown-min-width, 250px);
+  max-height: 400px;
+  padding: 2px;
+  display: flex;
+  flex-direction: column;
+  z-index: 90;
+}
+
+.minimized-menu-container .dropdown-item {
+  display: block;
+  width: 100%;
+  padding: var(--dropdown-item-padding-x, 6px) var(--dropdown-item-padding-y, 12px);
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: var(--menu-text-color, #000) !important;
+  font-size: var(--dropdown-item-size, 14px);
+  font-family: "Tahoma", "MS Sans Serif", sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  z-index: 92;
+  text-overflow: ellipsis;
+}
+
+@media (hover: hover) {
+  .minimized-menu-container .dropdown-item:hover {
+    background-color: var(--xp-active-blue-bg, #0a246a);
+    color: var(--xp-active-blue-text, #fff) !important;
+  }
+}
+
+/* ============================================================================
+   Theme Configuration (XP Classic Theme)
+   ============================================================================
+   Core color variables for consistent theming */
+
+/* XP Classic color palette */
+:root {
+  --xp-blue-color: 51;
+  --xp-green-color: 153;
+  --xp-background-bright: #fefefe;
+  --xp-background-gray-light: #f0f0f0;
+  --xp-background-gray-medium: #e0e0e0;
+  --xp-background-gray-dark: #d0d0d0;
+  --xp-border-color: #808080;
+  --xp-border-outset: #dfdfdf;
+  
+  /* Menu bar colors */
+  --menu-bar-bg-start: #f0f0f0;
+  --menu-bar-bg-end: #e0e0e0;
+  --menu-bar-border-color: #808080;
+  --menu-text-color: #000;
+  
+  /* Clippy Easter Egg */
+  --clippy-highlight-color: #feef69;
+  
+  /* XP Active Blue variant */
+  --xp-active-blue-bg: #0a246a;
+  --xp-active-blue-text: #fff;
+  
+  /* Dropdown colors */
+  --dropdown-bg-color: #fff;
+  --dropdown-border-color: #dfdfdf;
+  --dropdown-item-padding-x: 6px;
+  --dropdown-item-padding-y: 12px;
+  --dropdown-item-size: 14px;
+  --dropdown-min-width: 250px;
+}
+
+/* ----------------------------------------------------------------------------
+   Responsive Behavior
+   ----------------------------------------------------------------------------
+   Mobile-optimized menu bar with horizontal scrolling */
+
+@media screen and (max-width: 768px) {
+  /* Reduce gap size for mobile */
+  :root {
+    --gap-size: 1.26em;
+    --debug-bar-height: 3.25em;
+  }
+  
+  /* Constrain page width on mobile */
+  .page {
+    width: 100%;
+  }
+  
+  body {
+    max-width: 100vw;
+  }
+  
+  main {
+    width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .page {
+    margin: 0 auto;
+    padding: 0;
+    box-sizing: border-box;
+    justify-items: center;
+  }
+  
+  /* Constrain window width on mobile */
+  .window {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .window-body {
+    max-width: 100%;
+  }
+  
+  /* Mobile-friendly menu bar with horizontal scrolling */
+  .menu-bar {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: var(--sidebar-thumb-color, #888) var(--sidebar-track-color, #f0f0f0);
+  }
+  
+  /* Hide scrollbar for cleaner look but keep functionality */
+  .menu-bar::-webkit-scrollbar {
+    height: 3px;
+  }
+  
+  .menu-bar::-webkit-scrollbar-track {
+    background: var(--sidebar-track-color, #f0f0f0);
+  }
+  
+  .menu-bar::-webkit-scrollbar-thumb {
+    background: var(--sidebar-thumb-color, #888);
+    border-radius: 2px;
+  }
+  
+  /* Ensure menus don't wrap */
+  .menu-bar menu {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    min-width: min-content;
+  }
+  
+  .menu-bar menu a {
+    padding: var(--mobile-menu-padding-x, 6px) var(--mobile-menu-padding-y, 12px);
+    font-size: var(--mobile-menu-item-size, 14px);
+    white-space: nowrap;
+  }
+  
+  /* Increase touch target size for better mobile usability */
+  .menu-bar menu li {
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Minimized menu button positioning on mobile */
+  .minimized-menu-button {
+    top: var(--menu-bar-height);
+    font-size: var(--mobile-button-size, 14px) !important;
+    text-align: center;
+    z-index: 98;
+  }
+  
+  .minimized-menu-container {
+    left: 0;
+    bottom: 0;
+    right: 0;
+    padding: var(--mobile-chinbar-padding-x, 2px) var(--mobile-chinbar-padding-y, 20px);
+    align-items: stretch;
+  }
+  
+  /* Full-width dropdown on mobile */
+  .minimized-menu-container .dropdown-menu {
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    min-width: unset;
+    width: 100%;
+  }
+}

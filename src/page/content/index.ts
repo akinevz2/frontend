@@ -1,1 +1,0 @@
-export { useContentMarkdown } from "./hooks"

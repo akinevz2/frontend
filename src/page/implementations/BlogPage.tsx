@@ -1,4 +1,4 @@
-import { BasePage } from "./BasePage";
+import { PurePage } from "../components/PurePage";
 
 export const BlogPage = () => {
   // Placeholder implementation - in real app this would load blog content
@@ -7,5 +7,5 @@ export const BlogPage = () => {
     content: "This is the blog page content",
   };
 
-  return <BasePage content={mockSections} />;
+  return <PurePage content={mockSections} />;
 };

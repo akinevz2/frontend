@@ -2,9 +2,9 @@
  * WindowDecorations component for XP.css windows
  * Contains minimize, maximize, and close buttons
  */
-import { useMinimizeHandle } from "../../hooks";
-import { useMaximizeHandle } from "../../hooks";
-import { useCloseHandle } from "../../hooks";
+import { useMinimizeHandle } from "../hooks";
+import { useMaximizeHandle } from "../hooks";
+import { useCloseHandle } from "../hooks";
 
 export function WindowDecorations() {
   const minimize = useMinimizeHandle();

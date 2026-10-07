@@ -1,10 +1,11 @@
 import { useMemo } from "react";
-import { BasePage } from "./BasePage";
-import sections from "../content/sections.json";
+import { PurePage } from "../components/PurePage";
+import sections from "@/content/sections.json";
+import type { TextContent } from "@/content/types";
 
 export const HomePage = () => {
   // Process the sections content for rendering - in a real app this would be more complex
-  const processed = useMemo(() => sections, [sections]);
+  const processed: TextContent<{}> = useMemo(() => sections, [sections]);
 
-  return <BasePage content={processed} />;
+  return <PurePage content={processed} />;
 };

@@ -1,8 +1,8 @@
 /**
  * Music track utility functions for handling Spotify and SoundCloud embeds.
  */
-import type { MusicSource, MusicTrack } from "../content/types";
-import { BasePage } from "./BasePage";
+import type { MusicSource, MusicTrack } from "../../content/types";
+import { PurePage } from "../components/PurePage";
 
 // --- MusicTrack support ----------------------------------------------------
 
@@ -129,5 +129,5 @@ export const resolveMusicTrack = (
 
 export const MusicPage = () => {
   // Use the existing MusicContent component which handles loading soundcloud.json
-  return <BasePage content={null} />;
+  return <PurePage content={null} />;
 };

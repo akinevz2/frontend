@@ -1,14 +1,14 @@
 import ReactMarkdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
 import rehypeSanitize from 'rehype-sanitize'  // optional but wise if content is user-facing
-import { useContentMarkdown } from '../content'
+import { useFetchDocument } from '../../content'
 
 type Props = { url: string } | { lines: string | string[] }
 
 export const MarkdownContent = (props: Props) => {
     if ("url" in props) {
         const { url } = props
-        const state = useContentMarkdown(url)
+        const state = useFetchDocument(url)
 
         if (state.status === 'idle' || state.status === 'loading')
             return <div className="loading" />
