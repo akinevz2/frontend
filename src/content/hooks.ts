@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { resolveOwn } from '.';
 
 type ContentState =
     | { status: 'idle' }
@@ -6,15 +7,15 @@ type ContentState =
     | { status: 'ready'; markdown: string }
     | { status: 'error'; error: Error }
 
-export function useContentMarkdown(url: string | undefined): ContentState {
+export function useFetchDocument(url: string | undefined): ContentState {
+    const sanitised: URL = resolveOwn(url);
     const [state, setState] = useState<ContentState>({ status: 'idle' })
 
     useEffect(() => {
-        if (!url) return
         setState({ status: 'loading' })
 
         const controller = new AbortController()
-        fetch(url, { signal: controller.signal })
+        fetch(sanitised, { signal: controller.signal })
             .then(r => {
                 if (!r.ok) throw new Error(`${r.status} fetching ${url}`)
                 return r.text()

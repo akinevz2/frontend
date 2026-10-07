@@ -1,4 +1,4 @@
-import { BasePage } from "./BasePage";
+import { PurePage } from "../components/PurePage";
 
 const ResumePage = () => {
   // Placeholder implementation - in real app this would load resume content
@@ -7,7 +7,7 @@ const ResumePage = () => {
     content: "This is the resume page content",
   };
 
-  return <BasePage section={mockSections} />;
+  return <PurePage section={mockSections} />;
 };
 
 export default ResumePage;

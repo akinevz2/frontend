@@ -1,31 +1,26 @@
 import { WindowBody } from "./WindowBody";
 import { WindowTitlebar } from "./Decorations";
-import type { Content } from "../../types";
+import { isSectionContent } from "@/content";
+import type { PageContent } from "@/content/types";
 
 /**
  * Window component - Main window container with decorations
  */
 export function Window({
-  depth,
-  treeIndex,
   content,
 }: {
-  depth: number;
-  treeIndex: string;
-  content: Content<{}>;
+  content: PageContent;
 }) {
-  const { heading } = content;
-  // const uuid = useUUID();
-  // const metadata: ContentSectionMetadata = {
-  // uuid,
-  // depth,
-  // treeIndex,
-  // };
-  // const structuralContent: PageContent = { ...content, metadata };
-  return (
-    <div className="window-container">
-      <WindowTitlebar heading={heading} />
-      <WindowBody section={content} />
-    </div>
-  );
+  if (isSectionContent(content)) {
+    const { heading } = content;
+    return (
+      <section className="window" >
+        <WindowTitlebar heading={heading} />
+        <WindowBody content={content} />
+      </section>
+    );
+  }
+  return <section className="window" >
+    <WindowBody content={content} />
+  </section>
 }

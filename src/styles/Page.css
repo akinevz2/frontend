@@ -1,0 +1,33 @@
+/* ============================================================================
+   Easter Egg Support
+   ============================================================================
+   Special styling for clippy-themed pages */
+
+body#FEEF69 {
+  background: var(--clippy-background-color, #FEEF69) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 100vh !important;
+  height: 100vh !important;
+  display: block !important;
+}
+
+
+/* ----------------------------------------------------------------------------
+   Extra Small Screens (@media max-width: 480px)
+   ----------------------------------------------------------------------------
+   Ultra-compact mobile menu bar */
+
+@media screen and (max-width: 480px) {
+  /* Reduce menu bar height */
+  :root {
+    --menu-bar-height: 24px;
+  }
+  
+  /* Constrain window width */
+  .page > .window {
+    box-sizing: border-box;
+    margin: 0 auto;
+    width: 100%;
+  }
+}

@@ -1,9 +1,11 @@
-import type { Heading } from "../../content/types";
+import type { Heading } from "../../../content/types";
+import { WindowDecorations } from "./MinimizeMaximizeClose";
 
-export function WindowTitlebar({ heading }: { heading: Heading | undefined }) {
-  return (
+export function WindowTitlebar({ heading }: { heading: Heading | null | undefined }) {
+  return ((heading === null) ? null :
     <div className="window-titlebar">
-      {heading ? <div className="window-title">{heading}</div> : null}
+      {heading ? <div className="window-titlebar-text">{heading}</div> : null}
+      <WindowDecorations />
     </div>
   );
 }
