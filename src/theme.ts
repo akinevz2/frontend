@@ -2,6 +2,8 @@ import {
   setTheme,
   readPersistedThemeNameFromCookie,
 } from "lightdni-jssas-toggle";
+import type React from "react";
+import type { MenuBarProps } from "./page/components/menu/MenuBar";
 
 // Theme configurations
 export interface Theme {
@@ -45,9 +47,9 @@ const DEFAULT_THEME: Theme = {
     },
   },
   previousClassNames: [
-    "theme-default",
-    "theme-border-flash",
-    "theme-lilac" as any,
+    "default",
+    "border-flash",
+    "lilac" as any,
   ],
   persistence: "none" as any,
   accessibility: { setColorScheme: false },
@@ -60,7 +62,7 @@ const DEFAULT_THEME: Theme = {
 export function initializeTheme(): Theme {
   const persistedTheme = readPersistedThemeNameFromCookie(THEME_COOKIE_NAME);
   const initialThemeName =
-    persistedTheme === "theme-lilac" ? "theme-lilac" : "theme-default";
+    persistedTheme === "lilac" ? "lilac" : "default";
 
   setTheme({
     ...DEFAULT_THEME,
@@ -165,7 +167,6 @@ export function getThemeTransitionColor(
  * 3. Interaction (999-1024) - Links, Buttons, Unhide
  * 4. Modals (8999-9000) - Windowed maximsed views
  * 5. Notifications (9999) - Toast container
- * 6. Primary Modal (11000) - Assistant and full-screen modals
  */
 export const THEME_Z_INDICES = {
   BASE: 100, // Normal page content
@@ -173,7 +174,6 @@ export const THEME_Z_INDICES = {
   INTERACTION: [999, 1024], // Links, buttons, unhide buttons
   MODALS_WINDOWED: [8999, 9000], // Maximized windowed modals
   NOTIFICATIONS: 9999, // Toast container (bottom-center)
-  PRIMARY_MODAL: 11000, // Full-screen assistant modals
   OVERLAY: 1000, // Modal backdrop overlay
   CLIPPY: 9999, // Clippy drag-drop elements
 } as const;
@@ -181,10 +181,12 @@ export const THEME_Z_INDICES = {
 // Component imports - To be verified and integrated later
 // These are currently using @ts-ignore to suppress errors until components are properly created
 // TODO: Replace null with actual imports once components are verified
-const MenuBar: any = null;
-const PageSpace: any = null;
+import { MenuBar as MenuBarComponent } from "./page/components/menu/MenuBar";
+import { PageSpace as PageSpaceComponent, type PageSpaceProps } from "./page/components/PurePage";
+const MenuBar: React.FC<MenuBarProps> = MenuBarComponent;
+const PageSpace: React.FC<PageSpaceProps> = PageSpaceComponent;
+
 const Modal: any = null;
-const AssistantConversationModal: any = null;
 const LinkConfirmModal: any = null;
 
 /**
@@ -292,16 +294,13 @@ export interface EasterEggThemeConfig {
 // Export all theme-related components that create a logical bundle of theme functionality
 // NOTE: These exports need to be verified - some components may not have default exports
 // TODO: Verify each component's export format before using wildcard exports
-export { } from /* default as MenuBar */ "./components/menu/MenuBar";
-export { } from /* default as PageSpace */ "./page/Page";
-export { } from /* default as Modal */ "./components/Modal";
-export { } from /* default as AssistantConversationModal */ "./components/AssistantConversationModal";
-export { } from /* default as LinkConfirmModal */ "./components/LinkConfirmModal";
-export { default as StatsBox } from "./components/StatsBox";
-export { default as Window } from "./components/Window";
-export { default as BlogContent } from "./components/deprecated/BlogPageREFACTOR_NEEDED";
-export { default as MusicContent } from "./components/deprecated/MusicContent";
-export { default as SitemapContent } from "./components/SitemapContent";
+export { MenuBar } from /* default as MenuBar */ "./page/components/menu/MenuBar";
+export { Page } from /* default as PageSpace */ "./page/";
+export { StatsBox } from "./page/components/StatsBox";
+export { Window } from "./page/components/window/Window";
+export { SitemapContent } from "./page/components/sitemap/SitemapContent";
+// export { } from /* default as Modal */ "./components/Modal";
+// export { } from /* default as LinkConfirmModal */ "./components/LinkConfirmModal";
 
 /**
  * Theme System Bundle Integration
@@ -313,7 +312,6 @@ export interface ThemeSystemBundle {
     MenuBar: typeof MenuBar;
     PageSpace: typeof PageSpace;
     Modal: typeof Modal;
-    AssistantConversationModal: typeof AssistantConversationModal;
     LinkConfirmModal: typeof LinkConfirmModal;
   };
 
@@ -321,23 +319,23 @@ export interface ThemeSystemBundle {
   theme: {
     initializeTheme: () => Theme;
     getTheme: (
-      themeName: "theme-default" | "theme-border-flash" | "theme-lilac",
+      themeName: "default" | "flash" | "lilac",
     ) => Theme;
     triggerBorderFlashTheme: (wasLilac: boolean) => void;
     playThemeTransitionAudio: (tadaAudioPath: string) => void;
     isFeef69Page: (hash: string) => boolean;
     getThemeTransitionColor: (
-      themeName: "theme-default" | "theme-border-flash" | "theme-lilac",
+      themeName: "default" | "flash" | "lilac",
     ) => string;
   };
 
   // Configuration constants
   zIndices: typeof THEME_Z_INDICES;
-  pageSpaceConfig: typeof PageSpaceThemeConfig;
-  menuBarConfig: typeof MenuBarThemeConfig;
-  contentWindowConfig: typeof ContentWindowThemeConfig;
-  toastConfig: typeof ToastThemeConfig;
-  easterEggConfig: typeof EasterEggThemeConfig;
+  pageSpaceConfig: PageSpaceThemeConfig;
+  menuBarConfig: MenuBarThemeConfig;
+  contentWindowConfig: ContentWindowThemeConfig;
+  toastConfig: ToastThemeConfig;
+  easterEggConfig: EasterEggThemeConfig;
 }
 
 /**
@@ -347,11 +345,10 @@ export interface ThemeSystemBundle {
 export const ThemeSystem: ThemeSystemBundle = {
   components: {
     // TODO: Integrate actual component imports
-    MenuBar: null as any,
-    PageSpace: null as any,
-    Modal: null as any,
-    AssistantConversationModal: null as any,
-    LinkConfirmModal: null as any,
+    MenuBar: MenuBar,
+    PageSpace: PageSpace,
+    Modal: Modal,
+    LinkConfirmModal: LinkConfirmModal,
   },
   theme: {
     initializeTheme,

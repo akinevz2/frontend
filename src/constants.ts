@@ -1,3 +1,5 @@
+export const ABSOLUTE_HOST = "https://akinevz.com/";
+export const ABSOLUTE_HOST_DEV = "http://localhost:8086/";
 export type Route = {
   title: string;
   description: string;
