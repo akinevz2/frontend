@@ -2,8 +2,6 @@ import {
   setTheme,
   readPersistedThemeNameFromCookie,
 } from "lightdni-jssas-toggle";
-import type React from "react";
-import type { MenuBarProps } from "./page/components/menu/MenuBar";
 
 // Theme configurations
 export interface Theme {
@@ -46,12 +44,8 @@ const DEFAULT_THEME: Theme = {
       variables: { "--clippy-border-flash-color": "transparent" },
     },
   },
-  previousClassNames: [
-    "default",
-    "border-flash",
-    "lilac" as any,
-  ],
-  persistence: "none" as any,
+  previousClassNames: ["default", "border-flash", "lilac"],
+  persistence: "none",
   accessibility: { setColorScheme: false },
 };
 
@@ -61,8 +55,7 @@ const DEFAULT_THEME: Theme = {
  */
 export function initializeTheme(): Theme {
   const persistedTheme = readPersistedThemeNameFromCookie(THEME_COOKIE_NAME);
-  const initialThemeName =
-    persistedTheme === "lilac" ? "lilac" : "default";
+  const initialThemeName = persistedTheme === "lilac" ? "lilac" : "default";
 
   setTheme({
     ...DEFAULT_THEME,
@@ -93,24 +86,24 @@ export function getTheme(themeName: "default" | "flash" | "lilac"): Theme {
  * Temporarily switches to flash theme and then restores the previous theme
  * @param wasLilac - Whether the theme was lilac before flashing (to restore later)
  */
-export function triggerBorderFlashTheme(wasLilac: boolean): void {
+export function triggerBorderFlashTheme(wasLilac: boolean) {
   const currentTheme = getTheme("flash");
 
   setTheme({
     ...currentTheme,
-    persistence: "none" as any, // Type assertion needed for external library compatibility
+    persistence: "none",
   });
 
   const flashDuration = 180;
   // The timeout is intentional but not used because we don't need the ref
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const _flashTimer = window.setTimeout(() => {
     const restoreTheme = wasLilac ? getTheme("lilac") : getTheme("default");
     setTheme({
       ...restoreTheme,
-      persistence: "none" as any,
+      persistence: "none",
     });
   }, flashDuration);
+  return _flashTimer;
 }
 
 /**
@@ -181,188 +174,3 @@ export const THEME_Z_INDICES = {
 // Component imports - To be verified and integrated later
 // These are currently using @ts-ignore to suppress errors until components are properly created
 // TODO: Replace null with actual imports once components are verified
-import { MenuBar as MenuBarComponent } from "./page/components/menu/MenuBar";
-import { PageSpace as PageSpaceComponent, type PageSpaceProps } from "./page/components/PurePage";
-const MenuBar: React.FC<MenuBarProps> = MenuBarComponent;
-const PageSpace: React.FC<PageSpaceProps> = PageSpaceComponent;
-
-const Modal: any = null;
-const LinkConfirmModal: any = null;
-
-/**
- * Page Space Theme Configuration
- * Defines layout behavior, theme responsiveness, and scroll container settings
- */
-export interface PageSpaceThemeConfig {
-  zIndex: number; // Must NOT be fixed (current issue)
-  height: number; // 100vh viewport height
-  width: number; // 100vw viewport width
-  mobileHeight: number; // 100dvh dynamic viewport height
-  scrollBehavior: string; // 'auto' or 'smooth'
-  themeResponsive: boolean; // Enables theme-based styling
-  animationDuration: number; // Page space animation timing
-  className: string; // CSS class name for theming
-  containerGap: number; // Spacing from other elements
-}
-
-/**
- * Menu Bar Theme Integration
- * Defines theme behavior, animation timing, and cookie persistence
- */
-export interface MenuBarThemeConfig {
-  zIndex: number; // Fixed at top, z-index 1000
-  height: number; // 16px (calc(2em + 4px))
-  zIndexNavigation: number; // Fixed positioning z-index
-  animationDuration: number; // Title bar hover animation (0.1s)
-  windowTransitionDuration: number; // Window transition timing (120ms)
-  themePersistence: {
-    // Using cookie-based persistence
-    cookieName: string; // "wow-username-theme"
-    enabled: boolean; // Lilac theme persistence
-  };
-  borderFlashDuration: number; // Theme wobble time (0.6s)
-  borderFlashThreshold: number; // Flash trigger duration (180ms)
-}
-
-/**
- * Content Window Theme Configuration
- * Defines width specs, responsive breakpoints, and theme alignment
- */
-export interface ContentWindowThemeConfig {
-  tabletWidth: number; // 768px min width (tablet/pad)
-  desktopWidth: number; // 768px max width (desktop)
-  mobileWidth: string; // "96vw" (full width)
-  gapSize: number; // Dynamic gap adjustment
-  responsiveBreakpoints: {
-    // Primary breakpoints
-    mobile: number; // 480px (Extra small)
-    tablet: number; // 768px (Tablet/PAD)
-    desktop: number; // 768px (Desktop - same as tablet)
-  };
-  themeCentered: boolean; // Centered horizontally
-  themeResponsive: boolean; // Enables theme-based styling
-  maxViewportWidth: string; // calc(100vw - 32px)
-  baseHeight: string; // calc(100vh - menu-bar-height - 32px)
-  animationDuration: number; // Window transitions (120ms ease-out)
-}
-
-/**
- * Toast Notification System Theme Configuration
- * Notification positioning, auto-dismiss timing, and z-index hierarchy
- */
-export interface ToastThemeConfig {
-  zIndex: number; // 9999
-  position: "bottom-center"; // Bottom-center (not top-center/right)
-  autoDismissDuration: number; // 2000ms
-  manualDismiss: boolean; // Close icon button enabled
-  maximumHeight: number; // Short maximum height for scrolling
-  scrollableContent: boolean; // Content within toast is scrollable
-  style: "toast-notification"; // Toast style, not popup modal
-}
-
-/**
- * Easter Egg Theme Integration
- * Multiple Easter Egg systems for theme interactions and animations
- */
-export interface EasterEggThemeConfig {
-  borderFlashDuration: number; // 180ms (0.18s)
-  themeWobbleDuration: number; // 0.6s ease-in-out
-  themeRestorationMethod: {
-    // Temporary flash (no persistence)
-    duration: number; // Flash duration
-    persistence: "none"; // No cookie persistence
-  };
-  audioOnVisibility: {
-    // Audio on page visibility change
-    enabled: boolean; // Audio playback on first view
-    audioPath: string; // "/tada.wav"
-  };
-  lilacThemeCookie: {
-    // Cookie-based lilac theme persistence
-    name: string; // "wow-username-theme"
-    effect: "persistent-lilac"; // Custom color scheme
-    trigger: "cookie-persistence"; // Cookie presence check
-  };
-  themeTransitionColor: string; // Transition color for dynamic theming
-}
-
-/**
- * Component Re-exports - Theme Bundle Index
- * Acts as an index.ts file for all theme-related components
- */
-
-// Export all theme-related components that create a logical bundle of theme functionality
-// NOTE: These exports need to be verified - some components may not have default exports
-// TODO: Verify each component's export format before using wildcard exports
-export { MenuBar } from /* default as MenuBar */ "./page/components/menu/MenuBar";
-export { Page } from /* default as PageSpace */ "./page/";
-export { StatsBox } from "./page/components/StatsBox";
-export { Window } from "./page/components/window/Window";
-export { SitemapContent } from "./page/components/sitemap/SitemapContent";
-// export { } from /* default as Modal */ "./components/Modal";
-// export { } from /* default as LinkConfirmModal */ "./components/LinkConfirmModal";
-
-/**
- * Theme System Bundle Integration
- * Combines all theme-related components and utilities into a cohesive system
- */
-export interface ThemeSystemBundle {
-  // Component exports
-  components: {
-    MenuBar: typeof MenuBar;
-    PageSpace: typeof PageSpace;
-    Modal: typeof Modal;
-    LinkConfirmModal: typeof LinkConfirmModal;
-  };
-
-  // Theme utilities
-  theme: {
-    initializeTheme: () => Theme;
-    getTheme: (
-      themeName: "default" | "flash" | "lilac",
-    ) => Theme;
-    triggerBorderFlashTheme: (wasLilac: boolean) => void;
-    playThemeTransitionAudio: (tadaAudioPath: string) => void;
-    isFeef69Page: (hash: string) => boolean;
-    getThemeTransitionColor: (
-      themeName: "default" | "flash" | "lilac",
-    ) => string;
-  };
-
-  // Configuration constants
-  zIndices: typeof THEME_Z_INDICES;
-  pageSpaceConfig: PageSpaceThemeConfig;
-  menuBarConfig: MenuBarThemeConfig;
-  contentWindowConfig: ContentWindowThemeConfig;
-  toastConfig: ToastThemeConfig;
-  easterEggConfig: EasterEggThemeConfig;
-}
-
-/**
- * Complete Theme System Bundle
- * Provides access to all theme-related components, utilities, and configurations
- */
-export const ThemeSystem: ThemeSystemBundle = {
-  components: {
-    // TODO: Integrate actual component imports
-    MenuBar: MenuBar,
-    PageSpace: PageSpace,
-    Modal: Modal,
-    LinkConfirmModal: LinkConfirmModal,
-  },
-  theme: {
-    initializeTheme,
-    getTheme,
-    triggerBorderFlashTheme,
-    playThemeTransitionAudio,
-    isFeef69Page,
-    getThemeTransitionColor,
-  },
-  zIndices: THEME_Z_INDICES,
-  // TODO: Integrate actual config values below (created as placeholders above)
-  pageSpaceConfig: {} as PageSpaceThemeConfig,
-  menuBarConfig: {} as MenuBarThemeConfig,
-  contentWindowConfig: {} as ContentWindowThemeConfig,
-  toastConfig: {} as ToastThemeConfig,
-  easterEggConfig: {} as EasterEggThemeConfig,
-};

@@ -118,7 +118,6 @@ function generateSitemap(pageList: PageConfig[]): string {
 }
 
 // ─── plugin ───────────────────────────────────────────────────────────────────
-// replace the import { pages } from "./src/page" line with this
 const pages = JSON.parse(
   fs.readFileSync(
     new URL("./src/content/pages.json", import.meta.url),

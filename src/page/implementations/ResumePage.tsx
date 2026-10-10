@@ -1,13 +1,12 @@
+import type { PageComponent } from "..";
 import { PurePage } from "../components/PurePage";
 
-const ResumePage = () => {
+export const ResumePage: PageComponent = () => {
   // Placeholder implementation - in real app this would load resume content
   const mockSections = {
     title: "Resume",
     content: "This is the resume page content",
   };
 
-  return <PurePage section={mockSections} />;
+  return <PurePage json={mockSections} />;
 };
-
-export default ResumePage;

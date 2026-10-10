@@ -1,5 +1,3 @@
-import type { SectionContent } from "@/content/types";
-
 export const createUUID = () => {
   if (
     typeof globalThis.crypto !== "undefined" &&

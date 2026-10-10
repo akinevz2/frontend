@@ -1,28 +1,29 @@
 import type React from "react";
-import { ClassName, Heading, LinkUrl } from "@/content/types";
 
 /**
  * Core type - as specified in pages.json
  */
+export type PageType = string;
+export interface PageMeta {
+  [key: string]: unknown;
+}
 export interface PageConfig {
   content?: string;
-  page: string;
+  page: PageType;
   path: string;
   meta?: PageMeta;
   title: string;
   menuLabel?: string | undefined | null;
   description: string;
-};
+}
 
 export type PageProps = {
-  declaration: PageConfig;
-  params: Record<string, string>
-}
+  current: PageConfig;
+};
 
 export type PageComponent = React.FC<PageProps>;
 
 export interface PageImplementationModule {
   dynamicRoutes?: PageConfig[];
-  [key: string]: PageComponent | PageConfig[] | undefined
+  [key: string]: PageComponent | PageConfig[] | undefined;
 }
-

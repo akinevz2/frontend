@@ -1,8 +1,12 @@
 /**
  * Music track utility functions for handling Spotify and SoundCloud embeds.
  */
-import type { MusicSource, MusicTrack } from "../../content/types";
+import type { PageComponent } from "..";
+import type { MusicSource, MusicTrack, SectionContent } from "../../content/types";
 import { PurePage } from "../components/PurePage";
+
+// Import the soundcloud data directly
+import soundcloudJSON from "@/content/soundcloud.json";
 
 // --- MusicTrack support ----------------------------------------------------
 
@@ -127,7 +131,12 @@ export const resolveMusicTrack = (
   };
 };
 
-export const MusicPage = () => {
-  // Use the existing MusicContent component which handles loading soundcloud.json
-  return <PurePage content={null} />;
+// MusicPage implementation that uses the static soundcloud.json data
+export const MusicPage: PageComponent = () => {
+  function toSections(musicData: typeof soundcloudJSON): SectionContent {
+    throw new Error("Function not implemented.");
+  }
+
+  // Directly use the imported music data
+  return <PurePage json={toSections(soundcloudJSON)} />;
 };

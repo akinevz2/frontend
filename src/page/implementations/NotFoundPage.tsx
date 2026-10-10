@@ -1,13 +1,22 @@
-import { PurePage } from "../components/PurePage";
+import type { PageComponent } from "..";
+import type { PageContent } from "@/content/types";
+import { PurePage } from "@/page/components/PurePage";
 
-const NotFoundPage = () => {
-  // Placeholder implementation - in real app this would show 404 content
-  const mockSections = {
+export const NotFoundPage: PageComponent = () => {
+  const errorContent: PageContent = {
     heading: "Page Not Found",
-    content: "The page you are looking for does not exist.",
+    className: "error-window",
+    theme: "open",
+    content: [
+      {
+        heading: "Error Message",
+        content: [
+          `<pre class="error-stack">404 - Not Found</pre>`,
+          "The page you are looking for does not exist.",
+        ],
+        theme: "open",
+      },
+    ],
   };
-
-  return <PurePage content={mockSections} />;
+  return <PurePage json={errorContent} />;
 };
-
-export default NotFoundPage;
