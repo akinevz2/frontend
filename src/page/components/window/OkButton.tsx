@@ -1,5 +1,4 @@
 import {
-  useCallback,
   useEffect,
   useRef,
   type ButtonHTMLAttributes,
@@ -256,21 +255,18 @@ export const OkButton = ({ children, onClick, ...rest }: OkButtonProps) => {
     };
   }, []);
 
-  // Ref callback: register / unregister this button in the module-level
-  // set whenever the DOM element is attached or detached.
-  const setButtonRef = useCallback((node: HTMLButtonElement | null) => {
-    const previous = buttonRef.current;
-    if (previous) {
-      registeredButtons.delete(previous);
-    }
-    buttonRef.current = node;
-    if (node) {
-      registeredButtons.add(node);
-    }
-  }, []);
-
   return (
-    <button {...rest} ref={setButtonRef} onClick={onClick}>
+    <button
+      {...rest}
+      ref={buttonRef}
+      onClick={onClick}
+      aria-label="Reveal content"
+      className="reveal-button"
+      style={{
+        position: "relative",
+        alignSelf: "end",
+      }}
+    >
       {children ?? "OK"}
     </button>
   );

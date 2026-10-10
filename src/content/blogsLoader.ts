@@ -39,8 +39,6 @@ const BlogFrontMatter = z.object({
 
 export type BlogFrontMatterType = z.infer<typeof BlogFrontMatter>;
 
-export interface BlogPostEntry extends Record<string, any> { }
-
 export const loadBlogPosts = async (): Promise<BlogPost[]> => {
   try {
     const response = await fetch("/src/data/blogPosts.json");

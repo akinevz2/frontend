@@ -1,8 +1,8 @@
-import type { Pages } from "@/page"
+import type { Pages } from "@/page";
 
 type SitemapContent = {
-    pages: Pages
-}
+  pages: Pages;
+};
 export function SitemapContent({ pages }: SitemapContent) {
-    return `there's ${pages.length} pages on the website`;
+  return `there's ${pages.length} pages on the website`;
 }

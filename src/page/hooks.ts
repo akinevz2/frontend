@@ -1,22 +1,18 @@
-const mods = import.meta.glob('./implementations/*Page.tsx', { eager: true })
-import type { Pages } from ".";
-import menuPages from "../content/menu.json"
+import { useMemo } from "react";
+import { useLocation } from "react-router-dom";
+import { usePageContext } from "./components/PageContext";
+import { page404, type PageConfig } from "./index";
+import { resolvePage } from "./routing";
 
-export const PageRegistry: Record<string, any> =
-    Object.fromEntries(
-        Object.values(mods).flatMap((mod: any) =>
-            Object.entries(mod).filter(([key]) => key.endsWith('Page'))
-        )
-    )
-
-export const staticPages: Pages = menuPages;
-
-export const usePages = () => {
-    return staticPages;
-}
-
-export const usePath = (path: string, pages: Pages) => {
-    // Find page by path and return the component
-    const page = pages.find((page) => page.path === path);
-    return page?.content;
+export const usePage = () => {
+  const location = useLocation();
+  const { pages } = usePageContext();
+  return useMemo(() => {
+    return resolvePage(pages, location.pathname, page404)?.page;
+  }, [location.pathname, pages]);
 };
+
+export function usePageConfig(pathname: string): PageConfig {
+  const { pages } = usePageContext();
+  return resolvePage(pages, pathname, page404) ?? page404;
+}

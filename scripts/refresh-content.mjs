@@ -17,10 +17,10 @@ const driftReportPath = resolve(projectRoot, "public", "documents", "drift-repor
 
 const LOCAL_SOURCES = [
     {
-        inputPath: resolve(projectRoot, "public/blog/posts.json"),
+        inputPath: resolve(projectRoot, "src/content/addons.json"),
     },
     {
-        inputPath: resolve(projectRoot, "public/blog/music-links.json"),
+        inputPath: resolve(projectRoot, "src/content/music-ext.json"),
     },
 ];
 

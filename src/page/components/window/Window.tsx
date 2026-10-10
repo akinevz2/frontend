@@ -1,26 +1,24 @@
-import { WindowBody } from "./WindowBody";
-import { WindowTitlebar } from "./Decorations";
-import { isSectionContent } from "@/content";
-import type { PageContent } from "@/content/types";
+import type { ClassNames, Content } from "@/content/types";
+import { useContent } from "../hooks";
+
+export type WindowProps = {
+  content: Content;
+};
 
 /**
- * Window component - Main window container with decorations
+ * Window component - Main window container with decorations.
+ * useContent renders the recursive body and nested section windows.
  */
-export function Window({
-  content,
-}: {
-  content: PageContent;
-}) {
-  if (isSectionContent(content)) {
-    const { heading } = content;
-    return (
-      <section className="window" >
-        <WindowTitlebar heading={heading} />
-        <WindowBody content={content} />
-      </section>
-    );
-  }
-  return <section className="window" >
-    <WindowBody content={content} />
-  </section>
+export function Window({ content }: WindowProps) {
+  return useContent(content);
+}
+
+export type WindowBodyChildren = {
+  content: Content;
+};
+
+export type WindowBodyProps = ClassNames & WindowBodyChildren;
+
+export function WindowBody({ content }: WindowBodyProps) {
+  return useContent(content);
 }

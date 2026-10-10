@@ -7,36 +7,17 @@
  * 3. Integration with the new declarative page structure
  */
 
-import { Window } from "./window/Window.tsx";
-import type React from "react";
-import { useContent } from "./hooks.ts";
-import type { Content } from "@/content/types.d.ts";
-import type { Location } from "react-router-dom";
-
-export type PageSpaceProps = {
-  location: Location;
-};
-
-export const PageSpace: React.FC<PageSpaceProps> = (props: PageSpaceProps) => {
-  const { location } = props;
-
-
-  const metadata = useContent(content);
-  return <Window content={metadata} />
-}
-
-
+import type { SectionContent } from "@/content/types";
+import { Window } from "./window/Window";
+import { useContent } from "./hooks";
 /**
  * BasePage - Main component that renders page content
  *
  * This is a pure component that uses the new declarative approach
  * for rendering pages based on configuration rather than hard-coded HTML
  */
-export function PurePage<T extends unknown>({ content }: { content: Content<T> }) {
-  return (
-    <PageSpace content={content} />
-  );
+export function PurePage({ json }: { json: SectionContent }) {
+  if (!json) return null;
+  const content = useContent(json);
+  return <Window content={content} />;
 }
-
-
-

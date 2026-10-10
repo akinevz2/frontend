@@ -39,6 +39,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const projectRoot = resolve(__dirname, "..");
 const outputFile = resolve(projectRoot, "public/soundcloud.json");
+const contentOutputFile = resolve(projectRoot, "src/content/soundcloud.json");
 
 /** SoundCloud usernames whose discographies should be published. */
 const SOUND_CLOUD_OWNERS = ["akinevz", "akinevz2"];
@@ -507,6 +508,7 @@ export const run = async () => {
     };
 
     await writeFile(outputFile, `${JSON.stringify(result, null, 2)}\n`, "utf8");
+    await writeFile(contentOutputFile, `${JSON.stringify(result, null, 2)}\n`, "utf8");
 
 
     process.stdout.write(

@@ -1,4 +1,4 @@
-@import "../../public/loading.css";
+@import "../public/loading.css";
 
 .title-bar-controls button[aria-label="Maximize"] {
   margin-left: 2px;
@@ -160,6 +160,14 @@
 }
 
 /* Reset XP.css window styling overrides */
+#root > .window {
+  margin: 2em;
+}
+
+.window > *:not(.title-bar):not(.window) {
+  padding: 1.25em;
+}
+
 .window {
   min-width: min(480px, 100%);
   height: max-content;
@@ -215,6 +223,7 @@ main > .page {
 }
 
 body {
+  font-family: inherit;
   margin-top: 0;
   min-height: 100vh;
   min-height: 100dvh;
@@ -390,10 +399,10 @@ form#form > label {
   word-break: break-word;
 }
 
-.window-body pre {
+pre {
   white-space: pre-wrap;
-  overflow-wrap: anywhere;
   word-break: break-word;
+  overflow:scroll;
 }
 
 /* xp.css sets very large heading sizes; keep markdown headings readable in content windows. */
@@ -612,7 +621,7 @@ form#form > label {
   display: inline-block;
 }
 
-.minimized-menu .menu-button {
+.minimized-menu .menu_button {
   display: block;
   padding: 4px 8px;
   text-decoration: none;
@@ -628,12 +637,12 @@ form#form > label {
 }
 
 @media (hover: hover) {
-  .minimized-menu .menu-button:hover {
+  .minimized-menu .menu_button:hover {
     background-color: rgba(51, 153, 255, 0.2);
   }
 }
 
-.minimized-menu .menu-button:active {
+.minimized-menu .menu_button:active {
   background-color: rgba(51, 153, 255, 0.4);
 }
 
@@ -760,6 +769,7 @@ body:has(.unhide-button-container) .page {
   /* Constrain window width on mobile */
   .window {
     max-width: 100%;
+    margin: 0;
     box-sizing: border-box;
   }
 
@@ -910,8 +920,6 @@ body:has(.unhide-button-container) .page {
 .window-body-scroll {
   flex: 1;
   min-height: 0;
-  overflowY: auto;
-  overflowX: hidden;
 }
 
 .window-container-content {
@@ -941,12 +949,6 @@ body:has(.unhide-button-container) .page {
 }
 
 
-/* Additional Section Component Styles */
-.section-window-scroll-area {
-  overflowY: auto;
-  overflowX: hidden;
-}
-
 /* Combined window container with flex layout */
 .section-window-content-wrapper {
   cursor: default;
@@ -959,3 +961,140 @@ body:has(.unhide-button-container) .page {
   flex-direction: column;
 }
 
+/* ErrorPage styles */
+.page-content-container {
+  all: inherit;
+}
+
+.error-message-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 100%;
+  min-height: 100vh;
+  padding: var(--page-spacing, 2rem);
+  max-width: var(--page-width, 800px);
+  margin: 0 auto;
+  width: 100%;
+}
+
+.error-message-title {
+  font-size: var(--page-heading-size, 2.5rem);
+  font-weight: var(--page-heading-weight, 700);
+  color: var(--page-heading-color, inherit);
+  margin-bottom: var(--page-heading-margin, 1.5rem);
+  padding: var(--page-heading-padding, 0 0.5rem);
+}
+
+.error-message-body {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--page-content-gap, 1.5rem);
+  overflow: auto;
+}
+
+.error-message-text {
+  font-size: var(--page-content-size, 1rem);
+  line-height: var(--page-content-line-height, 1.7);
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  color: var(--page-text-color, inherit);
+}
+
+.error-message-stack-container {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  font-size: var(--page-code-size, 0.9rem);
+  line-height: var(--page-code-line-height, 1.5);
+}
+
+.error-message-stack {
+  background-color: var(--page-code-bg, rgba(0, 0, 0, 0.05));
+  padding: var(--page-code-padding, 1rem);
+  border-radius: var(--page-code-radius, 0.375rem);
+  font-family: var(--page-code-family, monospace);
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  color: var(--page-code-color, inherit);
+  border: var(--page-code-border, 1px solid rgba(0, 0, 0, 0.1));
+}
+
+.error-message-overlay {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  z-index: 10;
+}
+
+.error-message-overlay .clippy-image {
+  width: 6rem;
+  height: 6rem;
+  max-width: 6rem;
+  max-height: 6rem;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.error-message-overlay .clippy-image:hover {
+  opacity: 0;
+}
+
+.page-content-container.scrolled .error-message-overlay .clippy-image {
+  opacity: 0;
+}
+
+@media (max-width: 768px) {
+  .error-message-content {
+    padding: var(--page-spacing-mobile, 1rem);
+    min-height: 100vh;
+  }
+
+  .error-message-title {
+    font-size: var(--page-heading-size-mobile, 2rem);
+  }
+
+  .error-message-body {
+    gap: var(--page-content-gap-mobile, 1rem);
+  }
+
+  .error-message-stack-container {
+    font-size: var(--page-code-size-mobile, 0.85rem);
+  }
+
+  .error-message-overlay {
+    width: 100%;
+  }
+}
+
+/* Additional Error styles for 404/NotFound */
+.error-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #008080;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding: 20px;
+  z-index: 9999;
+  overflow: auto;
+}
+
+.error-speech-bubble {
+  position: relative;
+  background-color: #ffffd0;
+  border: 2px solid #000;
+  border-radius: 4px;
+  padding: 15px;
+  max-width: 600px;
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.5);
+  text-align: left;
+}
