@@ -79,6 +79,11 @@ const favouriteWindow = (entry: unknown): Section | string => {
   return "";
 };
 
+const tracksTotal = (total: number) => (
+  <h3 style={{ textAlign: "center" }}>
+    {total} tracks as of last website rebuild
+  </h3>
+);
 const buildMusic = (): Section[] => {
   const total = soundcloud.asOfUploadingTrackCount ?? soundcloud.trackCount;
   const favourites = (musicExt as unknown[]).map(favouriteWindow);
@@ -91,7 +96,7 @@ const buildMusic = (): Section[] => {
         `Generated: ${new Date(soundcloud.generatedAt).toLocaleString()}`,
         "Replaced a few weak mixes and removed a duplicate.",
         "This total measures main and alt profiles as of uploading.",
-        `**${total} tracks as of last website rebuild**`,
+        tracksTotal(total),
       ],
     },
     {

@@ -1,3 +1,5 @@
+import type { ReactElement } from "react";
+
 export type ThemeName = "experimental" | "centered" | "open";
 
 /** A music/video link rendered as an embedded player (or a plain link). */
@@ -13,7 +15,7 @@ export type Banner = {
   banner: { image: string; href: string; lines: string[] };
 };
 
-export type Item = string | Section | Embed | Banner;
+export type Item = string | Section | Embed | Banner | ReactElement;
 
 /** A window as written in the JSON content files. */
 export type Section = {
