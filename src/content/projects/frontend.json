@@ -1,0 +1,13 @@
+{
+  "slug": "frontend",
+  "title": "frontend",
+  "description": "The source of this personal website.",
+  "github": "https://github.com/akinevz2/frontend",
+  "content": {
+    "heading": "frontend",
+    "content": [
+      "The source of this personal website.",
+      "[https://github.com/akinevz2/frontend](https://github.com/akinevz2/frontend)"
+    ]
+  }
+}

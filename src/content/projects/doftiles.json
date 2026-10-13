@@ -1,0 +1,13 @@
+{
+  "slug": "doftiles",
+  "title": "doftiles",
+  "description": "A window manager setup based on herbstluftwm, almost ready for public use.",
+  "github": "https://github.com/akinevz2/doftiles",
+  "content": {
+    "heading": "doftiles",
+    "content": [
+      "A window manager setup based on herbstluftwm, almost ready for public use.",
+      "[https://github.com/akinevz2/doftiles](https://github.com/akinevz2/doftiles)"
+    ]
+  }
+}

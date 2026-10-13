@@ -182,14 +182,6 @@
       ]
     },
     {
-      "heading": "ninth post (#funny)",
-      "content": [
-        "![jumpscare](https://files.catbox.moe/105hw4.gif)",
-        "> yer da",
-        "me when i realise someone will see my shit in half disassembled order"
-      ]
-    },
-    {
       "heading": "tenth post (#meta, #funny, #redacted, and #timetravelled)",
       "content": [
         "you thought the linearity of my blog was in jeopardy",
@@ -315,21 +307,6 @@
           ]
         },
         {
-          "heading": "i can't belive it won't CDI! (#meta, #quarkus)",
-          "content": [
-            "well it seems there is no nice way to launch [quarkus](https://quarkus.io/) from [picocli](https://picocli.info/) with submenus. i've just spent the last 6 hours troubleshooting the submenu system built with [jline](https://jline.readthedocs.io/) and the reasons why it wouldn't launch the frontend due to missing CDI. the solution was letting it all go and just rewriting everything with manual CDI injection",
-            "![cdi](https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/cdi.png)",
-            {
-              "heading": "relevant",
-              "content": "![relevant](https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/relevant.jpg)"
-            },
-            {
-              "heading": "resolution",
-              "content": "Quarkus application class is intended to be implemented when adding functionality that has to run before the quarkus application starts. I instructed CoPilot to refactor the app to show the menus and launch the app in the background so that CDI is resolved"
-            }
-          ]
-        },
-        {
           "heading": "welcome back! (#ramble, #meta)",
           "content": [
             "I've decided that I am going to be ranking posts on my blog randomly",
@@ -343,52 +320,6 @@
           "heading": "eBay.co.uk is a scam (#rant, #meta, #auto, #blog, #ai)",
           "content": [
             "i have been using eBay for a long time, and i have had a lot of good experiences with it, but recently i have been having a lot of bad experiences with it. i have been trying to sell some items on eBay, and i have been getting a lot of fake buyers who are trying to scam me. they will buy an item, and then they will ask for a refund, and then they will leave negative feedback. i have been trying to report these buyers to eBay, but they don't seem to care. i have been trying to contact eBay customer service, but they don't seem to care either. i have been trying to find a way to get rid of these fake buyers, but i haven't found a solution yet. i am really frustrated with eBay, and i am considering switching to another platform."
-          ]
-        },
-        {
-          "heading": "fifth rage post (#qwen3.5)",
-          "content": [
-            "previous posts have been rearranged, and I will be attaching data from a repeated run, that seems to have proceeded almost identical to the previous one.",
-            "![gpu_usage](https://raw.githubusercontent.com/akinevz2/frontend/blog-posts/gpu_usage_qwen3.5.png)",
-            "still has spent an entirely unnecessary amount of time considering the output formatting like in the original run. my conclusion: **unsuitable for tool use**",
-            "> you will find the post will resize automatically if you fullscreen/unfullscreen your browser window **<<**",
-            {
-              "heading": "final output first part (prepare, its a very long read!)",
-              "content": [
-                "**\\# ollama run qwen35:nothink**",
-                "> > > please let me know what notable improvements are present in qwen3.5, as 5 lines without any markup, one bullet point per line,",
-                "> > > ... if they're known, otherwise return one sentence  ",
-                {
-                  "embed": "/blog/1st.md"
-                }
-              ]
-            },
-            {
-              "heading": "final output second part (never terminated in this run)",
-              "content": [
-                "> > > It appears that your training set does not include information on the Qwen3.5 released recently in early 2026. Please continue",
-                "> > > ... with outputting a conscise answer",
-                {
-                  "embed": "/blog/2nd.md"
-                }
-              ]
-            },
-            "**conclusion**",
-            "no useful output from this model on consumer hardware... qwen3.5:27b",
-            {
-              "heading": "well that sucks!",
-              "content": [
-                {
-                  "heading": "public key",
-                  "content": [
-                    {
-                      "heading": "reveal",
-                      "content": ["[public key](https://akinevz.com/pub.key)"]
-                    }
-                  ]
-                }
-              ]
-            }
           ]
         },
         {
