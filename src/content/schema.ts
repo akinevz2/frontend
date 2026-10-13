@@ -23,7 +23,7 @@ export type Section = {
   content?: string | Item[] | Section;
   link?: string;
   theme?: ThemeName | ThemeName[];
-  printout?: string;
+  embed?: string;
   status?: string;
   /** Text copied by the addon "Copy" button. */
   text?: string;

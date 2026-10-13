@@ -12,7 +12,7 @@
           "content": [
             {
               "heading": "Parts 1-6",
-              "printout": "/stories/1.md"
+              "embed": "/stories/1.md"
             }
           ]
         }
@@ -82,7 +82,7 @@
       "content": [
         {
           "content": "An interactive SQLite-backed REPL for storing and retrieving Runisch terms, with translation, usage examples, and tags.",
-          "printout": "/blog/рунисч-глоссарий.md"
+          "embed": "/blog/рунисч-глоссарий.md"
         }
       ]
     },
@@ -119,7 +119,7 @@
       "content": [
         {
           "content": "**wade carefully, here be dragons**",
-          "printout": "/wsl.1.md"
+          "embed": "/blog/wsl.1.md"
         }
       ]
     },
@@ -131,7 +131,7 @@
           "link": "https://akinevz.com/blog/references/NA2000_03.pdf"
         },
         {
-          "printout": "7.md",
+          "embed": "/blog/7.md",
           "heading": "повествование - a story"
         },
         {
@@ -308,7 +308,7 @@
               "heading": "update, fresh gemma4:latest pull",
               "content": [
                 {
-                  "printout": "4th.md"
+                  "embed": "/blog/4th.md"
                 }
               ]
             }
@@ -359,7 +359,7 @@
                 "> > > please let me know what notable improvements are present in qwen3.5, as 5 lines without any markup, one bullet point per line,",
                 "> > > ... if they're known, otherwise return one sentence  ",
                 {
-                  "printout": "1st.md"
+                  "embed": "/blog/1st.md"
                 }
               ]
             },
@@ -369,7 +369,7 @@
                 "> > > It appears that your training set does not include information on the Qwen3.5 released recently in early 2026. Please continue",
                 "> > > ... with outputting a conscise answer",
                 {
-                  "printout": "2nd.md"
+                  "embed": "/blog/2nd.md"
                 }
               ]
             },
