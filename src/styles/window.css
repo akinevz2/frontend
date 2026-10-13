@@ -365,24 +365,24 @@ form#form > label {
   box-sizing: border-box;
 }
 
-.debug-printout-scroll {
+.resource-embed-scroll {
   width: 100%;
   max-width: 100%;
   height: 100%;
 }
 
-.debug-printout-scroll,
-.debug-printout-scroll * {
+.resource-embed-scroll,
+.resource-embed-scroll * {
   font-family: "Fira Code", "Courier New", Courier, monospace !important;
 }
 
-.debug-printout-scroll pre,
-.debug-printout-scroll code {
+.resource-embed-scroll pre,
+.resource-embed-scroll code {
   max-width: 100%;
   box-sizing: border-box;
 }
 
-.debug-printout-scroll pre {
+.resource-embed-scroll pre {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   word-break: break-word;

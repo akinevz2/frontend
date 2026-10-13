@@ -6,7 +6,7 @@ type State =
   | { status: "ready"; text: string }
   | { status: "error"; message: string };
 
-export function Printout({ src }: { src: string }) {
+export function ResourceEmbed({ src }: { src: string }) {
   const [state, setState] = useState<State>({ status: "loading" });
 
   useEffect(() => {
@@ -26,13 +26,13 @@ export function Printout({ src }: { src: string }) {
   }, [src]);
 
   return (
-    <div className="debug-printout-scroll" data-debug="printout-scroll">
+    <div className="resource-embed-scroll" data-debug="resource-embed-scroll">
       <Md>
         {state.status === "ready"
           ? state.text
           : state.status === "loading"
             ? "Loading..."
-            : `## Printout unavailable\n\nFailed to fetch printout '${src}' (${state.message}).`}
+            : `## Resource unavailable\n\nFailed to fetch embed '${src}' (${state.message}).`}
       </Md>
     </div>
   );

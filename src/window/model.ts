@@ -17,7 +17,7 @@ export type WindowNode = {
   externalLink: boolean;
   themes: ThemeName[];
   className?: string | undefined;
-  printout?: string | undefined;
+  embed?: string | undefined;
   status?: string | undefined;
   copyText?: string | undefined;
   children: WindowChild[];
@@ -67,7 +67,7 @@ function buildNode(section: Section, id: string, depth: number): WindowNode {
     externalLink: Boolean(section.externalLink),
     themes: toThemes(section.theme),
     className: section.className,
-    printout: section.printout,
+    embed: section.embed,
     status: section.status,
     copyText: section.text,
     children,

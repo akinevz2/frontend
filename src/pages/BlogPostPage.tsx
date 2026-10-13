@@ -7,7 +7,7 @@ export const BlogPostPage = () => {
   const { pathname } = useLocation();
   const content = useMemo(() => {
     const src = decodeURI(pathname);
-    return { heading: src.split("/").pop() ?? src, printout: pathname };
+    return { heading: src.split("/").pop() ?? src, embed: pathname };
   }, [pathname]);
   return <PageWindows content={content} />;
 };

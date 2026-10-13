@@ -6,7 +6,7 @@ import { Md } from "@/lib/markdown";
 import { CopyAddon } from "./CopyAddon";
 import { BannerView, EmbedView } from "./Embed";
 import { OkButton } from "./OkButton";
-import { Printout } from "./Printout";
+import { ResourceEmbed } from "./ResourceEmbed";
 import { TitleBar } from "./TitleBar";
 import type { WindowChild, WindowNode } from "./model";
 import { permalinkFor, useWindowStore } from "./state";
@@ -82,7 +82,7 @@ function Body({ node, expanded }: { node: WindowNode; expanded: boolean }) {
       {showContent && node.children.length > 0 && (
         <Children items={node.children} />
       )}
-      {expanded && node.printout && <Printout src={node.printout} />}
+      {expanded && node.embed && <ResourceEmbed src={node.embed} />}
     </>
   );
 
@@ -115,12 +115,12 @@ export function Window({ node }: { node: WindowNode }) {
   if (flags.closed) return null;
 
   // Windows without a heading are plain groups of content, not windows.
-  if (!node.heading && !node.printout) {
+  if (!node.heading && !node.embed) {
     return <Body node={node} expanded />;
   }
 
   const expanded =
-    forcesExpanded(node) || Boolean(flags.expanded || node.printout);
+    forcesExpanded(node) || Boolean(flags.expanded || node.embed);
 
   const close = () => {
     playLayeredAudio(CLOSE_SOUND);
