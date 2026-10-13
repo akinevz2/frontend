@@ -28,7 +28,6 @@
   color: #fff;
   background-size: cover;
   background-position: center;
-  text-shadow: 0 1px 3px #000;
   min-height: 120px;
 }
 
@@ -50,14 +49,10 @@
   font-family: inherit;
 }
 
-/* The rebuild counter is a hero number, not body copy. */
 .music-as-of-uploading .window-body li strong {
   display: block;
   margin: 0.75em 0;
   text-align: center;
-  font-family: bahnscrift, "Fira Code", monospace;
-  font-size: 1.6rem;
-  font-weight: 400;
 }
 
 .music-as-of-uploading .window-body li p {
