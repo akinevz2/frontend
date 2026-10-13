@@ -45,8 +45,25 @@ function Children({ items }: { items: WindowChild[] }) {
   );
 }
 
-function Body({ node, expanded }: { node: WindowNode; expanded: boolean }) {
+function PermalinkButton({ node }: { node: WindowNode }) {
   const { permalinkMode } = useWindowStore();
+  return (
+    <div className="permalink-button-container">
+      <button
+        onClick={() =>
+          copyText(
+            permalinkFor(node, permalinkMode),
+            "Permalink copied to clipboard!",
+          )
+        }
+      >
+        Permalink Here
+      </button>
+    </div>
+  );
+}
+
+function Body({ node, expanded }: { node: WindowNode; expanded: boolean }) {
   const showOk = !expanded && !forcesExpanded(node);
   const showContent = expanded || Boolean(node.link);
 
@@ -76,25 +93,7 @@ function Body({ node, expanded }: { node: WindowNode; expanded: boolean }) {
     );
   }
 
-  return (
-    <>
-      {content}
-      {expanded && node.depth > 0 && node.heading && (
-        <div className="permalink-button-container">
-          <button
-            onClick={() =>
-              copyText(
-                permalinkFor(node, permalinkMode),
-                "Permalink copied to clipboard!",
-              )
-            }
-          >
-            Permalink Here
-          </button>
-        </div>
-      )}
-    </>
-  );
+  return <>{content}</>;
 }
 
 export function Window({ node }: { node: WindowNode }) {
@@ -148,6 +147,7 @@ export function Window({ node }: { node: WindowNode }) {
         <div
           className={`window-body${maximized ? " maximized-window-body" : ""}`}
         >
+          {maximized && node.heading && <PermalinkButton node={node} />}
           <Body node={node} expanded={expanded} />
         </div>
       )}

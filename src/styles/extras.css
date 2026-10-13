@@ -38,13 +38,57 @@
   right: 0;
   bottom: 0;
   z-index: 999;
-  padding: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-family: "Fira Code", monospace;
   font-size: 0.85rem;
-  background: #f0f0f0;
+  background: #fff;
   border-top: 1px solid #808080;
-  color: #000;
+  color: #2f2f2f;
 }
 
+.debug-bar strong {
+  font-family: inherit;
+}
+
+/* The rebuild counter is a hero number, not body copy. */
+.music-as-of-uploading .window-body li strong {
+  display: block;
+  margin: 0.75em 0;
+  text-align: center;
+  font-family: bahnscrift, "Fira Code", monospace;
+  font-size: 1.6rem;
+  font-weight: 400;
+}
+
+.music-as-of-uploading .window-body li p {
+  margin-bottom: 0;
+}
+
+/* Sits at the top right of the maximized window, on the first line of content. */
+.permalink-button-container {
+  align-self: flex-end;
+  margin-bottom: 0.25em;
+}
+
+.maximized-backdrop > .window.maximized {
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  box-sizing: border-box;
+  max-height: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.maximized-backdrop > .window.maximized > .window-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+body:has(.maximized-backdrop) {
+  overflow: hidden;
+}
 body:has(.maximized-backdrop) .debug-bar {
   display: none;
 }

@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { createPortal } from "react-dom";
 import {
   musicExt,
   soundcloud,
@@ -118,11 +119,13 @@ function DebugBar() {
     (p) =>
       `@${p.owner}: ${soundcloud.tracks.filter((t) => t.owner === p.owner).length}`,
   ).join(" | ");
-  return (
+  // .page establishes a perspective, so fixed positioning needs to escape it.
+  return createPortal(
     <div className="debug-bar" role="status" aria-live="polite" data-debug-bar>
       <strong>Debug:</strong> {soundcloud.trackCount} tracks loaded ({summary}).
       Generated {new Date(soundcloud.generatedAt).toLocaleString()}.
-    </div>
+    </div>,
+    document.body,
   );
 }
 
