@@ -28,7 +28,6 @@ export const MUTABLE_PATHS = Object.freeze([
     "addons/index.html",
     "blog.html",
     "blog/index.html",
-    "blog/posts.json",
     "contact.html",
     "contact/index.html",
     "music.html",
@@ -37,7 +36,6 @@ export const MUTABLE_PATHS = Object.freeze([
     "sitemap.xml",
     "sitemap.html",
     "sitemap/index.html",
-    "soundcloud.json",
     "wow.html",
     "wow/index.html",
     // pagerts is a new page - allowed as NEW until baseline is updated

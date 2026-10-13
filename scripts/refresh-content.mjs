@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { run as refreshSoundcloud } from "./refresh-soundcloud.mjs";
-import { readFile, unlink, writeFile } from "node:fs/promises";
+import { readdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -15,23 +15,31 @@ const projectRoot = resolve(__dirname, "..");
  */
 const driftReportPath = resolve(projectRoot, "public", "documents", "drift-report.json");
 
-const LOCAL_SOURCES = [
-    {
-        inputPath: resolve(projectRoot, "src/content/addons.json"),
-    },
-    {
-        inputPath: resolve(projectRoot, "src/content/music-ext.json"),
-    },
-];
+const contentRoot = resolve(projectRoot, "src/content");
 
-async function freezeBlogContent() {
-    for (const source of LOCAL_SOURCES) {
-        const content = await readFile(source.inputPath, "utf8");
+/** Every structural JSON file under src/content (recursively). */
+async function listContentJson(dir = contentRoot) {
+    const entries = await readdir(dir, { withFileTypes: true });
+    const nested = await Promise.all(
+        entries.map((entry) =>
+            entry.isDirectory()
+                ? listContentJson(resolve(dir, entry.name))
+                : entry.name.endsWith(".json")
+                  ? [resolve(dir, entry.name)]
+                  : [],
+        ),
+    );
+    return nested.flat();
+}
+
+async function validateLocalContent() {
+    for (const inputPath of await listContentJson()) {
+        const content = await readFile(inputPath, "utf8");
         JSON.parse(content);
 
         // Normalize trailing newline so build outputs remain stable.
-        await writeFile(source.inputPath, `${content.trim()}\n`, "utf8");
-        process.stdout.write(`Validated local content: ${source.inputPath}\n`);
+        await writeFile(inputPath, `${content.trim()}\n`, "utf8");
+        process.stdout.write(`Validated local content: ${inputPath}\n`);
     }
 }
 
@@ -41,7 +49,7 @@ export async function run() {
             throw error;
         }
     });
-    await freezeBlogContent();
+    await validateLocalContent();
     await refreshSoundcloud();
 }
 
@@ -49,9 +57,8 @@ const isDirectExecution =
     process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1]);
 
 if (isDirectExecution) {
-    process.stderr.write('Hello world :) <boom>')
+    run().catch((error) => {
+        process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
+        process.exit(1);
+    });
 }
-run().catch((error) => {
-    process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
-    process.exit(1);
-});
