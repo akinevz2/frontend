@@ -70,6 +70,7 @@ function leaveGhost(): void {
     left: `${rect.left}px`,
     width: `${rect.width}px`,
     height: `${rect.height}px`,
+    minHeight: "0",
   });
   ghost.removeAttribute("id");
   ghost.querySelectorAll("iframe, audio, video").forEach((el) => {

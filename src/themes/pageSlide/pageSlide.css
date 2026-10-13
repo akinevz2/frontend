@@ -20,6 +20,13 @@ html.theme-page-slide .page-slide-ghost {
   animation: page-slide-out var(--ps-duration) ease-in-out forwards;
 }
 
+/* The live <main> has an indefinite height, so its page sizes to content;
+   the ghost has a fixed height and must not stretch the page to fill it. */
+html.theme-page-slide .page-slide-ghost > .page {
+  height: auto;
+  min-height: 0;
+}
+
 @keyframes page-slide-in {
   from {
     translate: var(--ps-in-x) var(--ps-in-y);
