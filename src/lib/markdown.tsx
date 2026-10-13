@@ -52,7 +52,7 @@ export function Md({ children }: Props) {
           return (
             <a
               href={href}
-              {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
+              {...(external ? { rel: "noreferrer" } : {})}
               {...rest}
             >
               {label}
