@@ -20,7 +20,7 @@ export const ProjectPage = () => {
   const content = {
     theme: "open" as const,
     ...project.content,
-    content: [...toItems(project.content.content), backRow],
+    content: [backRow, ...toItems(project.content.content)],
   };
   return <PageWindows content={content} onLeave={back} />;
 };
