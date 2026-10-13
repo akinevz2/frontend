@@ -1,0 +1,13 @@
+{
+  "slug": "graphbrowser",
+  "title": "graphbrowser",
+  "description": "Describes a website's external dependency graph one layer at a time as structured markdown, with hyperlinks for navigating between graph nodes.",
+  "github": "https://github.com/akinevz2/graphbrowser",
+  "content": {
+    "heading": "graphbrowser",
+    "content": [
+      "Describes a website's external dependency graph one layer at a time as structured markdown, with hyperlinks for navigating between graph nodes.",
+      "[https://github.com/akinevz2/graphbrowser](https://github.com/akinevz2/graphbrowser)"
+    ]
+  }
+}

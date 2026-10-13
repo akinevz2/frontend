@@ -1,0 +1,13 @@
+{
+  "slug": "webuser",
+  "title": "webuser",
+  "description": "A jail and shell with mounted paths, packaged as a bun CLI.",
+  "github": "https://github.com/akinevz2/webuser",
+  "content": {
+    "heading": "webuser",
+    "content": [
+      "A jail and shell with mounted paths, packaged as a bun CLI.",
+      "[https://github.com/akinevz2/webuser](https://github.com/akinevz2/webuser)"
+    ]
+  }
+}

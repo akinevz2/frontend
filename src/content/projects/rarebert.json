@@ -1,0 +1,13 @@
+{
+  "slug": "rarebert",
+  "title": "rarebert",
+  "description": "AI-powered notification daemon. On hold until there is time to port it to Opencode V2.",
+  "github": "https://github.com/akinevz2/rarebert",
+  "content": {
+    "heading": "rarebert",
+    "content": [
+      "AI-powered notification daemon. On hold until there is time to port it to Opencode V2.",
+      "[https://github.com/akinevz2/rarebert](https://github.com/akinevz2/rarebert)"
+    ]
+  }
+}

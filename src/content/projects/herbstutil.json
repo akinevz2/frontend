@@ -1,0 +1,13 @@
+{
+  "slug": "herbstutil",
+  "title": "herbstutil",
+  "description": "Converts the output of `herbstclient attr` into JSON.",
+  "github": "https://github.com/akinevz2/herbstutil",
+  "content": {
+    "heading": "herbstutil",
+    "content": [
+      "Converts the output of `herbstclient attr` into JSON.",
+      "[https://github.com/akinevz2/herbstutil](https://github.com/akinevz2/herbstutil)"
+    ]
+  }
+}
