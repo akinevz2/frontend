@@ -129,3 +129,52 @@ body:has(.maximized-backdrop) .debug-bar {
   background-repeat: no-repeat;
   background-position: top 2px left 3px;
 }
+
+.clippy {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.4rem;
+  animation: clippy-enter 600ms ease-out;
+}
+
+.clippy-image {
+  width: 120px;
+  max-width: 28vw;
+  height: auto;
+  cursor: pointer;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4));
+}
+
+.clippy-bubble {
+  position: relative;
+  max-width: 180px;
+  padding: 0.5rem 0.75rem;
+  background: #fffde7;
+  border: 2px solid #aaa;
+  border-radius: 8px;
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.25);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.clippy-bubble::after {
+  content: "";
+  position: absolute;
+  right: 20px;
+  bottom: -8px;
+  border-top: 8px solid #aaa;
+  border-right: 8px solid transparent;
+  border-left: 8px solid transparent;
+}
+
+@keyframes clippy-enter {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+}

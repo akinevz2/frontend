@@ -5,7 +5,8 @@ import { ContactPage } from "./ContactPage";
 import { HomePage } from "./HomePage";
 import { MusicPage } from "./MusicPage";
 import { NotFoundPage } from "./NotFoundPage";
-import { PagertsPage } from "./PagertsPage";
+import { ProjectPage } from "./ProjectPage";
+import { ProjectsPage } from "./ProjectsPage";
 import { ResumePage } from "./ResumePage";
 import { SitemapPage } from "./SitemapPage";
 import { WowPage } from "./WowPage";
@@ -18,7 +19,8 @@ export const pageRegistry: Record<string, ComponentType> = {
   HomePage,
   MusicPage,
   NotFoundPage,
-  PagertsPage,
+  ProjectPage,
+  ProjectsPage,
   ResumePage,
   SitemapPage,
   WowPage,

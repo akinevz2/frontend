@@ -13,7 +13,13 @@ const GROUPS: Array<{ heading: string; summary: string; routes: Route[] }> = [
   {
     heading: "Interactive surfaces",
     summary: "The utility pages that support downloads, contact, and tooling.",
-    routes: inGroup(["/addons", "/wow", "/contact", "/resume", "/pagerts"]),
+    routes: routes.filter(
+      (route) =>
+        route.page === "ProjectPage" ||
+        ["/addons", "/wow", "/contact", "/resume", "/projects"].includes(
+          route.path,
+        ),
+    ),
   },
   {
     heading: "Index and diagnostics",

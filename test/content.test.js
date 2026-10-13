@@ -16,3 +16,18 @@ test("route paths are unique and a /404 route exists", () => {
   assert.equal(new Set(paths).size, paths.length);
   assert.ok(paths.includes("/404"));
 });
+
+test("every project document is complete and routable", async () => {
+  const { readdirSync } = await import("node:fs");
+  const files = readdirSync("src/content/projects").filter((f) => f.endsWith(".json"));
+  assert.ok(files.length > 0);
+  for (const file of files) {
+    const project = JSON.parse(readFileSync(`src/content/projects/${file}`, "utf8"));
+    for (const key of ["slug", "title", "description", "github"]) {
+      assert.equal(typeof project[key], "string", `${file}: ${key}`);
+    }
+    assert.ok(project.content, `${file}: content`);
+    const path = project.path ?? `/projects/${project.slug}`;
+    assert.ok(!pages.some((r) => r.path === path), `${file}: path clashes with pages.json`);
+  }
+});
