@@ -169,8 +169,11 @@ const onAudioEnded = () => {
 };
 
 // The close sound while the bubble is up makes Clippy refuse.
-const onCrunchy = () => {
-  if (state.bubble) set({ saysNo: true });
+// Only the first close per bubble is refused; the window then stays open.
+const onCrunchy = (event: Event) => {
+  if (!state.bubble || state.saysNo) return;
+  event.preventDefault();
+  set({ saysNo: true });
 };
 
 /** Attaches the global listeners; returns the detach function. */
