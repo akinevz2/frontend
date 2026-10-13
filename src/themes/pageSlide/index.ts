@@ -16,6 +16,7 @@ const VARIABLES = [
   "--ps-in-y",
   "--ps-out-x",
   "--ps-out-y",
+  "--ps-pad-from",
 ];
 
 /** Where the new page starts and the old one ends, per direction. */
@@ -60,6 +61,7 @@ const menuOrder = () =>
 
 /** Static copy of the outgoing page that slides off the screen. */
 function leaveGhost(): void {
+  root().style.removeProperty("--ps-pad-from");
   const main = document.querySelector("main");
   if (!main) return;
   const rect = main.getBoundingClientRect();
@@ -75,8 +77,11 @@ function leaveGhost(): void {
   const pageEl = main.querySelector<HTMLElement>(".page");
   const ghostPage = ghost.querySelector<HTMLElement>(".page");
   if (pageEl && ghostPage) {
-    // Page padding can depend on elements (debug bar) that unmount with the route.
-    ghostPage.style.paddingBottom = getComputedStyle(pageEl).paddingBottom;
+    // Page padding can depend on elements (debug bar) that unmount with the
+    // route: freeze it on the ghost and ease the new page away from it.
+    const padding = getComputedStyle(pageEl).paddingBottom;
+    ghostPage.style.paddingBottom = padding;
+    root().style.setProperty("--ps-pad-from", padding);
   }
   ghost.removeAttribute("id");
   ghost.querySelectorAll("iframe, audio, video").forEach((el) => {
@@ -87,10 +92,12 @@ function leaveGhost(): void {
   });
   document.body.appendChild(ghost);
   document.querySelectorAll<HTMLElement>("body > .debug-bar").forEach((bar) => {
-    const fade = bar.cloneNode(true) as HTMLElement;
-    fade.classList.add("page-slide-fade");
-    document.body.appendChild(fade);
-    window.setTimeout(() => fade.remove(), DURATION_MS + 200);
+    const leaving = bar.cloneNode(true) as HTMLElement;
+    leaving.classList.add("page-slide-bar");
+    // Layout rules key off this attribute; the clone must not keep them alive.
+    leaving.removeAttribute("data-debug-bar");
+    document.body.appendChild(leaving);
+    window.setTimeout(() => leaving.remove(), DURATION_MS + 200);
   });
   const remove = () => ghost.remove();
   ghost.addEventListener("animationend", remove);
@@ -150,6 +157,6 @@ export function disablePageSlide(): void {
   clearThemeVariables(VARIABLES);
   root().removeAttribute(ATTRIBUTE);
   document
-    .querySelectorAll(".page-slide-ghost, .page-slide-fade")
+    .querySelectorAll(".page-slide-ghost, .page-slide-bar")
     .forEach((el) => el.remove());
 }

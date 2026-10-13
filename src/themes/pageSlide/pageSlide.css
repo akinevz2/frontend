@@ -27,15 +27,27 @@ html.theme-page-slide .page-slide-ghost > .page {
   min-height: 0;
 }
 
-/* Fixed footer bars of the old page fade out instead of vanishing. */
-html.theme-page-slide .page-slide-fade {
+/* Fixed footer bars of the old page slide down off the screen. */
+html.theme-page-slide .page-slide-bar {
   pointer-events: none;
-  animation: page-slide-fade var(--ps-duration) ease-in-out forwards;
+  animation: page-slide-bar var(--ps-duration) ease-in-out forwards;
 }
 
-@keyframes page-slide-fade {
+/* The new page eases from the old page's bottom padding to its own, so its
+   window moves in step with the footer leaving. */
+html.theme-page-slide[data-page-slide] main:not(.page-slide-ghost) > .page {
+  animation: page-slide-pad var(--ps-duration) ease-in-out backwards;
+}
+
+@keyframes page-slide-bar {
   to {
-    opacity: 0;
+    translate: 0 100%;
+  }
+}
+
+@keyframes page-slide-pad {
+  from {
+    padding-bottom: var(--ps-pad-from, 0px);
   }
 }
 
@@ -54,7 +66,7 @@ html.theme-page-slide .page-slide-fade {
 @media (prefers-reduced-motion: reduce) {
   html.theme-page-slide[data-page-slide] main:not(.page-slide-ghost),
   html.theme-page-slide .page-slide-ghost,
-  html.theme-page-slide .page-slide-fade {
+  html.theme-page-slide .page-slide-bar {
     display: none;
     animation: none;
   }
