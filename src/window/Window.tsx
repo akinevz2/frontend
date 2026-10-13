@@ -141,7 +141,7 @@ export function Window({ node }: { node: WindowNode }) {
       <TitleBar
         node={node}
         maximized={maximized}
-        onMinimize={() => patch(node.id, { minimized: !flags.minimized })}
+        onMinimize={() => patch(node.id, { expanded: false, maximized: false })}
         onMaximize={() => patch(node.id, { maximized: !maximized })}
         onClose={close}
       />
