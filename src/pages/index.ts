@@ -1,6 +1,7 @@
 import type { ComponentType } from "react";
 import { AddonsPage } from "./AddonsPage";
 import { BlogPage } from "./BlogPage";
+import { BlogPostPage } from "./BlogPostPage";
 import { ContactPage } from "./ContactPage";
 import { HomePage } from "./HomePage";
 import { MusicPage } from "./MusicPage";
@@ -15,6 +16,7 @@ import { WowPage } from "./WowPage";
 export const pageRegistry: Record<string, ComponentType> = {
   AddonsPage,
   BlogPage,
+  BlogPostPage,
   ContactPage,
   HomePage,
   MusicPage,

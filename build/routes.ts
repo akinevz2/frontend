@@ -41,12 +41,10 @@ export function loadRoutes(): RouteConfig[] {
     .readdirSync(dir)
     .filter((name) => name.endsWith(".json"))
     .map((name) => readJson<ProjectDoc>(path.join(dir, name)))
-    .map(
-      (project): RouteConfig => ({
-        path: project.path ?? `/projects/${project.slug}`,
-        title: project.title,
-        description: project.description,
-      }),
-    );
+    .map((project): RouteConfig => ({
+      path: project.path ?? `/projects/${project.slug}`,
+      title: project.title,
+      description: project.description,
+    }));
   return [...pages, ...projects];
 }

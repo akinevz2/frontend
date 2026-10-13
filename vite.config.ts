@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 import path from "node:path";
 import { manualChunks } from "./build/chunks.ts";
 import { DEV_HOST, DEV_PORT, ROOT, SECURITY_HEADERS } from "./build/env.ts";
+import { blogDocumentsPlugin } from "./build/blogDocumentsPlugin.ts";
 import { routeSkeletonsPlugin } from "./build/routeSkeletonsPlugin.ts";
 
 const fromRoot = (p: string) => path.resolve(ROOT, p);
@@ -16,7 +17,7 @@ export default defineConfig({
       "@content": fromRoot("src/content"),
     },
   },
-  plugins: [react(), routeSkeletonsPlugin()],
+  plugins: [react(), blogDocumentsPlugin(), routeSkeletonsPlugin()],
   build: {
     cssMinify: false,
     rollupOptions: { output: { manualChunks } },

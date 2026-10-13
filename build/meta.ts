@@ -30,16 +30,46 @@ export function withRouteMeta(html: string, route: RouteConfig): string {
 
   const tags: Array<[string, string]> = [
     ["title", `<title data-route-meta="title">${title}</title>`],
-    ["description", `<meta name="description" content="${description}" data-route-meta="description" />`],
-    ["canonical", `<link rel="canonical" href="${url}" data-route-meta="canonical" />`],
-    ["og:title", `<meta property="og:title" content="${title}" data-route-meta="og:title" />`],
-    ["og:description", `<meta property="og:description" content="${description}" data-route-meta="og:description" />`],
-    ["og:url", `<meta property="og:url" content="${url}" data-route-meta="og:url" />`],
-    ["og:image", `<meta property="og:image" content="${image}" data-route-meta="og:image" />`],
-    ["twitter:card", `<meta name="twitter:card" content="summary" data-route-meta="twitter:card" />`],
-    ["twitter:image", `<meta name="twitter:image" content="${image}" data-route-meta="twitter:image" />`],
-    ["twitter:title", `<meta name="twitter:title" content="${title}" data-route-meta="twitter:title" />`],
-    ["twitter:description", `<meta name="twitter:description" content="${description}" data-route-meta="twitter:description" />`],
+    [
+      "description",
+      `<meta name="description" content="${description}" data-route-meta="description" />`,
+    ],
+    [
+      "canonical",
+      `<link rel="canonical" href="${url}" data-route-meta="canonical" />`,
+    ],
+    [
+      "og:title",
+      `<meta property="og:title" content="${title}" data-route-meta="og:title" />`,
+    ],
+    [
+      "og:description",
+      `<meta property="og:description" content="${description}" data-route-meta="og:description" />`,
+    ],
+    [
+      "og:url",
+      `<meta property="og:url" content="${url}" data-route-meta="og:url" />`,
+    ],
+    [
+      "og:image",
+      `<meta property="og:image" content="${image}" data-route-meta="og:image" />`,
+    ],
+    [
+      "twitter:card",
+      `<meta name="twitter:card" content="summary" data-route-meta="twitter:card" />`,
+    ],
+    [
+      "twitter:image",
+      `<meta name="twitter:image" content="${image}" data-route-meta="twitter:image" />`,
+    ],
+    [
+      "twitter:title",
+      `<meta name="twitter:title" content="${title}" data-route-meta="twitter:title" />`,
+    ],
+    [
+      "twitter:description",
+      `<meta name="twitter:description" content="${description}" data-route-meta="twitter:description" />`,
+    ],
   ];
 
   return tags.reduce((acc, [key, tag]) => replaceMeta(acc, key, tag), html);
