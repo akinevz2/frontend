@@ -5,6 +5,14 @@
   flex-wrap: wrap;
 }
 
+.ok-row > button {
+  margin-left: auto;
+}
+
+.ok-row-bottom {
+  align-items: flex-end;
+}
+
 .maximized-backdrop {
   position: fixed;
   inset: 0;

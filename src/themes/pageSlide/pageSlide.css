@@ -1,0 +1,64 @@
+/*
+ * Inert until lightdni-jssas-toggle adds `theme-page-slide` to <html> and
+ * sets --ps-* variables and data-page-slide on it.
+ */
+html.theme-page-slide {
+  overflow-x: clip;
+}
+
+/* No fill-forward: a lingering `translate` would trap fixed descendants. */
+html.theme-page-slide[data-page-slide] main:not(.page-slide-ghost) {
+  animation: page-slide-in var(--ps-duration) ease-in-out backwards;
+}
+
+html.theme-page-slide .page-slide-ghost {
+  position: fixed;
+  z-index: 1;
+  margin: 0;
+  overflow: hidden;
+  pointer-events: none;
+  animation: page-slide-out var(--ps-duration) ease-in-out forwards;
+}
+
+/* The live <main> has an indefinite height, so its page sizes to content;
+   the ghost has a fixed height and must not stretch the page to fill it. */
+html.theme-page-slide .page-slide-ghost > .page {
+  height: auto;
+  min-height: 0;
+}
+
+/* Fixed footer bars of the old page slide down off the screen. */
+html.theme-page-slide .page-slide-bar {
+  pointer-events: none;
+  animation: page-slide-bar var(--ps-duration) ease-in-out forwards;
+}
+
+/* The new page eases from the old page's bottom padding to its own, so its
+   window moves in step with the footer leaving. */
+html.theme-page-slide[data-page-slide] main:not(.page-slide-ghost) > .page {
+  animation: page-slide-pad var(--ps-duration) ease-in-out backwards;
+}
+
+@keyframes page-slide-bar {
+  to {
+    translate: 0 100%;
+  }
+}
+
+@keyframes page-slide-pad {
+  from {
+    padding-bottom: var(--ps-pad-from, 0px);
+  }
+}
+
+@keyframes page-slide-in {
+  from {
+    translate: var(--ps-in-x) var(--ps-in-y);
+  }
+}
+
+@keyframes page-slide-out {
+  to {
+    translate: var(--ps-out-x) var(--ps-out-y);
+  }
+}

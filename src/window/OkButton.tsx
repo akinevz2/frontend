@@ -4,7 +4,7 @@ import { useWindowStore } from "./state";
 
 /** OK follows the window's link if it has one, otherwise expands the window. */
 export function OkButton({ node }: { node: WindowNode }) {
-  const { expand } = useWindowStore();
+  const { expand, remember } = useWindowStore();
   const navigate = useNavigate();
 
   const onClick = () => {
@@ -15,7 +15,8 @@ export function OkButton({ node }: { node: WindowNode }) {
       return;
     }
     if (/^https?:/.test(link) || node.externalLink || /\.\w+$/.test(link)) {
-      window.open(link, "_blank", "noopener,noreferrer");
+      remember(node.id);
+      window.location.assign(link);
     } else {
       navigate(link);
     }
