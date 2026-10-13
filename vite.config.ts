@@ -14,7 +14,6 @@ export default defineConfig({
       "@": fromRoot("src"),
       "@public": fromRoot("public"),
       "@content": fromRoot("src/content"),
-      "@page": fromRoot("src/page"),
     },
   },
   plugins: [react(), routeSkeletonsPlugin()],

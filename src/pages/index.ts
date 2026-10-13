@@ -1,0 +1,25 @@
+import type { ComponentType } from "react";
+import { AddonsPage } from "./AddonsPage";
+import { BlogPage } from "./BlogPage";
+import { ContactPage } from "./ContactPage";
+import { HomePage } from "./HomePage";
+import { MusicPage } from "./MusicPage";
+import { NotFoundPage } from "./NotFoundPage";
+import { PagertsPage } from "./PagertsPage";
+import { ResumePage } from "./ResumePage";
+import { SitemapPage } from "./SitemapPage";
+import { WowPage } from "./WowPage";
+
+/** Maps the `page` names in content/pages.json to components. */
+export const pageRegistry: Record<string, ComponentType> = {
+  AddonsPage,
+  BlogPage,
+  ContactPage,
+  HomePage,
+  MusicPage,
+  NotFoundPage,
+  PagertsPage,
+  ResumePage,
+  SitemapPage,
+  WowPage,
+};

@@ -1,0 +1,479 @@
+.title-bar-controls button[aria-label="Maximize"] {
+  margin-left: 2px;
+}
+
+:root {
+  font-family: "Courier New", Courier, monospace;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  --background-color: #000;
+  --border-size: 0.25em;
+  --gap-size: 0.5em;
+  --menu-bar-height: calc(2em + 4px);
+  --trailer-tail: 8px;
+  /* Height of the music page's fixed debug bar (fontSize 0.85rem + 2 * 0.5rem
+     padding + 2px border, with a little slack for the generatedAt timestamp
+     wrapping). Used to reserve space below .page so the bar never overlaps
+     the last row of content. */
+  --debug-bar-height: 2.5em;
+  --clippy-border-flash-color: transparent;
+  font-size: 16px;
+}
+/* Force title bar text to dark gray for readability */
+.title-bar-text,
+.title-bar-text a {
+  color: #eee !important;
+  font-size: 0.85rem;
+}
+
+:root.theme-border-flash .window,
+:root.theme-border-flash .window *,
+:root.theme-border-flash .window *::before,
+:root.theme-border-flash .window *::after {
+  border-color: var(--clippy-border-flash-color, #feef69) !important;
+}
+
+:root.theme-border-flash .window .title-bar,
+:root.theme-border-flash .title-bar {
+  background: var(--clippy-border-flash-color, #feef69) !important;
+  background-image: none !important;
+}
+
+:root.theme-border-flash .window .title-bar-text,
+:root.theme-border-flash .window .title-bar a,
+:root.theme-border-flash .title-bar-text {
+  color: #000 !important;
+}
+
+:root.theme-box-shadow-flash .window .title-bar {
+  border-color: var(--clippy-border-flash-color, #feef69) !important;
+  box-shadow: 0 0 15px 4px #feef69 !important;
+}
+
+/* --- Lilac easter-egg theme: purple title bars ---------------------------
+ * Activated by a permanent cookie set when "lg355" or "lg355@sussex.ac.uk"
+ * is entered as the username on the WoW download page. Turns all window
+ * title-bar backgrounds purple (lilac).
+ */
+:root.theme-lilac .window .title-bar,
+:root.theme-lilac .title-bar {
+  background: #b060b0 !important;
+  background-image: linear-gradient(
+    to right,
+    #9c4f9c,
+    #b060b0,
+    #9c4f9c
+  ) !important;
+}
+
+:root.theme-lilac .window .title-bar-text,
+:root.theme-lilac .window .title-bar a,
+:root.theme-lilac .title-bar-text {
+  color: #fff !important;
+}
+
+/* --- Experimental theme: raise-and-wobble effect ----------------------------
+ * Sections marked with the "experimental" theme bob up and down gently on
+ * hover/focus, and gain a thick double border (2px solid) layered with the
+ * 98.css raised-window bevel. The 3D perspective is provided by .page.
+ * Driven by the `raiseWobble` flag on the theme definition.
+ */
+@keyframes theme-experimental-wobble {
+  0% {
+    transform: translateY(0);
+  }
+  20% {
+    transform: translateY(-6px);
+  }
+  40% {
+    transform: translateY(-3px);
+  }
+  60% {
+    transform: translateY(-6px);
+  }
+  80% {
+    transform: translateY(-2px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.window[data-theme="experimental"] {
+  /* The 3D perspective is provided by the .page ancestor so the raise/wobble
+     isn't clipped by this element's own box; here we just preserve the 3D
+     context and animate the transform. */
+  transform-style: preserve-3d;
+  transition:
+    transform 120ms ease-out,
+    box-shadow 86 ease-out;
+  will-change: transform;
+}
+
+@media (hover: hover) {
+  .window[data-theme="experimental"]:hover {
+    /* Bob up and down (translateY) in the page's 3D space. */
+    animation: theme-experimental-wobble 0.6s ease-in-out;
+  }
+}
+
+.window[data-theme="experimental"]:focus-within {
+  /* Keyboard focus also triggers the wobble (a11y). */
+  animation: theme-experimental-wobble 0.6s ease-in-out;
+}
+
+/* Respect reduced-motion: skip the wobble animation, keep the raise. */
+@media (prefers-reduced-motion: reduce) {
+  .window[data-theme="experimental"]:hover,
+  .window[data-theme="experimental"]:focus-within {
+    animation: none;
+  }
+}
+
+/* Touch devices (Android Firefox, etc.) don't expose a real hover pointer.
+   Strip the raise/wobble transitions there so the sticky-hover state can't
+   leave a window stuck mid-hover when the user scrolls past it. */
+@media (hover: none) {
+  .window[data-theme="experimental"] {
+    transition: none;
+    will-change: auto;
+  }
+}
+
+/** The "centered" theme centers child windows with space-around distribution. */
+.window[data-theme~="centered"] .window-body ul li {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+@font-face {
+  font-family: "bahnscrift";
+  src: url("/BAHNSCHRIFT.TTF");
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Reset XP.css window styling overrides */
+.window {
+  min-width: min(480px, 100%);
+  height: max-content;
+  box-sizing: border-box;
+  /* Leave room for the fixed menu bar when scrolling to a window. */
+  scroll-margin-top: var(--menu-bar-height);
+}
+
+.window:last-child {
+  margin-bottom: 0;
+}
+
+/* Add extra spacing for nested windows */
+.window-body .window {
+  margin-bottom: var(--trailer-tail);
+}
+
+.window-body .window:last-child {
+  margin-bottom: 0;
+}
+
+/* Spacing for windows inside lists (addon pages) */
+.window-body ul li .window,
+.window-body ul .window,
+.window-body .addon-wrapper {
+  margin-bottom: 0.5em;
+}
+
+.window-body ul li:last-child .window,
+.window-body ul .window:last-child,
+.window-body .addon-wrapper:last-child {
+  margin-bottom: 0;
+}
+
+/* Hide border on first-level windows to avoid double border */
+.page > .window,
+main > .page {
+  border: none;
+}
+
+/* Pin all root-level windows to the same width so a window with wider
+   inner content (e.g. a Spotify iframe) can't push itself past the rest
+   of the page. Defaults to 768px to match the website's compact reading
+   width; only grows when the viewport is narrower than that. */
+.page > .window {
+  width: min(768px, 100% - (var(--gap-size) * 2));
+  max-width: min(768px, 100% - (var(--gap-size) * 2));
+}
+/* Add more vertical padding to title bars */
+.title-bar {
+  padding-top: 0.25em !important;
+  padding-bottom: 0.25em !important;
+}
+
+body {
+  margin-top: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+#root {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  place-items: stretch;
+  min-height: 0;
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+label,
+input,
+textarea,
+button,
+form,
+div,
+a,
+li {
+  color: var(--text-color) !important;
+  opacity: 1 !important;
+}
+
+.page > ul,
+li {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  margin-bottom: var(--gap-size);
+}
+
+.page {
+  margin: 0 auto;
+  display: flex;
+  border: 0;
+  z-index: 100;
+  width: calc(100% - (var(--gap-size) * 2));
+  height: 100%;
+  box-sizing: border-box;
+  flex-direction: column;
+  place-items: center;
+  min-height: 100%;
+  /* Establish the 3D viewing space for themed windows so their raise/wobble
+     transforms (translateZ, scale) render relative to the page rather than
+     being clipped by the page's own box. */
+  perspective: 800px;
+  /* Let a raised window overflow the page bounds without clipping. */
+  transform-style: preserve-3d;
+}
+
+.window.maximized {
+  min-height: 100%;
+  min-width: 100%;
+  margin: 2em;
+  box-sizing: content-box;
+}
+
+.menu-item {
+  margin: 0;
+  padding: calc(var(--gap-size) / 2) var(--gap-size);
+  background-color: beige;
+}
+
+ul > section > h1,
+ul > section > h4,
+form#form > label {
+  margin: 0 calc(var(--gap-size) * 1.75);
+  font-family: bahnscrift, system-ui, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-size: 0.9rem;
+}
+
+.window-body ul {
+  margin: 0;
+  padding-left: 0;
+}
+
+.window-body ul li {
+  padding-left: 1.5em;
+}
+
+.window-body {
+  min-width: 0;
+  max-width: 100%;
+  word-break: break-word;
+}
+
+.maximized-window-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.maximized-window-body > *:last-child {
+  flex: 1;
+  min-height: 0;
+}
+
+/* The permalink row should never grow; it stays at its natural size while the
+   content siblings take the remaining height in the maximized window. */
+.maximized-window-body > .permalink-button-container {
+  flex: 0 0 auto;
+  min-height: 0;
+}
+
+/* When a window is maximized, let embedded iframes (SoundCloud/Spotify/blogs)
+   grow to fill the available window-body height instead of staying at their
+   fixed pixel height. Stretches the ancestor chain (ul > li > wrapper) so the
+   flex height propagates down to the iframe. Only applies inside `.maximized`
+   so inline (non-fullscreen) windows keep their natural sizes. */
+.maximized .maximized-window-body:has(iframe) {
+  /* allow the body itself to hand height down to its children */
+  align-items: stretch;
+}
+
+/* The content wrapper (a child other than the permalink row) should grow to
+   fill the window body, and hand its height down to the iframe chain. */
+.maximized
+  .maximized-window-body:has(iframe)
+  > *:not(.permalink-button-container),
+.maximized .maximized-window-body:has(iframe) ul,
+.maximized .maximized-window-body:has(iframe) ul > li {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.maximized .maximized-window-body iframe {
+  /* Fill the available height via flex (NOT height:100%, which resolves to 0
+     against an indefinite flex parent). flex-basis auto + grow stretches the
+     iframe to its share of the parent's resolved height. */
+  flex: 1 1 auto;
+  min-height: 200px;
+  max-height: 100%;
+  box-sizing: border-box;
+}
+
+.debug-printout-scroll {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+}
+
+.debug-printout-scroll,
+.debug-printout-scroll * {
+  font-family: "Fira Code", "Courier New", Courier, monospace !important;
+}
+
+.debug-printout-scroll pre,
+.debug-printout-scroll code {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.debug-printout-scroll pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.window-body pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* xp.css sets very large heading sizes; keep markdown headings readable in content windows. */
+.window-body h1 {
+  font-size: 1.2rem !important;
+  line-height: 1.25;
+  margin: 0.25em 0;
+}
+
+.window-body h2 {
+  text-align: right;
+  color: var(--button-shadow) !important;
+}
+
+.window-body > ul:first-child {
+  margin-top: 0;
+}
+
+.music-track-title {
+  font-size: 1.08em;
+  font-weight: 600;
+  margin: 0 0 0.35em 0;
+}
+
+.music-track-window .window-body {
+  padding: 0.5em;
+}
+
+.music-track-window ul {
+  min-width: 100%;
+}
+/* .music-track-window li, */
+.music-track-window p {
+  width: max-content;
+}
+.music-track-window iframe {
+  border-radius: 4px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Favourite-link windows mirror the per-track styling so their Spotify
+   iframe doesn't push the window wider than the rest of the page. */
+.music-favourite-link-window .window-body {
+  padding: 0.5em;
+}
+
+.music-favourite-link-window ul {
+  min-width: 100%;
+}
+
+.music-favourite-link-window p {
+  width: max-content;
+}
+
+.music-favourite-link-window iframe {
+  display: block;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+}
+
+/* Artist Profile Picture - 1:1 aspect ratio background image */
+.artist-profile-picture {
+  width: 80px;
+  height: 80px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 4px;
+  margin-right: 0.5em;
+  vertical-align: middle;
+}
+
+/* Artist Profile Background - stretched background under text */
+.artist-profile-background {
+  width: 100%;
+  min-height: 36em;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 4px;
+  margin-bottom: 0.5em;
+}
+
+/* Menu Bar - Windows XP style */

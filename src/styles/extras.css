@@ -1,0 +1,86 @@
+.ok-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.maximized-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.maximized-backdrop > .window {
+  width: min(96vw, 1100px);
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.artist-background {
+  display: block;
+  padding: 1.5em 1em;
+  color: #fff;
+  background-size: cover;
+  background-position: center;
+  text-shadow: 0 1px 3px #000;
+  min-height: 120px;
+}
+
+.debug-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+  padding: 0.5rem;
+  font-size: 0.85rem;
+  background: #f0f0f0;
+  border-top: 1px solid #808080;
+  color: #000;
+}
+
+body:has(.maximized-backdrop) .debug-bar {
+  display: none;
+}
+
+.addon-status {
+  font-weight: bold;
+}
+
+.form-feedback {
+  margin: 0.5em 0;
+}
+
+.resume-window {
+  max-width: 768px;
+  margin: 0 auto;
+}
+
+.resume-frame {
+  width: 100%;
+  height: 70vh;
+  border: 1px inset #808080;
+  background: #fff;
+}
+
+.resume-blurred {
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+.resume-controls {
+  display: flex;
+  gap: 1em;
+  align-items: center;
+  margin-bottom: 0.5em;
+}
+
+.resume-modal {
+  width: min(92vw, 420px);
+}

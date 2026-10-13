@@ -1,0 +1,176 @@
+body main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 0;
+  height: 100%;
+  min-height: 100%;
+}
+
+/* Fixed bars (menu bar, debug bar, unhide chinbar) overlay the viewport.
+   Reserve space on the body itself via padding so every flow descendant —
+   not just main — starts below them. */
+body {
+  padding-top: calc(var(--menu-bar-height) + var(--trailer-tail));
+  padding-bottom: var(--trailer-tail);
+}
+
+body.feef69-page {
+  background: #FEEF69 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 100vh !important;
+  height: 100vh !important;
+  display: block !important;
+}
+
+/* Account for the fixed debug bar on the music page (sits below menu bar) */
+body:has([data-debug-bar]) .page {
+  padding-bottom: calc(var(--debug-bar-height) + var(--trailer-tail));
+}
+
+/* Leave room for the fixed unhide chinbar on desktop */
+@media (prefers-color-scheme: light) {
+  :root {
+    --background-color: #fefefe;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  :root {
+    --gap-size: 1.26em;
+    --debug-bar-height: 3.25em;
+  }
+  body:has([data-debug-bar]) .page {
+    padding-bottom: calc(var(--debug-bar-height) + var(--trailer-tail));
+  }
+  .page {
+    width: 100%;
+  }
+
+  body {
+    max-width: 100vw;
+  }
+
+  main {
+    width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
+
+  .page {
+    margin: 0 auto;
+    padding: 0;
+    box-sizing: border-box;
+    justify-items: center;
+  }
+
+  /* Constrain window width on mobile */
+  .window {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .window-body {
+    max-width: 100%;
+  }
+
+  /* Mobile-friendly menu bar */
+  .menu-bar {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f0f0f0;
+  }
+
+  /* Hide scrollbar for cleaner look but keep functionality */
+  .menu-bar::-webkit-scrollbar {
+    height: 3px;
+  }
+
+  .menu-bar::-webkit-scrollbar-track {
+    background: #f0f0f0;
+  }
+
+  .menu-bar::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 2px;
+  }
+
+  .menu-bar menu {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    min-width: min-content;
+  }
+
+  .menu-bar menu a {
+    padding: 6px 12px;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  /* Increase touch target size for better mobile usability */
+  .menu-bar menu li {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Give the unhide button a visible chinbar on mobile so it isn't
+     clobbered by on-screen content. */
+  .minimized-menu-container {
+    left: 0;
+    bottom: 0;
+    right: 0;
+    padding: 2px 20px;
+    align-items: stretch;
+  }
+
+  .minimized-menu-button {
+    top: var(--menu-bar-height);
+    font-size: 14px !important;
+    text-align: center;
+    z-index: 98;
+  }
+
+  .minimized-menu-container .dropdown-menu {
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    min-width: unset;
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  :root {
+    --menu-bar-height: 24px;
+  }
+  .page > .window {
+    box-sizing: border-box;
+    margin: 0 auto;
+    /* width: fit-content; */
+    width: 100%;
+  }
+
+  /* Extra small screens - even more compact */
+  .menu-bar menu a {
+    padding: 5px 10px;
+  }
+}
+
+.Toastify__toast-container {
+  z-index: 9999 !important;
+}
+
+.Toastify__toast {
+  max-width: 100%;
+  width: 100%;
+}
+.Toastify__close-button {
+  place-self: center;
+  bottom: 6px;
+  right: 6px;
+}

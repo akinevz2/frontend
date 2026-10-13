@@ -1,17 +1,17 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import Website from "./Website";
-import "./main.css";
+import "xp.css/dist/98.css";
+import "react-toastify/dist/ReactToastify.css";
+import "./styles/index.css";
+import { App } from "./shell/App";
 
-function main() {
-  createRoot(document.getElementById("root")!).render(
-    <StrictMode>
-      <BrowserRouter>
-        <Website />
-      </BrowserRouter>
-    </StrictMode>,
-  );
-}
+document.body.classList.add("styles-loaded");
 
-main();
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </StrictMode>,
+);
