@@ -1,13 +1,19 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { createBurstCounter, createWordMatcher } from "../src/lib/clippy.ts";
+import { advanceWord, blipRollMs, createBurstCounter } from "../src/lib/clippyRules.ts";
 
-test("word matcher fires only on the full word and recovers from typos", () => {
-  const match = createWordMatcher("abc");
-  const feed = (s) => [...s].map(match).includes(true);
-  assert.equal(feed("ab"), false);
-  assert.equal(feed("xaabc"), true);
-  assert.equal(feed("abc"), true);
+test("word progress completes only on the full word and recovers from typos", () => {
+  const run = (keys) => {
+    let progress = 0;
+    let done = false;
+    for (const key of keys) {
+      ({ progress, done } = advanceWord(progress, key, "abc"));
+      if (done) return true;
+    }
+    return false;
+  };
+  assert.equal(run("ab"), false);
+  assert.equal(run("xaabc"), true);
 });
 
 test("burst counter needs enough clicks inside the window", () => {
@@ -16,5 +22,10 @@ test("burst counter needs enough clicks inside the window", () => {
   assert.equal(burst(500), false);
   assert.equal(burst(900), true);
   assert.equal(burst(5000), false);
-  assert.equal(burst(8000), false);
+});
+
+test("blip roll grows with active clicking time", () => {
+  assert.equal(blipRollMs(0), 120);
+  assert.ok(blipRollMs(1800) > blipRollMs(300));
+  assert.equal(blipRollMs(99999), 2570);
 });

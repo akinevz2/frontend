@@ -178,3 +178,16 @@ body:has(.maximized-backdrop) .debug-bar {
     transform: translateY(40px);
   }
 }
+
+body.feef69-page {
+  min-height: 100vh;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  background: #feef69 !important;
+}
+
+main.feef69-page {
+  height: 100vh;
+  background: #feef69;
+}
