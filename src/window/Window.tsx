@@ -123,11 +123,11 @@ export function Window({ node }: { node: WindowNode }) {
     forcesExpanded(node) || Boolean(flags.expanded || node.printout);
 
   const close = () => {
-    patch(node.id, { closed: true });
     playLayeredAudio(CLOSE_SOUND);
-    document.dispatchEvent(
+    const refused = !document.dispatchEvent(
       new CustomEvent("crunchy-kick-played", { cancelable: true }),
     );
+    if (!refused) patch(node.id, { closed: true });
   };
 
   const window_ = (
