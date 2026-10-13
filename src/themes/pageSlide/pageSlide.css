@@ -62,15 +62,3 @@ html.theme-page-slide[data-page-slide] main:not(.page-slide-ghost) > .page {
     translate: var(--ps-out-x) var(--ps-out-y);
   }
 }
-
-@media (prefers-reduced-motion: reduce) {
-  html.theme-page-slide[data-page-slide] main:not(.page-slide-ghost),
-  html.theme-page-slide[data-page-slide] main:not(.page-slide-ghost) > .page {
-    animation: none;
-  }
-
-  html.theme-page-slide .page-slide-ghost,
-  html.theme-page-slide .page-slide-bar {
-    display: none;
-  }
-}
