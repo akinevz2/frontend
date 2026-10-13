@@ -9,13 +9,24 @@ import { MenuBar } from "./MenuBar";
 import { resolveRoute } from "./resolveRoute";
 import { useRouteMeta } from "./useRouteMeta";
 
+/** Hidden page: / with this hash is an empty yellow screen. */
+const FEEF69_HASH = "#feef69";
+
 export function App() {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
   const route = resolveRoute(pathname);
   const Page = pageRegistry[route.page] ?? NotFoundPage;
 
+  const blank = pathname === "/" && hash.toLowerCase() === FEEF69_HASH;
+
   useRouteMeta(route);
+  useEffect(() => {
+    document.body.classList.toggle("feef69-page", blank);
+    return () => document.body.classList.remove("feef69-page");
+  }, [blank]);
   useEffect(applyStoredTheme, []);
+
+  if (blank) return <main className="feef69-page" />;
 
   return (
     <>
