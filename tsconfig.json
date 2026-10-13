@@ -28,10 +28,13 @@
     "forceConsistentCasingInFileNames": true,
     "incremental": true,
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@page-slide": ["./packages/page-slide/src/index.ts"],
+      "@page-slide/*": ["./packages/page-slide/src/*"]
     }
   },
   "include": [
-    "src"
+    "src",
+    "packages"
   ]
 }
