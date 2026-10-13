@@ -99,7 +99,8 @@ function Body({ node, expanded }: { node: WindowNode; expanded: boolean }) {
 }
 
 export function Window({ node }: { node: WindowNode }) {
-  const { flagsOf, patch } = useWindowStore();
+  const { flagsOf, patch, onLeave } = useWindowStore();
+  const leaves = node.depth === 0 && onLeave;
   const flags = flagsOf(node.id);
   const maximized = Boolean(flags.maximized);
 
@@ -127,7 +128,9 @@ export function Window({ node }: { node: WindowNode }) {
     const refused = !document.dispatchEvent(
       new CustomEvent("crunchy-kick-played", { cancelable: true }),
     );
-    if (!refused) patch(node.id, { closed: true });
+    if (refused) return;
+    if (leaves) leaves();
+    else patch(node.id, { closed: true });
   };
 
   const window_ = (
@@ -141,7 +144,11 @@ export function Window({ node }: { node: WindowNode }) {
       <TitleBar
         node={node}
         maximized={maximized}
-        onMinimize={() => patch(node.id, { expanded: false, maximized: false })}
+        onMinimize={() =>
+          leaves
+            ? leaves()
+            : patch(node.id, { expanded: false, maximized: false })
+        }
         onMaximize={() => patch(node.id, { maximized: !maximized })}
         onClose={close}
       />

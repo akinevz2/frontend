@@ -33,6 +33,8 @@ function Roots({
 type Props = {
   content: Section | Section[];
   permalinkMode?: PermalinkMode;
+  /** Closing or minimising a top-level window calls this instead. */
+  onLeave?: (() => void) | undefined;
   /** Extra windows rendered after the content windows (e.g. a form). */
   children?: ReactNode;
 };
@@ -41,11 +43,16 @@ type Props = {
 export function PageWindows({
   content,
   permalinkMode = "hash",
+  onLeave,
   children,
 }: Props) {
   const roots = useMemo(() => buildWindows(content), [content]);
   return (
-    <WindowProvider roots={roots} permalinkMode={permalinkMode}>
+    <WindowProvider
+      roots={roots}
+      permalinkMode={permalinkMode}
+      onLeave={onLeave}
+    >
       <Roots mode={permalinkMode}>{children}</Roots>
     </WindowProvider>
   );

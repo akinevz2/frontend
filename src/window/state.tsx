@@ -37,6 +37,8 @@ function reducer(state: State, action: Action): State {
 type WindowStore = {
   windows: WindowNode[];
   permalinkMode: PermalinkMode;
+  /** Replaces close/minimise of top-level windows (e.g. "go back"). */
+  onLeave: (() => void) | undefined;
   flagsOf: (id: string) => WindowFlags;
   patch: (id: string, flags: WindowFlags) => void;
   expand: (id: string) => void;
@@ -50,10 +52,12 @@ const Ctx = createContext<WindowStore | null>(null);
 export function WindowProvider({
   roots,
   permalinkMode = "hash",
+  onLeave,
   children,
 }: {
   roots: WindowNode[];
   permalinkMode?: PermalinkMode;
+  onLeave?: (() => void) | undefined;
   children: ReactNode;
 }) {
   const [state, dispatch] = useReducer(reducer, {});
@@ -64,6 +68,7 @@ export function WindowProvider({
     return {
       windows,
       permalinkMode,
+      onLeave,
       flagsOf,
       patch: (id, flags) => dispatch({ type: "patch", ids: [id], flags }),
       expand: (id) =>
@@ -77,7 +82,7 @@ export function WindowProvider({
         return state[w.id]?.closed;
       }),
     };
-  }, [state, windows, permalinkMode]);
+  }, [state, windows, permalinkMode, onLeave]);
 
   useEffect(() => {
     publishHidden({
