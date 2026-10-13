@@ -16,7 +16,22 @@ export function normalizePath(pathname: string): string {
   return routes.some((r) => r.path === lower) ? lower : path;
 }
 
+const BLOG_DOCUMENT = /^\/blog\/.+\.md$/i;
+
+/** Any /blog/**.md URL is a post page; the file itself is fetched by the page. */
+function blogDocumentRoute(pathname: string): Route {
+  const name = decodeURI(pathname).split("/").pop() ?? pathname;
+  return {
+    path: pathname,
+    title: `${name} | blog of kine`,
+    description: `${name} from the blog of kine.`,
+    page: "BlogPostPage",
+    hidden: true,
+  };
+}
+
 export function resolveRoute(pathname: string): Route {
+  if (BLOG_DOCUMENT.test(pathname)) return blogDocumentRoute(pathname);
   const path = normalizePath(pathname);
   const route = routes.find((r) => r.path === path);
   return route ?? NOT_FOUND;
