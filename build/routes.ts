@@ -23,8 +23,30 @@ export function escapeHtml(value: string): string {
     .replace(/'/g, "&#39;");
 }
 
-/** Single source of truth for routes: src/content/pages.json. */
+type ProjectDoc = {
+  slug: string;
+  path?: string;
+  title: string;
+  description: string;
+};
+
+const readJson = <T>(file: string): T =>
+  JSON.parse(fs.readFileSync(file, "utf-8")) as T;
+
+/** Routes: src/content/pages.json plus one route per src/content/projects/*.json. */
 export function loadRoutes(): RouteConfig[] {
-  const raw = fs.readFileSync(path.join(CONTENT, "pages.json"), "utf-8");
-  return JSON.parse(raw) as RouteConfig[];
+  const pages = readJson<RouteConfig[]>(path.join(CONTENT, "pages.json"));
+  const dir = path.join(CONTENT, "projects");
+  const projects = fs
+    .readdirSync(dir)
+    .filter((name) => name.endsWith(".json"))
+    .map((name) => readJson<ProjectDoc>(path.join(dir, name)))
+    .map(
+      (project): RouteConfig => ({
+        path: project.path ?? `/projects/${project.slug}`,
+        title: project.title,
+        description: project.description,
+      }),
+    );
+  return [...pages, ...projects];
 }

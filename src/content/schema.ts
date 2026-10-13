@@ -31,6 +31,17 @@ export type Section = {
   className?: string;
 };
 
+/** A document in src/content/projects/; every project becomes its own route. */
+export type Project = {
+  slug: string;
+  /** Defaults to /projects/<slug>. */
+  path?: string;
+  title: string;
+  description: string;
+  github: string;
+  content: Section;
+};
+
 export type MenuVisibility = false | "onlyHere" | "admin";
 
 /** An entry of pages.json. `hidden` also removes it from the sitemap. */

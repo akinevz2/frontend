@@ -4,6 +4,7 @@ import { ToastContainer } from "react-toastify";
 import { pageRegistry } from "@/pages";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { applyStoredTheme } from "@/lib/theme";
+import { Clippy } from "./Clippy";
 import { MenuBar } from "./MenuBar";
 import { resolveRoute } from "./resolveRoute";
 import { useRouteMeta } from "./useRouteMeta";
@@ -24,6 +25,7 @@ export function App() {
           <Page />
         </section>
       </main>
+      <Clippy />
       <ToastContainer position="bottom-right" />
     </>
   );

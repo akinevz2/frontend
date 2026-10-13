@@ -38,9 +38,11 @@ export const MUTABLE_PATHS = Object.freeze([
     "sitemap/index.html",
     "wow.html",
     "wow/index.html",
-    // pagerts is a new page - allowed as NEW until baseline is updated
+    // new pages - allowed as NEW until baseline is updated
     "pagerts.html",
     "pagerts/index.html",
+    "projects.html",
+    "projects/index.html",
     "checksums.txt",
     "assets/*.js",
 ]);
