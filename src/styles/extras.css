@@ -203,3 +203,9 @@ main.feef69-page {
   width: 100%;
   margin: 2px 0;
 }
+
+/* Inline image sizes in content must not exceed the window body. */
+.window-body img {
+  max-width: 100% !important;
+  object-fit: contain;
+}
