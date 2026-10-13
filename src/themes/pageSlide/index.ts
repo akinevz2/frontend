@@ -72,6 +72,12 @@ function leaveGhost(): void {
     height: `${rect.height}px`,
     minHeight: "0",
   });
+  const pageEl = main.querySelector<HTMLElement>(".page");
+  const ghostPage = ghost.querySelector<HTMLElement>(".page");
+  if (pageEl && ghostPage) {
+    // Page padding can depend on elements (debug bar) that unmount with the route.
+    ghostPage.style.paddingBottom = getComputedStyle(pageEl).paddingBottom;
+  }
   ghost.removeAttribute("id");
   ghost.querySelectorAll("iframe, audio, video").forEach((el) => {
     const box = el.getBoundingClientRect();
@@ -80,6 +86,12 @@ function leaveGhost(): void {
     el.replaceWith(placeholder);
   });
   document.body.appendChild(ghost);
+  document.querySelectorAll<HTMLElement>("body > .debug-bar").forEach((bar) => {
+    const fade = bar.cloneNode(true) as HTMLElement;
+    fade.classList.add("page-slide-fade");
+    document.body.appendChild(fade);
+    window.setTimeout(() => fade.remove(), DURATION_MS + 200);
+  });
   const remove = () => ghost.remove();
   ghost.addEventListener("animationend", remove);
   window.setTimeout(remove, DURATION_MS + 200);
@@ -137,5 +149,7 @@ export function disablePageSlide(): void {
   applyTheme({}, { previousClassNames: [CLASS] });
   clearThemeVariables(VARIABLES);
   root().removeAttribute(ATTRIBUTE);
-  document.querySelectorAll(".page-slide-ghost").forEach((el) => el.remove());
+  document
+    .querySelectorAll(".page-slide-ghost, .page-slide-fade")
+    .forEach((el) => el.remove());
 }

@@ -4,6 +4,7 @@ import { buildWindows } from "./model";
 import {
   WindowProvider,
   usePermalinkTarget,
+  useRememberLeave,
   useWindowStore,
   type PermalinkMode,
 } from "./state";
@@ -18,6 +19,7 @@ function Roots({
 }) {
   const { windows } = useWindowStore();
   usePermalinkTarget(mode);
+  useRememberLeave();
   return (
     <>
       {windows
