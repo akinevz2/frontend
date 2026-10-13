@@ -23,7 +23,7 @@ export function TitleBar({
           <a
             href={node.link}
             {...(node.externalLink || /^https?:/.test(node.link)
-              ? { target: "_blank", rel: "noreferrer" }
+              ? { rel: "noreferrer" }
               : {})}
           >
             {heading}

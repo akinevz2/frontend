@@ -39,6 +39,8 @@ type WindowStore = {
   permalinkMode: PermalinkMode;
   /** Replaces close/minimise of top-level windows (e.g. "go back"). */
   onLeave: (() => void) | undefined;
+  /** Records the window in the URL so returning to the page reopens it. */
+  remember: (id: string) => void;
   flagsOf: (id: string) => WindowFlags;
   patch: (id: string, flags: WindowFlags) => void;
   expand: (id: string) => void;
@@ -69,6 +71,15 @@ export function WindowProvider({
       windows,
       permalinkMode,
       onLeave,
+      remember: (id) => {
+        const node = windows.find((w) => w.id === id);
+        if (node)
+          history.replaceState(
+            history.state,
+            "",
+            permalinkFor(node, permalinkMode),
+          );
+      },
       flagsOf,
       patch: (id, flags) => dispatch({ type: "patch", ids: [id], flags }),
       expand: (id) =>
@@ -146,4 +157,21 @@ export function usePermalinkTarget(mode: PermalinkMode) {
     );
     return () => clearTimeout(timer);
   }, []);
+}
+
+/** Same-tab links out of the site remember the window they were clicked in. */
+export function useRememberLeave() {
+  const { remember } = useWindowStore();
+  useEffect(() => {
+    const onClick = (event: MouseEvent) => {
+      const anchor = (event.target as Element).closest?.("a[href]");
+      if (!(anchor instanceof HTMLAnchorElement)) return;
+      if (anchor.origin === location.origin || anchor.target === "_blank")
+        return;
+      const id = anchor.closest<HTMLElement>(".window[id]")?.id;
+      if (id) remember(id);
+    };
+    document.addEventListener("click", onClick, true);
+    return () => document.removeEventListener("click", onClick, true);
+  }, [remember]);
 }

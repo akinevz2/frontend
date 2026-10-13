@@ -13,7 +13,6 @@ function Tile({
   return (
     <a
       href={href}
-      target="_blank"
       rel="noopener noreferrer"
       className="artist-background"
       style={{ backgroundImage: `url('${image}')` }}
