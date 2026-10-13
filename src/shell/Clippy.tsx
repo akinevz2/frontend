@@ -1,5 +1,4 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
-import { useLocation } from "react-router-dom";
 import {
   attachClippy,
   getClippyState,
@@ -10,7 +9,6 @@ import { getHidden, subscribeHidden } from "@/window/hidden";
 
 /** Hidden mascot; summoning logic lives in lib/clippy. */
 export function Clippy() {
-  const { pathname } = useLocation();
   const { visible, bubble, saysNo } = useSyncExternalStore(
     subscribeClippy,
     getClippyState,
@@ -22,7 +20,7 @@ export function Clippy() {
   const hasHidden = hidden.items.length > 0;
   const showList = listOpen && hasHidden;
 
-  if (!visible || pathname === "/blog") return null;
+  if (!visible) return null;
 
   return (
     <div className="clippy">
