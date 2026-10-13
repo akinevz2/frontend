@@ -1,0 +1,40 @@
+/*
+ * Inert until lightdni-jssas-toggle adds `theme-page-slide` to <html> and
+ * sets --ps-* variables and data-page-slide on it.
+ */
+html.theme-page-slide {
+  overflow-x: clip;
+}
+
+/* No fill-forward: a lingering `translate` would trap fixed descendants. */
+html.theme-page-slide[data-page-slide] main:not(.page-slide-ghost) {
+  animation: page-slide-in var(--ps-duration) ease-in-out backwards;
+}
+
+html.theme-page-slide .page-slide-ghost {
+  position: fixed;
+  z-index: 1;
+  margin: 0;
+  overflow: hidden;
+  pointer-events: none;
+  animation: page-slide-out var(--ps-duration) ease-in-out forwards;
+}
+
+@keyframes page-slide-in {
+  from {
+    translate: var(--ps-in-x) var(--ps-in-y);
+  }
+}
+
+@keyframes page-slide-out {
+  to {
+    translate: var(--ps-out-x) var(--ps-out-y);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.theme-page-slide[data-page-slide] main:not(.page-slide-ghost),
+  html.theme-page-slide .page-slide-ghost {
+    animation: none;
+  }
+}

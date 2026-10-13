@@ -13,7 +13,6 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fromRoot("src"),
-      "@page-slide": fromRoot("packages/page-slide/src"),
       "@public": fromRoot("public"),
       "@content": fromRoot("src/content"),
     },

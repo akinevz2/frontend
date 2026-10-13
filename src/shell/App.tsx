@@ -3,16 +3,11 @@ import { useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { pageRegistry } from "@/pages";
 import { NotFoundPage } from "@/pages/NotFoundPage";
-import { createPageSlide } from "@page-slide";
-import { usePageSlide } from "@page-slide/react";
 import { applyStoredTheme } from "@/lib/theme";
 import { Clippy } from "./Clippy";
 import { MenuBar } from "./MenuBar";
-import { visibleMenuItems } from "./menu";
 import { resolveRoute } from "./resolveRoute";
 import { useRouteMeta } from "./useRouteMeta";
-
-const pageSlide = createPageSlide();
 
 /** Hidden page: / with this hash is an empty yellow screen. */
 const FEEF69_HASH = "#feef69";
@@ -30,15 +25,6 @@ export function App() {
     return () => document.body.classList.remove("feef69-page");
   }, [blank]);
   useEffect(applyStoredTheme, []);
-  useEffect(() => {
-    pageSlide.enable();
-    return () => pageSlide.disable();
-  }, []);
-  usePageSlide(
-    pageSlide,
-    pathname,
-    visibleMenuItems(pathname, false).map((item) => item.href),
-  );
 
   if (blank) return <main className="feef69-page" />;
 
