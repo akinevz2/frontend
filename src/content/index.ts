@@ -1,101 +1,22 @@
-import z from "zod";
-export { useFetchDocument } from "./hooks";
-export type * as default from "./types.d.ts";
-/**
- * Type guard to check if an item is a valid SectionProps object.
- * This filters out ReactNodes and other non-SectionProps items that may be
- * present in content arrays.
- */
-import type {
-  Content,
-  ClassName,
-  SectionContent,
-  TextContent,
-} from "./types.d.ts";
-import { isValidElement } from "react";
+import type { Route, Section, SoundCloudData } from "./schema";
+import pagesJson from "./pages.json";
+import sectionsJson from "./sections.json";
+import contactsJson from "./contacts.json";
+import addonsJson from "./addons.json";
+import charactersJson from "./characters.json";
+import pagertsJson from "./pagerts.json";
+import blogJson from "./blog.json";
+import soundcloudJson from "./soundcloud.json";
+import musicExtJson from "./music-ext.json";
 
-export function isSectionContent<T = unknown>(
-  item: unknown,
-): item is SectionContent<T> {
-  return (
-    typeof item === "object" &&
-    item !== null &&
-    !Array.isArray(item) &&
-    !isValidElement(item)
-  );
-}
+export * from "./schema";
 
-export function isPageContent(item: unknown): item is Content {
-  return isSectionContent(item) && "metadata" in item;
-}
-
-export function isTextContent<T>(c: unknown): c is TextContent<T> {
-  return isSectionContent(c);
-}
-
-const DEV = import.meta.env.DEV;
-const OWN_ORIGIN = DEV ? "http://localhost:8086" : "https://akinevz.com";
-
-// own origin only — document fetches, content json, markdown
-export const OwnOriginUrl = z
-  .url()
-  .transform((u) => new URL(u))
-  .superRefine((u, ctx) => {
-    if (u.origin && u.origin !== OWN_ORIGIN) {
-      ctx.addIssue(
-        `expected own origin ${OWN_ORIGIN}, got ${new URL(u).origin}`,
-      );
-    }
-  });
-
-// https anywhere — external links, soundcloud, github etc
-export const ExternalUrl = z
-  .url()
-  .superRefine((u, ctx) => {
-    if (DEV) return; // allow anything in dev
-    if (new URL(u).protocol !== "https:") {
-      ctx.addIssue(`external URLs must be https`);
-    }
-  })
-  .transform((u) => new URL(u));
-
-export const flattenClassNames = (classNames: ClassName[]): ClassName => {
-  return Array.isArray(classNames) ? classNames.join(" ") : classNames;
-};
-
-export function resolveOwn(path: string | unknown): URL {
-  if (!path || typeof path !== "string")
-    throw new Error(`resolveOwn path is not string?: ${path}`);
-  const absolute =
-    path.startsWith("http://") || path.startsWith("https://")
-      ? path
-      : new URL(path, OWN_ORIGIN).toString();
-  return OwnOriginUrl.parse(absolute);
-}
-
-export function assertLink(link: string, linktext?: string): void {
-  if (link.indexOf("../") !== -1)
-    throw new Error(`Link contains path escalation`);
-  if (link.startsWith("/")) return;
-  try {
-    const parsed = resolveOwn(link);
-    if (parsed.protocol !== "http:" && parsed.protocol !== "https:")
-      throw new Error(
-        `Link must use http/https or absolute local path${linktext ? ` for '${linktext}'` : ""}: '${link}'.`,
-      );
-  } catch {
-    throw new Error(
-      `Invalid link URL${linktext ? ` for '${linktext}'` : ""}: '${link}'.`,
-    );
-  }
-}
-
-export function validateLinks(item: Content): void {
-  if (!item) return;
-  if (typeof item !== "object") return;
-  if (!("external" in item)) return;
-  if (typeof item.external.link === "string") assertLink(item.external.link);
-  if (!Array.isArray(item.content)) return;
-  for (const subItem of item.content)
-    if (isPageContent(subItem)) validateLinks(subItem);
-}
+export const routes = pagesJson as Route[];
+export const sections = sectionsJson as Section;
+export const contacts = contactsJson as Section;
+export const addons = addonsJson as Section;
+export const characters = charactersJson as Section;
+export const pagerts = pagertsJson as Section;
+export const blog = blogJson as Section;
+export const soundcloud = soundcloudJson as SoundCloudData;
+export const musicExt = musicExtJson;

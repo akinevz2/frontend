@@ -1,0 +1,57 @@
+.menu-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: linear-gradient(to bottom, #f0f0f0 0%, #e0e0e0 100%);
+  border-bottom: 1px solid #808080;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  padding: 0;
+  margin: 0;
+}
+
+.menu-bar menu {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+}
+
+.menu-bar menu li {
+  margin: 0;
+  padding: 0;
+}
+
+.menu-bar menu a {
+  display: block;
+  padding: 4px 8px;
+  text-decoration: none;
+  color: #000 !important;
+  font-size: 16px;
+  font-family: "Tahoma", "MS Sans Serif", sans-serif;
+  white-space: nowrap;
+  transition: background-color 0.1s ease;
+}
+
+.menu-bar menu a.clippy-drop-active {
+  background-color: #feef69;
+  outline: 2px dashed #808080;
+}
+
+@media (hover: hover) {
+  .menu-bar menu a:hover {
+    background-color: rgba(51, 153, 255, 0.2);
+  }
+}
+
+.menu-bar menu a:active {
+  background-color: rgba(51, 153, 255, 0.4);
+}
+
+.menu-bar .menu-underline {
+  text-decoration: underline;
+}
+
+/* Minimized Sections Menu */
