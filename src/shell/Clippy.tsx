@@ -1,4 +1,4 @@
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { useLocation } from "react-router-dom";
 import {
   attachClippy,
@@ -6,6 +6,7 @@ import {
   onClippyClick,
   subscribeClippy,
 } from "@/lib/clippy";
+import { getHidden, subscribeHidden } from "@/window/hidden";
 
 /** Hidden mascot; summoning logic lives in lib/clippy. */
 export function Clippy() {
@@ -14,13 +15,27 @@ export function Clippy() {
     subscribeClippy,
     getClippyState,
   );
+  const hidden = useSyncExternalStore(subscribeHidden, getHidden);
+  const [listOpen, setListOpen] = useState(false);
   useEffect(attachClippy, []);
+
+  const hasHidden = hidden.items.length > 0;
+  const showList = listOpen && hasHidden;
 
   if (!visible || pathname === "/blog") return null;
 
   return (
     <div className="clippy">
-      {bubble && (
+      {showList && (
+        <ul className="clippy-bubble clippy-unhide" aria-label="Hidden windows">
+          {hidden.items.map((w) => (
+            <li key={w.id}>
+              <button onClick={() => hidden.restore(w.id)}>{w.label}</button>
+            </li>
+          ))}
+        </ul>
+      )}
+      {!showList && bubble && (
         <div className="clippy-bubble" role="status">
           {saysNo ? (
             "haha it said no"
@@ -36,7 +51,7 @@ export function Clippy() {
         className="clippy-image"
         src="/Clippy.png"
         alt="Clippy"
-        onClick={onClippyClick}
+        onClick={() => (hasHidden ? setListOpen((o) => !o) : onClippyClick())}
       />
     </div>
   );

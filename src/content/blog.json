@@ -383,9 +383,7 @@
                   "content": [
                     {
                       "heading": "reveal",
-                      "content": [
-                        "[public key](https://akinevz.com/pub.key)"
-                      ]
+                      "content": ["[public key](https://akinevz.com/pub.key)"]
                     }
                   ]
                 }

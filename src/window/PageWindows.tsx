@@ -1,6 +1,5 @@
 import { useMemo, type ReactNode } from "react";
 import type { Section } from "@/content";
-import { Dock } from "./Dock";
 import { buildWindows } from "./model";
 import {
   WindowProvider,
@@ -27,7 +26,6 @@ function Roots({
           <Window key={w.id} node={w} />
         ))}
       {children}
-      <Dock />
     </>
   );
 }
