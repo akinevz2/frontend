@@ -67,16 +67,14 @@ function PermalinkButton({ node }: { node: WindowNode }) {
 
 function Body({ node, expanded }: { node: WindowNode; expanded: boolean }) {
   const showOk = !expanded && !forcesExpanded(node);
+  const copyable = Boolean(node.status && node.link?.startsWith("/addons/"));
   const showContent = expanded || Boolean(node.link);
 
   const content = (
     <>
       {node.status && (
         <p className="addon-status">
-          status: <em>{node.status}</em>{" "}
-          {node.link?.startsWith("/addons/") && (
-            <CopyAddon src={node.link} text={node.copyText} />
-          )}
+          status: <em>{node.status}</em>
         </p>
       )}
       {showContent && node.children.length > 0 && (
@@ -85,6 +83,15 @@ function Body({ node, expanded }: { node: WindowNode; expanded: boolean }) {
       {expanded && node.embed && <ResourceEmbed src={node.embed} />}
     </>
   );
+
+  if (copyable) {
+    return (
+      <div className="ok-row ok-row-bottom">
+        {content}
+        <CopyAddon src={node.link} text={node.copyText} />
+      </div>
+    );
+  }
 
   if (showOk) {
     return (
