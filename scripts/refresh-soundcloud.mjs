@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Refresh public/soundcloud.json from SoundCloud's public HTML and oembed APIs
+ * Refresh src/content/soundcloud.json from SoundCloud's public HTML and oembed APIs
  * (no SoundCloud login required).
  *
  * Strategy
@@ -9,7 +9,7 @@
  *     anchors from each SoundCloud profile's server-rendered HTML.  This gives
  *     us track URLs plus the titles that are visible in the SSR'd anchor text
  *     (typically the most recent ~10 tracks per owner).
- * 2.  The previous public/soundcloud.json is read so that any older track URL
+ * 2.  The previous src/content/soundcloud.json is read so that any older track URL
  *     that has scrolled off the first page is preserved.  This keeps the
  *     discography complete even though SoundCloud only server-renders the most
  *     recent tracks.
@@ -17,7 +17,7 @@
  *     (https://soundcloud.com/oembed?url=...&format=json) to obtain a fresh
  *     title.  oembed works without a SoundCloud `client_id` (no 401s).
  * 4.  The merged set is sorted, deduplicated, and written back to
- *     public/soundcloud.json in the same shape that MusicContent.tsx and
+ *     src/content/soundcloud.json in the same shape that the music page
  *     verify-policy.mjs expect.
  *
  * Why this replaces the old `generate-soundcloud-json.mjs`
@@ -38,8 +38,7 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const projectRoot = resolve(__dirname, "..");
-const outputFile = resolve(projectRoot, "public/soundcloud.json");
-const contentOutputFile = resolve(projectRoot, "src/content/soundcloud.json");
+const outputFile = resolve(projectRoot, "src/content/soundcloud.json");
 
 /** SoundCloud usernames whose discographies should be published. */
 const SOUND_CLOUD_OWNERS = ["akinevz", "akinevz2"];
@@ -211,7 +210,7 @@ const extractVisibleTracks = (owner, page) => {
 };
 
 /**
- * Fetch the previous public/soundcloud.json (if any) so we can preserve the
+ * Fetch the previous src/content/soundcloud.json (if any) so we can preserve the
  * full URL list across runs.  Returns a map of "owner|path" -> title.
  */
 const readPreviousSnapshot = async () => {
@@ -508,8 +507,6 @@ export const run = async () => {
     };
 
     await writeFile(outputFile, `${JSON.stringify(result, null, 2)}\n`, "utf8");
-    await writeFile(contentOutputFile, `${JSON.stringify(result, null, 2)}\n`, "utf8");
-
 
     process.stdout.write(
         `Refreshed ${result.tracks.length} SoundCloud track(s) into ${outputFile}\n`,

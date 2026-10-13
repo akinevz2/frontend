@@ -53,5 +53,5 @@ docker
 
 .cache/
 tsconfig.tsbuildinfo
-*/**/soundcloud.json
 admin/wwwroot/
+*.tsbuildinfo

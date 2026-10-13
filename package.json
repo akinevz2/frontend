@@ -20,6 +20,7 @@
     "build:ready": "git add -A && npm run push",
     "push": "git push origin main",
     "preview": "vite preview --host 127.0.0.1 --port 8086",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.node.json --noEmit",
     "lint": "npx --yes prettier --write \"src/**/*.{ts,tsx}\" && eslint ./src --ext .ts,.tsx",
     "test": "node --test",
     "test:watch": "node --test --watch",
