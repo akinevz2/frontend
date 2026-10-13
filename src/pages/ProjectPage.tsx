@@ -6,5 +6,7 @@ import { PageWindows } from "@/window";
 export const ProjectPage = () => {
   const path = normalizePath(useLocation().pathname);
   const project = projects.find((p) => projectPath(p) === path);
-  return project ? <PageWindows content={project.content} /> : null;
+  if (!project) return null;
+  const content = { theme: "open" as const, ...project.content };
+  return <PageWindows content={content} />;
 };
