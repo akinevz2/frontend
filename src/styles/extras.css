@@ -209,3 +209,8 @@ main.feef69-page {
   max-width: 100% !important;
   object-fit: contain;
 }
+
+.back-row {
+  display: flex;
+  justify-content: flex-end;
+}
