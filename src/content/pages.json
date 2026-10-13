@@ -1,12 +1,75 @@
 [
-  { "path": "/", "menuLabel": "home", "title": "home of kine", "description": "my cozy little personal website", "page": "HomePage" },
-  { "path": "/resume", "menuLabel": "resume", "title": "please hire kine", "description": "kine would like you to see his resume!", "page": "ResumePage", "menu": false },
-  { "path": "/addons", "menuLabel": "addons", "title": "wow addons", "description": "Download World of Warcraft configuration files", "page": "AddonsPage", "menu": "onlyHere" },
-  { "path": "/sitemap", "menuLabel": "sitemap", "title": "sitemap of kine's website", "description": "an immersive map of the site, assets, and crawlable surfaces", "page": "SitemapPage", "menu": "admin" },
-  { "path": "/contact", "menuLabel": "links", "title": "please contact kine", "description": "contact me!", "page": "ContactPage" },
-  { "path": "/wow", "menuLabel": "configs", "title": "kind of work kine likes", "description": "hire me!", "page": "WowPage" },
-  { "path": "/projects", "menuLabel": "projects", "title": "projects by kine", "description": "things kine has built, with links to their code", "page": "ProjectsPage" },
-  { "path": "/music", "menuLabel": "music", "title": "glitchbox tracks", "description": "my featured uploads from SoundCloud", "page": "MusicPage" },
-  { "path": "/blog", "menuLabel": "blog", "title": "blog of kine", "description": "posts and notes from kine", "page": "BlogPage" },
-  { "path": "/404", "title": "not found", "description": "that page does not exist", "page": "NotFoundPage", "hidden": true }
+  {
+    "path": "/",
+    "menuLabel": "home",
+    "title": "home of kine",
+    "description": "my cozy little personal website",
+    "page": "HomePage"
+  },
+  {
+    "path": "/resume",
+    "menuLabel": "resume",
+    "title": "please hire kine",
+    "description": "kine would like you to see his resume!",
+    "page": "ResumePage",
+    "menu": false
+  },
+  {
+    "path": "/addons",
+    "menuLabel": "addons",
+    "title": "wow addons",
+    "description": "Download World of Warcraft configuration files",
+    "page": "AddonsPage",
+    "menu": "onlyHere"
+  },
+  {
+    "path": "/sitemap",
+    "menuLabel": "sitemap",
+    "title": "sitemap of kine's website",
+    "description": "an immersive map of the site, assets, and crawlable surfaces",
+    "page": "SitemapPage",
+    "menu": "admin"
+  },
+  {
+    "path": "/contact",
+    "menuLabel": "links",
+    "title": "please contact kine",
+    "description": "contact me!",
+    "page": "ContactPage"
+  },
+  {
+    "path": "/wow",
+    "menuLabel": "configs",
+    "title": "kind of work kine likes",
+    "description": "hire me!",
+    "page": "WowPage"
+  },
+  {
+    "path": "/projects",
+    "menuLabel": "projects",
+    "title": "projects by kine",
+    "description": "things kine has built, with links to their code",
+    "page": "ProjectsPage"
+  },
+  {
+    "path": "/music",
+    "menuLabel": "music",
+    "title": "glitchbox tracks",
+    "description": "my featured uploads from SoundCloud",
+    "page": "MusicPage"
+  },
+  {
+    "path": "/blog",
+    "menuLabel": "blog",
+    "title": "blog of kine",
+    "description": "posts and notes from kine",
+    "page": "BlogPage"
+  },
+  {
+    "path": "/404",
+    "title": "not found",
+    "description": "that page does not exist",
+    "page": "NotFoundPage",
+    "hidden": true
+  }
 ]

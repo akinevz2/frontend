@@ -25,11 +25,7 @@
         "content": [
           {
             "heading": "Global Installation",
-            "content": [
-              "npm install -g pagerts",
-              "",
-              "pagerts ./page.html"
-            ]
+            "content": ["npm install -g pagerts", "", "pagerts ./page.html"]
           },
           {
             "heading": "Using npx (No Installation Required)",
