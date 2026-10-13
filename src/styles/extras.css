@@ -5,6 +5,10 @@
   flex-wrap: wrap;
 }
 
+.ok-row-bottom {
+  align-items: flex-end;
+}
+
 .maximized-backdrop {
   position: fixed;
   inset: 0;
