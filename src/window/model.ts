@@ -1,10 +1,12 @@
+import { isValidElement, type ReactElement } from "react";
 import type { Banner, Embed, Item, Section, ThemeName } from "@/content";
 
 export type WindowChild =
   | { kind: "text"; lines: string[] }
   | { kind: "window"; node: WindowNode }
   | { kind: "embed"; embed: Embed }
-  | { kind: "banner"; banner: Banner["banner"] };
+  | { kind: "banner"; banner: Banner["banner"] }
+  | { kind: "element"; element: ReactElement };
 
 export type WindowNode = {
   /** Dotted tree index ("0", "0.1.2"); doubles as the DOM id and URL hash. */
@@ -44,6 +46,8 @@ function buildNode(section: Section, id: string, depth: number): WindowNode {
       const last = children[children.length - 1];
       if (last?.kind === "text") last.lines.push(item);
       else children.push({ kind: "text", lines: [item] });
+    } else if (isValidElement(item)) {
+      children.push({ kind: "element", element: item });
     } else if ("banner" in item) {
       children.push({ kind: "banner", banner: item.banner });
     } else if (isEmbed(item)) {

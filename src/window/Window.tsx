@@ -37,6 +37,8 @@ function Children({ items }: { items: WindowChild[] }) {
                 <BannerView banner={child.banner} />
               </li>
             );
+          case "element":
+            return <li key={index}>{child.element}</li>;
           case "window":
             return <Window key={child.node.id} node={child.node} />;
         }
