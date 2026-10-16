@@ -29,7 +29,7 @@
     "checksums": "node ./scripts/write-dist-checksums.mjs"
   },
   "dependencies": {
-    "@firebase/analytics": "^0.10.24",
+    "@firebase/analytics": "^0.10.25",
     "@firebase/app": "^0.16.1",
     "@firebase/firestore": "^3.7.3",
     "eslint-plugin-react-refresh": "^0.5.7",
