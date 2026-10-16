@@ -16,9 +16,16 @@ export function normalizePath(pathname: string): string {
   return routes.some((r) => r.path === lower) ? lower : path;
 }
 
-const BLOG_DOCUMENT = /^\/blog\/.+\.md$/i;
+/** Known asset extensions; anything else under /blog/ is treated as a post page. */
+const BLOG_ASSET =
+  /\.(md|html?|txt|xml|json|css|js|pdf|png|jpe?g|gif|webp|svg|ico|avif|mp3|mp4|ogg|wav|woff2?)$/i;
 
-/** Any /blog/**.md URL is a post page; the file itself is fetched by the page. */
+const BLOG_PAGE = new RegExp(
+  `^/blog/.+(?<!${BLOG_ASSET.source.slice(2, -1)})$`,
+  "i",
+);
+
+/** Any extension-less /blog/** URL is a post page; the file itself is + .md. */
 function blogDocumentRoute(pathname: string): Route {
   const name = decodeURI(pathname).split("/").pop() ?? pathname;
   return {
@@ -31,7 +38,7 @@ function blogDocumentRoute(pathname: string): Route {
 }
 
 export function resolveRoute(pathname: string): Route {
-  if (BLOG_DOCUMENT.test(pathname)) return blogDocumentRoute(pathname);
+  if (BLOG_PAGE.test(pathname)) return blogDocumentRoute(pathname);
   const path = normalizePath(pathname);
   const route = routes.find((r) => r.path === path);
   return route ?? NOT_FOUND;

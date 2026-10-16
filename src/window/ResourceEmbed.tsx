@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import { Md } from "@/lib/markdown";
 
-const rawUrl = (src: string) =>
-  /^\/blog\/.+\.md$/i.test(src) ? `/raw${src}` : src;
-
 type State =
   | { status: "loading" }
   | { status: "ready"; text: string }
@@ -15,7 +12,7 @@ export function ResourceEmbed({ src }: { src: string }) {
   useEffect(() => {
     const controller = new AbortController();
     setState({ status: "loading" });
-    fetch(rawUrl(src), { signal: controller.signal })
+    fetch(src, { signal: controller.signal })
       .then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.text();
