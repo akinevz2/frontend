@@ -11,9 +11,6 @@ services:
       - type: redirect
         source: /404
         destination: /404.html
-      - type: rewrite
-        source: /blog/*.md
-        destination: /index.html
 
 # Domain redirect configuration for pagerts.akinevz.com -> akinevz.com/pagerts
 # Note: To enable this redirect:
