@@ -1,6 +1,6 @@
 {
   "baselineUrl": "https://akinevz.com/checksums.txt",
-  "generatedAt": "2026-10-16T04:25:46.800Z",
+  "generatedAt": "2026-10-16T11:17:29.275Z",
   "mutablePaths": [
     "index.html",
     "404.html",
@@ -26,103 +26,115 @@
     "checksums.txt",
     "assets/*.js"
   ],
-  "violationCount": 16,
+  "violationCount": 18,
   "violations": [
+    {
+      "relPath": "blog/random/gdiff.md",
+      "status": "NEW",
+      "prev": null,
+      "next": "10dd61b40abca4875b3722a7d11001de958822615bbd5e38fa0c2dd337409fc1"
+    },
     {
       "relPath": "projects/development.html",
       "status": "CHANGED",
-      "prev": "1c6bb22baff1c9ee2487f3161264b95c67de20f9ac91b4e30726d343c2cc96d6",
-      "next": "bd6601ad181a3c8bf2e1f491177368ce8d073672cb178dcce0f02295bd359502"
+      "prev": "11208e85c78e9a77c60df0406d5afe9a03fcb135339ce729393ed01a5adeb97d",
+      "next": "7c038f46024f4ccc60d724fce86999f01f7d7f239833ad81fd754a6f9bfc0a6f"
     },
     {
       "relPath": "projects/development/index.html",
       "status": "CHANGED",
-      "prev": "1c6bb22baff1c9ee2487f3161264b95c67de20f9ac91b4e30726d343c2cc96d6",
-      "next": "bd6601ad181a3c8bf2e1f491177368ce8d073672cb178dcce0f02295bd359502"
+      "prev": "11208e85c78e9a77c60df0406d5afe9a03fcb135339ce729393ed01a5adeb97d",
+      "next": "7c038f46024f4ccc60d724fce86999f01f7d7f239833ad81fd754a6f9bfc0a6f"
     },
     {
       "relPath": "projects/doftiles.html",
       "status": "CHANGED",
-      "prev": "eb76259776770bb825db2d721de1c309cc486d22eaccf6514b4acea5cabea61f",
-      "next": "f95da2a0d011888979c05fd1d4c55736fe8d28b2619d855bd279eaf9f7fe1a96"
+      "prev": "091d34cbae659fa73b52832556eafe87d214a907f7a948be2db8626608c963b0",
+      "next": "c2711e34bd3c99383e893238b56bc7a1d928f191530af5a8ddc617bb0ba1fa3d"
     },
     {
       "relPath": "projects/doftiles/index.html",
       "status": "CHANGED",
-      "prev": "eb76259776770bb825db2d721de1c309cc486d22eaccf6514b4acea5cabea61f",
-      "next": "f95da2a0d011888979c05fd1d4c55736fe8d28b2619d855bd279eaf9f7fe1a96"
+      "prev": "091d34cbae659fa73b52832556eafe87d214a907f7a948be2db8626608c963b0",
+      "next": "c2711e34bd3c99383e893238b56bc7a1d928f191530af5a8ddc617bb0ba1fa3d"
     },
     {
       "relPath": "projects/frontend.html",
       "status": "CHANGED",
-      "prev": "88b28b8c7da5dc23be976d399a9b40220da8e36511b7358916866db21830d6f9",
-      "next": "f52c3d27807d4765f48d50d90c0590bdc0e4d8d48b2d5e550aaa9cb7fddec160"
+      "prev": "9a5a68349c3322fec93a500ba9919bbfc74ed65a361a133e3651e3a617ebaded",
+      "next": "1587021af39a891a5ff39de4eb300a3df6f9f3102849854228e157fb5659e434"
     },
     {
       "relPath": "projects/frontend/index.html",
       "status": "CHANGED",
-      "prev": "88b28b8c7da5dc23be976d399a9b40220da8e36511b7358916866db21830d6f9",
-      "next": "f52c3d27807d4765f48d50d90c0590bdc0e4d8d48b2d5e550aaa9cb7fddec160"
+      "prev": "9a5a68349c3322fec93a500ba9919bbfc74ed65a361a133e3651e3a617ebaded",
+      "next": "1587021af39a891a5ff39de4eb300a3df6f9f3102849854228e157fb5659e434"
     },
     {
       "relPath": "projects/graphbrowser.html",
       "status": "CHANGED",
-      "prev": "da7d2dfb9f43cf91fb1e69717ec8cff57d23ad15ef8c6e8e1193c8c09baf5e4e",
-      "next": "02a83fca1e227814fa4468758e6bf049cbcf8251cc20f47aa408a58a508f5e5b"
+      "prev": "98ca2cb9fb511b072912e17bd0f96b4481cd7f61bac15a5cee3f47ed85d2b041",
+      "next": "7d2a1e8828b2d4f0aaa8a430d9d23a26656e89cc08902097ed55726fcb4344e5"
     },
     {
       "relPath": "projects/graphbrowser/index.html",
       "status": "CHANGED",
-      "prev": "da7d2dfb9f43cf91fb1e69717ec8cff57d23ad15ef8c6e8e1193c8c09baf5e4e",
-      "next": "02a83fca1e227814fa4468758e6bf049cbcf8251cc20f47aa408a58a508f5e5b"
+      "prev": "98ca2cb9fb511b072912e17bd0f96b4481cd7f61bac15a5cee3f47ed85d2b041",
+      "next": "7d2a1e8828b2d4f0aaa8a430d9d23a26656e89cc08902097ed55726fcb4344e5"
     },
     {
       "relPath": "projects/herbstutil.html",
       "status": "CHANGED",
-      "prev": "4adacd69a11564b3c48b7f2d055e3ec82c8fe638a06df50bdc1514ef9c9580a4",
-      "next": "68373ff510fa01d815c296603774257a9d1843c56fe54cd083e9d3da2fe9ceca"
+      "prev": "df6d82f15a1c20bf2e9e29ef9bf3a2d7de219a6c7175372ed03cb1aaa60456f4",
+      "next": "34b3ca7e981238a19f2e272b8f7be99c829616e51f23b559180a78907f1e7a48"
     },
     {
       "relPath": "projects/herbstutil/index.html",
       "status": "CHANGED",
-      "prev": "4adacd69a11564b3c48b7f2d055e3ec82c8fe638a06df50bdc1514ef9c9580a4",
-      "next": "68373ff510fa01d815c296603774257a9d1843c56fe54cd083e9d3da2fe9ceca"
+      "prev": "df6d82f15a1c20bf2e9e29ef9bf3a2d7de219a6c7175372ed03cb1aaa60456f4",
+      "next": "34b3ca7e981238a19f2e272b8f7be99c829616e51f23b559180a78907f1e7a48"
     },
     {
       "relPath": "projects/lightdni-jssas-toggle.html",
       "status": "CHANGED",
-      "prev": "e224b4a219034d7f747607b0fbf83020fd442388faa64820c4a189a53556ddb3",
-      "next": "c71e7a7a1551c0fdc0d49d0147b78841c8537daea19a04bcfc4bfe65446a0a54"
+      "prev": "b0a0044e8739fc156ea0c19c13c1fac21e09a1858a9c7044142f38f8358646cb",
+      "next": "11068dbe2527e073bc59605fd2d50450fb45697fee8e300b2f751ccaef3edc37"
     },
     {
       "relPath": "projects/lightdni-jssas-toggle/index.html",
       "status": "CHANGED",
-      "prev": "e224b4a219034d7f747607b0fbf83020fd442388faa64820c4a189a53556ddb3",
-      "next": "c71e7a7a1551c0fdc0d49d0147b78841c8537daea19a04bcfc4bfe65446a0a54"
+      "prev": "b0a0044e8739fc156ea0c19c13c1fac21e09a1858a9c7044142f38f8358646cb",
+      "next": "11068dbe2527e073bc59605fd2d50450fb45697fee8e300b2f751ccaef3edc37"
     },
     {
       "relPath": "projects/rarebert.html",
       "status": "CHANGED",
-      "prev": "9e07e7056d2b4cb030f1077d4e86b9ae2a2434c233bcdff2fe5bf55b2ea88ab1",
-      "next": "9f53b929173a2483df93ccefc5065eb8fb63fa7045561088db616f914ca04f03"
+      "prev": "221437f977445cbf02728fc89cae3113153b1acc6099524a0c960198c17dbcbd",
+      "next": "881211bba0a5511faad73ee2cb8fd6860cf26b9dc10b4281e23a4e7d4dbb695d"
     },
     {
       "relPath": "projects/rarebert/index.html",
       "status": "CHANGED",
-      "prev": "9e07e7056d2b4cb030f1077d4e86b9ae2a2434c233bcdff2fe5bf55b2ea88ab1",
-      "next": "9f53b929173a2483df93ccefc5065eb8fb63fa7045561088db616f914ca04f03"
+      "prev": "221437f977445cbf02728fc89cae3113153b1acc6099524a0c960198c17dbcbd",
+      "next": "881211bba0a5511faad73ee2cb8fd6860cf26b9dc10b4281e23a4e7d4dbb695d"
     },
     {
       "relPath": "projects/webuser.html",
       "status": "CHANGED",
-      "prev": "2bf75810964f394d2d93ac826c811f337cb86c2966487c2e6283917c5ae1b92e",
-      "next": "fc57bdf47e23202faea886d9be6547122e41dcfbfb58aef18fd5c33c174e1804"
+      "prev": "4312f9a34860072724c12ca11a23bc5e44c0700b00cb617d3e44c8797a6d88ea",
+      "next": "9bc678872e00fe6dd0a4c0ae156e0665959461f52b1ea60656f0439a8633c476"
     },
     {
       "relPath": "projects/webuser/index.html",
       "status": "CHANGED",
-      "prev": "2bf75810964f394d2d93ac826c811f337cb86c2966487c2e6283917c5ae1b92e",
-      "next": "fc57bdf47e23202faea886d9be6547122e41dcfbfb58aef18fd5c33c174e1804"
+      "prev": "4312f9a34860072724c12ca11a23bc5e44c0700b00cb617d3e44c8797a6d88ea",
+      "next": "9bc678872e00fe6dd0a4c0ae156e0665959461f52b1ea60656f0439a8633c476"
+    },
+    {
+      "relPath": "raw/blog/random/gdiff.md",
+      "status": "NEW",
+      "prev": null,
+      "next": "10dd61b40abca4875b3722a7d11001de958822615bbd5e38fa0c2dd337409fc1"
     }
   ]
 }
