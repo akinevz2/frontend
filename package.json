@@ -26,7 +26,8 @@
     "check:audit": "npm audit --audit-level=low",
     "check:security": "npm run lint && npm run test",
     "check:all": "npm run check:security && npm run check:audit",
-    "checksums": "node ./scripts/write-dist-checksums.mjs"
+    "checksums": "node ./scripts/write-dist-checksums.mjs",
+    "postinstall": "node ./scripts/ensure-xpcss.mjs"
   },
   "dependencies": {
     "@firebase/analytics": "^0.10.24",

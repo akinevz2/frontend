@@ -31,6 +31,7 @@ export default defineConfig({
     port: DEV_PORT,
     strictPort: true,
     cors: false,
+    allowedHosts: ["ws-vision", ".ws-vision"], // remote dev machine hostname
     headers: SECURITY_HEADERS,
     watch: { usePolling: true },
   },
