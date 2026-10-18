@@ -1,7 +1,4 @@
-import { readFileSync, readdirSync } from "node:fs";
-import path from "node:path";
 import type { Connect, Plugin } from "vite";
-import { ROOT } from "./env.ts";
 
 const ASSETS =
   /\.(md|html?|txt|xml|json|css|js|pdf|png|jpe?g|gif|webp|svg|ico|avif|mp3|mp4|ogg|wav|woff2?)$/i;
