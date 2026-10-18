@@ -5,7 +5,7 @@ services:
     envVars:
       - key: NODE_VERSION
         value: 22.22.1
-    buildCommand: git submodule update --init --recursive && npm install && npm run build
+    buildCommand: git submodule update --init --recursive && npm install && npm --prefix xp.css install --no-audit --no-fund && npm --prefix xp.css run build && npm run build
     staticPublishPath: ./dist
     routes:
       - type: redirect

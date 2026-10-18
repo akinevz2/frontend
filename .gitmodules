@@ -1,0 +1,4 @@
+[submodule "xp.css"]
+	path = xp.css
+	url = https://github.com/akinevz2/XP.css.git
+	branch = build-system-modernization

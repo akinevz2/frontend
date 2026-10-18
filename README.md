@@ -28,6 +28,20 @@ This repo is where I experiment with:
 - Vite for development and builds
 - xp.css for the nostalgia
 
+### xp.css notes
+
+`xp.css` is the `xp.css` git submodule (the [akinevz2/XP.css](https://github.com/akinevz2/XP.css) fork, branch
+`build-system-modernization`), not the npm package. Its `dist/` bundles are gitignored and produced by
+`node build.js` inside the submodule, so before `vite build` you need:
+
+```
+git submodule update --init xp.css && npm --prefix xp.css install --no-audit --no-fund && npm --prefix xp.css run build
+```
+
+`vite.config.ts` resolves the bare `xp.css/...` import specifiers to the submodule via `resolve.alias`. When the
+fork merges `build-system-modernization` into `main`, repoint `.gitmodules` (`branch = build-system-modernization`
+→ `branch = main` or simply drop the `branch` line), then `git submodule update --remote` and commit the new submodule SHA.
+
 ## Local development
 
 Start the dev server:

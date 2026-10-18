@@ -15,6 +15,10 @@ export default defineConfig({
       "@": fromRoot("src"),
       "@public": fromRoot("public"),
       "@content": fromRoot("src/content"),
+      // xp.css is the git submodule (akinevz2/XP.css fork, branch
+      // build-system-modernization); its dist/ is built by node build.js,
+      // not shipped, so resolve the bare "xp.css/..." specifiers there.
+      "xp.css": fromRoot("xp.css"),
     },
   },
   plugins: [react(), blogDocumentsPlugin(), routeSkeletonsPlugin()],
