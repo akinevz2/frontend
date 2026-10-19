@@ -3,6 +3,12 @@
   "theme": "open",
   "content": [
     {
+      "heading": "SideTip (v0.1.19) — standalone rule-based aura icon",
+      "content": "Standalone Classic/TBC addon replacing the WeakAura class sets: one contextual icon (swing, energy/mana flash, cooldowns, range, auras, aggro). No WeakAuras required. Extract the SideTip folder into Interface/AddOns and /reload; /sidetip dump to verify.",
+      "status": "beta",
+      "link": "/addons/sidetip-0.1.19.zip"
+    },
+    {
       "heading": "Rueg Distributable Config (dist.7z)",
       "content": "Full distributable World of Warcraft configuration archive — addons, WeakAuras, and profiles, packaged for easy install.",
       "status": "available",
