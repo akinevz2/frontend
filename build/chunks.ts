@@ -1,8 +1,6 @@
 /** Vendor chunk grouping, first match wins (order matters: react-* before react). */
 const GROUPS: Array<[chunk: string, needles: string[]]> = [
-  ["firebase", ["firebase"]],
-  [
-    "markdown",
+  ["markdown",
     [
       "react-markdown",
       "rehype",

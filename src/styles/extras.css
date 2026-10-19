@@ -116,20 +116,11 @@ body:has(.maximized-backdrop) .debug-bar {
   background: #fff;
 }
 
-.resume-blurred {
-  filter: blur(6px);
-  pointer-events: none;
-}
-
 .resume-controls {
   display: flex;
   gap: 1em;
   align-items: center;
   margin-bottom: 0.5em;
-}
-
-.resume-modal {
-  width: min(92vw, 420px);
 }
 
 .title-bar-controls button[aria-label="Restore"] {
