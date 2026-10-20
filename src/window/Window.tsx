@@ -193,21 +193,20 @@ export function Window({ node }: { node: WindowNode }) {
   };
 
   const close = () => {
-    // Windows themed "funny" ARE the joke — pressing their ✕ always
-    // crunches, even when the close goes through normally.
+    // The crunchy kick backs every ✕ press: refused closes (Clippy veto,
+    // "funny" windows) and successful ones alike.
+    playLayeredAudio(CLOSE_SOUND);
     const funnyClose = hasTheme(node, "funny");
-    // The crunchy kick plays only when a window refuses to close (Clippy
-    // saying no); successful closes pass silently and then
-    // park/restore/leave as before.
+    // Refusal keeps the window open (see window-close-attempt below);
+    // successful closings park/restore/leave after the crunch.
     const refused = !document.dispatchEvent(
       new CustomEvent("window-close-attempt", { cancelable: true }),
     );
-    if (funnyClose || refused) playLayeredAudio(CLOSE_SOUND);
-    // "funny" windows refuse outright: the kick plays, the window stays.
+    // "funny" windows refuse outright: the kick played, the window stays.
     if (funnyClose) return;
     if (!refused) {
       if (maximized) {
-        // ✕ from fullscreen: restore into the page, no sound.
+        // ✕ from fullscreen: restore into the page (the kick already ran).
         patch(node.id, { maximized: false });
         return;
       }
@@ -222,7 +221,6 @@ export function Window({ node }: { node: WindowNode }) {
       minimize();
       return;
     }
-    // (Refusals and funny windows played the crunchy kick above.)
   };
 
   const window_ = (
