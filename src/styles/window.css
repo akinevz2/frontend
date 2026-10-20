@@ -480,6 +480,20 @@ form#form > label {
   padding: 0.5em;
 }
 
+/* Desktop keeps the liked fixed-height card; mobile squares the player
+   at the player's own footprint size, so square can never balloon tall
+   (spotify favourite-link players included via .embed). */
+@media (max-width: 768px) {
+  .embed,
+  [data-testid="embed-iframe"] {
+    display: block;
+    width: min(100%, 250px);
+    aspect-ratio: 1 / 1;
+    height: auto;
+    margin: 0 auto;
+  }
+}
+
 .music-favourite-link-window ul {
   min-width: 100%;
 }

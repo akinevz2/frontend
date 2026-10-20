@@ -18,6 +18,16 @@
   inset: 0;
   z-index: 2000;
   background: rgba(0, 0, 0, 0.6);
+  /* The dimmed shell is the scroll surface: a maximized window taller
+     than the viewport scrolls as a whole (title bar and all), keeping
+     one consistent piece of geometry for content, banners and rail. */
+  overflow-y: auto;
+  display: flex;
+  /* SAFE centering: a fitting window centers in the scrollport; an
+     overflowing one docks to the top edge instead (auto margins misbehave
+     on an overflowing scroll surface — bottom-anchoring the window). */
+  align-items: safe center;
+  justify-content: safe center;
 }
 
 /* Every window is wrapped by the shell: display: contents keeps the
@@ -44,31 +54,21 @@
   }
 }
 
-/* The maximized window stays IN the page tree (a sibling of the dimmed
-   layer, not its child): fixed positioning lifts it over the viewport
-   without uprooting it, so nothing is removed from the element tree and
-   the restore never re-adopts it. top: 50% + translate centers it; the
-   max-height cap keeps the centered placement exact for tall content,
-   which scrolls inside the window (title bar and all) as one piece. */
+/* The maximized window flows INSIDE its shell (the backdrop): hugging
+   content — no viewport clamp, no auto margins (they misalign on the
+   overflowing scroll surface). Alignment is the shell's safe centering.
+   Taller content extends the window; the dimmed shell scrolls it as one
+   piece (banner, posts and rail keep their DOM order and geometry). */
 .window.maximized {
-  position: fixed;
-  top: 50%;
-  left: 0;
-  right: 0;
-  bottom: auto;
-  z-index: 2001;
-  translate: 0 -50%;
-  margin: 0 auto;
   width: max-content;
   max-width: 96vw;
   min-width: min(800px, 96vw);
   height: fit-content;
   min-height: 0;
-  max-height: 100dvh;
+  max-height: none;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
 }
 
 .artist-background {

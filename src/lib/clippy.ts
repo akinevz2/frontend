@@ -25,18 +25,12 @@ export type ClippyState = {
   listOpen: boolean;
 };
 
-const isPhone = () =>
-  typeof navigator !== "undefined" &&
-  /(iphone|ipod|android.*mobile|windows phone|blackberry|iemobile|opera mini)/i.test(
-    navigator.userAgent,
-  );
-
 const storedVisible = () =>
   typeof sessionStorage !== "undefined" &&
   sessionStorage.getItem(SESSION_KEY) === "1";
 
 let state: ClippyState = {
-  visible: storedVisible() || isPhone(),
+  visible: storedVisible(),
   bubble: false,
   saysNo: false,
   listOpen: false,

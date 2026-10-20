@@ -125,6 +125,10 @@ function leaveGhost(): void {
   // the dimmed layer and the maximized window fold and drop with the
   // page — no portal ride-out is needed on navigation.
   document.querySelectorAll<HTMLElement>("body > .debug-bar").forEach((bar) => {
+    // A bar hidden by the maximized overlay rides nothing: cloning it
+    // only paints a flash after the unlock (the folded ghost unparks
+    // body:has while the ride is still alive).
+    if (getComputedStyle(bar).display === "none") return;
     const leaving = bar.cloneNode(true) as HTMLElement;
     leaving.classList.add("page-slide-bar");
     // Layout rules key off this attribute; the clone must not keep them alive.
@@ -172,7 +176,7 @@ export function suppressNextSlideClick(): void {
  * a narrow, wrapped menu. Matches the layout.css 768px breakpoint. */
 const isMobileLayout = () => window.matchMedia("(max-width: 768px)").matches;
 
-function transition(to: string): void {
+function transition(to: string, hash: string): void {
   if (to === current) return;
   if (clickSuppressed) clickSuppressed = false;
   else playMinimizeClick();
@@ -183,6 +187,9 @@ function transition(to: string): void {
   applyDirection(direction);
   restartArrival();
   current = to;
+  // A new page starts at the top — unless the url carries a hash, whose
+  // element the navigation scrolls itself to (scrollToHash).
+  if (!hash) window.scrollTo({ top: 0 });
 }
 
 /** Restart the just-applied destination slide so it runs in step with the
@@ -208,7 +215,7 @@ const onPopState = () => {
     if (location.hash) scrollToHash(location.hash);
     return;
   }
-  transition(location.pathname);
+  transition(location.pathname, location.hash);
 };
 
 /** Scrolls the hash element into view — inside its scrolling window
@@ -221,7 +228,13 @@ function scrollToHash(hash: string, attempts = 12): void {
   const tick = () => {
     const el = document.getElementById(id);
     if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      // Maximized windows are viewport-fixed overlays; scrolling the page
+      // behind them just resets the background while the overlay hides
+      // it. The restored window scrolls itself to the hash element on
+      // dismissal instead.
+      if (!el.closest(".maximized-backdrop")) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
       return;
     }
     if (attempts > 0) window.setTimeout(tick, 100);
@@ -246,7 +259,7 @@ export function enablePageSlide(): void {
     if (url != null) {
       const target = new URL(url, location.href);
       if (target.pathname !== current) {
-        transition(target.pathname);
+        transition(target.pathname, target.hash);
         if (target.hash) scrollToHash(target.hash);
       } else if (target.hash && target.hash !== location.hash) {
         // Same pathname, new hash: no page transition — scroll instead.

@@ -163,6 +163,19 @@ export function Window({ node }: { node: WindowNode }) {
     return () => document.removeEventListener("keydown", onKey, true);
   }, [maximized, node.id, patch, maximizedCtl]);
 
+  // Mobile: the maximized window's hash entry is a history PUSH, so the
+  // OS back button removes it — the hash leaves this window first, which
+  // dismisses the overlay (instead of ever leaving the page).
+  useEffect(() => {
+    if (!maximized) return;
+    if (!window.matchMedia("(max-width: 768px)").matches) return;
+    const onHash = () => {
+      if (location.hash !== `#${node.id}`) maximizedCtl.dismiss();
+    };
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, [maximized, node.id, maximizedCtl]);
+
   if (flags.closed) return null;
 
   // Windows without a heading are plain groups of content, not windows.

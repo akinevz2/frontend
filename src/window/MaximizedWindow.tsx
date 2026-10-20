@@ -1,5 +1,7 @@
 import { useRef, useState, type ReactNode, type RefObject } from "react";
 import type { WindowFlags } from "./state";
+import { descendantIds } from "./model";
+import { useWindowStore } from "./state";
 
 /** Machinery for maximized-foreground windows: the dimmed sibling layer,
  * the reserved flow slot beneath the fixed overlay, the dismissal paths
@@ -29,6 +31,7 @@ export function useMaximizedController(
   windowRef: RefObject<HTMLDivElement | null>,
 ): MaximizedController {
   const backdropRef = useRef<HTMLDivElement | null>(null);
+  const { windows } = useWindowStore();
   /** The maximized window keeps its flow slot reserved underneath: the
    * surrounding windows never reflow when it lifts or returns. */
   const [parkedSize, setParkedSize] = useState<{
@@ -101,9 +104,30 @@ export function useMaximizedController(
     }
     settleHashAfterDismiss();
     patch(nodeId, { maximized: false });
+    // The dismissal returns with the destination section revealed — the
+    // window itself plus its direct child windows — but no deeper: full
+    // expansion is the hash-navigation reveal's job, not the dismiss's.
+    const root = windows.find((w) => w.id === nodeId);
+    const direct =
+      root?.children.flatMap((c) => (c.kind === "window" ? [c.node.id] : [])) ??
+      [];
+    for (const id of [nodeId, ...direct]) {
+      patch(id, { expanded: true, minimized: false });
+    }
     if (riders.length) {
       window.setTimeout(() => riders.forEach((rider) => rider.remove()), 400);
     }
+    // Once restored into the flow, the background page scrolls the
+    // restored window to its hash position — landing where the hyperlink
+    // to it pointed, not wherever the overlay navigation left the page.
+    window.setTimeout(
+      () =>
+        windowRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        }),
+      riders.length ? 240 : 60,
+    );
   };
 
   return {
@@ -119,10 +143,25 @@ export function useMaximizedController(
           height: Math.round(rect.height),
         });
       }
-      history.replaceState(null, "", `#${nodeId}`);
+      // Anchor the hash so a refresh lands back on the revealed section:
+      // replaceState on desktop; on mobile the change is a HISTORY PUSH
+      // so the OS back button unwinds the maximized window first (its
+      // hashchange dismissal below) before ever leaving the page.
+      if (
+        typeof window !== "undefined" &&
+        window.matchMedia("(max-width: 768px)").matches
+      ) {
+        history.pushState(null, "", `#${nodeId}`);
+      } else {
+        history.replaceState(null, "", `#${nodeId}`);
+      }
       // A maximized window always shows its body — a stale minimized
-      // flag would leave it title-bar-only in the foreground.
+      // flag would leave it title-bar-only in the foreground — and the
+      // WHOLE subtree expands: every child window reveals beneath it.
       patch(nodeId, { maximized: true, minimized: false });
+      for (const id of descendantIds(windows, nodeId)) {
+        patch(id, { expanded: true, minimized: false });
+      }
     },
     dismiss: () => dismiss(false),
     dismissWithSlide: () => dismiss(true),

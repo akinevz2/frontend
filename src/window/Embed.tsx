@@ -34,7 +34,9 @@ export function EmbedView({ embed }: { embed: EmbedItem }) {
         height={spec.height}
         allowFullScreen
         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-        loading="lazy"
+        // NO loading="lazy": these frames live inside fixed-size window
+        // cards, so lazy loads never trigger on mobile and leave tall
+        // blank areas behind.
         referrerPolicy="strict-origin-when-cross-origin"
       />
     );

@@ -161,13 +161,19 @@ export function usePermalinkTarget(mode: PermalinkMode) {
       return;
     }
     expand(target.id);
-    const timer = setTimeout(
-      () =>
-        document
-          .getElementById(target.id)
-          ?.scrollIntoView({ behavior: "smooth" }),
-      100,
-    );
+    // POST-mode parity with the hash mechanism: the target post expands
+    // with its whole subtree revealed, and the page keeps scrolling the
+    // window into view while the expanded content settles the layout.
+    for (const id of descendantIds(windows, target.id)) {
+      patch(id, { expanded: true, minimized: false });
+    }
+    let attempts = 10;
+    const timer = setTimeout(function tick() {
+      document
+        .getElementById(target.id)
+        ?.scrollIntoView({ behavior: "smooth" });
+      if (attempts-- > 0) setTimeout(tick, 120);
+    }, 100);
     return () => clearTimeout(timer);
   }, []);
 }
