@@ -145,17 +145,14 @@ export function Clippy() {
       bl: [0, window.innerHeight],
       br: [window.innerWidth, window.innerHeight],
     };
-    const nearest = CORNERS.reduce(
-      (best, candidate) => {
-        const [bx, by] = cornerPoints[best];
-        const [cx, cy] = cornerPoints[candidate];
-        return Math.hypot(cx - centerX, cy - centerY) <
-          Math.hypot(bx - centerX, by - centerY)
-          ? candidate
-          : best;
-      },
-      "br" as Corner,
-    );
+    const nearest = CORNERS.reduce((best, candidate) => {
+      const [bx, by] = cornerPoints[best];
+      const [cx, cy] = cornerPoints[candidate];
+      return Math.hypot(cx - centerX, cy - centerY) <
+        Math.hypot(bx - centerX, by - centerY)
+        ? candidate
+        : best;
+    }, "br" as Corner);
     ["left", "top", "right", "bottom"].forEach((k) =>
       el.style.removeProperty(k),
     );

@@ -1,8 +1,6 @@
 import { useMemo, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { addons, characters } from "@/content";
-import { playLayeredAudio } from "@/lib/audio";
-import { activateLilac } from "@/lib/theme";
 import { PageWindows } from "@/window";
 
 type Feedback = { kind: "error" | "success"; text: string } | null;
@@ -58,9 +56,9 @@ function DownloadForm() {
       </div>
       <div className="window-body">
         <p>
-          To download the Rueg's UI configuration files — the Simple WoW UI
-          Pack — please enter your <a href="/addons">username</a> and verify
-          today's date.
+          To download the Rueg's UI configuration files — the Simple WoW UI Pack
+          — please enter your <a href="/addons">username</a> and verify today's
+          date.
         </p>
         <form onSubmit={onSubmit}>
           <div className="field-row-stacked">

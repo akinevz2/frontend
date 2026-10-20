@@ -22,13 +22,6 @@
     "page": "ContactPage"
   },
   {
-    "path": "/configs",
-    "menuLabel": "configs",
-    "title": "configs files from kine",
-    "description": "where you can find my configuration files",
-    "page": "ConfigsPage"
-  },
-  {
     "path": "/projects",
     "menuLabel": "projects",
     "title": "projects by kine",
@@ -36,11 +29,18 @@
     "page": "ProjectsPage"
   },
   {
+    "path": "/configs",
+    "menuLabel": "configs",
+    "title": "configs files from kine",
+    "description": "where you can find my configuration files",
+    "page": "ConfigsPage"
+  },
+  {
     "path": "/wow",
     "menuLabel": "wow addons",
     "title": "everything world of warcraft",
     "description": "my addons and configurations for wow classic",
-    "page": "AddonsPage"
+    "page": "WowPage"
   },
   {
     "path": "/music",

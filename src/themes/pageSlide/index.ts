@@ -26,11 +26,7 @@ const VARIABLES = [
 ];
 
 /** Where the new page starts, per direction. */
-const slide = (
-  name: string,
-  inX: string,
-  inY: string,
-): ThemeDefinition => ({
+const slide = (name: string, inX: string, inY: string): ThemeDefinition => ({
   className: CLASS,
   attributes: { [ATTRIBUTE]: name },
   variables: {
@@ -154,8 +150,7 @@ let originalPushState: History["pushState"] | null = null;
 /** On mobile screens the appearing page always slides straight down
  * (from above) — the side-by-side menu-order metaphor doesn't read on
  * a narrow, wrapped menu. Matches the layout.css 768px breakpoint. */
-const isMobileLayout = () =>
-  window.matchMedia("(max-width: 768px)").matches;
+const isMobileLayout = () => window.matchMedia("(max-width: 768px)").matches;
 
 function transition(to: string): void {
   if (to === current) return;

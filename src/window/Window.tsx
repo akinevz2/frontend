@@ -175,9 +175,7 @@ export function Window({ node }: { node: WindowNode }) {
   // Maximizing expands the interior exactly like pressing OK — a maximized
   // window always shows its full content in the backdrop.
   const expanded =
-    forcesExpanded(node) ||
-    Boolean(flags.expanded || node.embed) ||
-    maximized;
+    forcesExpanded(node) || Boolean(flags.expanded || node.embed) || maximized;
 
   // Minimize and Close share the same window behaviour. Close consults the
   // window-close-attempt event first: only refusals play the crunchy kick
