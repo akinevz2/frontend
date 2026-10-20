@@ -53,7 +53,7 @@
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
-    "pagerts": "^1.5.9",
+    "pagerts": "^2.0.2",
     "prettier": "^3.9.10",
     "zod": "^4.6.7"
   }
