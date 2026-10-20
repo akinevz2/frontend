@@ -124,11 +124,24 @@
 }
 
 /* The WOBBLE is back on the window itself: an experimental section bobs
-   gently on hover/focus in the page (a11y + character); the window stays
-   untouched when lifted (nothing retriggers in the fullscreen view). */
+   gently on hover/focus in the page (a11y + character); the window root
+   stays untouched when lifted (nothing retriggers in the fullscreen
+   view) — see the descendant suppression right below. */
 .window[data-theme~="experimental"]:not(.maximized):hover,
 .window[data-theme~="experimental"]:not(.maximized):focus-within {
   animation: theme-experimental-wobble 0.6s ease-in-out;
+}
+
+/* The :not(.maximized) guard above only covers the lifted ROOT window.
+   Maximizing force-expands the whole subtree (MaximizedWindow patches
+   every descendant expanded), so inline experimental child windows
+   inside the fullscreen view still match hover/focus and bob with a
+   translateY animation inside the fixed overlay's overflow-y scroll
+   surface — breaking its scroll positioning. Suppress them: the page
+   wobble is a page-context effect only. */
+.window.maximized .window[data-theme~="experimental"]:hover,
+.window.maximized .window[data-theme~="experimental"]:focus-within {
+  animation: none;
 }
 
 /* Respect reduced-motion: no glow, no wobble. */

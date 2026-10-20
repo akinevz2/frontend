@@ -35,7 +35,10 @@ export function App() {
     <>
       <MenuBar />
       <main>
-        <section className="page" key={route.path}>
+        <section
+          className={`page${route.path === "/configs" ? " page-configs" : ""}`}
+          key={route.path}
+        >
           <Page />
         </section>
       </main>

@@ -3,7 +3,7 @@
   "heading": "kine's blog posts",
   "content": [
     {
-      "heading": "Stories",
+      "heading": "Stories / Writing",
       "content": [
         "### Hot Action under a Cold Moon",
         "Click here to read",
@@ -59,23 +59,6 @@
       "content": "idle your mouse with me",
       "theme": "experimental",
       "link": "/images/booger_Boogie%20Long.gif"
-    },
-    "blog operating normally! :D",
-    {
-      "heading": "Rueg Config published! (#world of warcraft, #addons)",
-      "theme": "open",
-      "content": [
-        "Packed up the full Rueg configuration into a distributable archive — addons, WeakAuras, and profiles in one drop.",
-        "Grab it from the [download page](/wow#download) or the [addons page](/addons).",
-        "I had a bad copy of the zip stuck in website cache:",
-        "If you downloaded an archive with 2 folders",
-        "Delete it, the correct dist.7z should have 3",
-        "You can skip copying WTF/ and just copy interface",
-        {
-          "heading": "Open the download page",
-          "link": "/wow#download"
-        }
-      ]
     },
     {
       "heading": "Runisch Glossary (#russian, #glossary, #tool)",
@@ -203,13 +186,7 @@
       ]
     },
     {
-      "heading": "twelfth post (#discussion, #security, #wow, #addons)",
-      "content": [
-        "Although no verified cases of official ElvUI performing malicious opaque bank transfers (gold+items) have ever been publicly confirmed by Blizzard or the developer, concerns about its security have circulated for years. While the 2014 ElvUI backdoor - a debug command that allowed the addon's developers to remotely execute arbitrary Lua code on users' clients - was widely documented across gaming forums, Reddit, and tech blogs at the time and subsequently removed from official releases, similar malicious behavior reportedly persisted years later. During the World of Warcraft Classic Hardcore rush, one player encountered what appeared to be surreptitious opaque bank transfer functionality (gold+items) while using an ElvUI installation, an incident captured on livestream that raised fresh questions about the risks of third-party UI modifications and unverified addon distributions"
-      ]
-    },
-    {
-      "heading": "thirteenth post (#mixing, #phase, #technique, #audio, #music)",
+      "heading": "twelfth post (#mixing, #phase, #technique, #audio, #music)",
       "content": [
         "i found a mixing technique by accident and now i can't stop using it",
         "* i usually build my final mixes from 3 \"core\" channels",

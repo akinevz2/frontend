@@ -44,6 +44,13 @@ body:not(.styles-loaded) main textarea {
   }
 }
 
+/* The page's own background from the very first paint — the default
+   browser white must never show while the app CSS (which carries the
+   real theme values) fades in. */
+html {
+  background-color: var(--background-color);
+}
+
 body,
 #root {
   background-color: var(--mid-color);

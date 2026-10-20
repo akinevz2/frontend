@@ -3,12 +3,20 @@
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
+  /* The OK button wraps below the content (margin-left: auto line) but the
+     row is full-width (the display:contents maximize-shell leaves the
+     window as a direct flex item of .page), so wrapped flex lines would
+     stack flush against the last window above. Row-gap = the window-body
+     padding gives the buttons the same vertical separation as windows. */
+  row-gap: 8px;
 }
 
 .ok-row > button {
   margin-left: auto;
 }
 
+/* Buttons get the window padding above them via .ok-row's row-gap
+   (above); no page-specific spacing needed. */
 .ok-row-bottom {
   align-items: flex-end;
 }

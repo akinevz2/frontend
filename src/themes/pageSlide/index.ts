@@ -40,14 +40,19 @@ const slide = (name: string, inX: string, inY: string): ThemeDefinition => ({
   },
 });
 
-const themes: Record<Direction, ThemeDefinition> = {
+const themes: Record<Direction | "parked", ThemeDefinition> = {
   right: slide("right", "100vw", "0"),
   left: slide("left", "-100vw", "0"),
   down: slide("down", "0", "-100vh"),
+  /** Initial load ONTO a hyperlinked window target: the slide theme is
+   * fully installed (its class drives minimize folds and the navigation
+   * hooks) but with a zero-distance entrance — nothing visibly moves
+   * while the maximized overlay is the page's first paint. */
+  parked: slide("parked", "0", "0"),
 };
 
 const root = () => document.documentElement;
-const applyDirection = (themeName: Direction) =>
+const applyDirection = (themeName: Direction | "parked") =>
   setTheme({
     themeName,
     themes,
@@ -251,7 +256,14 @@ function scrollToHash(hash: string, attempts = 12): void {
 export function enablePageSlide(): void {
   if (originalPushState || typeof document === "undefined") return;
   current = location.pathname;
-  applyDirection("down");
+  // Initial load ONTO a hyperlinked window target (#hash or a blog
+  // ?post= the route maximizes): install the theme "parked" so the
+  // entrance slide plays from nowhere — the maximized overlay is the
+  // only visible first paint, and minimize folds / navigation hooks
+  // stay functional. Plain loads slide in from the top as before.
+  const linkedWindowTarget =
+    !!location.hash || new URLSearchParams(location.search).has("post");
+  applyDirection(linkedWindowTarget ? "parked" : "down");
 
   const original = history.pushState.bind(history);
   originalPushState = history.pushState;

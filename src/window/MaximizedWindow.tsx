@@ -1,7 +1,7 @@
 import { useRef, useState, type ReactNode, type RefObject } from "react";
 import type { WindowFlags } from "./state";
 import { descendantIds } from "./model";
-import { useWindowStore } from "./state";
+import { permalinkFor, useWindowStore } from "./state";
 
 /** Machinery for maximized-foreground windows: the dimmed sibling layer,
  * the reserved flow slot beneath the fixed overlay, the dismissal paths
@@ -34,7 +34,7 @@ export function useMaximizedController(
   windowRef: RefObject<HTMLDivElement | null>,
 ): MaximizedController {
   const backdropRef = useRef<HTMLDivElement | null>(null);
-  const { windows } = useWindowStore();
+  const { windows, permalinkMode } = useWindowStore();
   /** The window's own flags at maximize time: dismissal restores them
    * instead of expanding anything ("only scroll to" — and a window that
    * was minimized before maximizing gets minimized back). */
@@ -46,9 +46,11 @@ export function useMaximizedController(
     height: number;
   } | null>(null);
 
-  /** Hands the URL hash to the topmost remaining maximized window after
-   * a dismissal, or clears it entirely when none remain (a refresh then
-   * lands on the plain page, not a stale maximized anchor). The
+  /** Hands the URL to the topmost remaining maximized window's permalink
+   * after a dismissal (the page's own address form — ?post=slug on the
+   * blog — so a refresh lands back there), or clears it entirely when
+   * none remain — pathname WITHOUT the query, so a stale ?post can't
+   * resurrect a maximized window after the last one was dismissed. The
    * dismissed window's own backdrop is excluded via backdropRef, and
    * ride-out clones carry no id to ever qualify. */
   const settleHashAfterDismiss = () => {
@@ -58,10 +60,13 @@ export function useMaximizedController(
       ),
     ].filter((candidate) => candidate !== backdropRef.current);
     const topId = remaining[remaining.length - 1]?.dataset.windowId;
+    const topNode = topId ? windows.find((w) => w.id === topId) : undefined;
     history.replaceState(
       history.state,
       "",
-      topId ? `#${topId}` : `${location.pathname}${location.search}`,
+      topNode
+        ? permalinkFor(topNode, permalinkMode)
+        : `${location.pathname}`,
     );
   };
 
@@ -165,17 +170,20 @@ export function useMaximizedController(
           height: Math.round(rect.height),
         });
       }
-      // Anchor the hash so a refresh lands back on the revealed section:
-      // replaceState on desktop; on mobile the change is a HISTORY PUSH
-      // so the OS back button unwinds the maximized window first (its
-      // hashchange dismissal below) before ever leaving the page.
-      if (
-        typeof window !== "undefined" &&
-        window.matchMedia("(max-width: 768px)").matches
-      ) {
+      // Anchor the URL so a refresh lands back on the revealed section —
+      // in the page's own permalink form (?post=slug on the blog, hash
+      // elsewhere). Mobile still PUSHes a #tree-index hash: the OS back
+      // button's dismissal keys off the hash leaving THIS window; a
+      // query-only change never fires hashchange, so the permalink form
+      // can't drive that choreography.
+      if (matchMedia("(max-width: 768px)").matches) {
         history.pushState(null, "", `#${nodeId}`);
       } else {
-        history.replaceState(null, "", `#${nodeId}`);
+        const node = windows.find((w) => w.id === nodeId);
+        const url = node
+          ? permalinkFor(node, permalinkMode)
+          : `#${nodeId}`;
+        history.replaceState(null, "", url);
       }
       // A maximized window always shows its body — a stale minimized
       // flag would leave it title-bar-only in the foreground — and the

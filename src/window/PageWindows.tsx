@@ -10,15 +10,9 @@ import {
 } from "./state";
 import { Window } from "./Window";
 
-function Roots({
-  mode,
-  children,
-}: {
-  mode: PermalinkMode;
-  children?: ReactNode;
-}) {
+function Roots({ children }: { children?: ReactNode }) {
   const { windows } = useWindowStore();
-  usePermalinkTarget(mode);
+  usePermalinkTarget();
   useRememberLeave();
   return (
     <>
@@ -55,7 +49,7 @@ export function PageWindows({
       permalinkMode={permalinkMode}
       onLeave={onLeave}
     >
-      <Roots mode={permalinkMode}>{children}</Roots>
+      <Roots>{children}</Roots>
     </WindowProvider>
   );
 }

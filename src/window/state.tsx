@@ -51,6 +51,27 @@ type WindowStore = {
 
 const Ctx = createContext<WindowStore | null>(null);
 
+/** Seeds the store synchronously from the URL: if the location names a
+ * target window (?post=slug / #tree-index), it starts maximized with the
+ * whole subtree expanded on the FIRST render. usePermalinkTarget's
+ * post-paint effect normally applies these flags a frame later, but then
+ * the page first paints the un-maximized main DOM and scrolls — the
+ * maximized element pops into view over a polluted first frame. Rendering
+ * the flags from the start shows the maximized overlay immediately, with
+ * nothing below it ever committed. */
+function initialFlags(roots: WindowNode[]): State {
+  const windows = flatten(roots);
+  const target = findTarget(windows);
+  if (!target) return {};
+  const state: State = {
+    [target.id]: { maximized: true, minimized: false, expanded: true },
+  };
+  for (const id of descendantIds(windows, target.id)) {
+    state[id] = { expanded: true, minimized: false };
+  }
+  return state;
+}
+
 export function WindowProvider({
   roots,
   permalinkMode = "hash",
@@ -62,7 +83,9 @@ export function WindowProvider({
   onLeave?: (() => void) | undefined;
   children: ReactNode;
 }) {
-  const [state, dispatch] = useReducer(reducer, {});
+  const [state, dispatch] = useReducer(reducer, [], () =>
+    initialFlags(roots),
+  );
   const windows = useMemo(() => flatten(roots), [roots]);
 
   const store = useMemo<WindowStore>(() => {
@@ -119,62 +142,53 @@ export const toSlug = (heading: string): string =>
     .replace(/[^\p{L}\p{N}]+/gu, "-")
     .replace(/^-+|-+$/g, "");
 
-/** Blog posts are addressed as ?post=slug, everything else by #tree-index. */
+/** Blog posts are addressed as ?post=slug, everything else by #tree-index.
+ * The depth-0 root is excluded from ?post= addressing: findTarget's
+ * slug lookup only dives under the root, so emitting the slug for it
+ * generates a dead permalink from the very rail that shows the button. */
 export function permalinkFor(node: WindowNode, mode: PermalinkMode): string {
   const { origin, pathname } = window.location;
-  if (mode === "post" && node.heading) {
+  if (mode === "post" && node.depth > 0 && node.heading) {
     return `${origin}${pathname}?post=${encodeURIComponent(toSlug(node.heading))}`;
   }
   return `${origin}${pathname}#${node.id}`;
 }
 
-function findTarget(windows: WindowNode[], mode: PermalinkMode) {
-  if (mode === "post") {
-    const slug = new URLSearchParams(location.search).get("post");
-    return slug
-      ? windows.find(
-          (w) => w.depth > 0 && w.heading && toSlug(w.heading) === slug,
-        )
-      : undefined;
+/** The window named by the URL. BOTH link shapes land on any page:
+ * ?post=slug (the blog's permalink mode) addresses a post by heading, and
+ * #tree-index addresses any window by id. ?post wins when both are set
+ * (they could name different windows); the hash is the fallback. */
+function findTarget(windows: WindowNode[]) {
+  const slug = new URLSearchParams(location.search).get("post");
+  if (slug) {
+    const post = windows.find(
+      (w) => w.depth > 0 && w.heading && toSlug(w.heading) === slug,
+    );
+    if (post) return post;
   }
   const hash = location.hash.slice(1);
   return windows.find((w) => w.id === hash);
 }
 
-/** Opens the window named by the URL, once per page load. Hash targets
- * (cross-page links and permalinks) open their section maximized in the
- * foreground; blog ?post= targets keep the expand-and-scroll behaviour. */
-export function usePermalinkTarget(mode: PermalinkMode) {
+/** Confirms the window named by the URL, once per page load. The store is
+ * already seeded synchronously with the target maximized (initialFlags)
+ * so the FIRST paint shows the fullscreen view with no inline flash;
+ * this effect only re-applies the identical, idempotent patches. Both
+ * link shapes arrive the same way: the target opens maximized in the
+ * foreground with its whole subtree expanded. */
+export function usePermalinkTarget() {
   const { windows, expand, patch } = useWindowStore();
   useEffect(() => {
-    const target = findTarget(windows, mode);
+    const target = findTarget(windows);
     if (!target) return;
-    if (mode === "hash") {
-      expand(target.id);
-      // Arriving at a hash href reveals the target's whole subtree, not
-      // just its own section (descendants expand, stale minimized flags
-      // clear; closed/parked windows stay parked).
-      for (const id of descendantIds(windows, target.id)) {
-        patch(id, { expanded: true, minimized: false });
-      }
-      patch(target.id, { maximized: true, minimized: false });
-      return;
-    }
     expand(target.id);
-    // POST-mode parity with the hash mechanism: the target post expands
-    // with its whole subtree revealed, and the page keeps scrolling the
-    // window into view while the expanded content settles the layout.
+    // Arriving at a permalink reveals the target's whole subtree, not
+    // just its own section (descendants expand, stale minimized flags
+    // clear; closed/parked windows stay parked), then lifts it.
     for (const id of descendantIds(windows, target.id)) {
       patch(id, { expanded: true, minimized: false });
     }
-    let attempts = 10;
-    const timer = setTimeout(function tick() {
-      document
-        .getElementById(target.id)
-        ?.scrollIntoView({ behavior: "smooth" });
-      if (attempts-- > 0) setTimeout(tick, 120);
-    }, 100);
-    return () => clearTimeout(timer);
+    patch(target.id, { maximized: true, minimized: false });
   }, []);
 }
 
