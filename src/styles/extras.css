@@ -71,6 +71,14 @@
   flex-direction: column;
 }
 
+.window-minimized-body {
+  padding: 0.5em;
+}
+
+.window-minimized-body .ok-row {
+  margin: 0;
+}
+
 .artist-background {
   display: block;
   padding: 1.5em 1em;

@@ -81,7 +81,9 @@
       "heading": "Runisch Glossary (#russian, #glossary, #tool)",
       "content": [
         {
-          "content": "An interactive SQLite-backed REPL for storing and retrieving Runisch terms, with translation, usage examples, and tags.",
+          "heading": "An interactive SQLite-backed REPL for storing and retrieving Runisch terms.",
+          "theme": "centered",
+          "content": "with translation, usage examples, and tags",
           "embed": "/blog/рунисч-глоссарий.md"
         }
       ]

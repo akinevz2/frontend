@@ -15,10 +15,12 @@ export type MaximizedController = {
   /** Enters the maximized view: anchors the section hash, reserves the
    * flow slot (measured pre-lift) and lifts the window. Silent. */
   maximize: () => void;
-  /** Silent, instant restore: ✕ on a maximized window, Escape, OK and
-   * the out-of-bounds backdrop click all restore without sound (sounds
+  /** Silent, instant restore: ✕ on a maximized window, Escape and the
+   * out-of-bounds backdrop click all restore without sound (sounds
    * stay with the callers) and without the slide. */
   dismiss: () => void;
+  /** OK entry: restore AND reveal the window's content on return. */
+  dismissRevealed: () => void;
   /** Title-bar minimize only: restores with the slide-off ride. */
   dismissWithSlide: () => void;
   backdropRef: RefObject<HTMLDivElement | null>;
@@ -28,10 +30,15 @@ export type MaximizedController = {
 export function useMaximizedController(
   nodeId: string,
   patch: (id: string, flags: WindowFlags) => void,
+  flagsOf: (id: string) => WindowFlags,
   windowRef: RefObject<HTMLDivElement | null>,
 ): MaximizedController {
   const backdropRef = useRef<HTMLDivElement | null>(null);
   const { windows } = useWindowStore();
+  /** The window's own flags at maximize time: dismissal restores them
+   * instead of expanding anything ("only scroll to" — and a window that
+   * was minimized before maximizing gets minimized back). */
+  const preFlags = useRef<WindowFlags | null>(null);
   /** The maximized window keeps its flow slot reserved underneath: the
    * surrounding windows never reflow when it lifts or returns. */
   const [parkedSize, setParkedSize] = useState<{
@@ -58,7 +65,7 @@ export function useMaximizedController(
     );
   };
 
-  const dismiss = (slide: boolean) => {
+  const dismiss = (slide: boolean, revealed = false) => {
     const riders: HTMLElement[] = [];
     const shell = backdropRef.current;
     if (shell) {
@@ -103,35 +110,50 @@ export function useMaximizedController(
       shell.style.opacity = "0";
     }
     settleHashAfterDismiss();
-    patch(nodeId, { maximized: false });
-    // The dismissal returns with the destination section revealed — the
-    // window itself plus its direct child windows — but no deeper: full
-    // expansion is the hash-navigation reveal's job, not the dismiss's.
-    const root = windows.find((w) => w.id === nodeId);
-    const direct =
-      root?.children.flatMap((c) => (c.kind === "window" ? [c.node.id] : [])) ??
-      [];
-    for (const id of [nodeId, ...direct]) {
-      patch(id, { expanded: true, minimized: false });
+    // The title-bar minimize parks the restored window MINIMIZED (the
+    // mascot's un-hide list / summon brings it back). Every other exit
+    // restores the window's OWN flags as they stood at maximize time —
+    // never maximizing content, only scrolling back to it; hash-navigated
+    // windows hold no snapshot and simply persist their inline state.
+    if (slide) {
+      patch(nodeId, { maximized: false, minimized: true });
+    } else {
+      patch(nodeId, { maximized: false, ...(preFlags.current ?? {}) });
+      if (revealed) {
+        const root = windows.find((w) => w.id === nodeId);
+        const direct =
+          root?.children.flatMap((c) =>
+            c.kind === "window" ? [c.node.id] : [],
+          ) ?? [];
+        for (const id of [nodeId, ...direct]) {
+          patch(id, { expanded: true, minimized: false });
+        }
+      }
     }
     if (riders.length) {
       window.setTimeout(() => riders.forEach((rider) => rider.remove()), 400);
     }
-    // Once restored into the flow, the background page scrolls the
-    // restored window to its hash position — landing where the hyperlink
-    // to it pointed, not wherever the overlay navigation left the page.
-    window.setTimeout(
-      () =>
-        windowRef.current?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        }),
-      riders.length ? 240 : 60,
-    );
+    // Parked windows land nowhere: a minimized window has no content to
+    // settle, so only the non-minimize exits bring the page back to
+    // their hash position.
+    if (!slide) {
+      window.setTimeout(
+        () =>
+          windowRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          }),
+        riders.length ? 240 : 60,
+      );
+    }
   };
 
   return {
     maximize: () => {
+      // Snapshot the window's own flags first: the dismissal restores
+      // exactly these (never maximizes content, re-minimizes if it was
+      // minimized before the lift).
+      preFlags.current = { ...flagsOf(nodeId) };
       // The hash anchors the maximized window so a refresh lands back on
       // the revealed section. replaceState is untouched by the pageSlide
       // pushState patch — no transition, no sound.
@@ -164,6 +186,7 @@ export function useMaximizedController(
       }
     },
     dismiss: () => dismiss(false),
+    dismissRevealed: () => dismiss(false, true),
     dismissWithSlide: () => dismiss(true),
     backdropRef,
     parkedSize,

@@ -107,6 +107,12 @@ html.theme-page-slide .page-slide-ghost .page-slide-placeholder-frame {
   z-index: 4000;
   pointer-events: none;
   background: rgba(0, 0, 0, 0.6);
+  /* The ride carries its OWN flex alignment that used to come from
+     .maximized-backdrop (dropped from the clone): without it, the
+     window copy block-docks left of the page. */
+  display: flex;
+  align-items: safe center;
+  justify-content: safe center;
   animation: page-slide-backdrop-fade 180ms ease-out forwards;
 }
 

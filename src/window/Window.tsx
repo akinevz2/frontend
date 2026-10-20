@@ -150,7 +150,12 @@ export function Window({ node }: { node: WindowNode }) {
   const flags = flagsOf(node.id);
   const maximized = Boolean(flags.maximized);
   const windowRef = useRef<HTMLDivElement | null>(null);
-  const maximizedCtl = useMaximizedController(node.id, patch, windowRef);
+  const maximizedCtl = useMaximizedController(
+    node.id,
+    patch,
+    flagsOf,
+    windowRef,
+  );
 
   useEffect(() => {
     if (!maximized) return;
@@ -199,10 +204,10 @@ export function Window({ node }: { node: WindowNode }) {
     forcesExpanded(node) || Boolean(flags.expanded || node.embed) || maximized;
 
   // Minimize and Close share the same window behaviour. Sounds are pinned
-  // to their moments: the minimize click + slide ride belong to the
-  // title-bar minimize on a maximized window, the crunchy kick belongs to
-  // the ✕ close on an inline window, and navigation gets its own click
-  // (pageSlide). ✕ on a MAXIMIZED window dismisses silently.
+  // to their moments: the minimize click belongs to the title-bar
+  // minimize and the ✕ cross on a MAXIMIZED window, the crunchy kick to
+  // the ✕ close on an inline window, navigation gets its own click
+  // (pageSlide). Escape and OK stay silent.
   const minimize = () => {
     if (maximized) {
       // The title-bar minimize is the ONLY dismissal that plays the
@@ -226,9 +231,9 @@ export function Window({ node }: { node: WindowNode }) {
 
   const close = () => {
     if (maximized) {
-      // ✕ on a maximized window dismisses silently: no crunchy kick, no
-      // minimize click, no slide — the overlay simply restores into the
-      // page flow (the un-hide machinery never parks a lifted window).
+      // ✕ on a maximized window = a minimize: restores into the page
+      // flow with the minimize click — no crunchy kick, no slide.
+      playMinimizeClick();
       maximizedCtl.dismiss();
       return;
     }
@@ -291,7 +296,27 @@ export function Window({ node }: { node: WindowNode }) {
         }}
         onClose={close}
       />
-      {!flags.minimized && (
+      {flags.minimized ? (
+        // Minimized windows keep an OK row as their only interior
+        // affordance: pressing it restores and reveals the window.
+        <div className="window-body window-minimized-body">
+          <div className="ok-row ok-row-bottom">
+            <button
+              onClick={() => {
+                patch(node.id, { minimized: false, expanded: true });
+                requestAnimationFrame(() =>
+                  windowRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                  }),
+                );
+              }}
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      ) : (
         <div
           className={`window-body${maximized ? " maximized-window-body" : ""}`}
         >
@@ -301,7 +326,9 @@ export function Window({ node }: { node: WindowNode }) {
             maximized={maximized}
             // OK is the dismiss affordance in fullscreen: silent close,
             // no slide — the departing animation is the minimize's alone.
-            onOk={maximized ? () => maximizedCtl.dismiss() : undefined}
+            // OK on a maximized window: dismiss AND reveal its content
+            // (the returned window opens along with its direct children).
+            onOk={maximized ? () => maximizedCtl.dismissRevealed() : undefined}
           />
         </div>
       )}
