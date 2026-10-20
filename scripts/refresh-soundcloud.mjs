@@ -1,37 +1,35 @@
 #!/usr/bin/env node
 /**
- * Refresh src/content/soundcloud.json from SoundCloud's public HTML and oembed APIs
+ * Refresh src/content/soundcloud.json from SoundCloud's public api-v2 API
  * (no SoundCloud login required).
  *
  * Strategy
  * --------
- * 1.  `pagerts fetch <owner profile URLs>` extracts the visible track
- *     anchors from each SoundCloud profile's server-rendered HTML.  This gives
- *     us track URLs plus the titles that are visible in the SSR'd anchor text
- *     (typically the most recent ~10 tracks per owner).
- * 2.  The previous src/content/soundcloud.json is read so that any older track URL
- *     that has scrolled off the first page is preserved.  This keeps the
- *     discography complete even though SoundCloud only server-renders the most
- *     recent tracks.
- * 3.  For every track URL we then call SoundCloud's public oembed endpoint
- *     (https://soundcloud.com/oembed?url=...&format=json) to obtain a fresh
- *     title.  oembed works without a SoundCloud `client_id` (no 401s).
- * 4.  The merged set is sorted, deduplicated, and written back to
- *     src/content/soundcloud.json in the same shape that the music page
- *     verify-policy.mjs expect.
+ * 1.  Fetch the owner's profile HTML and scrape a fresh `client_id` out of
+ *     one of the `a-v2.sndcdn.com/assets/*.js` bundles it links.  SoundCloud
+ *     rotates these periodically, so they are never hard-coded.
+ * 2.  Resolve each owner handle to a numeric user id via
+ *     `api-v2.soundcloud.com/resolve`, then page through
+ *     `users/<id>/tracks?representation=full` to get the COMPLETE discography
+ *     (not just the ~10 tracks the profile page server-renders).
+ * 3.  Emit the tracks in API order (newest first) in the same JSON shape the
+ *     music page and verify-policy.mjs expect.
  *
- * Why this replaces the old `generate-soundcloud-json.mjs`
- * --------------------------------------------------------
- * The previous script hit `api-v2.soundcloud.com/users/<id>/tracks` directly,
- * which requires a public `client_id` query parameter.  SoundCloud rotates
- * these periodically and they were no longer valid, causing every build to
- * fail with HTTP 401.  This script sidesteps the API entirely and uses the
- * scraper + oembed combo instead.
+ * Why this replaces the old pagerts + oembed scraper
+ * ---------------------------------------------------
+ * The previous strategy only saw the most recent ~10 tracks per profile in
+ * the SSR'd HTML.  When a track was renamed, its URL slug changed too, so
+ * the new slug was invisible to the scraper while the old slug's oembed
+ * endpoint started returning 404 — the pruning step then deleted the track
+ * from the snapshot.  The api-v2 discography endpoint returns every track
+ * with its current permalink and title, so renames are picked up
+ * automatically and no pruning is needed at all.
+ *
+ * The old script's claim that api-v2 was unusable (HTTP 401) is outdated:
+ * the 401s came from stale hard-coded client_ids, not from the endpoint
+ * itself.  Scraping a fresh one per run sidesteps rotation entirely.
  */
-import { readFile, writeFile } from "node:fs/promises";
-import { readFileSync } from "node:fs";
-import { spawnSync } from "node:child_process";
-import { createRequire } from "node:module";
+import { writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -43,54 +41,15 @@ const outputFile = resolve(projectRoot, "src/content/soundcloud.json");
 /** SoundCloud usernames whose discographies should be published. */
 const SOUND_CLOUD_OWNERS = ["akinevz", "akinevz2"];
 
-/** User-Agent sent to pagerts for the outbound HTTP request. */
+/** User-Agent sent for every outbound HTTP request. */
 const USER_AGENT =
     "Mozilla/5.0 (X11; Linux x86_64; rv:139.0) Gecko/20100101 Firefox/139.0";
 
-/** Max in-flight oembed lookups. */
-const OEMBED_CONCURRENCY = 8;
+/** Fetch timeout (ms) for every HTTP request. */
+const FETCH_TIMEOUT_MS = 15_000;
 
-/** Fetch timeout (ms) for the oembed calls. */
-const OEMBED_TIMEOUT_MS = 8_000;
-
-/** System SoundCloud paths that are not tracks. */
-const SYSTEM_PATHS = new Set(["likes", "sets", "tracks", "comments", "followers", "following"]);
-
-/**
- * SoundCloud paths that look like tracks but are actually profile-level
- * landing pages (e.g. /akinevz/recent, /akinevz/popular).  Empty for now
- * but kept as a hook for future filtering.
- */
-const RESERVED_PATHS = new Set([]);
-
-/**
- * Timeout (ms) for the pagerts fetch subprocess.  Without this a stalled
- * npx/pagerts process would hang the whole build forever.
- */
-const PAGERTS_TIMEOUT_MS = 120_000;
-
-/**
- * Resolve the pagerts executable.  Prefers the version installed as a
- * dependency of this package (node_modules), then falls back to whatever
- * `pagerts` resolves on PATH (e.g. a global install).
- */
-const resolvePagertsBin = () => {
-    try {
-        const requireFromProject = createRequire(resolve(projectRoot, "package.json"));
-        const pkgJsonPath = requireFromProject.resolve("pagerts/package.json");
-        const pkgJson = JSON.parse(readFileSync(pkgJsonPath, "utf8"));
-        const bin =
-            typeof pkgJson.bin === "string"
-                ? pkgJson.bin
-                : (pkgJson.bin && pkgJson.bin.pagerts);
-        if (!bin) throw new Error("pagerts package.json has no bin entry");
-        return resolve(dirname(pkgJsonPath), bin);
-    } catch {
-        // Not installed locally — defer to a global install (or fail with a
-        // clear ENOENT from spawnSync).
-        return "pagerts";
-    }
-};
+/** Retries for transient api-v2 failures (it intermittently returns empty bodies). */
+const API_RETRIES = 3;
 
 /**
  * Build the source URL for an owner's profile.  SoundCloud recently renamed
@@ -100,416 +59,195 @@ const resolvePagertsBin = () => {
 const getProfileUrl = (owner) => `https://soundcloud.com/${owner}`;
 
 /**
- * Run `pagerts fetch <urls>` and return the parsed JSON array of page
- * descriptors.  Throws on non-zero exit or unparsable output.
+ * Fetch a URL with a hard timeout.  Returns the Response on any HTTP status
+ * (callers decide how to interpret it); throws only on network failure.
  */
-const runPagerts = (urls) => {
-    const args = [
-        "fetch",
-        "--user-agent",
-        USER_AGENT,
-        ...urls,
-    ];
-
-    const result = spawnSync(resolvePagertsBin(), args, {
-        cwd: projectRoot,
-        encoding: "utf8",
-        maxBuffer: 32 * 1024 * 1024,
-        timeout: PAGERTS_TIMEOUT_MS,
-    });
-
-    if (result.error) {
-        const hint =
-            result.error.code === "ENOENT"
-                ? " — is pagerts installed (npm install) or available globally?"
-                : "";
-        throw new Error(`pagerts fetch could not run: ${result.error.message}${hint}`);
-    }
-
-    if (result.status !== 0) {
-        const stderr = result.stderr?.trim() ?? "";
-        const timedOut = result.signal === "SIGTERM";
-        throw new Error(
-            `pagerts fetch failed (${timedOut ? `timed out after ${PAGERTS_TIMEOUT_MS}ms` : `exit ${result.status}`}): ${stderr || "no stderr"}`,
-        );
-    }
-
-    const stdout = result.stdout ?? "";
-    const trimmed = stdout.trim();
-    if (trimmed.length === 0) {
-        throw new Error("pagerts fetch produced empty output");
-    }
-
-    // pagerts writes the JSON array to stdout.  Find the first '[' in case any
-    // diagnostic lines slipped in.
-    const startIndex = trimmed.indexOf("[");
-    if (startIndex < 0) {
-        throw new Error(`pagerts fetch did not return a JSON array: ${trimmed.slice(0, 200)}`);
-    }
-
+const fetchWithTimeout = async (url, options = {}) => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
     try {
-        const parsed = JSON.parse(trimmed.slice(startIndex));
-        if (!Array.isArray(parsed)) {
-            throw new Error("pagerts output is not a JSON array");
-        }
-        return parsed;
-    } catch (error) {
-        throw new Error(
-            `Failed to parse pagerts output: ${error instanceof Error ? error.message : String(error)}`,
-        );
+        return await fetch(url, {
+            ...options,
+            headers: { "User-Agent": USER_AGENT, ...options.headers },
+            signal: controller.signal,
+        });
+    } finally {
+        clearTimeout(timer);
     }
 };
 
 /**
- * Pull track URLs (and their visible SSR titles) out of a single pagerts page
- * descriptor.  Only /<owner>/<slug> absolute paths are considered tracks;
- * sub-resources, system links (/likes, /sets, /tracks, /comments), and
- * protocol-relative links are ignored.
+ * Fetch a JSON document from api-v2 with retries.  api-v2 intermittently
+ * returns an empty body even with a 200, so retry until we get parseable
+ * JSON.  Throws with the HTTP status on definitive failure.
  */
-const extractVisibleTracks = (owner, page) => {
-    const resources = Array.isArray(page?.resources) ? page.resources : [];
-    const seen = new Map();
-
-    for (const resource of resources) {
-        const text = resource?.text?.value;
-        const link = resource?.link?.value;
-        if (typeof link !== "string" || link.length === 0) continue;
-        if (text === "src" && typeof link === "string" && link.startsWith("/")) {
-            // pagerts sometimes surfaces a `text=src` for <a class=...><img src=.../></a>
-            // — those still represent real links, so allow them through.
-        }
-
-        // Normalize the link to a path.  Skip non-track schemes/hosts.
-        let path;
-        try {
-            const url = new URL(link, getProfileUrl(owner));
-            if (url.hostname !== "soundcloud.com" && url.hostname !== "www.soundcloud.com") {
-                continue;
-            }
-            path = url.pathname;
-        } catch {
-            continue;
-        }
-
-        if (!path.startsWith(`/${owner}/`)) continue;
-        const slug = path.slice(`/${owner}/`.length);
-        if (slug.length === 0) continue;
-        if (SYSTEM_PATHS.has(slug)) continue;
-        if (RESERVED_PATHS.has(slug)) continue;
-        if (/\/.*\//.test(slug)) continue; // ignore nested paths
-
-        const title = typeof text === "string" && text.length > 0 ? text.trim() : null;
-        if (!seen.has(path)) {
-            seen.set(path, title);
-        } else if (!seen.get(path) && title) {
-            seen.set(path, title);
-        }
-    }
-
-    return seen;
-};
-
-/**
- * Fetch the previous src/content/soundcloud.json (if any) so we can preserve the
- * full URL list across runs.  Returns a map of "owner|path" -> title.
- */
-const readPreviousSnapshot = async () => {
+const fetchApiJson = async (url, attempt = 1) => {
     try {
-        const raw = await readFile(outputFile, "utf8");
-        const data = JSON.parse(raw);
-        const map = new Map();
-        const tracks = Array.isArray(data?.tracks) ? data.tracks : [];
-        for (const track of tracks) {
-            if (typeof track?.url !== "string") continue;
-            try {
-                const url = new URL(track.url);
-                if (url.hostname !== "soundcloud.com" && url.hostname !== "www.soundcloud.com") continue;
-                const key = `${url.pathname.replace(/^\//, "").split("/")[0]}|${url.pathname}`;
-                if (!map.has(key)) {
-                    map.set(key, typeof track.title === "string" ? track.title : null);
-                }
-            } catch {
-                // ignore malformed entries
-            }
+        const response = await fetchWithTimeout(url, {
+            headers: { Accept: "application/json" },
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status} for ${new URL(url).pathname}`);
         }
-        return map;
+        return await response.json();
     } catch (error) {
-        if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
-            return new Map();
+        if (attempt < API_RETRIES) {
+            await new Promise((resolveSleep) => setTimeout(resolveSleep, 1_000 * attempt));
+            return fetchApiJson(url, attempt + 1);
         }
         throw error;
     }
 };
 
 /**
- * Resolve the owner for a given track URL path.
+ * Scrape a fresh api-v2 `client_id` from one of the JS asset bundles linked
+ * by the owner's profile HTML.  SoundCloud rotates these periodically, so
+ * they must never be hard-coded.  Throws if no bundle yields one.
  */
-const ownerForPath = (path) => path.replace(/^\//, "").split("/")[0] ?? null;
-
-/**
- * Build an oembed URL for a given SoundCloud track URL.
- */
-const oembedUrl = (trackUrl) => {
-    const url = new URL("https://soundcloud.com/oembed");
-    url.searchParams.set("url", trackUrl);
-    url.searchParams.set("format", "json");
-    return url.toString();
-};
-
-/**
- * Fetch an oembed JSON document with a hard timeout.  Returns the parsed
- * document on success, or null on any failure.
- */
-const fetchOembed = async (trackUrl) => {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), OEMBED_TIMEOUT_MS);
-    try {
-        const response = await fetch(oembedUrl(trackUrl), {
-            headers: {
-                Accept: "application/json",
-                "User-Agent": USER_AGENT,
-            },
-            signal: controller.signal,
-        });
-        if (!response.ok) return null;
-        const data = await response.json();
-        return data && typeof data === "object" ? data : null;
-    } catch {
-        return null;
-    } finally {
-        clearTimeout(timer);
+const resolveClientId = async () => {
+    const profileResponse = await fetchWithTimeout(getProfileUrl(SOUND_CLOUD_OWNERS[0]));
+    if (!profileResponse.ok) {
+        throw new Error(`Could not fetch profile HTML: HTTP ${profileResponse.status}`);
     }
+    const html = await profileResponse.text();
+
+    const assetUrls = [
+        ...new Set(
+            [...html.matchAll(/https:\/\/a-v2\.sndcdn\.com\/assets\/[a-zA-Z0-9._-]+\.js/g)].map(
+                (match) => match[0],
+            ),
+        ),
+    ];
+    if (assetUrls.length === 0) {
+        throw new Error("No SoundCloud asset bundles found in profile HTML");
+    }
+
+    for (const assetUrl of assetUrls) {
+        const assetResponse = await fetchWithTimeout(assetUrl);
+        if (!assetResponse.ok) continue;
+        const js = await assetResponse.text();
+        const match = js.match(/client_id:"([a-zA-Z0-9]{20,40})"/);
+        if (match) return match[1];
+    }
+
+    throw new Error("No client_id found in any SoundCloud asset bundle");
 };
 
 /**
- * Run `worker` over `items` with at most `concurrency` tasks in flight.
- * Returns an array of results in the same order as `items`.
+ * Resolve an owner handle to its numeric SoundCloud user id.
  */
-const mapWithConcurrency = async (items, concurrency, worker) => {
-    const results = new Array(items.length);
-    let cursor = 0;
+const resolveUserId = async (owner, clientId) => {
+    const resolveUrl = new URL("https://api-v2.soundcloud.com/resolve");
+    resolveUrl.searchParams.set("url", getProfileUrl(owner));
+    resolveUrl.searchParams.set("client_id", clientId);
+    const user = await fetchApiJson(resolveUrl.toString());
+    if (typeof user?.id !== "number") {
+        throw new Error(`Could not resolve user id for ${owner}`);
+    }
+    return user.id;
+};
 
-    const next = async () => {
-        while (true) {
-            const index = cursor++;
-            if (index >= items.length) return;
-            results[index] = await worker(items[index], index);
+/**
+ * Page through the complete discography for a user.  Returns tracks in API
+ * order (newest first).  Note: `next_href` omits `client_id`, so it must be
+ * re-appended on every page or page 2+ returns HTTP 401.
+ */
+const fetchAllTracks = async (owner, userId, clientId) => {
+    const tracks = [];
+    let href = `https://api-v2.soundcloud.com/users/${userId}/tracks?client_id=${clientId}&limit=200&representation=full`;
+
+    while (href) {
+        const page = await fetchApiJson(href);
+        const collection = Array.isArray(page?.collection) ? page.collection : [];
+        for (const track of collection) {
+            if (typeof track?.permalink_url !== "string") continue;
+            tracks.push(track);
         }
+        const nextHref = typeof page?.next_href === "string" ? page.next_href : null;
+        href = nextHref
+            ? `${nextHref}${nextHref.includes("?") ? "&" : "?"}client_id=${clientId}`
+            : null;
+    }
+
+    if (tracks.length === 0) {
+        throw new Error(`Discography for ${owner} came back empty`);
+    }
+    return tracks;
+};
+
+/**
+ * Map an api-v2 track document to the snapshot shape.  Falls back to the
+ * URL slug if the title is missing.
+ */
+const toSnapshotTrack = (owner, track) => {
+    const url = track.permalink_url;
+    const path = `/${url.replace(/^https?:\/\/(www\.)?soundcloud\.com\//, "")}`;
+    return {
+        owner,
+        path,
+        title:
+            typeof track.title === "string" && track.title.length > 0
+                ? track.title
+                : path.split("/").pop(),
+        url,
     };
-
-    const workers = Array.from(
-        { length: Math.max(1, Math.min(concurrency, items.length)) },
-        () => next(),
-    );
-    await Promise.all(workers);
-    return results;
 };
 
 /**
- * Check whether a SoundCloud track is still live via the oembed endpoint.
- * SoundCloud serves a 200 HTML page for deleted tracks, so the track URL
- * itself is useless for liveness detection.  The oembed endpoint, however,
- * reliably returns HTTP 404 for deleted/private tracks and 200 for live
- * ones.  Returns the HTTP status code, or null on network failure (treated
- * as "keep" — we don't want to trim tracks due to transient errors).
+ * Fetch the complete discography for one owner.  Returns the snapshot-shaped
+ * track list in API order (newest first).
  */
-const fetchTrackStatus = async (trackUrl) => {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), OEMBED_TIMEOUT_MS);
-    try {
-        const response = await fetch(oembedUrl(trackUrl), {
-            method: "HEAD",
-            headers: { "User-Agent": USER_AGENT },
-            signal: controller.signal,
-        });
-        return response.status;
-    } catch {
-        return null;
-    } finally {
-        clearTimeout(timer);
-    }
-};
-
-/**
- * Check every track for liveness via the oembed endpoint and remove dead
- * tracks (HTTP 404).  Tracks that return null (network error/timeout) are
- * kept to avoid false trims from transient failures.  Returns the trimmed
- * list and logs what was removed.
- */
-const trim404Tracks = async (tracks) => {
-    const statuses = await mapWithConcurrency(
-        tracks,
-        OEMBED_CONCURRENCY,
-        async (track) => ({ track, status: await fetchTrackStatus(track.url) }),
-    );
-
-    const dead = [];
-    const alive = [];
-
-    for (const { track, status } of statuses) {
-        if (status === 404) {
-            dead.push(track);
-        } else {
-            alive.push(track);
-        }
-    }
-
-    if (dead.length > 0) {
-        process.stdout.write(
-            `Trimmed ${dead.length} dead track(s) (oembed 404):\n` +
-            dead.map((t) => `  - ${t.url} (${t.title})`).join("\n") +
-            "\n",
-        );
-    } else {
-        process.stdout.write("No dead tracks found.\n");
-    }
-
-    return alive;
-};
-
-/**
- * Strip the trailing " by <author>" suffix that oembed adds to titles.
- */
-const stripAuthorSuffix = (title) => {
-    if (typeof title !== "string") return null;
-    const idx = title.lastIndexOf(" by ");
-    if (idx > 0) return title.slice(0, idx).trim();
-    return title.trim();
-};
-
-/**
- * Build the final ordered track list.  Order: visible tracks first (newest
- * uploads at the top), then any older tracks from the previous snapshot that
- * weren't on the live page.
- */
-const mergeTracks = (visibleByOwner, previous) => {
-    const merged = new Map(); // key: owner|path -> track
-    const orderedKeys = [];
-
-    // Pass 1: visible tracks per owner, in pagerts-emitted order.
-    for (const owner of SOUND_CLOUD_OWNERS) {
-        const visible = visibleByOwner.get(owner);
-        if (!visible) continue;
-        for (const [path, title] of visible.entries()) {
-            const url = `https://soundcloud.com${path}`;
-            const key = `${owner}|${path}`;
-            if (!merged.has(key)) {
-                merged.set(key, { owner, path, title, url });
-                orderedKeys.push(key);
-            }
-        }
-    }
-
-    // Pass 2: append any track URL that was in the previous snapshot but not
-    // visible in the current pass.  This protects the long tail of the
-    // discography from being lost when newer uploads push older ones off
-    // SoundCloud's first page.
-    for (const [key, title] of previous.entries()) {
-        if (merged.has(key)) continue;
-        const [owner, path] = key.split("|");
-        if (!SOUND_CLOUD_OWNERS.includes(owner)) continue;
-        const url = `https://soundcloud.com${path}`;
-        merged.set(key, { owner, path, title, url });
-        orderedKeys.push(key);
-    }
-
-    return orderedKeys.map((key) => merged.get(key));
-};
-
-/**
- * Refresh titles for every merged track via oembed.  Falls back to the SSR
- * title (from pagerts) or the URL slug if oembed is unavailable.
- */
-const lookupTitles = async (tracks) => {
-    const titles = await mapWithConcurrency(tracks, OEMBED_CONCURRENCY, async (track) => {
-        const oembed = await fetchOembed(track.url);
-        if (oembed && typeof oembed.title === "string" && oembed.title.length > 0) {
-            return stripAuthorSuffix(oembed.title);
-        }
-        if (typeof track.title === "string" && track.title.length > 0) {
-            return track.title;
-        }
-        return track.path.split("/").pop() ?? track.path;
-    });
-
-    return tracks.map((track, index) => ({ ...track, title: titles[index] }));
+const fetchOwnerDiscography = async (owner, clientId) => {
+    const userId = await resolveUserId(owner, clientId);
+    const apiTracks = await fetchAllTracks(owner, userId, clientId);
+    return apiTracks.map((track) => toSnapshotTrack(owner, track));
 };
 
 export const run = async () => {
-    const profileUrls = SOUND_CLOUD_OWNERS.map(getProfileUrl);
-    const pages = runPagerts(profileUrls);
+    const clientId = await resolveClientId();
+    process.stdout.write(`Resolved SoundCloud client_id: ${clientId}\n`);
 
-    const visibleByOwner = new Map();
+    const discographies = new Map();
     for (const owner of SOUND_CLOUD_OWNERS) {
-        const page = pages.find((entry) => {
-            if (typeof entry?.url !== "string") return false;
-            try {
-                return new URL(entry.url).pathname === `/${owner}`;
-            } catch {
-                return false;
-            }
-        });
-        if (!page) {
-            process.stderr.write(`pagerts returned no page for ${owner}\n`);
-            visibleByOwner.set(owner, new Map());
-            continue;
-        }
-        visibleByOwner.set(owner, extractVisibleTracks(owner, page));
+        discographies.set(owner, await fetchOwnerDiscography(owner, clientId));
     }
 
-    const previous = await readPreviousSnapshot();
-    const merged = mergeTracks(visibleByOwner, previous);
-    const titled = await lookupTitles(merged);
-    const enriched = await trim404Tracks(titled);
+    // Flat track list in per-owner API order (newest first).  The music page
+    // filters this array by `owner`, so per-owner relative order is what the
+    // UI displays.
+    const tracks = SOUND_CLOUD_OWNERS.flatMap((owner) => discographies.get(owner) ?? []);
+    const trackCount = tracks.length;
 
-    const asOfUploadingTrackCount = enriched.length;
-    const source = getProfileUrl(SOUND_CLOUD_OWNERS[0]);
-
-    // Build per-owner track lists in the order: visible (newest first),
-    // then any long-tail entries from the previous snapshot.  The component
-    // groups the discography by `owner`, so emitting a `profiles` array
-    // ensures every owner gets its own section — not just the first one.
-    const tracksByOwner = new Map();
-    for (const owner of SOUND_CLOUD_OWNERS) tracksByOwner.set(owner, []);
-    for (const track of enriched) {
-        const bucket = tracksByOwner.get(track.owner);
-        if (bucket) bucket.push(track);
-    }
-
+    // Per-owner sections.  The component groups the discography by `owner`,
+    // so emitting a `profiles` array ensures every owner gets its own
+    // section — not just the first one.
     const profiles = SOUND_CLOUD_OWNERS.map((owner) => {
-        const ownerTracks = tracksByOwner.get(owner) ?? [];
+        const ownerTracks = discographies.get(owner) ?? [];
         return {
             owner,
             source: getProfileUrl(owner),
             profileImageUrl: null,
             trackCount: ownerTracks.length,
-            tracks: ownerTracks.map((track) => ({
-                owner: track.owner,
-                path: track.path,
-                title: track.title,
-                url: track.url,
-            })),
+            tracks: ownerTracks,
         };
     });
 
     const result = {
-        source,
+        source: getProfileUrl(SOUND_CLOUD_OWNERS[0]),
         generatedAt: new Date().toISOString(),
-        asOfUploadingTrackCount,
-        trackCount: asOfUploadingTrackCount,
-        tracks: enriched.map((track) => ({
-            owner: track.owner,
-            path: track.path,
-            title: track.title,
-            url: track.url,
-        })),
+        asOfUploadingTrackCount: trackCount,
+        trackCount,
+        tracks,
         profiles,
     };
 
     await writeFile(outputFile, `${JSON.stringify(result, null, 2)}\n`, "utf8");
 
     process.stdout.write(
-        `Refreshed ${result.tracks.length} SoundCloud track(s) into ${outputFile}\n`,
+        `Refreshed ${result.tracks.length} SoundCloud track(s) into ${outputFile}\n` +
+        profiles
+            .map((profile) => `  @${profile.owner}: ${profile.trackCount} track(s)\n`)
+            .join(""),
     );
 
     return result;

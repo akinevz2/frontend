@@ -101,14 +101,30 @@ function leaveGhost(): void {
   ghost.querySelectorAll("iframe, audio, video").forEach((el, i) => {
     const box = mediaBoxes[i];
     if (!box) return;
+    const live = liveMedias[i];
+    const isIframe = live?.tagName === "IFRAME";
     const placeholder = document.createElement("div");
     // Media can't be cloned into the static ghost; placeholders only carry
     // the layout box, with the document-paper look for iframes.
-    placeholder.className =
-      liveMedias[i]?.tagName === "IFRAME"
-        ? "page-slide-placeholder page-slide-placeholder-frame"
-        : "page-slide-placeholder";
+    placeholder.className = isIframe
+      ? "page-slide-placeholder page-slide-placeholder-frame"
+      : "page-slide-placeholder";
     placeholder.style.cssText = `width:${box.width}px;height:${box.height}px`;
+    if (isIframe && live) {
+      // Document frames keep their own paper background while the page
+      // drops: the resume preview is styled white, and falling back to the
+      // themed (dark) background reads as the PDF unloading mid-exit.
+      // Transparent iframes (music embeds) keep the themed placeholder
+      // background — a white flash there is visual pollution.
+      const background = getComputedStyle(live).backgroundColor;
+      if (
+        background &&
+        background !== "transparent" &&
+        background !== "rgba(0, 0, 0, 0)"
+      ) {
+        placeholder.style.backgroundColor = background;
+      }
+    }
     el.replaceWith(placeholder);
   });
   // XP-style minimise: each top-level window folds down onto the taskbar

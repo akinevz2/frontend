@@ -77,10 +77,12 @@ html.theme-page-slide .page-slide-ghost .page > .maximized-shell > .window {
   animation: page-slide-fold var(--ps-minimize, 98ms) linear forwards;
 }
 
-/* Paper look for the swapped-out document iframes (resume previews etc.) —
-   in the PAGE's background colour, not white: the placeholder is what
-   shows through while the page fades/slides, and a white flash reads as
-   visual pollution against the themed background. */
+/* Fallback look for the swapped-out iframes (music embeds etc.) — the
+   PAGE's background colour: the placeholder is what shows through while
+   the page fades/slides, and a white flash reads as visual pollution
+   against the themed background. Document frames that carry their own
+   opaque background (the white resume preview) adopt it in JS instead —
+   a dark placeholder there reads as the PDF unloading mid-exit. */
 html.theme-page-slide .page-slide-ghost .page-slide-placeholder-frame {
   background: var(--background-color);
 }

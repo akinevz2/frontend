@@ -2,9 +2,8 @@
   "heading": "Welcome to kine's website!",
   "theme": "open",
   "content": [
-    "err, there's lots of bugs on the internet like there's lots of bugs under a rock:",
-    "there are some on the bottom, and some on the top, but on the bottom",
-    "they're digesting most of the bottom-of-rock POLP",
+    "I sometimes change the blurb on the front page here,",
+    "Enjoy your visit!",
     {
       "heading": "for guru wisdom, there's tao of vim",
       "link": "https://mkaz.blog/working-with-vim/the-tao-of-vim/",

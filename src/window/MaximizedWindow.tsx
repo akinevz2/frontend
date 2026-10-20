@@ -64,9 +64,7 @@ export function useMaximizedController(
     history.replaceState(
       history.state,
       "",
-      topNode
-        ? permalinkFor(topNode, permalinkMode)
-        : `${location.pathname}`,
+      topNode ? permalinkFor(topNode, permalinkMode) : `${location.pathname}`,
     );
   };
 
@@ -180,9 +178,7 @@ export function useMaximizedController(
         history.pushState(null, "", `#${nodeId}`);
       } else {
         const node = windows.find((w) => w.id === nodeId);
-        const url = node
-          ? permalinkFor(node, permalinkMode)
-          : `#${nodeId}`;
+        const url = node ? permalinkFor(node, permalinkMode) : `#${nodeId}`;
         history.replaceState(null, "", url);
       }
       // A maximized window always shows its body — a stale minimized

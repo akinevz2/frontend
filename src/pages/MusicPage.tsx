@@ -94,7 +94,6 @@ const buildMusic = (): Section[] => {
       theme: "open",
       content: [
         `Generated: ${new Date(soundcloud.generatedAt).toLocaleString()}`,
-        "Replaced a few weak mixes and removed a duplicate.",
         "This total measures main and alt profiles as of uploading.",
         tracksTotal(total),
       ],

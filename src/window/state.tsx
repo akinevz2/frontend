@@ -83,9 +83,7 @@ export function WindowProvider({
   onLeave?: (() => void) | undefined;
   children: ReactNode;
 }) {
-  const [state, dispatch] = useReducer(reducer, [], () =>
-    initialFlags(roots),
-  );
+  const [state, dispatch] = useReducer(reducer, [], () => initialFlags(roots));
   const windows = useMemo(() => flatten(roots), [roots]);
 
   const store = useMemo<WindowStore>(() => {
