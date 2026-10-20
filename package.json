@@ -55,6 +55,6 @@
     "@vitejs/plugin-react": "^6.1.2",
     "pagerts": "^1.5.9",
     "prettier": "^3.9.10",
-    "zod": "^4.6.5"
+    "zod": "^4.6.7"
   }
 }
