@@ -97,3 +97,17 @@ export const playLayeredAudio = (src: string) => {
     releaseToPool(src, audio);
   });
 };
+
+let lastClickAt = 0;
+
+/** The Click.ogg minimize click, deduped: dismissal paths can stack
+ * within one gesture (a navigation that also folds windows) and the
+ * layered arena would happily overlap them — one click per burst. */
+export const playMinimizeClick = () => {
+  const now = performance.now();
+  if (now - lastClickAt < 180) {
+    return;
+  }
+  lastClickAt = now;
+  playLayeredAudio("/Click.ogg");
+};

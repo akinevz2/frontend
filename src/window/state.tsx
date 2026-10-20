@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import { clearHidden, publishHidden } from "./hidden";
-import { flatten, lineage, type WindowNode } from "./model";
+import { descendantIds, flatten, lineage, type WindowNode } from "./model";
 
 export type PermalinkMode = "hash" | "post";
 
@@ -151,7 +151,13 @@ export function usePermalinkTarget(mode: PermalinkMode) {
     if (!target) return;
     if (mode === "hash") {
       expand(target.id);
-      patch(target.id, { maximized: true });
+      // Arriving at a hash href reveals the target's whole subtree, not
+      // just its own section (descendants expand, stale minimized flags
+      // clear; closed/parked windows stay parked).
+      for (const id of descendantIds(windows, target.id)) {
+        patch(id, { expanded: true, minimized: false });
+      }
+      patch(target.id, { maximized: true, minimized: false });
       return;
     }
     expand(target.id);

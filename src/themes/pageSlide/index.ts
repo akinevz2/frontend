@@ -4,13 +4,11 @@ import {
   setTheme,
   type ThemeDefinition,
 } from "lightdni-jssas-toggle";
-import { playLayeredAudio } from "@/lib/audio";
+import { playMinimizeClick } from "@/lib/audio";
 import { resolveDirection, type Direction } from "./direction";
 import "./pageSlide.css";
 
 const CLASS = "theme-page-slide";
-/** Every navigation folds the departing windows — the fold's click. */
-const MINIMIZE_SOUND = "/Click.ogg";
 const ATTRIBUTE = "data-page-slide";
 const DURATION_MS = 400;
 /** Total fold duration (windows squash into the taskbar line). */
@@ -112,8 +110,9 @@ function leaveGhost(): void {
   // line — the bottom edge of the page — sucked toward it while shrinking.
   // The fold distance is measured per window; CSS does the squash.
   const taskbarLine = window.innerHeight;
-  ghost.querySelectorAll<HTMLElement>(".page > .window").forEach((win, i) => {
-    const liveWin = main.querySelectorAll(".page > .window")[i];
+  const topLevel = ".page > .window, .page > .maximized-shell > .window";
+  ghost.querySelectorAll<HTMLElement>(topLevel).forEach((win, i) => {
+    const liveWin = main.querySelectorAll(topLevel)[i];
     if (!liveWin) return;
     const dy = Math.max(
       0,
@@ -160,6 +159,13 @@ function leaveGhost(): void {
 
 let current = "";
 let originalPushState: History["pushState"] | null = null;
+/** Mutes the next transition's fold click: a window ✕ that navigates
+ * closes with its own crunchy kick — no Click.ogg on top of it. */
+let clickSuppressed = false;
+
+export function suppressNextSlideClick(): void {
+  clickSuppressed = true;
+}
 
 /** On mobile screens the appearing page always slides straight down
  * (from above) — the side-by-side menu-order metaphor doesn't read on
@@ -168,7 +174,8 @@ const isMobileLayout = () => window.matchMedia("(max-width: 768px)").matches;
 
 function transition(to: string): void {
   if (to === current) return;
-  playLayeredAudio(MINIMIZE_SOUND);
+  if (clickSuppressed) clickSuppressed = false;
+  else playMinimizeClick();
   const direction = isMobileLayout()
     ? "down"
     : resolveDirection(current, to, menuOrder());
@@ -194,7 +201,33 @@ function restartArrival(): void {
   }
 }
 
-const onPopState = () => transition(location.pathname);
+const onPopState = () => {
+  if (location.pathname === current) {
+    // Same-page history traversal only moves the hash: bring the
+    // hyperlinked element into view (inside its scrolling window).
+    if (location.hash) scrollToHash(location.hash);
+    return;
+  }
+  transition(location.pathname);
+};
+
+/** Scrolls the hash element into view — inside its scrolling window
+ * (a maximized window scrolls its own revealed content) or the page.
+ * The element can mount after the route commit (lazy pages), hence the
+ * deferred retries. */
+function scrollToHash(hash: string, attempts = 12): void {
+  const id = decodeURIComponent(hash.slice(1));
+  if (!id) return;
+  const tick = () => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    if (attempts > 0) window.setTimeout(tick, 100);
+  };
+  tick();
+}
 
 /**
  * Adds the sliding page transition as a lightdni-jssas-toggle theme: the
@@ -210,9 +243,22 @@ export function enablePageSlide(): void {
   const original = history.pushState.bind(history);
   originalPushState = history.pushState;
   history.pushState = (data, unused, url) => {
-    if (url != null) transition(new URL(url, location.href).pathname);
+    if (url != null) {
+      const target = new URL(url, location.href);
+      if (target.pathname !== current) {
+        transition(target.pathname);
+        if (target.hash) scrollToHash(target.hash);
+      } else if (target.hash && target.hash !== location.hash) {
+        // Same pathname, new hash: no page transition — scroll instead.
+        scrollToHash(target.hash);
+      }
+    }
     original(data, unused, url);
   };
+  // Same-page hyperlinks to hash elements change the hash natively.
+  window.addEventListener("hashchange", (event) =>
+    scrollToHash(new URL(event.newURL).hash),
+  );
   window.addEventListener("popstate", onPopState);
 }
 

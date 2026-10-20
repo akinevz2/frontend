@@ -97,6 +97,23 @@ export function flatten(nodes: WindowNode[]): WindowNode[] {
   ]);
 }
 
+/** Every descendant window id beneath a node (the node itself excluded) —
+ * used to reveal a whole subtree when arriving via a hash href. */
+export function descendantIds(windows: WindowNode[], rootId: string): string[] {
+  const root = windows.find((w) => w.id === rootId);
+  const acc: string[] = [];
+  const walk = (node: WindowNode) => {
+    for (const child of node.children) {
+      if (child.kind === "window") {
+        acc.push(child.node.id);
+        walk(child.node);
+      }
+    }
+  };
+  if (root) walk(root);
+  return acc;
+}
+
 /** "0.1.2" -> ["0", "0.1", "0.1.2"] */
 export function lineage(id: string): string[] {
   const parts = id.split(".");

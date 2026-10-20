@@ -35,15 +35,19 @@ html.theme-page-slide .page-slide-ghost > .page {
   min-height: 0;
 }
 
-/* Fixed footer bars of the old page drop out of the bottom with it —
-   fading as they go, so the bar visibly rides out instead of blinking
-   away at the route commit. */
+/* Fixed footer bars of the old page exit on their own beat: the slide
+   starts immediately (no fold-delay) and fades as it goes, so the bar
+   visibly rides out instead of blinking away at the route commit. */
 html.theme-page-slide .page-slide-bar {
   pointer-events: none;
-  animation:
-    page-slide-drop var(--ps-drop-dur) linear var(--ps-drop-delay) forwards,
-    page-slide-backdrop-fade var(--ps-drop-dur) ease-in var(--ps-drop-delay)
-      forwards;
+  animation: page-slide-bar-exit 280ms ease-in forwards;
+}
+
+@keyframes page-slide-bar-exit {
+  to {
+    translate: 0 100vh;
+    opacity: 0;
+  }
 }
 
 /* The live bar yields to its ride-out clone for the exit (visibility —
@@ -65,7 +69,8 @@ html.theme-page-slide[data-page-slide] main:not(.page-slide-ghost) > .page {
    edge falls to meet it (the outline sucks downward, as in XP), while the
    whole window is drawn the last stretch toward the measured fold point.
    Contents ride the squash, as in XP itself. */
-html.theme-page-slide .page-slide-ghost .page > .window {
+html.theme-page-slide .page-slide-ghost .page > .window,
+html.theme-page-slide .page-slide-ghost .page > .maximized-shell > .window {
   transform-origin: bottom center;
   /* Linear, per preference: the top edge falls towards the taskbar line
      at a constant rate for the entire fold. */
@@ -92,36 +97,51 @@ html.theme-page-slide .page-slide-ghost .page-slide-placeholder-frame {
 /* Departing dimmed overlays: the dark level fades in step with the
    departing windows (slide-off on dismissal, page fold on navigation);
    ride clones keep the fade going even when the portals unmount
-   mid-animation. */
+   mid-animation. The ride carries its OWN full backdrop look — it must
+   drop the .maximized-backdrop class, or body:has() would keep the page
+   raised over the menu bar for the ride's whole lifetime. */
 .maximized-backdrop.page-slide-backdrop-close,
 .page-slide-backdrop-ride {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
   pointer-events: none;
+  background: rgba(0, 0, 0, 0.6);
   animation: page-slide-backdrop-fade 180ms ease-out forwards;
 }
 
 @keyframes page-slide-backdrop-fade {
   to {
     opacity: 0;
+    background: rgba(0, 0, 0, 0);
   }
 }
 
-/* Departing exit on a minimized window / closing maximized window:
-   Window.tsx adds .window-minimize and measures --page-fold-dy to the
-   taskbar line exactly like the ghost clone above. The squash glitched
-   on windows whose content collapses beneath the animation, so the
-   window simply departs below the bottom edge instead. */
-/* Departing exit on a closing maximized window: Window.tsx adds
+/* Departing exit on a closing maximized window: MaximizedWindow adds
    .window-minimize to the ride-out clone and measures --page-fold-dy to
-   the taskbar line exactly like the ghost clone above. The !important
-   outranks theme animations (theme-experimental-flash on maximized
-   experimental windows would otherwise replace the slide). */
+   the taskbar line exactly like the ghost clone above, and the squish
+   plays the same fold: the bottom edge slides to the taskbar line while
+   the top edge falls to meet it. The !important outranks theme
+   animations (theme-experimental-flash on maximized experimental windows
+   would otherwise replace the fold); the clone paints above the raised
+   page, above its fading dimmed layer. Since the ride clone is inert and
+   the real window returns to the flow the moment the fold starts, the
+   collapsing content never glitches beneath the squash. */
 html.theme-page-slide .window.window-minimize {
-  animation: window-minimize-exit 180ms ease-in forwards !important;
+  z-index: 4001;
+  transform-origin: bottom center;
+  animation: window-minimize-exit var(--ps-minimize, 98ms) linear forwards
+    !important;
 }
 
 @keyframes window-minimize-exit {
   to {
-    translate: 0 calc(100% + var(--page-fold-dy, 0px));
+    /* Fold onto the taskbar line, then clear it: without the extra
+       100% offset the squashed sliver would rest exactly AT the bottom
+       edge (the page drop that normally carries it away doesn't exist
+       for a standalone dismissal). */
+    transform: translateY(calc(var(--page-fold-dy, 80vh) + 100%))
+      scaleY(0.06);
   }
 }
 

@@ -20,19 +20,44 @@
   background: rgba(0, 0, 0, 0.6);
 }
 
+/* Every window is wrapped by the shell: display: contents keeps the
+   window's own flow box while inline; the SAME wrapper becomes the
+   fixed darkened backdrop when the window lifts — the window element
+   stays inside the background element in every state. */
+.maximized-shell {
+  display: contents;
+}
+
+.maximized-backdrop:not(.page-slide-backdrop-ride):not(
+    .page-slide-backdrop-close
+  ) {
+  /* The darkening fades rather than blinking in when the window lifts
+     over the page (its removal always rides the fade-out clone,
+     whose own mount animation must not be overridden by this one). */
+  animation: page-slide-backdrop-in 180ms ease-out;
+}
+
+@keyframes page-slide-backdrop-in {
+  from {
+    opacity: 0;
+    background: rgba(0, 0, 0, 0);
+  }
+}
+
 /* The maximized window stays IN the page tree (a sibling of the dimmed
    layer, not its child): fixed positioning lifts it over the viewport
    without uprooting it, so nothing is removed from the element tree and
-   the restore never re-adopts it. Explicit top: 0 + auto side insets
-   center it horizontally and dock it to the top edge; tall windows cap
-   at the viewport and scroll themselves (title bar and all) as a piece. */
+   the restore never re-adopts it. top: 50% + translate centers it; the
+   max-height cap keeps the centered placement exact for tall content,
+   which scrolls inside the window (title bar and all) as one piece. */
 .window.maximized {
   position: fixed;
-  top: 0;
+  top: 50%;
   left: 0;
   right: 0;
   bottom: auto;
   z-index: 2001;
+  translate: 0 -50%;
   margin: 0 auto;
   width: max-content;
   max-width: 96vw;
@@ -138,14 +163,11 @@
 body:has(.maximized-backdrop) {
   overflow: hidden;
 }
-/* The maximized window is now an in-tree fixed child of .page — the page's
-   3D viewing space (perspective/preserve-3d) would become its containing
-   block and trap it, so it is flattened while a window is maximized; the
-   z-index raise lets the dimmed layer cover the menu bar like the old
-   body-level portal did. */
+/* The maximized window is an in-tree fixed child of .page; the z-index
+   raise lets the dimmed shell cover the menu bar like the old body-level
+   portal did. (.page itself carries no perspective/transform-style — see
+   window.css — so fixed descendants stay viewport-anchored.) */
 body:has(.maximized-backdrop) .page {
-  perspective: none;
-  transform-style: flat;
   z-index: 3000;
 }
 body:has(.maximized-backdrop) .debug-bar {

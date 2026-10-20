@@ -224,6 +224,7 @@
 
 /* Hide border on first-level windows to avoid double border */
 .page > .window,
+.page > .maximized-shell > .window,
 main > .page {
   border: none;
 }
@@ -232,7 +233,8 @@ main > .page {
    inner content (e.g. a Spotify iframe) can't push itself past the rest
    of the page. Defaults to 768px to match the website's compact reading
    width; only grows when the viewport is narrower than that. */
-.page > .window {
+.page > .window,
+.page > .maximized-shell > .window {
   width: min(768px, 100% - (var(--gap-size) * 2));
   max-width: min(768px, 100% - (var(--gap-size) * 2));
 }
@@ -299,12 +301,10 @@ li {
   flex-direction: column;
   place-items: center;
   min-height: 100%;
-  /* Establish the 3D viewing space for themed windows so their raise/wobble
-     transforms (translateZ, scale) render relative to the page rather than
-     being clipped by the page's own box. */
-  perspective: 800px;
-  /* Let a raised window overflow the page bounds without clipping. */
-  transform-style: preserve-3d;
+  /* NO perspective / transform-style here: the themed raise/wobble
+     transforms are plain 2D translateY, and any 3D viewing space would
+     turn .page into the containing block for fixed-position descendants
+     (maximized windows ride in-tree over the page). */
 }
 
 .window.maximized {

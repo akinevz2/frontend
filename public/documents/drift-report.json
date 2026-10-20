@@ -1,6 +1,6 @@
 {
   "baselineUrl": "https://akinevz.com/checksums.txt",
-  "generatedAt": "2026-10-20T17:10:23.892Z",
+  "generatedAt": "2026-10-20T18:49:36.591Z",
   "mutablePaths": [
     "index.html",
     "404.html",
@@ -26,169 +26,127 @@
     "checksums.txt",
     "assets/*.js"
   ],
-  "violationCount": 27,
+  "violationCount": 20,
   "violations": [
     {
-      "relPath": "addons/rage-volley.txt",
+      "relPath": "Click.ogg",
       "status": "CHANGED",
-      "prev": "8ade0b52fd7435f7e55987bb1304b81d6e3e5c1e2fc3c2a87202e815a6291f0f",
-      "next": "7eff5b6e2ee4edbb6a437be4b910686fcf2254f58db3938fc308aea553780847"
+      "prev": "d92d71deb2164f1f11ca75607db32012eda31dc8f70afb3254288b4ed390d089",
+      "next": "62c4bd4111f31aecf0da9225867a9dff5686f5351b55f26d5af5f6824d126cbf"
     },
     {
-      "relPath": "addons/rueg-wa-druid.txt",
-      "status": "CHANGED",
-      "prev": "90a0836a893d4fbe2c7d1f5c9b4227a39abf979ae8a71a962ddde8fe33ed2306",
-      "next": "59001df0ad44941dbbeb2b8868f5b446501e97a75a6f8ec9cb425c823954073b"
-    },
-    {
-      "relPath": "addons/rueg-wa-mage.txt",
-      "status": "CHANGED",
-      "prev": "437963f7402566d3e6389b255e0c067f8ec7d324421299575f66045ff7a1220a",
-      "next": "c53afc7432e19212cdc0c22c3bbfd87e2dbde6b76dd6eee560b5ddda2a1db7b8"
-    },
-    {
-      "relPath": "addons/rueg-wa-paladin.txt",
+      "relPath": "assets/index-DNqBU2Tb.css",
       "status": "NEW",
       "prev": null,
-      "next": "2798bdbfe12d53d22911089da6063134815d1608742b0cd711a048ec984d4ecb"
-    },
-    {
-      "relPath": "addons/rueg-wa-priest.txt",
-      "status": "CHANGED",
-      "prev": "e7025ea348ad9aa32bcc5c0aac09857b7591ebc0f587b733d3b21ccddc8d2993",
-      "next": "59bee3343cc8c14dab453a17a27b094042a2b408555a5062d69baa100051af37"
-    },
-    {
-      "relPath": "addons/rueg-wa-rueg.txt",
-      "status": "CHANGED",
-      "prev": "a49b6fb08f5c5e4d4828cf49e98b72692dc36888502f262041f1822f864fc20b",
-      "next": "98dea05b5d5a429c6f49e92d8e4501735f96615e5e2525093ab951a7eaf45192"
-    },
-    {
-      "relPath": "addons/rueg-wa-shaman.txt",
-      "status": "CHANGED",
-      "prev": "66d529b6eb53688d2401a8449f0f697e50898da0faae01b277e6453baf454342",
-      "next": "0fab27c7181385b8817de8a6ed3a547b044956af021043240d102dc8a83508bd"
-    },
-    {
-      "relPath": "assets/index-D3mDEIvs.css",
-      "status": "NEW",
-      "prev": null,
-      "next": "185d6d24be0f8f846ed532a194cac93f99d1efd19fccdfebb668e4e3d3c8c21b"
+      "next": "75ee1722f4c07c57edb59525d65b6ebda23c16652915e34943c566936a20bc4c"
     },
     {
       "relPath": "configs.html",
       "status": "CHANGED",
-      "prev": "7a9c2204f58afd540e2f9f95a5f389bc359108367d258b3a5a498198ba28fa87",
-      "next": "3cf63d9cbfc9e200361aeb84e2deab260a4d10019e770c8d4736442b86f18575"
+      "prev": "3f694cb8ecdfb5de27dfa43cd2e1ea35368a240ed39910440107ea7d4d510fd8",
+      "next": "c6a66ae9d19d6503d3b4e7732d580a83e988b798b8eb01493736953bf0741e5a"
     },
     {
       "relPath": "configs/index.html",
       "status": "CHANGED",
-      "prev": "7a9c2204f58afd540e2f9f95a5f389bc359108367d258b3a5a498198ba28fa87",
-      "next": "3cf63d9cbfc9e200361aeb84e2deab260a4d10019e770c8d4736442b86f18575"
-    },
-    {
-      "relPath": "documents/drift-report.json",
-      "status": "CHANGED",
-      "prev": "36e223fb8ebce16871dd5519e27d356f123b8b2c0df3bb5baa810275aaf7c6dc",
-      "next": "461479f1ea70b62c05482b3e5d21730a06f7f3dd71908805f31248c948fa2f2b"
+      "prev": "3f694cb8ecdfb5de27dfa43cd2e1ea35368a240ed39910440107ea7d4d510fd8",
+      "next": "c6a66ae9d19d6503d3b4e7732d580a83e988b798b8eb01493736953bf0741e5a"
     },
     {
       "relPath": "projects/development.html",
       "status": "CHANGED",
-      "prev": "86a3094470f6cbfd723aaacb1f8de149ea68bff0202d60ed48e9377c53f609e5",
-      "next": "656c931d381fb2cebb92c952ca85063f38d98ab1571a51e2553a2779a4b49fa3"
+      "prev": "bc7c4c622c1a2a32bd356f32c7afb985746d44d95532bc1535773cfc27cd807f",
+      "next": "0da484fd811cf99340ab6fba0c2da76dca93cb3e2a16d97583a6f1a23a3d9217"
     },
     {
       "relPath": "projects/development/index.html",
       "status": "CHANGED",
-      "prev": "86a3094470f6cbfd723aaacb1f8de149ea68bff0202d60ed48e9377c53f609e5",
-      "next": "656c931d381fb2cebb92c952ca85063f38d98ab1571a51e2553a2779a4b49fa3"
+      "prev": "bc7c4c622c1a2a32bd356f32c7afb985746d44d95532bc1535773cfc27cd807f",
+      "next": "0da484fd811cf99340ab6fba0c2da76dca93cb3e2a16d97583a6f1a23a3d9217"
     },
     {
       "relPath": "projects/doftiles.html",
       "status": "CHANGED",
-      "prev": "cdb41c2629943dd9c17510fefe3e0e56260757b3fe0bc65574497b8933574813",
-      "next": "73d9d2a822ca6e1458d1e3f199eaf8d46256d7c157904ea37f6fe7ac79bcc66e"
+      "prev": "c8d6dbb653cac78b3810e760779ed23a2fae59dabfbb2c7f6671087137c8978b",
+      "next": "792d668e53a123fd1ae5c9b6377c9d2816c8fa085849d2116594a50400b0c5f6"
     },
     {
       "relPath": "projects/doftiles/index.html",
       "status": "CHANGED",
-      "prev": "cdb41c2629943dd9c17510fefe3e0e56260757b3fe0bc65574497b8933574813",
-      "next": "73d9d2a822ca6e1458d1e3f199eaf8d46256d7c157904ea37f6fe7ac79bcc66e"
+      "prev": "c8d6dbb653cac78b3810e760779ed23a2fae59dabfbb2c7f6671087137c8978b",
+      "next": "792d668e53a123fd1ae5c9b6377c9d2816c8fa085849d2116594a50400b0c5f6"
     },
     {
       "relPath": "projects/frontend.html",
       "status": "CHANGED",
-      "prev": "d070939c65421db7732c15debbdc43fc98935721f1aeb91c42e98393a2a3d00c",
-      "next": "eb1680ff4dfbd434f89e346540663be832270698acefedb6e55d6d39398e01e4"
+      "prev": "a6ad9a5e0e3497d9194df005193ae8f5f4bf14e26b3c6ee0ba9110d69c5a697b",
+      "next": "0d0c4c4111f564b312a1196509d936875520e7aa48c54b44745ed6f18839abf8"
     },
     {
       "relPath": "projects/frontend/index.html",
       "status": "CHANGED",
-      "prev": "d070939c65421db7732c15debbdc43fc98935721f1aeb91c42e98393a2a3d00c",
-      "next": "eb1680ff4dfbd434f89e346540663be832270698acefedb6e55d6d39398e01e4"
+      "prev": "a6ad9a5e0e3497d9194df005193ae8f5f4bf14e26b3c6ee0ba9110d69c5a697b",
+      "next": "0d0c4c4111f564b312a1196509d936875520e7aa48c54b44745ed6f18839abf8"
     },
     {
       "relPath": "projects/graphbrowser.html",
       "status": "CHANGED",
-      "prev": "11cb57bab494938231b926e6167ed9b6fe2663b01f828be55881e04570ee59c5",
-      "next": "b509d3feb5040ebb48cb8809c6e31d3b133eae295fb2718dbeb47a3e7ba3d128"
+      "prev": "2500efe408f429eafb45b9ab29c2a58671bd9a158c835667bceab07570358f1a",
+      "next": "9510353abf9406a7bb08ccb24ececc57d0b55e6c009bf85c9cf2ae0554b68308"
     },
     {
       "relPath": "projects/graphbrowser/index.html",
       "status": "CHANGED",
-      "prev": "11cb57bab494938231b926e6167ed9b6fe2663b01f828be55881e04570ee59c5",
-      "next": "b509d3feb5040ebb48cb8809c6e31d3b133eae295fb2718dbeb47a3e7ba3d128"
+      "prev": "2500efe408f429eafb45b9ab29c2a58671bd9a158c835667bceab07570358f1a",
+      "next": "9510353abf9406a7bb08ccb24ececc57d0b55e6c009bf85c9cf2ae0554b68308"
     },
     {
       "relPath": "projects/herbstutil.html",
       "status": "CHANGED",
-      "prev": "136c0845b54035fc4566e939484655c8f66d7f4b75ff965a8ecb99a551e59c55",
-      "next": "6e24e62b9980ca4922ce3e0ba1597314c26e7b2e4b480d8afe638e439db6cd88"
+      "prev": "029fa2b82fea093c23b62035bf41e6ce5bbbbb56a2ef05e8985478d6dfb72483",
+      "next": "a5a7f04d5a9b174fdd5c7298896bf9b5afe800afe8a6c78b4040014d3082972b"
     },
     {
       "relPath": "projects/herbstutil/index.html",
       "status": "CHANGED",
-      "prev": "136c0845b54035fc4566e939484655c8f66d7f4b75ff965a8ecb99a551e59c55",
-      "next": "6e24e62b9980ca4922ce3e0ba1597314c26e7b2e4b480d8afe638e439db6cd88"
+      "prev": "029fa2b82fea093c23b62035bf41e6ce5bbbbb56a2ef05e8985478d6dfb72483",
+      "next": "a5a7f04d5a9b174fdd5c7298896bf9b5afe800afe8a6c78b4040014d3082972b"
     },
     {
       "relPath": "projects/lightdni-jssas-toggle.html",
       "status": "CHANGED",
-      "prev": "d8e485160f07b1161cb4efa9cd88252c8b31c48fb13771ac6aef3ca50cf39bd2",
-      "next": "d25f5c93e9d1e6d3f3ad1a2fe3fba1061b440eab1e882579016206757c967ee5"
+      "prev": "8988e9b3b507cbba76e5ad9239360f8bf75c7fe5ac58ec2ef5de768d85c8e872",
+      "next": "b664146d8d867d8e061c13789188b1ef236038d64baafb6720c30b7867836663"
     },
     {
       "relPath": "projects/lightdni-jssas-toggle/index.html",
       "status": "CHANGED",
-      "prev": "d8e485160f07b1161cb4efa9cd88252c8b31c48fb13771ac6aef3ca50cf39bd2",
-      "next": "d25f5c93e9d1e6d3f3ad1a2fe3fba1061b440eab1e882579016206757c967ee5"
+      "prev": "8988e9b3b507cbba76e5ad9239360f8bf75c7fe5ac58ec2ef5de768d85c8e872",
+      "next": "b664146d8d867d8e061c13789188b1ef236038d64baafb6720c30b7867836663"
     },
     {
       "relPath": "projects/rarebert.html",
       "status": "CHANGED",
-      "prev": "c367b72b51f25667958e135bc4552e46cebcfc78c5256b4ce8d12c9cbca5dc7d",
-      "next": "7adc303995597efd5bda536e1be4910a77418bec324d252b2efec423ceb7d09a"
+      "prev": "3db4d00801ba54cbbbd44bf874088f5cf423a975e574a32b61ccd1b603230bce",
+      "next": "a64cdf0cb377813164d3c93566ae1df232974ca3664e63743779b7afa52df14d"
     },
     {
       "relPath": "projects/rarebert/index.html",
       "status": "CHANGED",
-      "prev": "c367b72b51f25667958e135bc4552e46cebcfc78c5256b4ce8d12c9cbca5dc7d",
-      "next": "7adc303995597efd5bda536e1be4910a77418bec324d252b2efec423ceb7d09a"
+      "prev": "3db4d00801ba54cbbbd44bf874088f5cf423a975e574a32b61ccd1b603230bce",
+      "next": "a64cdf0cb377813164d3c93566ae1df232974ca3664e63743779b7afa52df14d"
     },
     {
       "relPath": "projects/webuser.html",
       "status": "CHANGED",
-      "prev": "89cdeb0a8ed4068783ea826fbc8057ff5c40df753d1706d8cdd7052dfe0dd5c8",
-      "next": "9fadb9e4934ac07acd340823bd3e19788585a363d239f47deea6cc9b95776d45"
+      "prev": "88f45f46301e45a9496728c27262ed615fdae8da3610bb1b8054134d919005a6",
+      "next": "7e355baa046790784801dd1498758164c443c91b2263aea46a6658ce0147eab4"
     },
     {
       "relPath": "projects/webuser/index.html",
       "status": "CHANGED",
-      "prev": "89cdeb0a8ed4068783ea826fbc8057ff5c40df753d1706d8cdd7052dfe0dd5c8",
-      "next": "9fadb9e4934ac07acd340823bd3e19788585a363d239f47deea6cc9b95776d45"
+      "prev": "88f45f46301e45a9496728c27262ed615fdae8da3610bb1b8054134d919005a6",
+      "next": "7e355baa046790784801dd1498758164c443c91b2263aea46a6658ce0147eab4"
     }
   ]
 }
