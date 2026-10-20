@@ -1,6 +1,6 @@
 {
   "baselineUrl": "https://akinevz.com/checksums.txt",
-  "generatedAt": "2026-10-20T14:16:23.811Z",
+  "generatedAt": "2026-10-20T17:10:23.892Z",
   "mutablePaths": [
     "index.html",
     "404.html",
@@ -26,115 +26,169 @@
     "checksums.txt",
     "assets/*.js"
   ],
-  "violationCount": 18,
+  "violationCount": 27,
   "violations": [
+    {
+      "relPath": "addons/rage-volley.txt",
+      "status": "CHANGED",
+      "prev": "8ade0b52fd7435f7e55987bb1304b81d6e3e5c1e2fc3c2a87202e815a6291f0f",
+      "next": "7eff5b6e2ee4edbb6a437be4b910686fcf2254f58db3938fc308aea553780847"
+    },
+    {
+      "relPath": "addons/rueg-wa-druid.txt",
+      "status": "CHANGED",
+      "prev": "90a0836a893d4fbe2c7d1f5c9b4227a39abf979ae8a71a962ddde8fe33ed2306",
+      "next": "59001df0ad44941dbbeb2b8868f5b446501e97a75a6f8ec9cb425c823954073b"
+    },
+    {
+      "relPath": "addons/rueg-wa-mage.txt",
+      "status": "CHANGED",
+      "prev": "437963f7402566d3e6389b255e0c067f8ec7d324421299575f66045ff7a1220a",
+      "next": "c53afc7432e19212cdc0c22c3bbfd87e2dbde6b76dd6eee560b5ddda2a1db7b8"
+    },
+    {
+      "relPath": "addons/rueg-wa-paladin.txt",
+      "status": "NEW",
+      "prev": null,
+      "next": "2798bdbfe12d53d22911089da6063134815d1608742b0cd711a048ec984d4ecb"
+    },
+    {
+      "relPath": "addons/rueg-wa-priest.txt",
+      "status": "CHANGED",
+      "prev": "e7025ea348ad9aa32bcc5c0aac09857b7591ebc0f587b733d3b21ccddc8d2993",
+      "next": "59bee3343cc8c14dab453a17a27b094042a2b408555a5062d69baa100051af37"
+    },
+    {
+      "relPath": "addons/rueg-wa-rueg.txt",
+      "status": "CHANGED",
+      "prev": "a49b6fb08f5c5e4d4828cf49e98b72692dc36888502f262041f1822f864fc20b",
+      "next": "98dea05b5d5a429c6f49e92d8e4501735f96615e5e2525093ab951a7eaf45192"
+    },
+    {
+      "relPath": "addons/rueg-wa-shaman.txt",
+      "status": "CHANGED",
+      "prev": "66d529b6eb53688d2401a8449f0f697e50898da0faae01b277e6453baf454342",
+      "next": "0fab27c7181385b8817de8a6ed3a547b044956af021043240d102dc8a83508bd"
+    },
+    {
+      "relPath": "assets/index-D3mDEIvs.css",
+      "status": "NEW",
+      "prev": null,
+      "next": "185d6d24be0f8f846ed532a194cac93f99d1efd19fccdfebb668e4e3d3c8c21b"
+    },
     {
       "relPath": "configs.html",
       "status": "CHANGED",
-      "prev": "458d31ec35774796eb8d834a49a9e54bca1aa74bf2eeaaa630cc06da9b78d32b",
-      "next": "34addbc9a2cec7c41682830a057d4f195a0fd9f7a27e2182ff9e8a371b7e8400"
+      "prev": "7a9c2204f58afd540e2f9f95a5f389bc359108367d258b3a5a498198ba28fa87",
+      "next": "3cf63d9cbfc9e200361aeb84e2deab260a4d10019e770c8d4736442b86f18575"
     },
     {
       "relPath": "configs/index.html",
       "status": "CHANGED",
-      "prev": "458d31ec35774796eb8d834a49a9e54bca1aa74bf2eeaaa630cc06da9b78d32b",
-      "next": "34addbc9a2cec7c41682830a057d4f195a0fd9f7a27e2182ff9e8a371b7e8400"
+      "prev": "7a9c2204f58afd540e2f9f95a5f389bc359108367d258b3a5a498198ba28fa87",
+      "next": "3cf63d9cbfc9e200361aeb84e2deab260a4d10019e770c8d4736442b86f18575"
+    },
+    {
+      "relPath": "documents/drift-report.json",
+      "status": "CHANGED",
+      "prev": "36e223fb8ebce16871dd5519e27d356f123b8b2c0df3bb5baa810275aaf7c6dc",
+      "next": "461479f1ea70b62c05482b3e5d21730a06f7f3dd71908805f31248c948fa2f2b"
     },
     {
       "relPath": "projects/development.html",
       "status": "CHANGED",
-      "prev": "521d54e6efd5010e158aea0a14a872fbbe0818d1c553feb7638e6867a022e11d",
-      "next": "7320fd67b80815539491377f5053c5a3387059a837511ceff30d482b9aacf33e"
+      "prev": "86a3094470f6cbfd723aaacb1f8de149ea68bff0202d60ed48e9377c53f609e5",
+      "next": "656c931d381fb2cebb92c952ca85063f38d98ab1571a51e2553a2779a4b49fa3"
     },
     {
       "relPath": "projects/development/index.html",
       "status": "CHANGED",
-      "prev": "521d54e6efd5010e158aea0a14a872fbbe0818d1c553feb7638e6867a022e11d",
-      "next": "7320fd67b80815539491377f5053c5a3387059a837511ceff30d482b9aacf33e"
+      "prev": "86a3094470f6cbfd723aaacb1f8de149ea68bff0202d60ed48e9377c53f609e5",
+      "next": "656c931d381fb2cebb92c952ca85063f38d98ab1571a51e2553a2779a4b49fa3"
     },
     {
       "relPath": "projects/doftiles.html",
       "status": "CHANGED",
-      "prev": "760cec87659017da609dd9a0fb96a8477f5dfde9bb3dc0aeba227625dbd8a985",
-      "next": "c657275db0adaef5457c7ab5af7e512bd6d1670141b2dfabdae7b3c4a1f5d777"
+      "prev": "cdb41c2629943dd9c17510fefe3e0e56260757b3fe0bc65574497b8933574813",
+      "next": "73d9d2a822ca6e1458d1e3f199eaf8d46256d7c157904ea37f6fe7ac79bcc66e"
     },
     {
       "relPath": "projects/doftiles/index.html",
       "status": "CHANGED",
-      "prev": "760cec87659017da609dd9a0fb96a8477f5dfde9bb3dc0aeba227625dbd8a985",
-      "next": "c657275db0adaef5457c7ab5af7e512bd6d1670141b2dfabdae7b3c4a1f5d777"
+      "prev": "cdb41c2629943dd9c17510fefe3e0e56260757b3fe0bc65574497b8933574813",
+      "next": "73d9d2a822ca6e1458d1e3f199eaf8d46256d7c157904ea37f6fe7ac79bcc66e"
     },
     {
       "relPath": "projects/frontend.html",
       "status": "CHANGED",
-      "prev": "2821a64cbf41907a9fe5af990403962abc956d519c3e3e25d4be7db6dc178b28",
-      "next": "3d918a7a882ab86bbb1ee961ef3c98b1b4aac12c4e66f8fabac55489c1ac4a62"
+      "prev": "d070939c65421db7732c15debbdc43fc98935721f1aeb91c42e98393a2a3d00c",
+      "next": "eb1680ff4dfbd434f89e346540663be832270698acefedb6e55d6d39398e01e4"
     },
     {
       "relPath": "projects/frontend/index.html",
       "status": "CHANGED",
-      "prev": "2821a64cbf41907a9fe5af990403962abc956d519c3e3e25d4be7db6dc178b28",
-      "next": "3d918a7a882ab86bbb1ee961ef3c98b1b4aac12c4e66f8fabac55489c1ac4a62"
+      "prev": "d070939c65421db7732c15debbdc43fc98935721f1aeb91c42e98393a2a3d00c",
+      "next": "eb1680ff4dfbd434f89e346540663be832270698acefedb6e55d6d39398e01e4"
     },
     {
       "relPath": "projects/graphbrowser.html",
       "status": "CHANGED",
-      "prev": "76cfa052c9b52c4f4a5c84efaa24c910cbd1d3ac3b94ff940e3d273243cec4db",
-      "next": "75f99975523484bca50deebd7cbbb464e960cec686b6af4324a998ca5e98cb3d"
+      "prev": "11cb57bab494938231b926e6167ed9b6fe2663b01f828be55881e04570ee59c5",
+      "next": "b509d3feb5040ebb48cb8809c6e31d3b133eae295fb2718dbeb47a3e7ba3d128"
     },
     {
       "relPath": "projects/graphbrowser/index.html",
       "status": "CHANGED",
-      "prev": "76cfa052c9b52c4f4a5c84efaa24c910cbd1d3ac3b94ff940e3d273243cec4db",
-      "next": "75f99975523484bca50deebd7cbbb464e960cec686b6af4324a998ca5e98cb3d"
+      "prev": "11cb57bab494938231b926e6167ed9b6fe2663b01f828be55881e04570ee59c5",
+      "next": "b509d3feb5040ebb48cb8809c6e31d3b133eae295fb2718dbeb47a3e7ba3d128"
     },
     {
       "relPath": "projects/herbstutil.html",
       "status": "CHANGED",
-      "prev": "ad90bbbc847d3d0b24e0e81ecb8aa1bdf4274f97533a2763e457b585dd9d4c6f",
-      "next": "1fbe9e6ef5a878e99ba73a752172049c0ef9a9057d1d8741de481f467b7f598c"
+      "prev": "136c0845b54035fc4566e939484655c8f66d7f4b75ff965a8ecb99a551e59c55",
+      "next": "6e24e62b9980ca4922ce3e0ba1597314c26e7b2e4b480d8afe638e439db6cd88"
     },
     {
       "relPath": "projects/herbstutil/index.html",
       "status": "CHANGED",
-      "prev": "ad90bbbc847d3d0b24e0e81ecb8aa1bdf4274f97533a2763e457b585dd9d4c6f",
-      "next": "1fbe9e6ef5a878e99ba73a752172049c0ef9a9057d1d8741de481f467b7f598c"
+      "prev": "136c0845b54035fc4566e939484655c8f66d7f4b75ff965a8ecb99a551e59c55",
+      "next": "6e24e62b9980ca4922ce3e0ba1597314c26e7b2e4b480d8afe638e439db6cd88"
     },
     {
       "relPath": "projects/lightdni-jssas-toggle.html",
       "status": "CHANGED",
-      "prev": "fbd2dbaf0e51e58a9557215dd9467814febc50c092648450224b84a520da9a82",
-      "next": "d9d862754c6b439238b774c5e811284fca4280ce896036b063c18700875bbe73"
+      "prev": "d8e485160f07b1161cb4efa9cd88252c8b31c48fb13771ac6aef3ca50cf39bd2",
+      "next": "d25f5c93e9d1e6d3f3ad1a2fe3fba1061b440eab1e882579016206757c967ee5"
     },
     {
       "relPath": "projects/lightdni-jssas-toggle/index.html",
       "status": "CHANGED",
-      "prev": "fbd2dbaf0e51e58a9557215dd9467814febc50c092648450224b84a520da9a82",
-      "next": "d9d862754c6b439238b774c5e811284fca4280ce896036b063c18700875bbe73"
+      "prev": "d8e485160f07b1161cb4efa9cd88252c8b31c48fb13771ac6aef3ca50cf39bd2",
+      "next": "d25f5c93e9d1e6d3f3ad1a2fe3fba1061b440eab1e882579016206757c967ee5"
     },
     {
       "relPath": "projects/rarebert.html",
       "status": "CHANGED",
-      "prev": "346f048708765ddba96eb978b1ddad8094613256cfdc85244c094778c77b25b2",
-      "next": "128c1332a236717ea1014eef7099295ac8d368935129f3d4169b99825c98ed57"
+      "prev": "c367b72b51f25667958e135bc4552e46cebcfc78c5256b4ce8d12c9cbca5dc7d",
+      "next": "7adc303995597efd5bda536e1be4910a77418bec324d252b2efec423ceb7d09a"
     },
     {
       "relPath": "projects/rarebert/index.html",
       "status": "CHANGED",
-      "prev": "346f048708765ddba96eb978b1ddad8094613256cfdc85244c094778c77b25b2",
-      "next": "128c1332a236717ea1014eef7099295ac8d368935129f3d4169b99825c98ed57"
+      "prev": "c367b72b51f25667958e135bc4552e46cebcfc78c5256b4ce8d12c9cbca5dc7d",
+      "next": "7adc303995597efd5bda536e1be4910a77418bec324d252b2efec423ceb7d09a"
     },
     {
       "relPath": "projects/webuser.html",
       "status": "CHANGED",
-      "prev": "b964a88fa07b88d6b6d5a6cd0ebf5a677f5d862da92780fb9a543f5c5c396139",
-      "next": "ef8e24c83f670cfa200dd83a67ae9f66b070342c19089345c5656395e241350b"
+      "prev": "89cdeb0a8ed4068783ea826fbc8057ff5c40df753d1706d8cdd7052dfe0dd5c8",
+      "next": "9fadb9e4934ac07acd340823bd3e19788585a363d239f47deea6cc9b95776d45"
     },
     {
       "relPath": "projects/webuser/index.html",
       "status": "CHANGED",
-      "prev": "b964a88fa07b88d6b6d5a6cd0ebf5a677f5d862da92780fb9a543f5c5c396139",
-      "next": "ef8e24c83f670cfa200dd83a67ae9f66b070342c19089345c5656395e241350b"
+      "prev": "89cdeb0a8ed4068783ea826fbc8057ff5c40df753d1706d8cdd7052dfe0dd5c8",
+      "next": "9fadb9e4934ac07acd340823bd3e19788585a363d239f47deea6cc9b95776d45"
     }
   ]
 }

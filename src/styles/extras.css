@@ -18,15 +18,32 @@
   inset: 0;
   z-index: 2000;
   background: rgba(0, 0, 0, 0.6);
-  /* The dimmed layer itself is the scroll surface: a maximized window
-     taller than the viewport scrolls as a whole (title bar and all)
-     instead of scrolling its interior. */
-  overflow-y: auto;
+}
+
+/* The maximized window stays IN the page tree (a sibling of the dimmed
+   layer, not its child): fixed positioning lifts it over the viewport
+   without uprooting it, so nothing is removed from the element tree and
+   the restore never re-adopts it. Explicit top: 0 + auto side insets
+   center it horizontally and dock it to the top edge; tall windows cap
+   at the viewport and scroll themselves (title bar and all) as a piece. */
+.window.maximized {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: auto;
+  z-index: 2001;
+  margin: 0 auto;
+  width: max-content;
+  max-width: 96vw;
+  min-width: min(800px, 96vw);
+  height: fit-content;
+  min-height: 0;
+  max-height: 100dvh;
+  box-sizing: border-box;
   display: flex;
-  /* The window docks top-left; margin: auto on it centers it whenever it
-     fits, and lets it pin to the top edge when it overflows. */
-  align-items: flex-start;
-  justify-content: flex-start;
+  flex-direction: column;
+  overflow-y: auto;
 }
 
 .artist-background {
@@ -50,6 +67,17 @@
   background: #fff;
   border-top: 1px solid #808080;
   color: #2f2f2f;
+  /* The bar rides out with its page (a page-slide-bar clone drops it);
+     each arrival — the music page remounts it on every navigation —
+     slides it back in from the bottom edge. */
+  animation: debug-bar-enter 240ms ease-out backwards;
+}
+
+@keyframes debug-bar-enter {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
 }
 
 .debug-bar strong {
@@ -91,34 +119,13 @@
   margin-left: 0;
 }
 
-.maximized-backdrop > .window.maximized {
-  /* Desktop maximize = a foreground modal, not a fullscreen takeover:
-     centered (margin: auto), hugging its content — shrink-wrapped width
-     with an 800px floor (narrow content must not become a sliver) and a
-     96vw cap. Content taller than the viewport extends past the backdrop
-     edge and the dimmed layer scrolls the window as one piece — no inner
-     scrolling. */
-  margin: auto;
-  width: max-content;
-  max-width: 96vw;
-  min-width: min(800px, 96vw);
-  height: auto;
-  /* Override the base .window.maximized min sizes, or the window stays at
-     full viewport size. */
-  min-height: 0;
-  box-sizing: border-box;
-  max-height: none;
-  display: flex;
-  flex-direction: column;
-}
-
 /* Leaf windows (no nested section nodes) size purely to their inner content
    on maximize — no 800px floor below. */
-.maximized-backdrop > .window.maximized.content-size {
+.window.maximized.content-size {
   min-width: 0;
 }
 
-.maximized-backdrop > .window.maximized > .window-body {
+.window.maximized > .window-body {
   /* Drop the 8px XP window-body margin so the scrollbar hugs the window
      frame; the inset moves to padding, which scrollbars do not overlap. */
   margin: 0;
@@ -130,6 +137,16 @@
 
 body:has(.maximized-backdrop) {
   overflow: hidden;
+}
+/* The maximized window is now an in-tree fixed child of .page — the page's
+   3D viewing space (perspective/preserve-3d) would become its containing
+   block and trap it, so it is flattened while a window is maximized; the
+   z-index raise lets the dimmed layer cover the menu bar like the old
+   body-level portal did. */
+body:has(.maximized-backdrop) .page {
+  perspective: none;
+  transform-style: flat;
+  z-index: 3000;
 }
 body:has(.maximized-backdrop) .debug-bar {
   display: none;

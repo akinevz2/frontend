@@ -4,10 +4,13 @@ import {
   setTheme,
   type ThemeDefinition,
 } from "lightdni-jssas-toggle";
+import { playLayeredAudio } from "@/lib/audio";
 import { resolveDirection, type Direction } from "./direction";
 import "./pageSlide.css";
 
 const CLASS = "theme-page-slide";
+/** Every navigation folds the departing windows — the fold's click. */
+const MINIMIZE_SOUND = "/Click.ogg";
 const ATTRIBUTE = "data-page-slide";
 const DURATION_MS = 400;
 /** Total fold duration (windows squash into the taskbar line). */
@@ -119,13 +122,24 @@ function leaveGhost(): void {
     win.style.setProperty("--page-fold-dy", `${Math.round(dy)}px`);
   });
   document.body.appendChild(ghost);
+  // Maximized overlays ride INSIDE the ghost now (they are in-tree), so
+  // the dimmed layer and the maximized window fold and drop with the
+  // page — no portal ride-out is needed on navigation.
   document.querySelectorAll<HTMLElement>("body > .debug-bar").forEach((bar) => {
     const leaving = bar.cloneNode(true) as HTMLElement;
     leaving.classList.add("page-slide-bar");
     // Layout rules key off this attribute; the clone must not keep them alive.
     leaving.removeAttribute("data-debug-bar");
     document.body.appendChild(leaving);
-    window.setTimeout(() => leaving.remove(), REMOVAL_MS);
+    // The live bar yields to the clone in the same frame — visibility,
+    // not display, so the body padding rules keep reserving its row —
+    // and the clone drops (and fades) with the page instead of the bar
+    // blinking out at the route commit.
+    bar.classList.add("page-slide-bar-hide");
+    window.setTimeout(() => {
+      leaving.remove();
+      bar.classList.remove("page-slide-bar-hide");
+    }, REMOVAL_MS);
   });
   const remove = (event?: Event) => {
     // Child windows bubbling their minimise-end must NOT retire the ghost —
@@ -154,6 +168,7 @@ const isMobileLayout = () => window.matchMedia("(max-width: 768px)").matches;
 
 function transition(to: string): void {
   if (to === current) return;
+  playLayeredAudio(MINIMIZE_SOUND);
   const direction = isMobileLayout()
     ? "down"
     : resolveDirection(current, to, menuOrder());

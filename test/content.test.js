@@ -31,6 +31,21 @@ test("page aliases target an existing route (+optional section anchor)", () => {
   }
 });
 
+test("include directives target a registered content file", async () => {
+  const { readdirSync } = await import("node:fs");
+  const indexTs = readFileSync("src/content/index.ts", "utf8");
+  const jsonFiles = readdirSync("src/content").filter((f) => f.endsWith(".json"));
+  const directives = jsonFiles.flatMap((file) =>
+    readFileSync(`src/content/${file}`, "utf8").match(/"include"\s*:\s*"([^"]+)"/g) ?? [],
+  );
+  for (const directive of directives) {
+    const name = directive.match(/"include"\s*:\s*"([^"]+)"/)[1];
+    const target = `src/content/${name}.json`;
+    assert.ok(readFileSync(target, "utf8").length > 0, `include target ${target} exists`);
+    assert.match(indexTs, new RegExp(`\\b${name}\\b`), `${name} registered in includeRegistry`);
+  }
+});
+
 test("every project document is complete and routable", async () => {
   const { readdirSync } = await import("node:fs");
   const files = readdirSync("src/content/projects").filter((f) => f.endsWith(".json"));

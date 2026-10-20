@@ -119,7 +119,7 @@ body:has([data-debug-bar]) .page {
      with equal specificity. dvh (with vh fallback) tracks the *visible*
      viewport, so the Android Firefox/Chrome navigation bar cannot hide the
      window's top edge underneath it. */
-  body .maximized-backdrop > .window.maximized {
+  body .window.maximized {
     margin: 0;
     width: 100vw;
     height: 100vh;
@@ -128,25 +128,19 @@ body:has([data-debug-bar]) .page {
     min-height: 0;
   }
 
-  body
-    .maximized-backdrop
-    > .window.maximized
-    > .window-body,
-  body
-    .maximized-backdrop
-    > .window.maximized
-    > .maximized-window-body {
+  body .window.maximized > .window-body,
+  body .window.maximized > .maximized-window-body {
     margin: 0;
     padding: 0;
   }
 
   /* Leaf windows (no nested sections) keep their natural size on maximize
-     instead of ballooning to the viewport; margin: auto centers them in
-     the dimmed layer. */
-  body .maximized-backdrop > .window.maximized.content-size {
-    margin: auto;
+     instead of ballooning to the viewport; auto margins center them
+     horizontally, docked to the top edge. */
+  body .window.maximized.content-size {
+    margin: 0 auto;
     width: min(100vw, 1100px);
-    height: auto;
+    height: fit-content;
     max-height: 100dvh;
   }
 

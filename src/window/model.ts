@@ -50,6 +50,11 @@ function buildNode(section: Section, id: string, depth: number): WindowNode {
       children.push({ kind: "element", element: item });
     } else if ("banner" in item) {
       children.push({ kind: "banner", banner: item.banner });
+    } else if ("include" in item) {
+      // Directives are resolved at content load (src/content/index.ts);
+      // reaching the model means an unknown/broken include slipped
+      // through — fail loudly instead of rendering an opaque object.
+      throw new Error(`Unresolved include directive: ${String(item.include)}`);
     } else if (isEmbed(item)) {
       children.push({ kind: "embed", embed: item });
     } else {

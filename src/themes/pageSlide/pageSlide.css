@@ -35,11 +35,21 @@ html.theme-page-slide .page-slide-ghost > .page {
   min-height: 0;
 }
 
-/* Fixed footer bars of the old page drop out of the bottom with it. */
+/* Fixed footer bars of the old page drop out of the bottom with it —
+   fading as they go, so the bar visibly rides out instead of blinking
+   away at the route commit. */
 html.theme-page-slide .page-slide-bar {
   pointer-events: none;
-  animation: page-slide-drop var(--ps-drop-dur) linear var(--ps-drop-delay)
-    forwards;
+  animation:
+    page-slide-drop var(--ps-drop-dur) linear var(--ps-drop-delay) forwards,
+    page-slide-backdrop-fade var(--ps-drop-dur) ease-in var(--ps-drop-delay)
+      forwards;
+}
+
+/* The live bar yields to its ride-out clone for the exit (visibility —
+   display would collapse the reserved body padding row). */
+html.theme-page-slide .page-slide-bar-hide {
+  visibility: hidden;
 }
 
 /* The new page eases from the old page's bottom padding to its own, so its
@@ -76,6 +86,42 @@ html.theme-page-slide .page-slide-ghost .page-slide-placeholder-frame {
 @keyframes page-slide-drop {
   to {
     translate: 0 100vh;
+  }
+}
+
+/* Departing dimmed overlays: the dark level fades in step with the
+   departing windows (slide-off on dismissal, page fold on navigation);
+   ride clones keep the fade going even when the portals unmount
+   mid-animation. */
+.maximized-backdrop.page-slide-backdrop-close,
+.page-slide-backdrop-ride {
+  pointer-events: none;
+  animation: page-slide-backdrop-fade 180ms ease-out forwards;
+}
+
+@keyframes page-slide-backdrop-fade {
+  to {
+    opacity: 0;
+  }
+}
+
+/* Departing exit on a minimized window / closing maximized window:
+   Window.tsx adds .window-minimize and measures --page-fold-dy to the
+   taskbar line exactly like the ghost clone above. The squash glitched
+   on windows whose content collapses beneath the animation, so the
+   window simply departs below the bottom edge instead. */
+/* Departing exit on a closing maximized window: Window.tsx adds
+   .window-minimize to the ride-out clone and measures --page-fold-dy to
+   the taskbar line exactly like the ghost clone above. The !important
+   outranks theme animations (theme-experimental-flash on maximized
+   experimental windows would otherwise replace the slide). */
+html.theme-page-slide .window.window-minimize {
+  animation: window-minimize-exit 180ms ease-in forwards !important;
+}
+
+@keyframes window-minimize-exit {
+  to {
+    translate: 0 calc(100% + var(--page-fold-dy, 0px));
   }
 }
 

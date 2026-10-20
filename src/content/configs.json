@@ -6,7 +6,6 @@
       "heading": "Linux Configs",
       "content": [
         "My Linux setup files — a window-manager configuration based on herbstluftwm, documented in the doftiles project.",
-        "[doftiles project](/projects/doftiles)",
         "[github.com/akinevz2/doftiles](https://github.com/akinevz2/doftiles)",
         {
           "heading": "Gallery",
@@ -22,7 +21,12 @@
       "link": "/projects/doftiles"
     },
     {
-      "heading": "Wow Configs",
+      "heading": "WoW Configs",
+      "content": [
+        "My World of Warcraft configuration files — the window layout of Rueg's UI, the Simple WoW UI Pack, running wow classic.",
+        "[everything world of warcraft](/wow)",
+        { "include": "characters" }
+      ],
       "link": "/wow"
     }
   ]

@@ -23,13 +23,18 @@ export function OkButton({
       return;
     }
     const { link } = node;
+    // OK revealing a section no longer rewrites the hash — the hash follows
+    // the maximized window (Window.tsx) and off-site departures only.
     if (!link) {
       expand(node.id);
-      history.replaceState(null, "", `#${node.id}`);
       return;
     }
     if (/^https?:/.test(link) || node.externalLink || /\.\w+$/.test(link)) {
+      // Leaving the site: bookmark this window into the hash first, so a
+      // return visit (via back or the external page) lands back on the
+      // last revealed maximized section.
       remember(node.id);
+      history.replaceState(null, "", `#${node.id}`);
       window.location.assign(link);
     } else {
       navigate(link);

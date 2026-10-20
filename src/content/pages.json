@@ -37,10 +37,19 @@
   },
   {
     "path": "/wow",
-    "menuLabel": "wow addons",
+    "menuLabel": "wow & addons",
     "title": "everything world of warcraft",
     "description": "my addons and configurations for wow classic",
     "page": "WowPage"
+  },
+  {
+    "path": "/addons",
+    "title": "wow addons",
+    "description": "short-hand redirect to the world of warcraft page",
+    "page": "AddonsPage",
+    "alias": "/wow#addons",
+    "menu": false,
+    "hidden": true
   },
   {
     "path": "/music",

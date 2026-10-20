@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { createPortal } from "react-dom";
+import { useEffect, useRef } from "react";
 import { playLayeredAudio } from "@/lib/audio";
 import { getClippyState } from "@/lib/clippy";
 import { Md } from "@/lib/markdown";
@@ -63,6 +62,13 @@ function PermalinkButton({ node }: { node: WindowNode }) {
   return <button onClick={onClick}>Permalink</button>;
 }
 
+/** The maximized rail's dismiss button for linked windows: Cancel closes
+ * the fullscreen view without touching OK's link (the dialog OK/Cancel
+ * pair — OK confirms through the link, Cancel backs out). */
+function CancelButton({ onClose }: { onClose: () => void }) {
+  return <button onClick={onClose}>Cancel</button>;
+}
+
 function Body({
   node,
   expanded,
@@ -97,16 +103,19 @@ function Body({
   );
 
   // Maximized: the rail sits BELOW the content in normal flow — content on
-  // top, then OK + Permalink. margin-top: auto only pushes the rail to the
-  // bottom edge when the window is taller than its content, so nothing ever
-  // scrolls underneath it. OK keeps its regular function (navigate when
-  // linked) and closes the fullscreen view otherwise (via onOk).
+  // top, then OK (+ Cancel for linked windows) + Permalink. Dialog rules:
+  // OK keeps its native meaning — follow the link on linked windows,
+  // dismiss on link-less ones — while Cancel is the explicit dismiss
+  // affordance that leaves the link untouched. margin-top: auto only
+  // pushes the rail to the bottom edge when the window is taller than
+  // its content, so nothing ever scrolls underneath it.
   if (maximized) {
     return (
       <div className="maximized-content-col">
         {content}
         <div className="ok-row ok-row-bottom">
           <OkButton node={node} onOk={node.link ? undefined : onOk} />
+          {node.link && onOk && <CancelButton onClose={onOk} />}
           <PermalinkButton node={node} />
         </div>
       </div>
@@ -139,11 +148,69 @@ export function Window({ node }: { node: WindowNode }) {
   const leaves = node.depth === 0 && onLeave;
   const flags = flagsOf(node.id);
   const maximized = Boolean(flags.maximized);
+  const windowRef = useRef<HTMLDivElement | null>(null);
 
-  /** Exiting the fullscreen view: click sound + restore into the page. */
-  const exitFullscreen = () => {
-    playLayeredAudio(MINIMIZE_SOUND);
+  /** Hand the URL hash to the topmost remaining maximized window after a
+   * dismissal, or clear it entirely when none remain (so a refresh lands
+   * on the plain page instead of a stale maximized anchor). DOM order is
+   * the topmost truth; ride-out clones are excluded or the dismissed
+   * window would re-anchor the hash to itself. */
+  const settleHashAfterDismiss = () => {
+    const mine = windowRef.current?.closest(".maximized-backdrop");
+    const remaining = [
+      ...document.querySelectorAll<HTMLElement>(
+        ".maximized-backdrop[data-window-id]",
+      ),
+    ].filter(
+      (candidate) =>
+        candidate !== mine &&
+        !candidate.classList.contains("page-slide-backdrop-ride"),
+    );
+    const topId = remaining[remaining.length - 1]?.dataset.windowId;
+    history.replaceState(
+      history.state,
+      "",
+      topId ? `#${topId}` : `${location.pathname}${location.search}`,
+    );
+  };
+
+  /** Maximized dismissal: the window is already IN the page tree, so the
+   * patch restores it to its flow slot on this very commit (no re-adopt,
+   * no content flash) while static clones — the dimmed layer fading, the
+   * window sliding below the bottom edge — ride the exit out on top. */
+  const dismissMaximized = () => {
+    const backdrop = windowRef.current?.closest(".maximized-backdrop");
+    const popped = windowRef.current;
+    if (backdrop && popped) {
+      const ridingBackdrop = backdrop.cloneNode(true) as HTMLElement;
+      ridingBackdrop.classList.add("page-slide-backdrop-ride");
+      ridingBackdrop.removeAttribute("data-window-id");
+      ridingBackdrop.setAttribute("inert", "");
+      document.body.appendChild(ridingBackdrop);
+      const ridingWindow = popped.cloneNode(true) as HTMLElement;
+      ridingWindow.setAttribute("inert", "");
+      ridingWindow.classList.add("window-minimize");
+      const rect = popped.getBoundingClientRect();
+      ridingWindow.style.setProperty(
+        "--page-fold-dy",
+        `${Math.max(0, Math.round(window.innerHeight - rect.bottom))}px`,
+      );
+      document.body.appendChild(ridingWindow);
+      window.setTimeout(() => {
+        ridingBackdrop.remove();
+        ridingWindow.remove();
+      }, 400);
+      settleHashAfterDismiss();
+    }
     patch(node.id, { maximized: false });
+  };
+
+  /** Exiting the fullscreen view: click sound + the slide-out ride +
+   * restore into the page flow. silent=true keeps the Click.ogg for the
+   * title bar / Escape only — out-of-bounds and OK dismissals are quiet. */
+  const exitFullscreen = (silent = false) => {
+    if (!silent) playLayeredAudio(MINIMIZE_SOUND);
+    dismissMaximized();
   };
 
   useEffect(() => {
@@ -188,8 +255,16 @@ export function Window({ node }: { node: WindowNode }) {
       exitFullscreen();
       return;
     }
-    if (leaves) leaves();
-    else patch(node.id, { expanded: false, maximized: false });
+    if (leaves) {
+      // Navigation is the fold here: pageSlide animates every departing
+      // window (and plays the minimize click). Don't fold twice.
+      leaves();
+      return;
+    }
+    // Inline windows collapse to their title bar — no depart animation
+    // (the slide-off is for maximized dismissals and page exits only).
+    playLayeredAudio(MINIMIZE_SOUND);
+    patch(node.id, { expanded: false, maximized: false });
   };
 
   const close = () => {
@@ -206,8 +281,9 @@ export function Window({ node }: { node: WindowNode }) {
     if (funnyClose) return;
     if (!refused) {
       if (maximized) {
-        // ✕ from fullscreen: restore into the page (the kick already ran).
-        patch(node.id, { maximized: false });
+        // ✕ from fullscreen: the kick already ran, no minimize click —
+        // slide out via the ride clone and restore into the page flow.
+        dismissMaximized();
         return;
       }
       // Easter egg: while Clippy is on screen, ✕ parks the window instead
@@ -225,6 +301,7 @@ export function Window({ node }: { node: WindowNode }) {
 
   const window_ = (
     <div
+      ref={windowRef}
       id={maximized ? undefined : node.id}
       className={[
         "window",
@@ -240,7 +317,18 @@ export function Window({ node }: { node: WindowNode }) {
         node={node}
         maximized={maximized}
         onMinimize={minimize}
-        onMaximize={() => patch(node.id, { maximized: !maximized })}
+        onMaximize={() => {
+          if (!maximized) {
+            // Entering fullscreen: the hash anchors the maximized window so
+            // a refresh lands back on the revealed section. replaceState is
+            // untouched by the pageSlide pushState patch — no transition.
+            history.replaceState(null, "", `#${node.id}`);
+            patch(node.id, { maximized: true });
+            return;
+          }
+          // Restore button: slide-out dismissal (silent) + hash hand-off.
+          dismissMaximized();
+        }}
         onClose={close}
       />
       {!flags.minimized && (
@@ -251,23 +339,33 @@ export function Window({ node }: { node: WindowNode }) {
             node={node}
             expanded={expanded}
             maximized={maximized}
-            // OK restores the window into the page when it has no link to
-            // follow; linked windows keep their navigate-on-OK behaviour.
-            // Deliberately silent: the minimize click (Click.ogg) is for the
-            // title bar / Escape paths only.
-            onOk={
-              maximized ? () => patch(node.id, { maximized: false }) : undefined
-            }
+            // OK is the dismiss affordance in fullscreen (silent close —
+            // Click.ogg stays with the title bar / Escape / backdrop),
+            // playing the same departing fold before the page restore.
+            onOk={maximized ? () => exitFullscreen(true) : undefined}
           />
         </div>
       )}
     </div>
   );
 
-  return maximized
-    ? createPortal(
-        <div className="maximized-backdrop">{window_}</div>,
-        document.body,
-      )
-    : window_;
+  // The maximized window stays where it is in the tree: the dimmed layer
+  // renders as a sibling and the window itself is lifted by fixed
+  // positioning (see .window.maximized) — nothing is portaled away, so
+  // permalinks, scroll targets and the element tree keep their window.
+  if (maximized) {
+    return (
+      <>
+        <div
+          className="maximized-backdrop"
+          data-window-id={node.id}
+          // Every click lands on the dimmed layer (the window floats
+          // above it): out-of-bounds dismissal, silent by rule.
+          onClick={() => exitFullscreen(true)}
+        />
+        {window_}
+      </>
+    );
+  }
+  return window_;
 }

@@ -102,7 +102,7 @@ function DownloadForm() {
 
 export const WowPage = () => (
   <>
+    <PageWindows content={[addons, characters]} />
     <DownloadForm />
-    <PageWindows content={[characters, addons]} />
   </>
 );

@@ -10,12 +10,21 @@ export type Embed = {
   provider?: "soundcloud";
 };
 
+/**
+ * A content-file include directive: `{"include": "<name>"}` expands, at
+ * load time (src/content/index.ts), into the referenced content file's
+ * top-level Section as a nested child — JSON cannot import, so this is
+ * the "include" mechanism for reusing a section across pages.
+ */
+export type IncludeRef = { include: string };
+
 /** A clickable image tile with caption lines (artist profile headers). */
 export type Banner = {
   banner: { image: string; href: string; lines: string[] };
 };
 
-export type Item = string | Section | Embed | Banner | ReactElement;
+export type Item =
+  string | Section | Embed | Banner | IncludeRef | ReactElement;
 
 /** A window as written in the JSON content files. */
 export type Section = {

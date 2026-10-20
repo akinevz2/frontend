@@ -392,8 +392,7 @@ form#form > label {
 
 /* In a maximized "centered" window the content hugs the bottom left corner
    and grows upward and rightward as the space allows. */
-.maximized-backdrop
-  > .window.maximized[data-theme~="centered"]
+.window.maximized[data-theme~="centered"]
   > .maximized-window-body
   > ul {
   display: flex;
@@ -401,8 +400,7 @@ form#form > label {
   justify-content: flex-end;
 }
 
-.maximized-backdrop
-  > .window.maximized[data-theme~="centered"]
+.window.maximized[data-theme~="centered"]
   > .maximized-window-body
   > ul
   > li {

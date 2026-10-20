@@ -7,45 +7,46 @@
       "heading": "Rueg WeakAuras — class aura sets",
       "content": [
         {
-          "heading": "Rogue (v5.0.1)",
+          "heading": "Rogue (v5.0.5)",
           "content": "Weak Aura tracker for GCD, energy tickrate, and range",
           "status": "available",
           "link": "/addons/rueg-wa-rueg.txt"
         },
         {
-          "heading": "Mage (v3.0.0)",
+          "heading": "Mage (v5.0.5)",
           "content": "Weak Aura tracker for GCD, energy tickrate, and range",
           "status": "available",
           "link": "/addons/rueg-wa-mage.txt"
         },
         {
-          "heading": "Priest (v5.0.1)",
+          "heading": "Priest (v5.0.5)",
           "content": "Weak Aura tracker for GCD, mana tickrate, and range",
           "status": "available",
           "link": "/addons/rueg-wa-priest.txt"
         },
         {
-          "heading": "Warrior (v2.3.1)",
+          "heading": "Warrior (v5.0.5)",
           "content": "Weak Aura tracker for GCD, rage starvation, and range",
           "status": "available",
           "link": "/addons/rage-volley.txt"
         },
         {
-          "heading": "Druid (v5.0.0)",
+          "heading": "Druid (v5.0.5)",
           "content": "Weak Aura tracker for swing, energy recharge, and range",
           "status": "available",
           "link": "/addons/rueg-wa-druid.txt"
         },
         {
-          "heading": "Shaman (v5.0.1)",
+          "heading": "Shaman (v5.0.5)",
           "content": "Weak Aura tracker for swing, energy recharge, and range",
           "status": "available",
           "link": "/addons/rueg-wa-shaman.txt"
         },
         {
-          "heading": "Paladin (coming soon)",
+          "heading": "Paladin (v5.0.5)",
           "content": "Weak Aura tracker for GCD, mana starvation, and range",
-          "status": "coming soon"
+          "status": "available",
+          "link": "/addons/rueg-wa-paladin.txt"
         }
       ]
     },
@@ -83,21 +84,16 @@
       "content": [
         {
           "heading": "Rueg Distributable Config (dist.7z)",
-          "content": "Full distributable World of Warcraft configuration archive — addons, WeakAuras, and profiles, packaged for easy install.",
-          "status": "available",
-          "link": "/dist.7z"
+          "content": "See bottom of this page.",
+          "status": "available"
         },
         {
-          "heading": "addons config to play like Rueg",
+          "heading": "addons list",
           "content": [
             "![addons1](/images/addons11.png)",
             "![addons1](/images/addons12.png)"
           ],
-          "status": "available (and supports easy hypelinking)"
-        },
-        {
-          "heading": "more addons coming after I finish my work",
-          "link": "https://akinevz.dev/"
+          "status": "available"
         }
       ]
     }
