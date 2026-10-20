@@ -1,12 +1,15 @@
 {
   "slug": "development",
   "title": "development",
-  "description": "Home repository of akinevz.com.",
+  "description": "My main submodules repository.",
   "github": "https://github.com/akinevz2/development",
   "content": {
     "heading": "development",
     "content": [
-      "Home repository of akinevz.com.",
+      "My master repository where I develop software.",
+      "It contains various projects and configurations that power my personal website.",
+      "I work inside a WSL Ubuntu environment, with the development repository mounted as a devcontainer.",
+      "",
       "[https://github.com/akinevz2/development](https://github.com/akinevz2/development)"
     ]
   }

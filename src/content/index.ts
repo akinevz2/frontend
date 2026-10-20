@@ -3,6 +3,7 @@ import pagesJson from "./pages.json";
 import sectionsJson from "./sections.json";
 import contactsJson from "./contacts.json";
 import addonsJson from "./addons.json";
+import configsJson from "./configs.json";
 import charactersJson from "./characters.json";
 import blogJson from "./blog.json";
 import soundcloudJson from "./soundcloud.json";
@@ -36,6 +37,7 @@ export const routes: Route[] = [
 export const sections = sectionsJson as Section;
 export const contacts = contactsJson as Section;
 export const addons = addonsJson as Section;
+export const configs = configsJson as Section;
 export const characters = charactersJson as Section;
 export const blog = blogJson as Section;
 export const soundcloud = soundcloudJson as SoundCloudData;

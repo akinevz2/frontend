@@ -4,6 +4,7 @@ import { PageWindows } from "@/window";
 const projectWindow = (project: (typeof projects)[number]): Section => ({
   heading: project.title,
   theme: "open",
+  link: projectPath(project),
   content: [
     project.description,
     `[Project page](${projectPath(project)}) · [GitHub](${project.github})`,

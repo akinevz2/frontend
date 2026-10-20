@@ -7,22 +7,6 @@
     "page": "HomePage"
   },
   {
-    "path": "/resume",
-    "menuLabel": "resume",
-    "title": "please hire kine",
-    "description": "kine would like you to see his resume!",
-    "page": "ResumePage",
-    "menu": false
-  },
-  {
-    "path": "/addons",
-    "menuLabel": "addons",
-    "title": "wow addons",
-    "description": "Download World of Warcraft configuration files",
-    "page": "AddonsPage",
-    "menu": "onlyHere"
-  },
-  {
     "path": "/sitemap",
     "menuLabel": "sitemap",
     "title": "sitemap of kine's website",
@@ -32,30 +16,37 @@
   },
   {
     "path": "/contact",
-    "menuLabel": "links",
-    "title": "please contact kine",
-    "description": "contact me!",
+    "menuLabel": "contact",
+    "title": "contact page of kine",
+    "description": "where to find me online",
     "page": "ContactPage"
   },
   {
-    "path": "/wow",
+    "path": "/configs",
     "menuLabel": "configs",
-    "title": "kind of work kine likes",
-    "description": "hire me!",
-    "page": "WowPage"
+    "title": "configs files from kine",
+    "description": "where you can find my configuration files",
+    "page": "ConfigsPage"
   },
   {
     "path": "/projects",
     "menuLabel": "projects",
     "title": "projects by kine",
-    "description": "things kine has built, with links to their code",
+    "description": "links to my projects, with links to their code",
     "page": "ProjectsPage"
+  },
+  {
+    "path": "/wow",
+    "menuLabel": "wow addons",
+    "title": "everything world of warcraft",
+    "description": "my addons and configurations for wow classic",
+    "page": "AddonsPage"
   },
   {
     "path": "/music",
     "menuLabel": "music",
-    "title": "glitchbox tracks",
-    "description": "my featured uploads from SoundCloud",
+    "title": "glitchbox by kine",
+    "description": "my music collection, including tracks from my project",
     "page": "MusicPage"
   },
   {
@@ -64,6 +55,13 @@
     "title": "blog of kine",
     "description": "posts and notes from kine",
     "page": "BlogPage"
+  },
+  {
+    "path": "/resume",
+    "menuLabel": "resume",
+    "title": "please hire kine",
+    "description": "kine would like you to see his resume!",
+    "page": "ResumePage"
   },
   {
     "path": "/404",

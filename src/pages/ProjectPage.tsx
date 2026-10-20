@@ -11,16 +11,12 @@ export const ProjectPage = () => {
   const path = normalizePath(useLocation().pathname);
   const project = projects.find((p) => projectPath(p) === path);
   if (!project) return null;
-  const back = () => navigate("/projects");
-  const backRow = (
-    <div className="back-row">
-      <button onClick={back}>Back</button>
-    </div>
-  );
   const content = {
     theme: "open" as const,
     ...project.content,
-    content: [backRow, ...toItems(project.content.content)],
+    content: toItems(project.content.content),
   };
-  return <PageWindows content={content} onLeave={back} />;
+  return (
+    <PageWindows content={content} onLeave={() => navigate("/projects")} />
+  );
 };

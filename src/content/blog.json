@@ -66,14 +66,14 @@
       "theme": "open",
       "content": [
         "Packed up the full Rueg configuration into a distributable archive — addons, WeakAuras, and profiles in one drop.",
-        "Grab it from the [addons page](/addons) or click below.",
+        "Grab it from the [download page](/wow#download) or the [addons page](/addons).",
         "I had a bad copy of the zip stuck in website cache:",
         "If you downloaded an archive with 2 folders",
         "Delete it, the correct dist.7z should have 3",
         "You can skip copying WTF/ and just copy interface",
         {
-          "heading": "Big Download Button",
-          "link": "/dist.7z"
+          "heading": "Open the download page",
+          "link": "/wow#download"
         }
       ]
     },

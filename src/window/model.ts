@@ -74,10 +74,13 @@ function buildNode(section: Section, id: string, depth: number): WindowNode {
   };
 }
 
-/** Normalises JSON content into window trees; roots are numbered 0, 1, ... */
+/** Normalises JSON content into window trees; roots are numbered 0, 1, ...
+ * (unless the section declares its own anchor id). */
 export function buildWindows(content: Section | Section[]): WindowNode[] {
   const roots = Array.isArray(content) ? content : [content];
-  return roots.map((section, index) => buildNode(section, String(index), 0));
+  return roots.map((section, index) =>
+    buildNode(section, section.anchor ?? String(index), 0),
+  );
 }
 
 export function flatten(nodes: WindowNode[]): WindowNode[] {

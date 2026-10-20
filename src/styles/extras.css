@@ -18,16 +18,15 @@
   inset: 0;
   z-index: 2000;
   background: rgba(0, 0, 0, 0.6);
+  /* The dimmed layer itself is the scroll surface: a maximized window
+     taller than the viewport scrolls as a whole (title bar and all)
+     instead of scrolling its interior. */
+  overflow-y: auto;
   display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.maximized-backdrop > .window {
-  width: min(96vw, 1100px);
-  max-height: 92vh;
-  display: flex;
-  flex-direction: column;
+  /* The window docks top-left; margin: auto on it centers it whenever it
+     fits, and lets it pin to the top edge when it overflows. */
+  align-items: flex-start;
+  justify-content: flex-start;
 }
 
 .artist-background {
@@ -67,23 +66,63 @@
   margin-bottom: 0;
 }
 
-/* Sits at the top right of the maximized window, on the first line of content. */
-.permalink-button-container {
-  align-self: flex-end;
-  margin-bottom: 0.25em;
+/* Maximized window column: content grows from the top; the OK + Permalink
+   rail comes after it in normal flow. margin-top: auto pushes the rail to
+   the bottom edge only when the window is taller than its content, so
+   content never scrolls underneath the buttons. */
+.maximized-content-col {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.maximized-content-col > .ok-row {
+  flex: 0 0 auto;
+  margin-top: auto;
+  justify-content: flex-end;
+  gap: 0.5em;
+  /* Same separation from the content as the window body's own padding. */
+  padding-top: 8px;
+}
+
+/* Both rail buttons cluster on the right; no auto-margin split between
+   them (the base .ok-row > button rule is superseded here). */
+.maximized-content-col > .ok-row > button {
+  margin-left: 0;
 }
 
 .maximized-backdrop > .window.maximized {
-  height: 100vh;
-  width: 100vw;
-  margin: 0;
+  /* Desktop maximize = a foreground modal, not a fullscreen takeover:
+     centered (margin: auto), hugging its content — shrink-wrapped width
+     with an 800px floor (narrow content must not become a sliver) and a
+     96vw cap. Content taller than the viewport extends past the backdrop
+     edge and the dimmed layer scrolls the window as one piece — no inner
+     scrolling. */
+  margin: auto;
+  width: max-content;
+  max-width: 96vw;
+  min-width: min(800px, 96vw);
+  height: auto;
+  /* Override the base .window.maximized min sizes, or the window stays at
+     full viewport size. */
+  min-height: 0;
   box-sizing: border-box;
   max-height: none;
   display: flex;
   flex-direction: column;
 }
 
+/* Leaf windows (no nested section nodes) size purely to their inner content
+   on maximize — no 800px floor below. */
+.maximized-backdrop > .window.maximized.content-size {
+  min-width: 0;
+}
+
 .maximized-backdrop > .window.maximized > .window-body {
+  /* Drop the 8px XP window-body margin so the scrollbar hugs the window
+     frame; the inset moves to padding, which scrollbars do not overlap. */
+  margin: 0;
+  padding: 8px;
   flex: 1 1 auto;
   min-height: 0;
   overflow: auto;
@@ -124,6 +163,10 @@ body:has(.maximized-backdrop) .debug-bar {
 }
 
 .title-bar-controls button[aria-label="Restore"] {
+  /* Match the Maximize button's gap (the 98 theme only gaps Close, so the
+     maximized triplet Minimize/Restore/Close would lose the Minimize to
+     Restore spacing). */
+  margin-left: 2px;
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='8' height='9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23000' d='M2 0h6v6H7V5H7V1H2zM0 3h6v6H0zm1 2v3h4V5z' fill-rule='evenodd'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: top 2px left 3px;
@@ -135,10 +178,13 @@ body:has(.maximized-backdrop) .debug-bar {
   bottom: 1rem;
   z-index: 10000;
   display: flex;
-  flex-direction: column;
+  /* Speech bubble sits BESIDE the avatar, bottom-aligned. */
+  flex-direction: row;
   align-items: flex-end;
   gap: 0.4rem;
-  animation: clippy-enter 600ms ease-out;
+  /* No persistent animation here: base animations restart whenever the
+     class list changes, which made every reposition dip and glide. The
+     arrival bob is an explicit .clippy-arrive class instead. */
 }
 
 .clippy-image {
@@ -147,6 +193,85 @@ body:has(.maximized-backdrop) .debug-bar {
   height: auto;
   cursor: pointer;
   filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4));
+  /* Pointer dragging needs raw touch events; page scrolling must not steal. */
+  touch-action: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Corner anchoring: br is the default; the other three mirror it. */
+.clippy[data-corner="br"] {
+  left: auto;
+  top: auto;
+  right: 1rem;
+  bottom: 1rem;
+}
+
+.clippy[data-corner="bl"] {
+  left: 1rem;
+  top: auto;
+  right: auto;
+  bottom: 1rem;
+  /* Avatar hugs the left edge; the bubble lands on its right side. */
+  flex-direction: row-reverse;
+}
+
+.clippy[data-corner="tl"] {
+  left: 1rem;
+  top: 1rem;
+  right: auto;
+  bottom: auto;
+  flex-direction: row-reverse;
+  align-items: flex-start;
+}
+
+.clippy[data-corner="tr"] {
+  left: auto;
+  top: 1rem;
+  right: 1rem;
+  bottom: auto;
+  align-items: flex-start;
+}
+
+/* Bubbles beside the avatar point at it horizontally. */
+.clippy[data-corner="br"] .clippy-bubble::after,
+.clippy[data-corner="tr"] .clippy-bubble::after {
+  top: 50%;
+  bottom: auto;
+  left: auto;
+  right: -8px;
+  translate: 0 -50%;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-left: 8px solid #aaa;
+  border-right: none;
+}
+
+.clippy[data-corner="bl"] .clippy-bubble::after,
+.clippy[data-corner="tl"] .clippy-bubble::after {
+  top: 50%;
+  bottom: auto;
+  right: auto;
+  left: -8px;
+  translate: 0 -50%;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-right: 8px solid #aaa;
+  border-left: none;
+}
+
+/* Reposition bob: Clippy rises into place like in its arrive animation
+   (fade + upward glide). Applied by the component during repositioning
+   only, so clicks can't re-trigger it. */
+.clippy-arrive {
+  animation: clippy-bob 600ms ease-out;
+}
+
+@keyframes clippy-bob {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
 }
 
 .clippy-bubble {
@@ -171,13 +296,6 @@ body:has(.maximized-backdrop) .debug-bar {
   border-left: 8px solid transparent;
 }
 
-@keyframes clippy-enter {
-  from {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-}
-
 body.feef69-page {
   min-height: 100vh;
   height: 100vh;
@@ -191,25 +309,37 @@ main.feef69-page {
   background: #feef69;
 }
 
+/* The unhide bubble: shell keeps the .clippy-bubble chrome (incl. its
+   outside tail*); the list scrolls inside it. The cap lives on the shell
+   so long headings can't push the mascot (or itself) off screen —
+   row-reverse corners extend the row to the right, into the viewport edge. */
+.clippy-unhide-bubble {
+  box-sizing: border-box;
+  width: min(12rem, 45vw);
+}
+
 .clippy-unhide {
   list-style: none;
-  margin: 0 0 8px;
+  margin: 0;
   padding: 6px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+/* Defensive: the inner list owns no chrome, so it must carry no tail. */
+.clippy-unhide::after {
+  display: none;
 }
 
 .clippy-unhide button {
   display: block;
   width: 100%;
   margin: 2px 0;
+  word-break: break-word;
 }
 
 /* Inline image sizes in content must not exceed the window body. */
 .window-body img {
   max-width: 100% !important;
   object-fit: contain;
-}
-
-.back-row {
-  display: flex;
-  justify-content: flex-end;
 }

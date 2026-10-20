@@ -51,6 +51,9 @@ body:has([data-debug-bar]) .page {
 
   body {
     max-width: 100vw;
+    /* The menu bar is sticky/in-flow on mobile — only the trailer tail needs
+       reserving; the bar's own height is occupied by normal document flow. */
+    padding-top: 0;
   }
 
   main {
@@ -78,32 +81,18 @@ body:has([data-debug-bar]) .page {
     max-width: 100%;
   }
 
-  /* Mobile-friendly menu bar */
+  /* Mobile menu bar: sits in the flow (sticky) so its height grows with
+     wrapped rows instead of reserving a fixed one-line height. */
   .menu-bar {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
-    scrollbar-color: #888 #f0f0f0;
+    position: sticky;
+    top: 0;
+    overflow-x: visible;
   }
 
-  /* Hide scrollbar for cleaner look but keep functionality */
-  .menu-bar::-webkit-scrollbar {
-    height: 3px;
-  }
-
-  .menu-bar::-webkit-scrollbar-track {
-    background: #f0f0f0;
-  }
-
-  .menu-bar::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 2px;
-  }
-
+  /* Wrap to the next line when the items overflow — no horizontal scroll. */
   .menu-bar menu {
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     justify-content: flex-start;
-    min-width: min-content;
   }
 
   .menu-bar menu a {
@@ -116,6 +105,49 @@ body:has([data-debug-bar]) .page {
   .menu-bar menu li {
     display: flex;
     align-items: center;
+  }
+
+  /* Permalink scrolling: the wrapped menu bar can reach ~2 rows on mobile,
+     so leave a bit more headroom than the desktop one-line bar needs. */
+  .window {
+    scroll-margin-top: calc(2 * var(--menu-bar-height) + 1em);
+  }
+
+  /* Fullscreened windows fill the viewport edge-to-edge: no side margins,
+     no window-body padding — exactly 100vw x 100dvh. The body prefix
+     outranks the desktop maximized rules in extras.css, which load later
+     with equal specificity. dvh (with vh fallback) tracks the *visible*
+     viewport, so the Android Firefox/Chrome navigation bar cannot hide the
+     window's top edge underneath it. */
+  body .maximized-backdrop > .window.maximized {
+    margin: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  body
+    .maximized-backdrop
+    > .window.maximized
+    > .window-body,
+  body
+    .maximized-backdrop
+    > .window.maximized
+    > .maximized-window-body {
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Leaf windows (no nested sections) keep their natural size on maximize
+     instead of ballooning to the viewport; margin: auto centers them in
+     the dimmed layer. */
+  body .maximized-backdrop > .window.maximized.content-size {
+    margin: auto;
+    width: min(100vw, 1100px);
+    height: auto;
+    max-height: 100dvh;
   }
 
   /* Give the unhide button a visible chinbar on mobile so it isn't

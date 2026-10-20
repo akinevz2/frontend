@@ -10,38 +10,43 @@ import "./pageSlide.css";
 const CLASS = "theme-page-slide";
 const ATTRIBUTE = "data-page-slide";
 const DURATION_MS = 400;
+/** Total fold duration (windows squash into the taskbar line). */
+const MINIMIZE_MS = 98;
+/** After the minimise beat, the page drops out of the bottom in one stroke. */
+const DROP_DURATION_MS = 180;
+const REMOVAL_MS = MINIMIZE_MS + DROP_DURATION_MS + 200;
 const VARIABLES = [
   "--ps-duration",
+  "--ps-minimize",
+  "--ps-drop-delay",
+  "--ps-drop-dur",
   "--ps-in-x",
   "--ps-in-y",
-  "--ps-out-x",
-  "--ps-out-y",
   "--ps-pad-from",
 ];
 
-/** Where the new page starts and the old one ends, per direction. */
+/** Where the new page starts, per direction. */
 const slide = (
   name: string,
   inX: string,
   inY: string,
-  outX: string,
-  outY: string,
 ): ThemeDefinition => ({
   className: CLASS,
   attributes: { [ATTRIBUTE]: name },
   variables: {
     "--ps-duration": `${DURATION_MS}ms`,
+    "--ps-minimize": `${MINIMIZE_MS}ms`,
+    "--ps-drop-delay": `${MINIMIZE_MS}ms`,
+    "--ps-drop-dur": `${DROP_DURATION_MS}ms`,
     "--ps-in-x": inX,
     "--ps-in-y": inY,
-    "--ps-out-x": outX,
-    "--ps-out-y": outY,
   },
 });
 
 const themes: Record<Direction, ThemeDefinition> = {
-  right: slide("right", "100vw", "0", "-100vw", "0"),
-  left: slide("left", "-100vw", "0", "100vw", "0"),
-  down: slide("down", "0", "-100vh", "0", "100vh"),
+  right: slide("right", "100vw", "0"),
+  left: slide("left", "-100vw", "0"),
+  down: slide("down", "0", "-100vh"),
 };
 
 const root = () => document.documentElement;
@@ -59,11 +64,18 @@ const menuOrder = () =>
     (a) => new URL(a.href).pathname,
   );
 
-/** Static copy of the outgoing page that slides off the screen. */
+/** Static copy of the outgoing page: windows minimise into their title bars,
+ * then the whole page drops out of the bottom in one fast stroke. */
 function leaveGhost(): void {
   root().style.removeProperty("--ps-pad-from");
   const main = document.querySelector("main");
   if (!main) return;
+  // Measure the LIVE layout first — the detached clone reports zero-size
+  // boxes, which is what used to blank the placeholders and collapse
+  // windows instantly. querySelectorAll order is stable across cloneNode.
+  const liveMedias = [...main.querySelectorAll("iframe, audio, video")];
+  const mediaBoxes = liveMedias.map((el) => el.getBoundingClientRect());
+
   const rect = main.getBoundingClientRect();
   const ghost = main.cloneNode(true) as HTMLElement;
   ghost.classList.add("page-slide-ghost");
@@ -84,11 +96,31 @@ function leaveGhost(): void {
     root().style.setProperty("--ps-pad-from", padding);
   }
   ghost.removeAttribute("id");
-  ghost.querySelectorAll("iframe, audio, video").forEach((el) => {
-    const box = el.getBoundingClientRect();
+  ghost.querySelectorAll("iframe, audio, video").forEach((el, i) => {
+    const box = mediaBoxes[i];
+    if (!box) return;
     const placeholder = document.createElement("div");
+    // Media can't be cloned into the static ghost; placeholders only carry
+    // the layout box, with the document-paper look for iframes.
+    placeholder.className =
+      liveMedias[i]?.tagName === "IFRAME"
+        ? "page-slide-placeholder page-slide-placeholder-frame"
+        : "page-slide-placeholder";
     placeholder.style.cssText = `width:${box.width}px;height:${box.height}px`;
     el.replaceWith(placeholder);
+  });
+  // XP-style minimise: each top-level window folds down onto the taskbar
+  // line — the bottom edge of the page — sucked toward it while shrinking.
+  // The fold distance is measured per window; CSS does the squash.
+  const taskbarLine = window.innerHeight;
+  ghost.querySelectorAll<HTMLElement>(".page > .window").forEach((win, i) => {
+    const liveWin = main.querySelectorAll(".page > .window")[i];
+    if (!liveWin) return;
+    const dy = Math.max(
+      0,
+      taskbarLine - liveWin.getBoundingClientRect().bottom,
+    );
+    win.style.setProperty("--page-fold-dy", `${Math.round(dy)}px`);
   });
   document.body.appendChild(ghost);
   document.querySelectorAll<HTMLElement>("body > .debug-bar").forEach((bar) => {
@@ -97,32 +129,59 @@ function leaveGhost(): void {
     // Layout rules key off this attribute; the clone must not keep them alive.
     leaving.removeAttribute("data-debug-bar");
     document.body.appendChild(leaving);
-    window.setTimeout(() => leaving.remove(), DURATION_MS + 200);
+    window.setTimeout(() => leaving.remove(), REMOVAL_MS);
   });
-  const remove = () => ghost.remove();
+  const remove = (event?: Event) => {
+    // Child windows bubbling their minimise-end must NOT retire the ghost —
+    // wait for the drop animation on the ghost itself, or the timeout.
+    if (
+      event &&
+      !(
+        event.target === ghost &&
+        (event as AnimationEvent).animationName === "page-slide-drop"
+      )
+    )
+      return;
+    ghost.remove();
+  };
   ghost.addEventListener("animationend", remove);
-  window.setTimeout(remove, DURATION_MS + 200);
-}
-
-/** Restarts the CSS animation on the persistent <main> element. */
-function arriveMain(): void {
-  const main = document.querySelector("main");
-  if (!main) return;
-  main.style.animation = "none";
-  void main.offsetWidth;
-  main.style.animation = "";
+  window.setTimeout(() => remove(), REMOVAL_MS);
 }
 
 let current = "";
 let originalPushState: History["pushState"] | null = null;
 
+/** On mobile screens the appearing page always slides straight down
+ * (from above) — the side-by-side menu-order metaphor doesn't read on
+ * a narrow, wrapped menu. Matches the layout.css 768px breakpoint. */
+const isMobileLayout = () =>
+  window.matchMedia("(max-width: 768px)").matches;
+
 function transition(to: string): void {
   if (to === current) return;
-  const direction = resolveDirection(current, to, menuOrder());
+  const direction = isMobileLayout()
+    ? "down"
+    : resolveDirection(current, to, menuOrder());
   leaveGhost();
   applyDirection(direction);
-  arriveMain();
+  restartArrival();
   current = to;
+}
+
+/** Restart the just-applied destination slide so it runs in step with the
+ * exit choreography (fold + drop happen while the page slides in). */
+function restartArrival(): void {
+  const main = document.querySelector("main");
+  if (!main) return;
+  main.style.animation = "none";
+  void main.offsetWidth;
+  main.style.animation = "";
+  const pageEl = main.querySelector<HTMLElement>(".page");
+  if (pageEl) {
+    pageEl.style.animation = "none";
+    void pageEl.offsetWidth;
+    pageEl.style.animation = "";
+  }
 }
 
 const onPopState = () => transition(location.pathname);

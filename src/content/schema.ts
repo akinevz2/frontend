@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 
-export type ThemeName = "experimental" | "centered" | "open";
+export type ThemeName = "experimental" | "centered" | "open" | "funny";
 
 /** A music/video link rendered as an embedded player (or a plain link). */
 export type Embed = {
@@ -24,6 +24,8 @@ export type Section = {
   link?: string;
   theme?: ThemeName | ThemeName[];
   embed?: string;
+  /** Stable permalink anchor; defaults to the numeric tree index ("0"). */
+  anchor?: string;
   status?: string;
   /** Text copied by the addon "Copy" button. */
   text?: string;
@@ -53,6 +55,10 @@ export type Route = {
   menuLabel?: string;
   menu?: MenuVisibility;
   hidden?: boolean;
+  /** Redirect: visiting `path` immediately navigates to this path+hash. */
+  alias?: string;
+  /** Menu bar links here instead of `path` (e.g. an in-page section anchor). */
+  menuHref?: string;
 };
 
 export type SoundCloudTrack = {

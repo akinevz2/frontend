@@ -21,6 +21,8 @@ export type ClippyState = {
   visible: boolean;
   bubble: boolean;
   saysNo: boolean;
+  /** The unhide list is shown instead of a bubble (masks it completely). */
+  listOpen: boolean;
 };
 
 const isPhone = () =>
@@ -37,6 +39,7 @@ let state: ClippyState = {
   visible: storedVisible() || isPhone(),
   bubble: false,
   saysNo: false,
+  listOpen: false,
 };
 const listeners = new Set<() => void>();
 const set = (patch: Partial<ClippyState>) => {
@@ -126,8 +129,17 @@ export const onClippyTriggerClick = () => {
 
 const hint = () => {
   clearTimeout(bubbleTimer);
-  set({ bubble: true, saysNo: false });
-  bubbleTimer = setTimeout(() => set({ bubble: false }), BUBBLE_MS);
+  // The hint is the priority UI: dismiss the unhide list in the same
+  // atomically-committed state update so it can never mask the bubble
+  // (the stray "haha it said no"/hiding interplay of the flag mirrors).
+  set({ bubble: true, saysNo: false, listOpen: false });
+  bubbleTimer = setTimeout(
+    // saysNo dies with its bubble: a stale veto would otherwise turn every
+    // later bubble into "haha it said no" (visible the moment another
+    // bubble is unmasked, e.g. dismissing the reopen list).
+    () => set({ bubble: false, saysNo: false }),
+    BUBBLE_MS,
+  );
 };
 
 const imageBurst = createBurstCounter();
@@ -168,10 +180,25 @@ const onAudioEnded = () => {
   a.volume = 0;
 };
 
-// The close sound while the bubble is up makes Clippy refuse.
-// Only the first close per bubble is refused; the window then stays open.
+// A close attempt while the bubble is actually displayed makes Clippy
+// refuse. listOpen lives in PUBLIC state now (single source of truth — the
+// old component-to-lib mirror was effect-synchronized and could go stale,
+// disarming the veto); the unhide list masks the bubble completely, so no
+// refusal may fire then.
+export const toggleClippyList = () => {
+  if (state.listOpen) {
+    set({ listOpen: false });
+    return;
+  }
+  // Opening the list dismisses any speech bubble — including the "haha it
+  // said no" veto state — so the reopen list owns the attention; pending
+  // bubble timers are cancelled alongside.
+  clearTimeout(bubbleTimer);
+  set({ listOpen: true, bubble: false, saysNo: false });
+};
+
 const onCrunchy = (event: Event) => {
-  if (!state.bubble || state.saysNo) return;
+  if (state.listOpen || !state.bubble || state.saysNo) return;
   event.preventDefault();
   set({ saysNo: true });
 };
@@ -179,11 +206,11 @@ const onCrunchy = (event: Event) => {
 /** Attaches the global listeners; returns the detach function. */
 export function attachClippy(): () => void {
   window.addEventListener("keydown", onKeyDown);
-  document.addEventListener("crunchy-kick-played", onCrunchy);
+  document.addEventListener("window-close-attempt", onCrunchy);
   getAudio().addEventListener("ended", onAudioEnded);
   return () => {
     window.removeEventListener("keydown", onKeyDown);
-    document.removeEventListener("crunchy-kick-played", onCrunchy);
+    document.removeEventListener("window-close-attempt", onCrunchy);
     getAudio().removeEventListener("ended", onAudioEnded);
     clearBlip();
     activeMs = 0;

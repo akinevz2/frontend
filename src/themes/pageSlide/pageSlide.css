@@ -1,12 +1,18 @@
 /*
  * Inert until lightdni-jssas-toggle adds `theme-page-slide` to <html> and
  * sets --ps-* variables and data-page-slide on it.
+ *
+ * Exit choreography: each top-level window folds down onto the taskbar
+ * line at the bottom of the page (XP-style outline squash, linear over
+ * --ps-minimize), then the whole page drops straight out of the bottom in
+ * one fast stroke — a jump, not a scroll-away.
  */
 html.theme-page-slide {
   overflow-x: clip;
 }
 
-/* No fill-forward: a lingering `translate` would trap fixed descendants. */
+/* No fill-forward: a lingering `translate` would trap fixed descendants.
+   `backwards` fill parks the incoming page at its off-viewport start. */
 html.theme-page-slide[data-page-slide] main:not(.page-slide-ghost) {
   animation: page-slide-in var(--ps-duration) ease-in-out backwards;
 }
@@ -17,7 +23,9 @@ html.theme-page-slide .page-slide-ghost {
   margin: 0;
   overflow: hidden;
   pointer-events: none;
-  animation: page-slide-out var(--ps-duration) ease-in-out forwards;
+  /* Hold in place while windows minimise (--ps-drop-delay), then drop. */
+  animation: page-slide-drop var(--ps-drop-dur) linear var(--ps-drop-delay)
+    forwards;
 }
 
 /* The live <main> has an indefinite height, so its page sizes to content;
@@ -27,21 +35,47 @@ html.theme-page-slide .page-slide-ghost > .page {
   min-height: 0;
 }
 
-/* Fixed footer bars of the old page slide down off the screen. */
+/* Fixed footer bars of the old page drop out of the bottom with it. */
 html.theme-page-slide .page-slide-bar {
   pointer-events: none;
-  animation: page-slide-bar var(--ps-duration) ease-in-out forwards;
+  animation: page-slide-drop var(--ps-drop-dur) linear var(--ps-drop-delay)
+    forwards;
 }
 
 /* The new page eases from the old page's bottom padding to its own, so its
-   window moves in step with the footer leaving. */
+   window moves in step with the footer leaving. (JS sequencing in
+   themes/pageSlide applies the theme only after the exit, so this starts
+   right as the destination page begins its slide-in.) */
 html.theme-page-slide[data-page-slide] main:not(.page-slide-ghost) > .page {
   animation: page-slide-pad var(--ps-duration) ease-in-out backwards;
 }
 
-@keyframes page-slide-bar {
+/* XP minimise: every top-level window folds down onto the taskbar line —
+   the bottom edge of the page. The BOTTOM edge stays anchored and the top
+   edge falls to meet it (the outline sucks downward, as in XP), while the
+   whole window is drawn the last stretch toward the measured fold point.
+   Contents ride the squash, as in XP itself. */
+html.theme-page-slide .page-slide-ghost .page > .window {
+  transform-origin: bottom center;
+  /* Linear, per preference: the top edge falls towards the taskbar line
+     at a constant rate for the entire fold. */
+  animation: page-slide-fold var(--ps-minimize, 98ms) linear forwards;
+}
+
+/* Paper look for the swapped-out document iframes (resume previews etc.). */
+html.theme-page-slide .page-slide-ghost .page-slide-placeholder-frame {
+  background: #fff;
+}
+
+@keyframes page-slide-fold {
   to {
-    translate: 0 100%;
+    transform: translateY(var(--page-fold-dy, 80vh)) scaleY(0.06);
+  }
+}
+
+@keyframes page-slide-drop {
+  to {
+    translate: 0 100vh;
   }
 }
 
@@ -54,11 +88,5 @@ html.theme-page-slide[data-page-slide] main:not(.page-slide-ghost) > .page {
 @keyframes page-slide-in {
   from {
     translate: var(--ps-in-x) var(--ps-in-y);
-  }
-}
-
-@keyframes page-slide-out {
-  to {
-    translate: var(--ps-out-x) var(--ps-out-y);
   }
 }

@@ -13,6 +13,6 @@ export function visibleMenuItems(
     .filter((route) => route.menu !== "admin" || isAdmin)
     .map((route) => ({
       label: route.menuLabel ?? route.path.slice(1),
-      href: route.path,
+      href: route.menuHref ?? route.path,
     }));
 }

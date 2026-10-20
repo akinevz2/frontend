@@ -3,6 +3,7 @@ import { AddonsPage } from "./AddonsPage";
 import { BlogPage } from "./BlogPage";
 import { BlogPostPage } from "./BlogPostPage";
 import { ContactPage } from "./ContactPage";
+import { ConfigsPage } from "./ConfigsPage";
 import { HomePage } from "./HomePage";
 import { MusicPage } from "./MusicPage";
 import { NotFoundPage } from "./NotFoundPage";
@@ -17,6 +18,7 @@ export const pageRegistry: Record<string, ComponentType> = {
   AddonsPage,
   BlogPage,
   BlogPostPage,
+  ConfigsPage,
   ContactPage,
   HomePage,
   MusicPage,

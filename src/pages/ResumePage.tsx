@@ -13,7 +13,7 @@ export const ResumePage = () => {
             }
             aria-label="Open formal resume in a new tab"
           >
-            Open in new tab
+            Open in new tab (formal design)
           </button>
           <a
             href="/documents/resume.pdf"

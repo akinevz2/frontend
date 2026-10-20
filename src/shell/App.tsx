@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { pageRegistry } from "@/pages";
 import { NotFoundPage } from "@/pages/NotFoundPage";
@@ -27,6 +27,9 @@ export function App() {
   useEffect(applyStoredTheme, []);
 
   if (blank) return <main className="feef69-page" />;
+
+  // Aliased short-hands redirect (e.g. /addons -> /wow#addons).
+  if (route.alias) return <Navigate to={route.alias} replace />;
 
   return (
     <>

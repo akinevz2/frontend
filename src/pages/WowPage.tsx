@@ -1,6 +1,6 @@
 import { useMemo, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { characters } from "@/content";
+import { addons, characters } from "@/content";
 import { playLayeredAudio } from "@/lib/audio";
 import { activateLilac } from "@/lib/theme";
 import { PageWindows } from "@/window";
@@ -37,19 +37,9 @@ function DownloadForm() {
     const user = normalise(username);
     if (!user) return fail("Please enter a username.");
     if (!date) return fail("Please enter a date.");
-    if (user !== "kine" && user !== "lg355") return fail("Invalid username.");
+    if (user !== "kine") return fail("Invalid username.");
     if (date !== today)
       return fail("Incorrect date. Please enter today's date.");
-
-    if (user === "lg355") {
-      activateLilac();
-      playLayeredAudio("/tada.wav");
-      setFeedback({
-        kind: "success",
-        text: "Easter egg unlocked! Lilac theme activated.",
-      });
-      return;
-    }
 
     setFeedback({
       kind: "success",
@@ -62,14 +52,15 @@ function DownloadForm() {
   };
 
   return (
-    <div className="window download-window">
+    <div className="window download-window" id="download">
       <div className="title-bar">
-        <span className="title-bar-text">Rueg Configuration Download</span>
+        <span className="title-bar-text">WoW Profile Pack Download</span>
       </div>
       <div className="window-body">
         <p>
-          To download the World of Warcraft configuration files, please enter
-          your <a href="/addons">username</a> and verify today's date.
+          To download the Rueg's UI configuration files — the Simple WoW UI
+          Pack — please enter your <a href="/addons">username</a> and verify
+          today's date.
         </p>
         <form onSubmit={onSubmit}>
           <div className="field-row-stacked">
@@ -114,6 +105,6 @@ function DownloadForm() {
 export const WowPage = () => (
   <>
     <DownloadForm />
-    <PageWindows content={characters} />
+    <PageWindows content={[characters, addons]} />
   </>
 );

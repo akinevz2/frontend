@@ -1,0 +1,29 @@
+{
+  "heading": "Configs",
+  "theme": "open",
+  "content": [
+    {
+      "heading": "Linux Configs",
+      "content": [
+        "My Linux setup files — a window-manager configuration based on herbstluftwm, documented in the doftiles project.",
+        "[doftiles project](/projects/doftiles)",
+        "[github.com/akinevz2/doftiles](https://github.com/akinevz2/doftiles)",
+        {
+          "heading": "Gallery",
+          "content": [
+            "Screenshots of the herbstluftwm desktop in action, plus a look at the setup under development:",
+            "![herbstluftwm desktop, screenshot 1](/images/herbst-1.png)",
+            "![herbstluftwm desktop, screenshot 2](/images/herbst-2.png)",
+            "![herbstluftwm desktop, screenshot 3](/images/herbst-3.png)",
+            "![work in progress setup](/images/development-1.png)"
+          ]
+        }
+      ],
+      "link": "/projects/doftiles"
+    },
+    {
+      "heading": "Wow Configs",
+      "link": "/wow"
+    }
+  ]
+}

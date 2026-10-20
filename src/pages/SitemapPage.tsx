@@ -16,7 +16,7 @@ const GROUPS: Array<{ heading: string; summary: string; routes: Route[] }> = [
     routes: routes.filter(
       (route) =>
         route.page === "ProjectPage" ||
-        ["/addons", "/wow", "/contact", "/resume", "/projects"].includes(
+        ["/addons", "/configs", "/contact", "/resume", "/projects"].includes(
           route.path,
         ),
     ),

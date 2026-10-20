@@ -1,96 +1,105 @@
 {
-  "heading": "Welcome to Rueg's UI homepage",
+  "heading": "Welcome to Rueg's UI homepage — Simple WoW UI Pack",
   "theme": "open",
+  "anchor": "addons",
   "content": [
     {
-      "heading": "SideTip (v0.1.19) — standalone rule-based aura icon",
-      "content": "Standalone Classic/TBC addon replacing the WeakAura class sets: one contextual icon (swing, energy/mana flash, cooldowns, range, auras, aggro). No WeakAuras required. Extract the SideTip folder into Interface/AddOns and /reload; /sidetip dump to verify.",
-      "status": "beta",
-      "link": "/addons/sidetip-0.1.19.zip"
-    },
-    {
-      "heading": "Rueg Distributable Config (dist.7z)",
-      "content": "Full distributable World of Warcraft configuration archive — addons, WeakAuras, and profiles, packaged for easy install.",
-      "status": "available",
-      "link": "/dist.7z"
-    },
-    {
-      "heading": "more addons coming after I finish my work",
-      "link": "https://akinevz.dev/"
-    },
-    {
-      "heading": "Rueg WeakAura Rogue (v5.0.1)",
-      "content": "Weak Aura tracker for GCD, energy tickrate, and range",
-      "status": "available",
-      "link": "/addons/rueg-wa-rueg.txt"
-    },
-    {
-      "heading": "Rueg WeakAura Mage (v3.0.0)",
-      "content": "Weak Aura tracker for GCD, energy tickrate, and range",
-      "status": "available",
-      "link": "/addons/rueg-wa-mage.txt"
-    },
-    {
-      "heading": "Rueg WeakAura Priest (v5.0.1)",
-      "content": "Weak Aura tracker for GCD, mana tickrate, and range",
-      "status": "available",
-      "link": "/addons/rueg-wa-priest.txt"
-    },
-    {
-      "heading": "Rueg WeakAura Warrior (v2.3.1)",
-      "content": "Weak Aura tracker for GCD, rage starvation, and range",
-      "status": "available",
-      "link": "/addons/rage-volley.txt"
-    },
-    {
-      "heading": "Rueg WeakAura Druid (v5.0.0)",
-      "content": "Weak Aura tracker for swing, energy recharge, and range",
-      "status": "available",
-      "link": "/addons/rueg-wa-druid.txt"
-    },
-    {
-      "heading": "Rueg WeakAura Shaman (v5.0.1)",
-      "content": "Weak Aura tracker for swing, energy recharge, and range",
-      "status": "available",
-      "link": "/addons/rueg-wa-shaman.txt"
-    },
-    {
-      "heading": "Rueg Cell (v1.0)",
-      "content": "Cell preset with right-handed layout + stats in chat.",
-      "status": "available (unmaintained)",
-      "link": "/addons/rueg-cell.txt"
-    },
-    {
-      "heading": "Rueg Grid2 (v1.0)",
-      "content": "Grid2 preset with buff indicators.",
-      "status": "available (unmaintained)",
-      "link": "/addons/rueg-grid2.txt"
-    },
-    {
-      "heading": "Rueg Plater Bars (v2.2)",
-      "content": "Profile for Plater with Blizzard-like nameplates. Large-format",
-      "status": "available",
-      "link": "/addons/rueg-plater.txt"
-    },
-    {
-      "heading": "Rueg Plater Small Bars (v2.1)",
-      "content": "Profile for Plater with Blizzard-like nameplates.",
-      "status": "available",
-      "link": "/addons/rueg-plater-smol.txt"
-    },
-    {
-      "heading": "Rueg WeakAura Paladin (coming soon)",
-      "content": "Weak Aura tracker for GCD, mana starvation, and range",
-      "status": "coming soon",
-      "link": "/addons/rueg-wa-warrior.txt"
-    },
-    {
-      "heading": "addons config to play like Rueg",
+      "heading": "Rueg WeakAuras — class aura sets",
       "content": [
-        "![addons1](/images/addons11.png)",
-        "![addons1](/images/addons12.png)"
-      ],
-      "status": "available (and supports easy hypelinking)"
+        {
+          "heading": "Rogue (v5.0.1)",
+          "content": "Weak Aura tracker for GCD, energy tickrate, and range",
+          "status": "available",
+          "link": "/addons/rueg-wa-rueg.txt"
+        },
+        {
+          "heading": "Mage (v3.0.0)",
+          "content": "Weak Aura tracker for GCD, energy tickrate, and range",
+          "status": "available",
+          "link": "/addons/rueg-wa-mage.txt"
+        },
+        {
+          "heading": "Priest (v5.0.1)",
+          "content": "Weak Aura tracker for GCD, mana tickrate, and range",
+          "status": "available",
+          "link": "/addons/rueg-wa-priest.txt"
+        },
+        {
+          "heading": "Warrior (v2.3.1)",
+          "content": "Weak Aura tracker for GCD, rage starvation, and range",
+          "status": "available",
+          "link": "/addons/rage-volley.txt"
+        },
+        {
+          "heading": "Druid (v5.0.0)",
+          "content": "Weak Aura tracker for swing, energy recharge, and range",
+          "status": "available",
+          "link": "/addons/rueg-wa-druid.txt"
+        },
+        {
+          "heading": "Shaman (v5.0.1)",
+          "content": "Weak Aura tracker for swing, energy recharge, and range",
+          "status": "available",
+          "link": "/addons/rueg-wa-shaman.txt"
+        },
+        {
+          "heading": "Paladin (coming soon)",
+          "content": "Weak Aura tracker for GCD, mana starvation, and range",
+          "status": "coming soon"
+        }
+      ]
+    },
+    {
+      "heading": "Addon profiles & presets",
+      "content": [
+        {
+          "heading": "Cell (v1.0)",
+          "content": "Cell preset with right-handed layout + stats in chat.",
+          "status": "available (unmaintained)",
+          "link": "/addons/rueg-cell.txt"
+        },
+        {
+          "heading": "Grid2 (v1.0)",
+          "content": "Grid2 preset with buff indicators.",
+          "status": "available (unmaintained)",
+          "link": "/addons/rueg-grid2.txt"
+        },
+        {
+          "heading": "Plater Bars (v2.2)",
+          "content": "Profile for Plater with Blizzard-like nameplates. Large-format",
+          "status": "available",
+          "link": "/addons/rueg-plater.txt"
+        },
+        {
+          "heading": "Plater Small Bars (v2.1)",
+          "content": "Profile for Plater with Blizzard-like nameplates.",
+          "status": "available",
+          "link": "/addons/rueg-plater-smol.txt"
+        }
+      ]
+    },
+    {
+      "heading": "Full UI & installation",
+      "content": [
+        {
+          "heading": "Rueg Distributable Config (dist.7z)",
+          "content": "Full distributable World of Warcraft configuration archive — addons, WeakAuras, and profiles, packaged for easy install.",
+          "status": "available",
+          "link": "/dist.7z"
+        },
+        {
+          "heading": "addons config to play like Rueg",
+          "content": [
+            "![addons1](/images/addons11.png)",
+            "![addons1](/images/addons12.png)"
+          ],
+          "status": "available (and supports easy hypelinking)"
+        },
+        {
+          "heading": "more addons coming after I finish my work",
+          "link": "https://akinevz.dev/"
+        }
+      ]
     }
   ]
 }

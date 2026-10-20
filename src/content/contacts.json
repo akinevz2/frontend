@@ -1,5 +1,5 @@
 {
-  "heading": "Where you can find kine online!",
+  "heading": "Contacts",
   "theme": "open",
   "content": [
     "[akinevz.com/resume](https://akinevz.com/resume)",
@@ -19,6 +19,7 @@
     "",
     {
       "heading": "funny within",
+      "theme": "funny",
       "content": ["click here to look at the [fuckingclippy](#fuckingclippy)"]
     }
   ]

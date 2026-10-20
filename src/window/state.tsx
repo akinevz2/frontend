@@ -141,12 +141,19 @@ function findTarget(windows: WindowNode[], mode: PermalinkMode) {
   return windows.find((w) => w.id === hash);
 }
 
-/** Opens and scrolls to the window named by the URL, once per page load. */
+/** Opens the window named by the URL, once per page load. Hash targets
+ * (cross-page links and permalinks) open their section maximized in the
+ * foreground; blog ?post= targets keep the expand-and-scroll behaviour. */
 export function usePermalinkTarget(mode: PermalinkMode) {
-  const { windows, expand } = useWindowStore();
+  const { windows, expand, patch } = useWindowStore();
   useEffect(() => {
     const target = findTarget(windows, mode);
     if (!target) return;
+    if (mode === "hash") {
+      expand(target.id);
+      patch(target.id, { maximized: true });
+      return;
+    }
     expand(target.id);
     const timer = setTimeout(
       () =>

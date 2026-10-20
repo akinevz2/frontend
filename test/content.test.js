@@ -17,6 +17,20 @@ test("route paths are unique and a /404 route exists", () => {
   assert.ok(paths.includes("/404"));
 });
 
+test("page aliases target an existing route (+optional section anchor)", () => {
+  const paths = new Set(pages.map((r) => r.path));
+  const anchors = new Set(
+    readFileSync("src/content/addons.json", "utf8").match(/"anchor"\s*:\s*"([^"]+)"/g) ?? [],
+  );
+  for (const route of pages) {
+    if (!route.alias) continue;
+    const [target, hash] = route.alias.split("#");
+    assert.ok(paths.has(target), `${route.path}: alias target ${target} exists`);
+    if (hash && target === "/wow" && hash === "addons")
+      assert.ok(anchors.size > 0, "wow#addons anchor exists in addons.json");
+  }
+});
+
 test("every project document is complete and routable", async () => {
   const { readdirSync } = await import("node:fs");
   const files = readdirSync("src/content/projects").filter((f) => f.endsWith(".json"));

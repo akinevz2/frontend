@@ -1,7 +1,7 @@
 {
   "slug": "doftiles",
   "title": "doftiles",
-  "description": "A window manager setup based on herbstluftwm, almost ready for public use.",
+  "description": "A personal dotfiles setup based with deployment, stow, and window manager.",
   "github": "https://github.com/akinevz2/doftiles",
   "content": {
     "heading": "doftiles",
