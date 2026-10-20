@@ -102,7 +102,7 @@ export function youTubeThumbnail(url: string): string | null {
   const id =
     host === "youtu.be"
       ? parsed.pathname.slice(1)
-      : host.endsWith("youtube.com")
+      : host === "youtube.com" || host === "www.youtube.com"
         ? parsed.searchParams.get("v")
         : null;
   return id ? `https://i.ytimg.com/vi/${id}/maxresdefault.jpg` : null;
