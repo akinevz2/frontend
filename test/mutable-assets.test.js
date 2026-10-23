@@ -20,6 +20,13 @@ test("blog pages remain mutable", () => {
   assert.equal(isMutablePath("blog/index.html"), true);
 });
 
+test("LFS and self-referential artifacts are mutable", () => {
+  // LFS: digest depends on whether the checkout smudged the pointer
+  assert.equal(isMutablePath("dist.7z"), true);
+  // rewritten on every build by write-dist-checksums.mjs itself
+  assert.equal(isMutablePath("documents/drift-report.json"), true);
+});
+
 test("stable non-blog artifacts are not mutable", () => {
   assert.equal(isMutablePath("configs.html"), false);
   assert.equal(isMutablePath("spinner.svg"), false);

@@ -50,6 +50,13 @@ export const MUTABLE_PATHS = Object.freeze([
   // documents embedded into posts via blog.json.
   "blog/",
   "stories/",
+  // Git-LFS artifact: CI checkouts that do not smudge LFS see the pointer
+  // bytes, so its digest depends on the checkout environment — and the
+  // archive itself legitimately changes.  Never a STABLE invariant.
+  "dist.7z",
+  // Self-referential sidecar: write-dist-checksums.mjs rewrites it on
+  // every build (generatedAt, violation counts), so it changes each run.
+  "documents/drift-report.json",
   "checksums.txt",
   "assets/*.js",
 ]);

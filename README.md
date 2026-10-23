@@ -56,6 +56,12 @@ Build for production:
 npm run build
 ```
 
+`npm run build:local` runs the full pre-push pipeline locally — the same
+checks CI ("Website CI") runs on main: lockfile STABLE, the full build
+(with checksums + drift report), and the drift-policy gate, plus
+lint/tests/audit. `npm run check:ci` runs just the CI-equivalent subset
+(lockfile + build + drift policy) without the content refresh.
+
 Run linting:
 
 ```
