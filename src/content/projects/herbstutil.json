@@ -1,13 +1,102 @@
 {
   "slug": "herbstutil",
   "title": "herbstutil",
-  "description": "Converts the output of `herbstclient attr` into JSON.",
+  "description": "A stdin filter that turns the verbose output of herbstclient attr into clean JSON - for scripting the herbstluftwm tiling window manager.",
   "github": "https://github.com/akinevz2/herbstutil",
   "content": {
-    "heading": "herbstutil",
+    "heading": "herbstutil - JSON bridge to herbstluftwm",
     "content": [
-      "Converts the output of `herbstclient attr` into JSON.",
-      "[https://github.com/akinevz2/herbstutil](https://github.com/akinevz2/herbstutil)"
+      "herbstutil is a small command-line filter that post-processes the output of `herbstclient attr` into clean JSON - so the state of the herbstluftwm window manager can be consumed wherever JSON is spoken.",
+      "[https://github.com/akinevz2/herbstutil](https://github.com/akinevz2/herbstutil)",
+      {
+        "heading": "herbstluftwm in a nutshell",
+        "anchor": "herbstluftwm",
+        "theme": "open",
+        "content": [
+          "herbstluftwm is a manual tiling window manager for Linux. Its core idea: the whole desktop is one global object tree - monitors, tags, clients (windows), settings - queried and modified over IPC with the companion tool herbstclient.",
+          "The tree is probed with `herbstclient attr <path>`: it prints a short description of the node, its children, and a table of every attribute (typed, writable, hookable).",
+          "```sh\n$ herbstclient attr clients.            # children of the clients node\n$ herbstclient attr clients.focus.      # introspect the focused window\n$ herbstclient attr clients.focus.tag   # read a single leaf value\n```",
+          "The catch: `attr` output is written for humans first - padded type tables, prose, legends. Great to read, fragile to parse."
+        ]
+      },
+      {
+        "heading": "What herbstutil does",
+        "anchor": "about",
+        "status": "early release",
+        "theme": "open",
+        "content": [
+          "herbstutil reads `herbstclient attr` output on stdin and rebuilds it as JSON, preserving the node's shape:",
+          "value - the node's description; children - the names of the child nodes; attributes - every attribute as a name-value pair.",
+          "Where herbstclient speaks humans, herbstutil speaks machine.",
+          {
+            "heading": "Usage",
+            "theme": "open",
+            "content": [
+              "herbstutil is a stdin filter built with Bun and bunli, packaged as a single executable:",
+              "```sh\n$ herbstclient attr clients. | herbstutil\n$ herbstclient attr clients.focus. | herbstutil --space 2\n```",
+              "s, --space <n> - pretty-print with `n` spaces of indentation (default 4)",
+              "It refuses to run attached to a terminal: herbstutil always reads from stdin."
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Examples",
+        "anchor": "examples",
+        "theme": "open",
+        "content": [
+          "The same node, before and after `| herbstutil`.",
+          {
+            "heading": "Root node: herbstclient attr clients.",
+            "theme": "open",
+            "content": [
+              "Raw:",
+              "```text\n$ herbstclient attr clients.\nThe managed windows. For every (managed) window id there is an entry here.\n\n5 children:\n  0x400003.\n  0x700003.\n  0xc00003.\n  0xe80003.\n  focus.\n0 attributes.\n .---- type\n | .-- writable\n | | .-- hookable\n V V V\n```",
+              "Piped through herbstutil:",
+              "```json\n{\n    \"value\": \"The managed windows. For every (managed) window id there is an entry here.\",\n    \"children\": [\n        \"0x400003.\",\n        \"0x700003.\",\n        \"0xc00003.\",\n        \"0xe80003.\",\n        \"focus.\"\n    ],\n    \"attributes\": {}\n}\n```"
+            ]
+          },
+          {
+            "heading": "Node with attributes: herbstclient attr clients.focus.",
+            "theme": "open",
+            "content": [
+              "Raw (excerpt):",
+              "```text\n$ herbstclient attr clients.focus.\na managed window\n\n1 child:\n  parent_frame.\n24 attributes:\n s - - class = \"Alacritty\"\n b w h decorated = true\n b w h floating = false\n i - h pid = 61763\n s - h tag = \"work\"\n s - h title = \"OC | Customizing opencode and dotfiles\"\n b - h visible = true\n```",
+              "Piped through herbstutil (excerpt - all 24 attributes arrive in the JSON):",
+              "```json\n{\n    \"value\": \"a managed window\",\n    \"children\": [\n        \"parent_frame.\"\n    ],\n    \"attributes\": {\n        \"class\": \"\\\"Alacritty\\\"\",\n        \"decorated\": \"true\",\n        \"floating\": \"false\",\n        \"pid\": \"61763\",\n        \"tag\": \"\\\"work\\\"\",\n        \"title\": \"\\\"OC | Customizing opencode and dotfiles\\\"\",\n        \"urgent\": \"false\",\n        \"visible\": \"true\",\n        \"winid\": \"\\\"0x700003\\\"\"\n    }\n}\n```",
+              "Note how attribute values stay as raw strings - a reminder that everything coming from `attr` is text until you parse it downstream."
+            ]
+          },
+          {
+            "heading": "Leaf node: herbstclient attr clients.focus.tag",
+            "theme": "open",
+            "content": [
+              "Raw:",
+              "```text\n$ herbstclient attr clients.focus.tag\nwork\n```",
+              "Piped through herbstutil:",
+              "```json\n{\n    \"value\": \"work\",\n    \"children\": [],\n    \"attributes\": {}\n}\n```"
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Links",
+        "theme": "open",
+        "content": [
+          {
+            "heading": "GitHub repository",
+            "link": "https://github.com/akinevz2/herbstutil"
+          },
+          {
+            "heading": "herbstluftwm project",
+            "link": "https://herbstluftwm.org"
+          },
+          {
+            "heading": "herbstclient reference",
+            "link": "https://herbstluftwm.org/doc/herbstclient.html"
+          }
+        ]
+      }
     ]
   }
 }

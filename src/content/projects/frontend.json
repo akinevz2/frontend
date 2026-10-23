@@ -7,7 +7,15 @@
     "heading": "frontend",
     "content": [
       "The source of this personal website.",
-      "[https://github.com/akinevz2/frontend](https://github.com/akinevz2/frontend)"
+      "[https://github.com/akinevz2/frontend](https://github.com/akinevz2/frontend)",
+      {
+        "heading": "From the README",
+        "theme": "open",
+        "content": [
+          "Built as a landing page and a point-of-interest for those that stumble upon it: personal storytelling through UI, JSON-driven content that is easy to edit, and small interactive features (windows, modals, media embeds).",
+          "React + TypeScript, Vite for development and builds, xp.css for the nostalgia."
+        ]
+      }
     ]
   }
 }

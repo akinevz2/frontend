@@ -8,6 +8,14 @@
     "content": [
       "pagerts fetches a URL (or reads a local HTML file) and prints every external resource it references - links, meta tags, scripts, styles - as JSON.",
       {
+        "heading": "From the README",
+        "theme": "open",
+        "content": [
+          "PagerTS fetches web pages, parses their HTML, and reports each page's title, URL, and external resources - inspecting common resource-bearing tags, or scanning every element for selected link properties.",
+          "Requires Node.js 20 or later; installs globally with `npm install --global pagerts`."
+        ]
+      },
+      {
         "heading": "Quick start",
         "content": [
           "npm install -g pagerts",

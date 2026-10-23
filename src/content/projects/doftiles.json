@@ -7,7 +7,15 @@
     "heading": "doftiles",
     "content": [
       "A window manager setup based on herbstluftwm, almost ready for public use.",
-      "[https://github.com/akinevz2/doftiles](https://github.com/akinevz2/doftiles)"
+      "[https://github.com/akinevz2/doftiles](https://github.com/akinevz2/doftiles)",
+      {
+        "heading": "From the README",
+        "theme": "open",
+        "content": [
+          "configs for kine@home - Ubuntu deploys are as simple as `make install` now.",
+          "Deployed with GNU stow: the repo is cloned into ~/dots and its packages (bar, dunst, herbst, rofi, shell, vim) are adopted into $HOME."
+        ]
+      }
     ]
   }
 }
