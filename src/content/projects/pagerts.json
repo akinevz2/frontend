@@ -1,6 +1,5 @@
 {
   "slug": "pagerts",
-  "path": "/pagerts",
   "title": "pagerts",
   "description": "A TypeScript CLI that lists every link and resource a webpage references, as plain JSON.",
   "github": "https://github.com/akinevz2/pagerts",
@@ -10,7 +9,11 @@
       "pagerts fetches a URL (or reads a local HTML file) and prints every external resource it references - links, meta tags, scripts, styles - as JSON.",
       {
         "heading": "Quick start",
-        "content": ["npm install -g pagerts", "", "pagerts https://example.com"],
+        "content": [
+          "npm install -g pagerts",
+          "",
+          "pagerts https://example.com"
+        ],
         "theme": "open"
       },
       {

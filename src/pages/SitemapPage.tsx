@@ -15,7 +15,7 @@ const GROUPS: Array<{ heading: string; summary: string; routes: Route[] }> = [
     summary: "The utility pages that support downloads, contact, and tooling.",
     routes: routes.filter(
       (route) =>
-        route.page === "ProjectPage" ||
+        (route.page === "ProjectPage" && !route.alias) ||
         ["/addons", "/configs", "/contact", "/resume", "/projects"].includes(
           route.path,
         ),

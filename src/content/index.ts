@@ -23,17 +23,56 @@ export const projects = Object.values(projectModules).sort((a, b) =>
   a.title.localeCompare(b.title),
 );
 
-/** Static pages from pages.json plus one hidden-from-menu route per project. */
-export const routes: Route[] = [
-  ...(pagesJson as Route[]),
-  ...projects.map((project): Route => ({
+/**
+ * Short-hand URL for a project: /<slug>. Redirects to the canonical
+ * /projects/<slug> route via the same alias mechanism pages.json uses.
+ */
+export const projectShortPath = (project: Project) => `/${project.slug}`;
+
+function projectRoute(project: Project): Route {
+  return {
     path: projectPath(project),
     title: project.title,
     description: project.description,
     page: "ProjectPage",
     menu: false,
-  })),
-];
+  };
+}
+
+/** Alias route: hidden, redirects to the canonical project route. */
+function projectAliasRoute(project: Project): Route {
+  return {
+    path: projectShortPath(project),
+    title: project.title,
+    description: project.description,
+    page: "ProjectPage",
+    alias: projectPath(project),
+    menu: false,
+    hidden: true,
+  };
+}
+
+/** Static pages from pages.json, kept separate so project aliases can check clashes. */
+const pageRoutes: Route[] = pagesJson as Route[];
+
+/**
+ * One canonical route per project (/projects/<slug>) plus a hidden
+ * short-hand alias route (/<slug>) redirecting to it. The alias is
+ * skipped when the slug would clash with an existing route path.
+ */
+const projectRoutes: Route[] = projects.flatMap((project): Route[] => {
+  const taken =
+    pageRoutes.some((page) => page.path === projectShortPath(project)) ||
+    projects.some(
+      (other) =>
+        other !== project && projectPath(other) === projectShortPath(project),
+    );
+  return taken
+    ? [projectRoute(project)]
+    : [projectRoute(project), projectAliasRoute(project)];
+});
+
+export const routes: Route[] = [...pageRoutes, ...projectRoutes];
 /* ------------------------------------------------------------------ includes
  * A content file can embed another content file's window tree with an
  * include directive instead of duplicating it:
