@@ -68,6 +68,15 @@ Dependency audit:
 npm run check:audit
 ```
 
+Drift gate (CI runs this after every build; fails on genuine drift of
+non-mutable artifacts vs the live deployment, after reconciling Vite
+rebuild noise — rehashed bundle references and stale-baseline entries —
+against the live site):
+
+```
+npm run verify:policy
+```
+
 ## Contact
 
 If you are here to learn more about me professionally, the website includes my resume and contact details.

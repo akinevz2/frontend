@@ -2,7 +2,7 @@
 
 .DEFAULT_GOAL := help
 
-.PHONY: help content-regen regen refresh build checksums clean
+.PHONY: help content-regen regen refresh build checksums verify-policy clean
 
 help:
 	@echo "Available targets:"
@@ -11,6 +11,7 @@ help:
 	@echo "  make refresh    - Refresh generated content inputs"
 	@echo "  make build      - Build the production site"
 	@echo "  make checksums  - Recompute dist checksums"
+	@echo "  make verify-policy - Fail if the drift report shows genuine drift"
 	@echo "  make clean      - Remove dist output"
 
 # Full end-to-end pipeline (refresh -> vite build -> checksums).
@@ -30,6 +31,9 @@ build:
 
 checksums:
 	npm run checksums
+
+verify-policy:
+	npm run verify:policy
 
 clean:
 	rm -rf dist

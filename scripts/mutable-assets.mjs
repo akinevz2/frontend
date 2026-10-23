@@ -21,30 +21,37 @@
  * Paths are relative to `dist/` and use forward slashes.
  */
 export const MUTABLE_PATHS = Object.freeze([
-    "index.html",
-    "404.html",
-    "404/index.html",
-    "addons.html",
-    "addons/index.html",
-    "blog.html",
-    "blog/index.html",
-    "contact.html",
-    "contact/index.html",
-    "music.html",
-    "music/index.html",
-    "resume/index.html",
-    "sitemap.xml",
-    "sitemap.html",
-    "sitemap/index.html",
-    "wow.html",
-    "wow/index.html",
-    // new pages - allowed as NEW until baseline is updated
-    "pagerts.html",
-    "pagerts/index.html",
-    "projects.html",
-    "projects/index.html",
-    "checksums.txt",
-    "assets/*.js",
+  "index.html",
+  "404.html",
+  "404/index.html",
+  "addons.html",
+  "addons/index.html",
+  "blog.html",
+  "blog/index.html",
+  "contact.html",
+  "contact/index.html",
+  "music.html",
+  "music/index.html",
+  "resume/index.html",
+  "sitemap.xml",
+  "sitemap.html",
+  "sitemap/index.html",
+  "wow.html",
+  "wow/index.html",
+  // new pages - allowed as NEW until baseline is updated
+  "pagerts.html",
+  "pagerts/index.html",
+  "projects.html",
+  "projects/index.html",
+  // Blog post content: posts (.md), attachments, and embedded documents
+  // are authored content.  Publishing a new post or editing an existing
+  // one is a legitimate content change, never STABLE-invariant drift,
+  // so every artifact under these subtrees is mutable.  `stories/` holds
+  // documents embedded into posts via blog.json.
+  "blog/",
+  "stories/",
+  "checksums.txt",
+  "assets/*.js",
 ]);
 
 export const MUTABLE_PATH_SET = Object.freeze(new Set(MUTABLE_PATHS));
@@ -56,20 +63,20 @@ export const MUTABLE_PATH_SET = Object.freeze(new Set(MUTABLE_PATHS));
  * are considered mutable (e.g. assets/index- matches assets/index-D4oX1XA7.js).
  */
 export function isMutablePath(relPath) {
-    if (MUTABLE_PATH_SET.has(relPath)) {
+  if (MUTABLE_PATH_SET.has(relPath)) {
+    return true;
+  }
+  // Check if path starts with any mutable prefix pattern
+  for (const pattern of MUTABLE_PATHS) {
+    if (relPath.startsWith(pattern)) {
+      return true;
+    }
+    if (pattern.includes("*")) {
+      const [prefix, suffix] = pattern.split("*");
+      if (relPath.startsWith(prefix) && relPath.endsWith(suffix)) {
         return true;
+      }
     }
-    // Check if path starts with any mutable prefix pattern
-    for (const pattern of MUTABLE_PATHS) {
-        if (relPath.startsWith(pattern)) {
-            return true;
-        }
-        if (pattern.includes('*')) {
-            const [prefix, suffix] = pattern.split('*');
-            if (relPath.startsWith(prefix) && relPath.endsWith(suffix)) {
-                return true;
-            }
-        }
-    }
-    return false;
+  }
+  return false;
 }

@@ -1,6 +1,6 @@
 {
   "name": "website-xp-phone",
-  "version": "2.2.10",
+  "version": "2.2.11",
   "license": "GPL v2",
   "author": "Kirill <kine> Nevzorov <akinevz@outlook.com>",
   "type": "module",
@@ -27,6 +27,7 @@
     "check:security": "npm run lint && npm run test",
     "check:all": "npm run check:security && npm run check:audit",
     "checksums": "node ./scripts/write-dist-checksums.mjs",
+    "verify:policy": "node ./scripts/verify-policy.mjs",
     "postinstall": "node ./scripts/ensure-xpcss.mjs"
   },
   "dependencies": {

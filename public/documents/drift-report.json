@@ -1,6 +1,6 @@
 {
   "baselineUrl": "https://akinevz.com/checksums.txt",
-  "generatedAt": "2026-10-23T21:05:17.711Z",
+  "generatedAt": "2026-10-23T21:21:29.982Z",
   "mutablePaths": [
     "index.html",
     "404.html",
@@ -23,232 +23,52 @@
     "pagerts/index.html",
     "projects.html",
     "projects/index.html",
+    "blog/",
+    "stories/",
     "checksums.txt",
     "assets/*.js"
   ],
-  "violationCount": 37,
-  "violations": [
-    {
-      "relPath": "blog/random/google.md",
-      "status": "NEW",
-      "prev": null,
-      "next": "8cfd0278521371d555607643b6d4a7b6a261077e24fbac2b232ba7474d069e87"
-    },
-    {
-      "relPath": "configs.html",
-      "status": "CHANGED",
-      "prev": "5f3cbfba9e1f83aabe8650ea1511318d967260cfc59c0f1690fb4049d5e37aaf",
-      "next": "6ccf146d06807140207450f38ed85fc43bd0f223d3cef1003e446aa05967af4f"
-    },
-    {
-      "relPath": "configs/index.html",
-      "status": "CHANGED",
-      "prev": "5f3cbfba9e1f83aabe8650ea1511318d967260cfc59c0f1690fb4049d5e37aaf",
-      "next": "6ccf146d06807140207450f38ed85fc43bd0f223d3cef1003e446aa05967af4f"
-    },
-    {
-      "relPath": "development.html",
-      "status": "CHANGED",
-      "prev": "560252c025c042184e9ef02f8be2111d11487e21ad37b0cbae41452f94431176",
-      "next": "cd505b046f1e1b59e145b9bfd44062b1e7cea68b288bffde4c5e0c617e27ce1d"
-    },
-    {
-      "relPath": "development/index.html",
-      "status": "CHANGED",
-      "prev": "560252c025c042184e9ef02f8be2111d11487e21ad37b0cbae41452f94431176",
-      "next": "cd505b046f1e1b59e145b9bfd44062b1e7cea68b288bffde4c5e0c617e27ce1d"
-    },
-    {
-      "relPath": "doftiles.html",
-      "status": "CHANGED",
-      "prev": "bab19dc6593d3105e026ad2d459fa3f629bc07071126fdffc056e2aeed15632c",
-      "next": "f3452b501cda04d56fb6f63fe9ee26a56bbf43e5e8399f380548bf96883d7318"
-    },
-    {
-      "relPath": "doftiles/index.html",
-      "status": "CHANGED",
-      "prev": "bab19dc6593d3105e026ad2d459fa3f629bc07071126fdffc056e2aeed15632c",
-      "next": "f3452b501cda04d56fb6f63fe9ee26a56bbf43e5e8399f380548bf96883d7318"
-    },
-    {
-      "relPath": "frontend.html",
-      "status": "CHANGED",
-      "prev": "bde020c583e7e698e78c919e01c992551338a09af8826d406dd6a8f31fd0b2db",
-      "next": "76ac91468bb2be2c63b649c27b2dc8fcad8663ac04916c6d9feee639fa0ff297"
-    },
-    {
-      "relPath": "frontend/index.html",
-      "status": "CHANGED",
-      "prev": "bde020c583e7e698e78c919e01c992551338a09af8826d406dd6a8f31fd0b2db",
-      "next": "76ac91468bb2be2c63b649c27b2dc8fcad8663ac04916c6d9feee639fa0ff297"
-    },
-    {
-      "relPath": "graphbrowser.html",
-      "status": "CHANGED",
-      "prev": "a3c5bab43ca6a856185343b88c63d02907f3d9ca00594d12aff1e74413ecd0b3",
-      "next": "95b61896b5e8c437fbe80693902908a8a03cba9035b7c183c0db1d109e4610b7"
-    },
-    {
-      "relPath": "graphbrowser/index.html",
-      "status": "CHANGED",
-      "prev": "a3c5bab43ca6a856185343b88c63d02907f3d9ca00594d12aff1e74413ecd0b3",
-      "next": "95b61896b5e8c437fbe80693902908a8a03cba9035b7c183c0db1d109e4610b7"
-    },
-    {
-      "relPath": "herbstutil.html",
-      "status": "CHANGED",
-      "prev": "bb9da7a30b07d53e778d29eb3a8a4b7d729c8232e5c06b19c45b37365e25f5b4",
-      "next": "d22b92c62c85f0126aa5a01c8e7c8c9d3e2ac7c4cd65b0a314f597aa7a061d6a"
-    },
-    {
-      "relPath": "herbstutil/index.html",
-      "status": "CHANGED",
-      "prev": "bb9da7a30b07d53e778d29eb3a8a4b7d729c8232e5c06b19c45b37365e25f5b4",
-      "next": "d22b92c62c85f0126aa5a01c8e7c8c9d3e2ac7c4cd65b0a314f597aa7a061d6a"
-    },
-    {
-      "relPath": "lightdni-jssas-toggle.html",
-      "status": "CHANGED",
-      "prev": "d7bb3941c2990c9816c933d1cfd7693e76325c6a2074150b1226021077599867",
-      "next": "ae11306e9b2ecacdc2d84b21983d60bec5abc2cd08df13367e260a46140082fd"
-    },
-    {
-      "relPath": "lightdni-jssas-toggle/index.html",
-      "status": "CHANGED",
-      "prev": "d7bb3941c2990c9816c933d1cfd7693e76325c6a2074150b1226021077599867",
-      "next": "ae11306e9b2ecacdc2d84b21983d60bec5abc2cd08df13367e260a46140082fd"
-    },
-    {
-      "relPath": "projects/development.html",
-      "status": "CHANGED",
-      "prev": "133ad939347d0d286c6e591864e2c4bfc5013c80423b32b40ef58ad7994c79a0",
-      "next": "bdc3d3af85b3d8ee911ad5494fbba38bad430ced39bafea1bfdc55f34158684e"
-    },
-    {
-      "relPath": "projects/development/index.html",
-      "status": "CHANGED",
-      "prev": "133ad939347d0d286c6e591864e2c4bfc5013c80423b32b40ef58ad7994c79a0",
-      "next": "bdc3d3af85b3d8ee911ad5494fbba38bad430ced39bafea1bfdc55f34158684e"
-    },
-    {
-      "relPath": "projects/doftiles.html",
-      "status": "CHANGED",
-      "prev": "39accc3e1d676f823db1a3901f937a9d6e5e8ff59ae1635f2efed51bb5cc64c3",
-      "next": "bc4a581cc7112faa69897c4997948230a6bd83709afbd600a0782c0a06e805e6"
-    },
-    {
-      "relPath": "projects/doftiles/index.html",
-      "status": "CHANGED",
-      "prev": "39accc3e1d676f823db1a3901f937a9d6e5e8ff59ae1635f2efed51bb5cc64c3",
-      "next": "bc4a581cc7112faa69897c4997948230a6bd83709afbd600a0782c0a06e805e6"
-    },
-    {
-      "relPath": "projects/frontend.html",
-      "status": "CHANGED",
-      "prev": "a536890eaa420b8027be1d9fcc491680aea25fef3ce231365f88284a2d4dcb19",
-      "next": "3f8a3b87852029d6e385450683675c7ffa403f95b4cfdd00c48fd6e7845d079d"
-    },
-    {
-      "relPath": "projects/frontend/index.html",
-      "status": "CHANGED",
-      "prev": "a536890eaa420b8027be1d9fcc491680aea25fef3ce231365f88284a2d4dcb19",
-      "next": "3f8a3b87852029d6e385450683675c7ffa403f95b4cfdd00c48fd6e7845d079d"
-    },
-    {
-      "relPath": "projects/graphbrowser.html",
-      "status": "CHANGED",
-      "prev": "2070a68b7463d84d67e4256e2b8a974570eb2f24eee1f9a5a864cb9cae311a37",
-      "next": "6511326cb73e65deeab431869c72131f7f59a7ae4e4cc0001ab95fd8c8bd27ee"
-    },
-    {
-      "relPath": "projects/graphbrowser/index.html",
-      "status": "CHANGED",
-      "prev": "2070a68b7463d84d67e4256e2b8a974570eb2f24eee1f9a5a864cb9cae311a37",
-      "next": "6511326cb73e65deeab431869c72131f7f59a7ae4e4cc0001ab95fd8c8bd27ee"
-    },
-    {
-      "relPath": "projects/herbstutil.html",
-      "status": "CHANGED",
-      "prev": "1f30d8fe8abc1c88dde0945c39eb9414d612e8b048108b0be21efba18e69dd7b",
-      "next": "b93fef40de659726300968832e6fa9abfa8d988743541f8195f0806fc4bb9c86"
-    },
-    {
-      "relPath": "projects/herbstutil/index.html",
-      "status": "CHANGED",
-      "prev": "1f30d8fe8abc1c88dde0945c39eb9414d612e8b048108b0be21efba18e69dd7b",
-      "next": "b93fef40de659726300968832e6fa9abfa8d988743541f8195f0806fc4bb9c86"
-    },
-    {
-      "relPath": "projects/lightdni-jssas-toggle.html",
-      "status": "CHANGED",
-      "prev": "f6e68474dd811b234113af42ddc574bcfe08f43c7d1476966f994ffa6cb39534",
-      "next": "c722325e5455d0454a006fe8ea1e55688970aa668d6a7560133e69d05ab63796"
-    },
-    {
-      "relPath": "projects/lightdni-jssas-toggle/index.html",
-      "status": "CHANGED",
-      "prev": "f6e68474dd811b234113af42ddc574bcfe08f43c7d1476966f994ffa6cb39534",
-      "next": "c722325e5455d0454a006fe8ea1e55688970aa668d6a7560133e69d05ab63796"
-    },
-    {
-      "relPath": "projects/pagerts.html",
-      "status": "CHANGED",
-      "prev": "ddd8529a5158e16f24d66d38f2455e0e6eedbbf29dc2adb114d8a0280018ffd3",
-      "next": "33260f113b262f2bb880967513029a06e56c70543868cd869e28818269b62021"
-    },
-    {
-      "relPath": "projects/pagerts/index.html",
-      "status": "CHANGED",
-      "prev": "ddd8529a5158e16f24d66d38f2455e0e6eedbbf29dc2adb114d8a0280018ffd3",
-      "next": "33260f113b262f2bb880967513029a06e56c70543868cd869e28818269b62021"
-    },
-    {
-      "relPath": "projects/rarebert.html",
-      "status": "CHANGED",
-      "prev": "14c67445ebd0220509c9258c00eb7114769f99876e7d6eb5ced6adbddfd974be",
-      "next": "78899ad4eb4221ab2c40c694d28d88b86c7f42ba70fa341741b4477fe7c86f4e"
-    },
-    {
-      "relPath": "projects/rarebert/index.html",
-      "status": "CHANGED",
-      "prev": "14c67445ebd0220509c9258c00eb7114769f99876e7d6eb5ced6adbddfd974be",
-      "next": "78899ad4eb4221ab2c40c694d28d88b86c7f42ba70fa341741b4477fe7c86f4e"
-    },
-    {
-      "relPath": "projects/webuser.html",
-      "status": "CHANGED",
-      "prev": "40b8d90551a7e300149b0be97027729bc3a2b4c9e8729ef87a6b6bac8a66d5a8",
-      "next": "cf4ca218774fdc53f889b39c3dfdb9d9738e89756764f94773966aea4990b1be"
-    },
-    {
-      "relPath": "projects/webuser/index.html",
-      "status": "CHANGED",
-      "prev": "40b8d90551a7e300149b0be97027729bc3a2b4c9e8729ef87a6b6bac8a66d5a8",
-      "next": "cf4ca218774fdc53f889b39c3dfdb9d9738e89756764f94773966aea4990b1be"
-    },
-    {
-      "relPath": "rarebert.html",
-      "status": "CHANGED",
-      "prev": "ea3fd904c1a0d798d92db3ba86d6cc55d48c49e846a0560457799e8185f54103",
-      "next": "06d33a9d87552f75086504e00aa4162ecd822f9e4d8cf0feadf023f8603e777f"
-    },
-    {
-      "relPath": "rarebert/index.html",
-      "status": "CHANGED",
-      "prev": "ea3fd904c1a0d798d92db3ba86d6cc55d48c49e846a0560457799e8185f54103",
-      "next": "06d33a9d87552f75086504e00aa4162ecd822f9e4d8cf0feadf023f8603e777f"
-    },
-    {
-      "relPath": "webuser.html",
-      "status": "CHANGED",
-      "prev": "42b9bb336cf8e4f55f27913bbdebae9ed56a2710c0cccb2b19542dc55ecf7c13",
-      "next": "4a8f9ce2b89b3e40b243d8c4d078be097097e0ed036c782cd72cb3c5448e54d0"
-    },
-    {
-      "relPath": "webuser/index.html",
-      "status": "CHANGED",
-      "prev": "42b9bb336cf8e4f55f27913bbdebae9ed56a2710c0cccb2b19542dc55ecf7c13",
-      "next": "4a8f9ce2b89b3e40b243d8c4d078be097097e0ed036c782cd72cb3c5448e54d0"
-    }
-  ]
+  "violationCount": 0,
+  "violations": [],
+  "rehashOnlyCount": 36,
+  "rehashOnly": [
+    "configs.html",
+    "configs/index.html",
+    "development.html",
+    "development/index.html",
+    "doftiles.html",
+    "doftiles/index.html",
+    "frontend.html",
+    "frontend/index.html",
+    "graphbrowser.html",
+    "graphbrowser/index.html",
+    "herbstutil.html",
+    "herbstutil/index.html",
+    "lightdni-jssas-toggle.html",
+    "lightdni-jssas-toggle/index.html",
+    "projects/development.html",
+    "projects/development/index.html",
+    "projects/doftiles.html",
+    "projects/doftiles/index.html",
+    "projects/frontend.html",
+    "projects/frontend/index.html",
+    "projects/graphbrowser.html",
+    "projects/graphbrowser/index.html",
+    "projects/herbstutil.html",
+    "projects/herbstutil/index.html",
+    "projects/lightdni-jssas-toggle.html",
+    "projects/lightdni-jssas-toggle/index.html",
+    "projects/pagerts.html",
+    "projects/pagerts/index.html",
+    "projects/rarebert.html",
+    "projects/rarebert/index.html",
+    "projects/webuser.html",
+    "projects/webuser/index.html",
+    "rarebert.html",
+    "rarebert/index.html",
+    "webuser.html",
+    "webuser/index.html"
+  ],
+  "liveMatchCount": 0,
+  "liveMatched": []
 }

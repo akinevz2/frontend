@@ -1,0 +1,27 @@
+import assert from "node:assert/strict";
+import { test } from "node:test";
+import { isMutablePath } from "../scripts/mutable-assets.mjs";
+
+test("blog post artifacts are mutable, so new posts are never drift", () => {
+  // posts at the blog root and in subdirectories
+  assert.equal(isMutablePath("blog/new-post.md"), true);
+  assert.equal(isMutablePath("blog/random/google.md"), true);
+  // post attachments
+  assert.equal(isMutablePath("blog/P5kKjYA.png"), true);
+  assert.equal(isMutablePath("blog/exhausted.txt"), true);
+  // non-ASCII post filenames survive path checks
+  assert.equal(isMutablePath("blog/рунисч-глоссарий.md"), true);
+  // embedded post documents
+  assert.equal(isMutablePath("stories/1.md"), true);
+});
+
+test("blog pages remain mutable", () => {
+  assert.equal(isMutablePath("blog.html"), true);
+  assert.equal(isMutablePath("blog/index.html"), true);
+});
+
+test("stable non-blog artifacts are not mutable", () => {
+  assert.equal(isMutablePath("configs.html"), false);
+  assert.equal(isMutablePath("spinner.svg"), false);
+  assert.equal(isMutablePath("assets/index-Ab12Cd34.css"), false);
+});
