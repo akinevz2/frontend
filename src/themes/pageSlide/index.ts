@@ -248,6 +248,9 @@ const onPopState = () => {
 
 /** Scrolls the hash element into view — inside its scrolling window
  * (a maximized window scrolls its own revealed content) or the page.
+ * A target already fully on screen is left exactly where it is: the
+ * landing scroll exists to reveal an off-screen section, so yanking a
+ * visible one to the top row would only scramble the reader's place.
  * The element can mount after the route commit (lazy pages), hence the
  * deferred retries. */
 function scrollToHash(hash: string, attempts = 12): void {
@@ -261,7 +264,9 @@ function scrollToHash(hash: string, attempts = 12): void {
       // it. The restored window scrolls itself to the hash element on
       // dismissal instead.
       if (!el.closest(".maximized-backdrop")) {
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        const rect = el.getBoundingClientRect();
+        if (rect.top < 0 || rect.bottom > window.innerHeight)
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
       }
       return;
     }

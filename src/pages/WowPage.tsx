@@ -1,6 +1,6 @@
 import { useMemo, useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
 import { addons, characters } from "@/content";
+import { useSignals } from "@/lib/signals";
 import { PageWindows } from "@/window";
 
 type Feedback = { kind: "error" | "success"; text: string } | null;
@@ -22,7 +22,9 @@ function download(href: string, name: string) {
 }
 
 function DownloadForm() {
-  const navigate = useNavigate();
+  // Cancelling is a command, not a router call — the shell owns the one
+  // router-aware "app:navigate" handler.
+  const { dispatch } = useSignals();
   const [username, setUsername] = useState("");
   const [date, setDate] = useState("");
   const [feedback, setFeedback] = useState<Feedback>(null);
@@ -85,7 +87,10 @@ function DownloadForm() {
           </div>
           <div className="form-actions">
             <button type="submit">Verify &amp; Download</button>
-            <button type="button" onClick={() => navigate("/")}>
+            <button
+              type="button"
+              onClick={() => dispatch("app:navigate", { to: "/" })}
+            >
               Cancel
             </button>
           </div>

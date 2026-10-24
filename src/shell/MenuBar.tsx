@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { getCookie } from "@/lib/cookies";
+import { useSignals } from "@/lib/signals";
 import { visibleMenuItems } from "./menu";
 
 const isTyping = (target: EventTarget | null) =>
@@ -10,7 +11,9 @@ const isTyping = (target: EventTarget | null) =>
 
 export function MenuBar() {
   const { pathname } = useLocation();
-  const navigate = useNavigate();
+  // Hotkeys command navigation, so they dispatch: the shell owns the
+  // router-aware handler. The <Link> elements below stay real anchors.
+  const { dispatch } = useSignals();
   const items = useMemo(
     () => visibleMenuItems(pathname, getCookie("admin") === "akinevz"),
     [pathname],
@@ -30,11 +33,11 @@ export function MenuBar() {
       const item = items.find((i) => i.label[0]?.toLowerCase() === key);
       if (!item) return;
       event.preventDefault();
-      navigate(item.href);
+      dispatch("app:navigate", { to: item.href });
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [items, navigate]);
+  }, [items, dispatch]);
 
   return (
     <nav className="menu-bar">

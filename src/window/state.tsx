@@ -6,8 +6,8 @@ import {
   useReducer,
   type ReactNode,
 } from "react";
-import { clearHidden, publishHidden } from "./hidden";
 import { descendantIds, flatten, lineage, type WindowNode } from "./model";
+import { dispatchSignal, type SignalManifest } from "@/lib/signals";
 
 export type PermalinkMode = "hash" | "post";
 
@@ -50,6 +50,12 @@ type WindowStore = {
 };
 
 const Ctx = createContext<WindowStore | null>(null);
+
+/** The roster of no parked windows — the answer broadcast on unmount. */
+const EMPTY_HIDDEN: SignalManifest["window:hidden"] = {
+  items: [],
+  restore: () => {},
+};
 
 /** Seeds the store synchronously from the URL: if the location names a
  * target window (?post=slug / #tree-index), it starts REVEALED — expanded
@@ -119,12 +125,17 @@ export function WindowProvider({
   }, [state, windows, permalinkMode, onLeave]);
 
   useEffect(() => {
-    publishHidden({
+    // The parked-window roster is broadcast as a signal, not held in a
+    // store: every change of the window flags re-publishes the WHOLE
+    // snapshot, so consumers (Clippy) can keep just the last one they
+    // were sent — push-only events, no singleton to subscribe to.
+    dispatchSignal("window:hidden", {
       items: store.parked.map((w) => ({ id: w.id, label: w.heading ?? w.id })),
       restore: store.restore,
     });
   }, [store]);
-  useEffect(() => clearHidden, []);
+  // Leaving the page parks nothing; an empty roster tells Clippy so.
+  useEffect(() => () => dispatchSignal("window:hidden", EMPTY_HIDDEN), []);
 
   return <Ctx.Provider value={store}>{children}</Ctx.Provider>;
 }
