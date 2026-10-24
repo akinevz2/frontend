@@ -5,6 +5,7 @@ import {
   type ThemeDefinition,
 } from "lightdni-jssas-toggle";
 import { playMinimizeClick } from "@/lib/audio";
+import { dispatchSignal } from "@/lib/signals";
 import { resolveDirection, type Direction } from "./direction";
 import "./pageSlide.css";
 
@@ -199,6 +200,9 @@ const isMobileLayout = () => window.matchMedia("(max-width: 768px)").matches;
 
 function transition(to: string, hash: string): void {
   if (to === current) return;
+  // The committed navigation rides the signal bus as a notice —
+  // monitoring handlers subscribe; the choreography itself stays here.
+  dispatchSignal("page:navigated", { from: current, to });
   if (clickSuppressed) clickSuppressed = false;
   else playMinimizeClick();
   const direction = isMobileLayout()

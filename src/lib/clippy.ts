@@ -1,4 +1,5 @@
 import { playLayeredAudio } from "./audio";
+import { onSignal } from "./signals";
 import {
   advanceWord,
   blipRollMs,
@@ -191,20 +192,20 @@ export const toggleClippyList = () => {
   set({ listOpen: true, bubble: false, saysNo: false });
 };
 
-const onCrunchy = (event: Event) => {
+const onCrunchy = ({ refuse }: { refuse: () => void }) => {
   if (state.listOpen || !state.bubble || state.saysNo) return;
-  event.preventDefault();
+  refuse();
   set({ saysNo: true });
 };
 
 /** Attaches the global listeners; returns the detach function. */
 export function attachClippy(): () => void {
   window.addEventListener("keydown", onKeyDown);
-  document.addEventListener("window-close-attempt", onCrunchy);
+  const offWindowClose = onSignal("window:close", onCrunchy);
   getAudio().addEventListener("ended", onAudioEnded);
   return () => {
     window.removeEventListener("keydown", onKeyDown);
-    document.removeEventListener("window-close-attempt", onCrunchy);
+    offWindowClose();
     getAudio().removeEventListener("ended", onAudioEnded);
     clearBlip();
     activeMs = 0;

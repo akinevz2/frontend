@@ -5,6 +5,7 @@ import "xp.css/dist/98.css";
 import "react-toastify/dist/ReactToastify.css";
 import "./styles/index.css";
 import { App } from "./shell/App";
+import { SignalProvider } from "./lib/signals";
 import { enablePageSlide } from "./themes/pageSlide";
 
 document.body.classList.add("styles-loaded");
@@ -21,7 +22,9 @@ enablePageSlide();
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <SignalProvider>
+        <App />
+      </SignalProvider>
     </BrowserRouter>
   </StrictMode>,
 );

@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useSignals } from "@/lib/signals";
 import type { WindowNode } from "./model";
 import { useWindowStore } from "./state";
 
@@ -19,7 +19,7 @@ export function OkButton({
   onMaximize?: (() => void) | undefined;
 }) {
   const { flagsOf, expand, remember } = useWindowStore();
-  const navigate = useNavigate();
+  const { dispatch } = useSignals();
 
   const onClick = () => {
     if (onOk) {
@@ -49,7 +49,9 @@ export function OkButton({
       history.replaceState(null, "", `#${node.id}`);
       window.location.assign(link);
     } else {
-      navigate(link);
+      // Internal navigation is a signal: the shell's handler performs
+      // the route change, so the window system stays router-free.
+      dispatch("app:navigate", { to: link });
     }
   };
 

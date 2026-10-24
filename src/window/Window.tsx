@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { playLayeredAudio, playMinimizeClick } from "@/lib/audio";
 import { getClippyState } from "@/lib/clippy";
 import { Md } from "@/lib/markdown";
+import { useSignals } from "@/lib/signals";
 import { CopyAddon } from "./CopyAddon";
 import { BannerView, EmbedView } from "./Embed";
 import { OkButton } from "./OkButton";
@@ -10,9 +11,10 @@ import { ResourceEmbed } from "./ResourceEmbed";
 import { TitleBar } from "./TitleBar";
 import type { WindowChild, WindowNode } from "./model";
 import { permalinkFor, useWindowStore } from "./state";
-import { dataTheme, forcesExpanded } from "./themes";
+import { closeSound, dataTheme, forcesExpanded } from "./themes";
 import { hasTheme } from "./model";
 
+/** The refused close's kick (the sound policy is declared in ./themes). */
 const CLOSE_SOUND = "/crunchy_kick.ogg";
 
 function Children({ items }: { items: WindowChild[] }) {
@@ -154,6 +156,7 @@ function Body({
 
 export function Window({ node }: { node: WindowNode }) {
   const { flagsOf, patch, onLeave } = useWindowStore();
+  const { dispatch } = useSignals();
   const leaves = node.depth === 0 && onLeave;
   const flags = flagsOf(node.id);
   const maximized = Boolean(flags.maximized);
@@ -246,19 +249,24 @@ export function Window({ node }: { node: WindowNode }) {
       return;
     }
     const funnyClose = hasTheme(node, "funny");
-    // Refusal keeps the window open (see window-close-attempt below);
-    // successful closings park/restore/leave after the crunch.
-    const refused = !document.dispatchEvent(
-      new CustomEvent("window-close-attempt", { cancelable: true }),
-    );
-    // The crunchy kick backs every inline ✕ press EXCEPT the navigation
-    // close: ✕ on a leave-on-close page (Projects) IS a navigation back
-    // to the index, and the pageSlide transition plays its own Click.ogg
-    // for it — no kick and no suppression, so the click is the
-    // navigation's only sound. Refused closes (Clippy veto, "funny"
-    // windows) still kick: the refusal is the kick's moment.
-    if (funnyClose || refused || !leaves) playLayeredAudio(CLOSE_SOUND);
-    if (funnyClose || refused) return;
+    // The close attempt rides the signal bus: handlers (Clippy) may
+    // refuse it by calling refuse() before dispatch returns.
+    let vetoed = false;
+    dispatch("window:close", {
+      id: node.id,
+      refuse: () => {
+        vetoed = true;
+      },
+    });
+    // Refusal keeps the window open; successful closings park/leave
+    // in silence.
+    const closes = !(funnyClose || vetoed);
+    // The sound is declared in themes.ts (closeSound): the crunchy
+    // kick is a non-closing window's sound only; the navigation's
+    // Click.ogg belongs to the pageSlide transition.
+    if (closeSound(closes, Boolean(leaves)) === "kick")
+      playLayeredAudio(CLOSE_SOUND);
+    if (!closes) return;
     // Easter egg: while Clippy is on screen, ✕ parks the window instead
     // of leaving the page — the mascot's unhide list offers it back
     // (restore). Never on leave-on-close pages (Projects), where ✕ means
