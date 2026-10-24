@@ -1,6 +1,6 @@
 {
   "baselineUrl": "https://akinevz.com/checksums.txt",
-  "generatedAt": "2026-10-24T00:53:26.898Z",
+  "generatedAt": "2026-10-24T01:01:33.589Z",
   "mutablePaths": [
     "blog/",
     "stories/",
@@ -9,31 +9,13 @@
     "checksums.txt",
     "assets/*.js"
   ],
-  "violationCount": 2,
-  "violations": [
-    {
-      "relPath": ".generated.json",
-      "status": "NEW",
-      "prev": null,
-      "next": "f7c31bc0f4febcf63d003c5de9b78b3bdbdfb7afcc569ccc1f6df1b90f4a05f6",
-      "resolution": "unverifiable",
-      "note": "no counterpart at the baseline URL"
-    },
-    {
-      "relPath": "sitemap.xml",
-      "status": "CHANGED",
-      "prev": "ceebe239b132b89ac99d679595c6fc7a2bbf7186023e5b8ea34143f2c8efdb40",
-      "next": "5103abe4d34be71d8247e9bbb713a052d8301b1c61ff09013b0914ac4d89a1cb",
-      "resolution": "content-drift"
-    }
-  ],
-  "rehashOnlyCount": 55,
-  "rehashOnly": [
+  "generatedPaths": [
     "404.html",
     "404/index.html",
     "addons.html",
     "addons/index.html",
     "blog.html",
+    "blog/index.html",
     "configs.html",
     "configs/index.html",
     "contact.html",
@@ -79,12 +61,17 @@
     "rarebert/index.html",
     "resume/index.html",
     "sitemap.html",
+    "sitemap.xml",
     "sitemap/index.html",
     "webuser.html",
     "webuser/index.html",
     "wow.html",
     "wow/index.html"
   ],
+  "violationCount": 0,
+  "violations": [],
+  "rehashOnlyCount": 0,
+  "rehashOnly": [],
   "liveMatchCount": 0,
   "liveMatched": []
 }
