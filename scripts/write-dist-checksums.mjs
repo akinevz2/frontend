@@ -39,6 +39,7 @@ const distRoot = resolve(projectRoot, "dist");
 const publicRoot = resolve(projectRoot, "public");
 const distChecksumsPath = resolve(distRoot, "checksums.txt");
 const publicChecksumsPath = resolve(publicRoot, "checksums.txt");
+const generatedManifestPath = resolve(distRoot, ".generated.json");
 
 /**
  * Sidecar written next to `checksums.txt` capturing any STABLE-invariant
@@ -191,9 +192,48 @@ async function readRemoteChecksums() {
   }
 }
 
+/**
+ * Read the generated-artifact manifest that routeSkeletonsPlugin emits
+ * (`dist/.generated.json`): every webapp-generated path it lists is
+ * auto-marked mutable, so new routes and project pages never need a
+ * hand-maintained mutable entry.
+ *
+ * Fail-loud policy: an existing but corrupt manifest throws (a build
+ * tooling regression must not silently downgrade the gate); a missing
+ * manifest only notes it — pages then fall back to the denylist in
+ * mutable-assets.mjs and the live-reconcile in the drift gate.
+ */
+async function readGeneratedPaths() {
+  let raw;
+  try {
+    raw = await readFile(generatedManifestPath, "utf8");
+  } catch {
+    process.stdout.write(
+      `Note: no generated-artifact manifest at dist/.generated.json — ` +
+        `generated pages are not auto-marked mutable (run vite build first)\n`,
+    );
+    return new Set();
+  }
+
+  const parsed = JSON.parse(raw);
+  const list =
+    parsed !== null && typeof parsed === "object" && !Array.isArray(parsed)
+      ? parsed.generated
+      : null;
+  if (!Array.isArray(list) || list.some((p) => typeof p !== "string")) {
+    throw new Error(
+      `corrupt generated-artifact manifest: ` +
+        `${relative(projectRoot, generatedManifestPath)} must be ` +
+        `{ "generated": string[] }`,
+    );
+  }
+  return new Set(list);
+}
+
 async function run() {
   const files = await walk(distRoot);
   const existing = await readRemoteChecksums();
+  const generatedPaths = await readGeneratedPaths();
   const rows = [];
   let index = 0;
   const driftViolations = [];
@@ -202,8 +242,9 @@ async function run() {
   const liveCounterparts = new Map();
 
   for (const filePath of files.sort()) {
-    // Skip the manifest file itself so it doesn't appear in its own diff.
-    if (filePath === distChecksumsPath) {
+    // Skip the manifest file itself and the generated-artifact manifest so
+    // neither appears in its own diff.
+    if (filePath === distChecksumsPath || filePath === generatedManifestPath) {
       continue;
     }
 
@@ -216,11 +257,13 @@ async function run() {
       : previous === digest
         ? "STABLE"
         : "CHANGED";
-    const mutable = isMutablePath(relPath);
+    const generated = generatedPaths.has(relPath);
+    const mutable = generated || isMutablePath(relPath);
+    const tag = generated ? " (generated)" : mutable ? " (mutable)" : "";
     index += 1;
 
     process.stdout.write(
-      `${String(index).padStart(3, "0")}. [${status}] ${relPath}${mutable ? " (mutable)" : ""}\n` +
+      `${String(index).padStart(3, "0")}. [${status}] ${relPath}${tag}\n` +
         `     prev: ${previous ?? "(none)"}\n` +
         `     next: ${digest}\n`,
     );
@@ -266,6 +309,7 @@ async function run() {
       baselineUrl: REMOTE_CHECKSUMS_URL,
       generatedAt: new Date().toISOString(),
       mutablePaths: [...MUTABLE_PATH_SET],
+      generatedPaths: [...generatedPaths].sort(),
       violationCount: driftViolations.length,
       violations: driftViolations,
       rehashOnlyCount: rehashOnly.length,

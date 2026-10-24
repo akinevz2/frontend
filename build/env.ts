@@ -15,5 +15,8 @@ export const SECURITY_HEADERS = {
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "SAMEORIGIN",
   "Content-Security-Policy": "frame-ancestors 'self'",
-  "Referrer-Policy": "no-referrer",
+  // not "no-referrer": YouTube embeds fail with Error 153 when the player
+  // cannot see the embedding origin (cross-origin requests only get the
+  // origin under this policy, so it stays privacy-friendly).
+  "Referrer-Policy": "strict-origin-when-cross-origin",
 };

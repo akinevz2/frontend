@@ -15,9 +15,12 @@ test("blog post artifacts are mutable, so new posts are never drift", () => {
   assert.equal(isMutablePath("stories/1.md"), true);
 });
 
-test("blog pages remain mutable", () => {
-  assert.equal(isMutablePath("blog.html"), true);
-  assert.equal(isMutablePath("blog/index.html"), true);
+test("blog pages are not hand-listed anymore", () => {
+  // generated pages (blog.html, webuser/index.html, ...) are auto-marked
+  // mutable via dist/.generated.json, emitted by routeSkeletonsPlugin —
+  // see test/route-skeletons.test.js
+  assert.equal(isMutablePath("blog.html"), false);
+  assert.equal(isMutablePath("webuser/index.html"), false);
 });
 
 test("LFS and self-referential artifacts are mutable", () => {

@@ -2,6 +2,7 @@ import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { Link } from "react-router-dom";
+import { rehypeYoutubeEmbed } from "@/lib/rehypeYoutubeEmbed";
 import { CLIPPY_LINK, onClippyTriggerClick } from "./clippy";
 
 const schema = {
@@ -19,6 +20,7 @@ const schema = {
       "allowFullScreen",
       "loading",
       "style",
+      "referrerPolicy",
     ],
   },
 };
@@ -28,7 +30,7 @@ type Props = { children: string; inline?: boolean };
 export function Md({ children }: Props) {
   return (
     <Markdown
-      rehypePlugins={[rehypeRaw, [rehypeSanitize, schema]]}
+      rehypePlugins={[rehypeRaw, rehypeYoutubeEmbed, [rehypeSanitize, schema]]}
       components={{
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         a({ href, children: label, node: _node, ...rest }) {
