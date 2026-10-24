@@ -4,7 +4,7 @@ import { ToastContainer } from "react-toastify";
 import { pageRegistry } from "@/pages";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { applyStoredTheme } from "@/lib/theme";
-import { useSignal, useSignals } from "@/lib/signals";
+import { bindNavigate } from "./routerSignals";
 import { Clippy } from "./Clippy";
 import { MenuBar } from "./MenuBar";
 import { resolveRoute } from "./resolveRoute";
@@ -17,20 +17,13 @@ export function App() {
   const { pathname, hash } = useLocation();
   const route = resolveRoute(pathname);
   const Page = pageRegistry[route.page] ?? NotFoundPage;
-  const { dispatch } = useSignals();
   const navigate = useNavigate();
-
-  // The navigation behaviour is a signal handler: any module dispatches
-  // "app:navigate" and the shell — the router-aware behaviour — performs
-  // the route change. The pageSlide choreography rides the pushState it
-  // triggers, exactly as a direct navigate() would.
-  useSignal("app:navigate", ({ to }) => navigate(to));
-
-  // Page-load monitoring: every mounted route announces itself, initial
-  // load included (pages remount per route path).
-  useEffect(() => {
-    dispatch("page:loaded", { path: pathname });
-  }, [pathname, dispatch]);
+  // The shell keeps only the router awareness: the app:navigate handler
+  // attached at boot (routerSignals) performs dispatches with THIS
+  // navigate, bound here against the router context. Page-load
+  // monitoring is the attached handlers' business too — the boot route
+  // is announced there, transitions by the pageSlide theme.
+  bindNavigate(navigate);
 
   const blank = pathname === "/" && hash.toLowerCase() === FEEF69_HASH;
 

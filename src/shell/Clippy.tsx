@@ -6,15 +6,9 @@ import {
   subscribeClippy,
   toggleClippyList,
 } from "@/lib/clippy";
-import { useSignal, type SignalManifest } from "@/lib/signals";
+import { useSignalValue } from "@/lib/signals";
 
 type Corner = "tl" | "tr" | "bl" | "br";
-
-/** The roster of no parked windows, before the first signal arrives. */
-const NO_HIDDEN: SignalManifest["window:hidden"] = {
-  items: [],
-  restore: () => {},
-};
 
 /** Where Clippy sits; mirrors the four screen corners. */
 const CORNERS: Corner[] = ["tl", "tr", "bl", "br"];
@@ -30,11 +24,10 @@ export function Clippy() {
     subscribeClippy,
     getClippyState,
   );
-  // The parked-window roster is a push-only signal, so Clippy holds the
-  // LAST snapshot it was sent in plain state; the window store re-sends
-  // on every change, so a held snapshot stays current.
-  const [hidden, setHidden] = useState(NO_HIDDEN);
-  useSignal("window:hidden", setHidden);
+  // The parked-window roster is a retained signal: Clippy reads its
+  // snapshot at render time (the bus keeps the last one) and manages
+  // no bridge of its own.
+  const hidden = useSignalValue("window:hidden");
   useEffect(attachClippy, []);
 
   const containerRef = useRef<HTMLDivElement>(null);

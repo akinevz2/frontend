@@ -6,9 +6,14 @@ import "react-toastify/dist/ReactToastify.css";
 import "./styles/index.css";
 import { App } from "./shell/App";
 import { SignalProvider } from "./lib/signals";
+import { attachRouterSignals } from "./shell/routerSignals";
 import { enablePageSlide } from "./themes/pageSlide";
 
 document.body.classList.add("styles-loaded");
+// Attach the shell's signal handlers at boot, next to the theme: the
+// bus carries navigation commands, route-change notices and window
+// events; handlers live here and in lib modules, not in components.
+attachRouterSignals();
 // Always install the page-slide theme: its hooks drive window
 // minimisation, navigation choreography and sounds. When the page is
 // loaded directly ONTO a hyperlinked window target (a #hash or ?post=
