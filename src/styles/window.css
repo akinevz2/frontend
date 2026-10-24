@@ -383,18 +383,13 @@ form#form > label {
 
 /* In a maximized "centered" window the content hugs the bottom left corner
    and grows upward and rightward as the space allows. */
-.window.maximized[data-theme~="centered"]
-  > .maximized-window-body
-  > ul {
+.window.maximized[data-theme~="centered"] > .maximized-window-body > ul {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
 }
 
-.window.maximized[data-theme~="centered"]
-  > .maximized-window-body
-  > ul
-  > li {
+.window.maximized[data-theme~="centered"] > .maximized-window-body > ul > li {
   justify-content: flex-start;
 }
 
@@ -483,6 +478,14 @@ form#form > label {
     height: auto;
     margin: 0 auto;
   }
+}
+
+/* YouTube players are 16:9 — size them from their width instead of a
+   fixed pixel height (or the mobile square above, which letterboxes
+   video). Declared after the media block so it wins the cascade. */
+.embed-youtube {
+  aspect-ratio: 16 / 9;
+  height: auto;
 }
 
 .music-favourite-link-window ul {

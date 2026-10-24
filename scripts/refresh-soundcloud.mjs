@@ -43,7 +43,7 @@ const SOUND_CLOUD_OWNERS = ["akinevz", "akinevz2"];
 
 /** User-Agent sent for every outbound HTTP request. */
 const USER_AGENT =
-    "Mozilla/5.0 (X11; Linux x86_64; rv:139.0) Gecko/20100101 Firefox/139.0";
+  "Mozilla/5.0 (X11; Linux x86_64; rv:139.0) Gecko/20100101 Firefox/139.0";
 
 /** Fetch timeout (ms) for every HTTP request. */
 const FETCH_TIMEOUT_MS = 15_000;
@@ -63,17 +63,17 @@ const getProfileUrl = (owner) => `https://soundcloud.com/${owner}`;
  * (callers decide how to interpret it); throws only on network failure.
  */
 const fetchWithTimeout = async (url, options = {}) => {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
-    try {
-        return await fetch(url, {
-            ...options,
-            headers: { "User-Agent": USER_AGENT, ...options.headers },
-            signal: controller.signal,
-        });
-    } finally {
-        clearTimeout(timer);
-    }
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  try {
+    return await fetch(url, {
+      ...options,
+      headers: { "User-Agent": USER_AGENT, ...options.headers },
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timer);
+  }
 };
 
 /**
@@ -82,21 +82,23 @@ const fetchWithTimeout = async (url, options = {}) => {
  * JSON.  Throws with the HTTP status on definitive failure.
  */
 const fetchApiJson = async (url, attempt = 1) => {
-    try {
-        const response = await fetchWithTimeout(url, {
-            headers: { Accept: "application/json" },
-        });
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status} for ${new URL(url).pathname}`);
-        }
-        return await response.json();
-    } catch (error) {
-        if (attempt < API_RETRIES) {
-            await new Promise((resolveSleep) => setTimeout(resolveSleep, 1_000 * attempt));
-            return fetchApiJson(url, attempt + 1);
-        }
-        throw error;
+  try {
+    const response = await fetchWithTimeout(url, {
+      headers: { Accept: "application/json" },
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} for ${new URL(url).pathname}`);
     }
+    return await response.json();
+  } catch (error) {
+    if (attempt < API_RETRIES) {
+      await new Promise((resolveSleep) =>
+        setTimeout(resolveSleep, 1_000 * attempt),
+      );
+      return fetchApiJson(url, attempt + 1);
+    }
+    throw error;
+  }
 };
 
 /**
@@ -105,46 +107,53 @@ const fetchApiJson = async (url, attempt = 1) => {
  * they must never be hard-coded.  Throws if no bundle yields one.
  */
 const resolveClientId = async () => {
-    const profileResponse = await fetchWithTimeout(getProfileUrl(SOUND_CLOUD_OWNERS[0]));
-    if (!profileResponse.ok) {
-        throw new Error(`Could not fetch profile HTML: HTTP ${profileResponse.status}`);
-    }
-    const html = await profileResponse.text();
+  const profileResponse = await fetchWithTimeout(
+    getProfileUrl(SOUND_CLOUD_OWNERS[0]),
+  );
+  if (!profileResponse.ok) {
+    throw new Error(
+      `Could not fetch profile HTML: HTTP ${profileResponse.status}`,
+    );
+  }
+  const html = await profileResponse.text();
 
-    const assetUrls = [
-        ...new Set(
-            [...html.matchAll(/https:\/\/a-v2\.sndcdn\.com\/assets\/[a-zA-Z0-9._-]+\.js/g)].map(
-                (match) => match[0],
-            ),
+  const assetUrls = [
+    ...new Set(
+      [
+        ...html.matchAll(
+          /https:\/\/a-v2\.sndcdn\.com\/assets\/[a-zA-Z0-9._-]+\.js/g,
         ),
-    ];
-    if (assetUrls.length === 0) {
-        throw new Error("No SoundCloud asset bundles found in profile HTML");
-    }
+      ].map((match) => match[0]),
+    ),
+  ];
+  if (assetUrls.length === 0) {
+    throw new Error("No SoundCloud asset bundles found in profile HTML");
+  }
 
-    for (const assetUrl of assetUrls) {
-        const assetResponse = await fetchWithTimeout(assetUrl);
-        if (!assetResponse.ok) continue;
-        const js = await assetResponse.text();
-        const match = js.match(/client_id:"([a-zA-Z0-9]{20,40})"/);
-        if (match) return match[1];
-    }
+  for (const assetUrl of assetUrls) {
+    const assetResponse = await fetchWithTimeout(assetUrl);
+    if (!assetResponse.ok) continue;
+    const js = await assetResponse.text();
+    const match = js.match(/client_id:"([a-zA-Z0-9]{20,40})"/);
+    if (match) return match[1];
+  }
 
-    throw new Error("No client_id found in any SoundCloud asset bundle");
+  throw new Error("No client_id found in any SoundCloud asset bundle");
 };
 
 /**
- * Resolve an owner handle to its numeric SoundCloud user id.
+ * Resolve an owner handle to its public api-v2 user object (id plus
+ * profile metadata such as the public track_count).
  */
-const resolveUserId = async (owner, clientId) => {
-    const resolveUrl = new URL("https://api-v2.soundcloud.com/resolve");
-    resolveUrl.searchParams.set("url", getProfileUrl(owner));
-    resolveUrl.searchParams.set("client_id", clientId);
-    const user = await fetchApiJson(resolveUrl.toString());
-    if (typeof user?.id !== "number") {
-        throw new Error(`Could not resolve user id for ${owner}`);
-    }
-    return user.id;
+const resolveUser = async (owner, clientId) => {
+  const resolveUrl = new URL("https://api-v2.soundcloud.com/resolve");
+  resolveUrl.searchParams.set("url", getProfileUrl(owner));
+  resolveUrl.searchParams.set("client_id", clientId);
+  const user = await fetchApiJson(resolveUrl.toString());
+  if (typeof user?.id !== "number") {
+    throw new Error(`Could not resolve user id for ${owner}`);
+  }
+  return user;
 };
 
 /**
@@ -153,26 +162,27 @@ const resolveUserId = async (owner, clientId) => {
  * re-appended on every page or page 2+ returns HTTP 401.
  */
 const fetchAllTracks = async (owner, userId, clientId) => {
-    const tracks = [];
-    let href = `https://api-v2.soundcloud.com/users/${userId}/tracks?client_id=${clientId}&limit=200&representation=full`;
+  const tracks = [];
+  let href = `https://api-v2.soundcloud.com/users/${userId}/tracks?client_id=${clientId}&limit=200&representation=full`;
 
-    while (href) {
-        const page = await fetchApiJson(href);
-        const collection = Array.isArray(page?.collection) ? page.collection : [];
-        for (const track of collection) {
-            if (typeof track?.permalink_url !== "string") continue;
-            tracks.push(track);
-        }
-        const nextHref = typeof page?.next_href === "string" ? page.next_href : null;
-        href = nextHref
-            ? `${nextHref}${nextHref.includes("?") ? "&" : "?"}client_id=${clientId}`
-            : null;
+  while (href) {
+    const page = await fetchApiJson(href);
+    const collection = Array.isArray(page?.collection) ? page.collection : [];
+    for (const track of collection) {
+      if (typeof track?.permalink_url !== "string") continue;
+      tracks.push(track);
     }
+    const nextHref =
+      typeof page?.next_href === "string" ? page.next_href : null;
+    href = nextHref
+      ? `${nextHref}${nextHref.includes("?") ? "&" : "?"}client_id=${clientId}`
+      : null;
+  }
 
-    if (tracks.length === 0) {
-        throw new Error(`Discography for ${owner} came back empty`);
-    }
-    return tracks;
+  if (tracks.length === 0) {
+    throw new Error(`Discography for ${owner} came back empty`);
+  }
+  return tracks;
 };
 
 /**
@@ -180,87 +190,116 @@ const fetchAllTracks = async (owner, userId, clientId) => {
  * URL slug if the title is missing.
  */
 const toSnapshotTrack = (owner, track) => {
-    const url = track.permalink_url;
-    const path = `/${url.replace(/^https?:\/\/(www\.)?soundcloud\.com\//, "")}`;
-    return {
-        owner,
-        path,
-        title:
-            typeof track.title === "string" && track.title.length > 0
-                ? track.title
-                : path.split("/").pop(),
-        url,
-    };
+  const url = track.permalink_url;
+  const path = `/${url.replace(/^https?:\/\/(www\.)?soundcloud\.com\//, "")}`;
+  return {
+    owner,
+    path,
+    title:
+      typeof track.title === "string" && track.title.length > 0
+        ? track.title
+        : path.split("/").pop(),
+    url,
+  };
 };
 
 /**
  * Fetch the complete discography for one owner.  Returns the snapshot-shaped
  * track list in API order (newest first).
  */
+/**
+ * Fetch the complete discography for one owner.  Returns the snapshot-shaped
+ * track list in API order (newest first).
+ *
+ * Integrity: the fetched list must match the profile's PUBLIC track_count —
+ * the number any anonymous visitor (and this unauthenticated snapshot) can
+ * see.  A mismatch means the list came back truncated or the API lagged a
+ * fresh upload; retry once, then fail loudly rather than write a silently
+ * incomplete discography.  (Tracks the owner sees but the public does not —
+ * still processing or private — never inflate the public count, so they do
+ * not trip this check.)
+ */
 const fetchOwnerDiscography = async (owner, clientId) => {
-    const userId = await resolveUserId(owner, clientId);
-    const apiTracks = await fetchAllTracks(owner, userId, clientId);
-    return apiTracks.map((track) => toSnapshotTrack(owner, track));
+  const user = await resolveUser(owner, clientId);
+  let apiTracks = await fetchAllTracks(owner, user.id, clientId);
+  const publicCount =
+    typeof user.track_count === "number" ? user.track_count : null;
+  if (publicCount !== null && apiTracks.length !== publicCount) {
+    apiTracks = await fetchAllTracks(owner, user.id, clientId);
+    if (apiTracks.length !== publicCount) {
+      throw new Error(
+        `Discography for ${owner} returned ${apiTracks.length} track(s) ` +
+          `but the public profile counts ${publicCount} — refusing to ` +
+          `write a truncated snapshot`,
+      );
+    }
+  }
+  return apiTracks.map((track) => toSnapshotTrack(owner, track));
 };
 
 export const run = async () => {
-    const clientId = await resolveClientId();
-    process.stdout.write(`Resolved SoundCloud client_id: ${clientId}\n`);
+  const clientId = await resolveClientId();
+  process.stdout.write(`Resolved SoundCloud client_id: ${clientId}\n`);
 
-    const discographies = new Map();
-    for (const owner of SOUND_CLOUD_OWNERS) {
-        discographies.set(owner, await fetchOwnerDiscography(owner, clientId));
-    }
+  const discographies = new Map();
+  for (const owner of SOUND_CLOUD_OWNERS) {
+    discographies.set(owner, await fetchOwnerDiscography(owner, clientId));
+  }
 
-    // Flat track list in per-owner API order (newest first).  The music page
-    // filters this array by `owner`, so per-owner relative order is what the
-    // UI displays.
-    const tracks = SOUND_CLOUD_OWNERS.flatMap((owner) => discographies.get(owner) ?? []);
-    const trackCount = tracks.length;
+  // Flat track list in per-owner API order (newest first).  The music page
+  // filters this array by `owner`, so per-owner relative order is what the
+  // UI displays.
+  const tracks = SOUND_CLOUD_OWNERS.flatMap(
+    (owner) => discographies.get(owner) ?? [],
+  );
+  const trackCount = tracks.length;
 
-    // Per-owner sections.  The component groups the discography by `owner`,
-    // so emitting a `profiles` array ensures every owner gets its own
-    // section — not just the first one.
-    const profiles = SOUND_CLOUD_OWNERS.map((owner) => {
-        const ownerTracks = discographies.get(owner) ?? [];
-        return {
-            owner,
-            source: getProfileUrl(owner),
-            profileImageUrl: null,
-            trackCount: ownerTracks.length,
-            tracks: ownerTracks,
-        };
-    });
-
-    const result = {
-        source: getProfileUrl(SOUND_CLOUD_OWNERS[0]),
-        generatedAt: new Date().toISOString(),
-        asOfUploadingTrackCount: trackCount,
-        trackCount,
-        tracks,
-        profiles,
+  // Per-owner sections.  The component groups the discography by `owner`,
+  // so emitting a `profiles` array ensures every owner gets its own
+  // section — not just the first one.
+  const profiles = SOUND_CLOUD_OWNERS.map((owner) => {
+    const ownerTracks = discographies.get(owner) ?? [];
+    return {
+      owner,
+      source: getProfileUrl(owner),
+      profileImageUrl: null,
+      trackCount: ownerTracks.length,
+      tracks: ownerTracks,
     };
+  });
 
-    await writeFile(outputFile, `${JSON.stringify(result, null, 2)}\n`, "utf8");
+  const result = {
+    source: getProfileUrl(SOUND_CLOUD_OWNERS[0]),
+    generatedAt: new Date().toISOString(),
+    asOfUploadingTrackCount: trackCount,
+    trackCount,
+    tracks,
+    profiles,
+  };
 
-    process.stdout.write(
-        `Refreshed ${result.tracks.length} SoundCloud track(s) into ${outputFile}\n` +
-        profiles
-            .map((profile) => `  @${profile.owner}: ${profile.trackCount} track(s)\n`)
-            .join(""),
-    );
+  await writeFile(outputFile, `${JSON.stringify(result, null, 2)}\n`, "utf8");
 
-    return result;
+  process.stdout.write(
+    `Refreshed ${result.tracks.length} SoundCloud track(s) into ${outputFile}\n` +
+      profiles
+        .map(
+          (profile) => `  @${profile.owner}: ${profile.trackCount} track(s)\n`,
+        )
+        .join(""),
+  );
+
+  return result;
 };
 
 const isDirectExecution =
-    process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1]);
+  process.argv[1] &&
+  fileURLToPath(import.meta.url) === resolve(process.argv[1]);
 
 if (isDirectExecution) {
-    run().catch((error) => {
-        process.stderr.write(
-            `${error instanceof Error ? error.message : String(error)}\n`,
-        );
-        process.exit(1);
-    });
+  run().catch((error) => {
+    process.stderr.write(
+      `${error instanceof Error ? error.message : String(error)}\n`,
+    );
+    process.exit(1);
+  });
 }

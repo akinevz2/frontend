@@ -1,13 +1,14 @@
 {
   "baselineUrl": "https://akinevz.com/checksums.txt",
-  "generatedAt": "2026-10-24T01:01:33.589Z",
+  "generatedAt": "2026-10-24T11:56:28.486Z",
   "mutablePaths": [
     "blog/",
     "stories/",
     "dist.7z",
     "documents/drift-report.json",
     "checksums.txt",
-    "assets/*.js"
+    "assets/*.js",
+    "assets/*.css"
   ],
   "generatedPaths": [
     "404.html",

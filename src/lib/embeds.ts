@@ -2,7 +2,10 @@ export type EmbedSpec = {
   provider: "spotify" | "youtube" | "soundcloud";
   label: string;
   src: string;
-  height: number;
+  /** Fixed pixel height for fixed-aspect players (Spotify, SoundCloud).
+   * Omitted for YouTube: those players are 16:9 and size themselves from
+   * their width via CSS (.embed-youtube). */
+  height?: number;
 };
 
 const SPOTIFY_TYPES = new Set([
@@ -14,6 +17,41 @@ const SPOTIFY_TYPES = new Set([
   "show",
 ]);
 const SPOTIFY_HEIGHT = 152;
+const YOUTUBE_ID = /^[A-Za-z0-9_-]+$/;
+
+/**
+ * Extracts a video id from common YouTube URL forms:
+ *   https://youtu.be/<id>
+ *   https://www.youtube.com/watch?v=<id>
+ *   https://www.youtube.com/embed/<id> (also /shorts/, /live/ and /v/)
+ * www./m./music. subdomains and youtube-nocookie.com are accepted.
+ * Returns null for anything else — including any link carrying a ?list=
+ * parameter: it points at a playlist (often unlisted), and every caller
+ * renders those as plain links instead of embeds.
+ */
+export function youtubeVideoId(url: string): string | null {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return null;
+  }
+  if (parsed.searchParams.get("list")) return null;
+  const host = parsed.hostname.replace(/^(www|m|music)\./, "");
+  if (host === "youtu.be") {
+    const id = parsed.pathname.slice(1).split("/")[0];
+    return id && YOUTUBE_ID.test(id) ? id : null;
+  }
+  if (host !== "youtube.com" && host !== "youtube-nocookie.com") return null;
+  if (parsed.pathname === "/watch") {
+    const id = parsed.searchParams.get("v");
+    return id && YOUTUBE_ID.test(id) ? id : null;
+  }
+  const embed = parsed.pathname.match(
+    /^\/(?:embed|shorts|live|v)\/([A-Za-z0-9_-]+)/,
+  );
+  return embed?.[1] ?? null;
+}
 
 function parse(url: string): URL | null {
   try {
@@ -72,23 +110,12 @@ export function resolveEmbed(
     };
   }
 
-  if (
-    host === "youtu.be" ||
-    host === "youtube.com" ||
-    host === "www.youtube.com"
-  ) {
-    // Playlists are often unlisted, so they fall back to a plain link.
-    if (parsed.searchParams.get("list")) return null;
-    const id =
-      host === "youtu.be"
-        ? parsed.pathname.slice(1)
-        : parsed.searchParams.get("v");
-    if (!id) return null;
+  const youtubeId = youtubeVideoId(url);
+  if (youtubeId) {
     return {
       provider: "youtube",
       label: "YouTube",
-      src: `https://www.youtube.com/embed/${id}`,
-      height: SPOTIFY_HEIGHT,
+      src: `https://www.youtube.com/embed/${youtubeId}`,
     };
   }
 
@@ -96,14 +123,6 @@ export function resolveEmbed(
 }
 
 export function youTubeThumbnail(url: string): string | null {
-  const parsed = parse(url);
-  if (!parsed || parsed.searchParams.get("list")) return null;
-  const host = parsed.hostname;
-  const id =
-    host === "youtu.be"
-      ? parsed.pathname.slice(1)
-      : host === "youtube.com" || host === "www.youtube.com"
-        ? parsed.searchParams.get("v")
-        : null;
+  const id = youtubeVideoId(url);
   return id ? `https://i.ytimg.com/vi/${id}/maxresdefault.jpg` : null;
 }

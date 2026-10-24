@@ -1,35 +1,34 @@
-import type { Root } from "hast";
+import type { Element, ElementContent, Root } from "hast";
 import { visit } from "unist-util-visit";
+import { youtubeVideoId } from "./embeds.ts";
 
 /**
- * Extracts a video id from common YouTube URL forms:
- *   https://youtu.be/<id>
- *   https://www.youtube.com/watch?v=<id>
- *   https://www.youtube.com/embed/<id>
- *   https://www.youtube.com/shorts/<id>
- * Returns null for anything else.
+ * Keeps the embed inside its container (the window body) at any width while
+ * preserving the player's 16:9 shape, and centres it when the body is wider
+ * than the cap. The width/height attributes stay as a no-CSS fallback and
+ * give the browser the intrinsic ratio before styles load.
  */
-function videoIdFromUrl(href: string): string | null {
-  let url: URL;
-  try {
-    url = new URL(href);
-  } catch {
-    return null;
-  }
-  const host = url.hostname.replace(/^(www|m|music)\./, "");
-  if (host === "youtu.be") {
-    const id = url.pathname.slice(1).split("/")[0];
-    return id && /^[A-Za-z0-9_-]+$/.test(id) ? id : null;
-  }
-  if (host !== "youtube.com" && host !== "youtube-nocookie.com") return null;
-  if (url.pathname === "/watch") {
-    const id = url.searchParams.get("v");
-    return id && /^[A-Za-z0-9_-]+$/.test(id) ? id : null;
-  }
-  const embed = url.pathname.match(
-    /^\/(?:embed|shorts|live|v)\/([A-Za-z0-9_-]+)/,
-  );
-  return embed ? (embed[1] ?? null) : null;
+const RESPONSIVE_STYLE =
+  "width: 100%; max-width: 560px; height: auto; aspect-ratio: 16 / 9;" +
+  " display: block; margin: 0 auto;";
+
+/** The fallback title for embeds whose link text is just the bare URL
+ * (markdown autolinks) — a URL reads poorly as a player title. */
+const FALLBACK_TITLE = "YouTube video";
+
+function textContent(node: ElementContent): string {
+  if (node.type === "text") return node.value;
+  if (node.type === "element") return node.children.map(textContent).join("");
+  return "";
+}
+
+/** Uses the link's own text as the accessible player title when it is
+ * human-readable ([my talk](…)), falling back for bare autolinks (<…>). */
+function linkTitle(node: Element, href: string): string {
+  const text = textContent(node).trim();
+  return text && text.toLowerCase() !== href.toLowerCase()
+    ? text
+    : FALLBACK_TITLE;
 }
 
 /** Rehype plugin: replace YouTube links with responsive 16:9 embeds. */
@@ -39,17 +38,18 @@ export function rehypeYoutubeEmbed() {
       if (!parent || index === undefined || node.tagName !== "a") return;
       const href = node.properties?.href;
       if (typeof href !== "string") return;
-      const id = videoIdFromUrl(href);
+      const id = youtubeVideoId(href);
       if (!id) return;
       parent.children[index] = {
         type: "element",
         tagName: "iframe",
         properties: {
           src: `https://www.youtube-nocookie.com/embed/${id}`,
-          title: "YouTube video",
+          title: linkTitle(node, href),
           width: "560",
           height: "315",
           loading: "lazy",
+          style: RESPONSIVE_STYLE,
           // YouTube's player rejects embeds without a usable referrer
           // (error 153). The site sends Referrer-Policy: no-referrer, so
           // the iframe needs its own policy to send its origin.

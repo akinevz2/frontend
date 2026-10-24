@@ -398,3 +398,10 @@ main.feef69-page {
   max-width: 100% !important;
   object-fit: contain;
 }
+
+/* Same for inline iframe embeds in content (markdown YouTube links carry
+   their own responsive style; this also caps hand-written <iframe>s in raw
+   HTML). Music-page players are sized by their own rules and excluded. */
+.window-body iframe:not(.embed) {
+  max-width: 100%;
+}

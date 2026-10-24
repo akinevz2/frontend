@@ -30,8 +30,17 @@ test("LFS and self-referential artifacts are mutable", () => {
   assert.equal(isMutablePath("documents/drift-report.json"), true);
 });
 
+test("vite-emitted bundles are mutable (rebuild noise)", () => {
+  // hashed names + chunk hashing/module ordering vary between rebuilds
+  assert.equal(isMutablePath("assets/index-D4oX1XA7.js"), true);
+  assert.equal(isMutablePath("assets/index-8bBd-nO8.css"), true);
+  assert.equal(isMutablePath("assets/toastify-DVtug25g.css"), true);
+});
+
 test("stable non-blog artifacts are not mutable", () => {
   assert.equal(isMutablePath("configs.html"), false);
   assert.equal(isMutablePath("spinner.svg"), false);
-  assert.equal(isMutablePath("assets/index-Ab12Cd34.css"), false);
+  // public/-copied css lands at the dist ROOT, not in assets/ — only
+  // vite-emitted bundles under assets/ are mutable.
+  assert.equal(isMutablePath("loading.css"), false);
 });

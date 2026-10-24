@@ -57,10 +57,24 @@ npm run build
 ```
 
 `npm run build:local` runs the full pre-push pipeline locally — the same
-checks CI ("Website CI") runs on main: lockfile STABLE, the full build
-(with checksums + drift report), and the drift-policy gate, plus
+checks CI ("Website CI") runs on main: lockfile STABLE, the gated build
+(vite build + checksums + drift report), and the drift-policy gate, plus
 lint/tests/audit. `npm run check:ci` runs just the CI-equivalent subset
-(lockfile + build + drift policy) without the content refresh.
+(lockfile + gated build + drift policy) without the content refresh.
+
+`npm run build` is the deploy build (Render): vite build only — no
+checksums pass, no content regeneration — so host rebuilds stay cheap.
+`npm run build:gated` is `build` plus the checksums/drift-report pass and
+is what CI and `build:local` run. The drift-policy gate
+(`npm run verify:policy`) is a pure static check of the committed drift
+report, so the Render deploy runs it before installing anything and
+fails fast when the uploaded build doesn't pass.
+
+Content snapshots that mirror live services (`src/content/soundcloud.json`)
+are regenerated only by `npm run refresh:soundcloud`, which runs inside
+`build:local` — never by `npm run build`. Deploy-side builds (Render)
+ship the committed snapshot and manifest exactly as `build:local`
+produced them.
 
 Run linting:
 

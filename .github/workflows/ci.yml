@@ -41,8 +41,8 @@ jobs:
       - name: Verify lockfile STABLE
         run: git diff --exit-code package-lock.json
 
-      - name: Build site
-        run: npm run build
+      - name: Build site + drift manifest
+        run: npm run build:gated
 
       - name: Verify drift policy
         run: |

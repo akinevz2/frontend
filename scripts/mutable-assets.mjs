@@ -43,7 +43,13 @@ export const MUTABLE_PATHS = Object.freeze([
   // every build (generatedAt, violation counts), so it changes each run.
   "documents/drift-report.json",
   "checksums.txt",
+  // Vite-emitted bundles: content-hashed names, and chunk hashing/module
+  // ordering can legitimately vary between rebuilds of identical inputs
+  // ("rebuild noise").  Covers every chunk vite emits under assets/
+  // (index-*.css, toastify-*.css, *.js).  Hand-copied public/ files land
+  // at the dist ROOT, never in assets/, so they stay STABLE.
   "assets/*.js",
+  "assets/*.css",
 ]);
 
 export const MUTABLE_PATH_SET = Object.freeze(new Set(MUTABLE_PATHS));

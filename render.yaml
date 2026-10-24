@@ -5,7 +5,17 @@ services:
     envVars:
       - key: NODE_VERSION
         value: 22.22.1
-    buildCommand: git submodule update --init --recursive && npm install && npm --prefix xp.css install --no-audit --no-fund && npm --prefix xp.css run build && npm run build
+    # Deploy builds are deliberately cheap and side-effect-free:
+    # - no content regeneration — committed snapshots (soundcloud.json et
+    #   al.) ship exactly as build:local produced and committed them;
+    # - no checksums/drift pipeline — the committed manifest + drift
+    #   report (public/, copied into dist/ by vite) are served as-is; the
+    #   live-baseline pipeline re-runs where it belongs (CI, build:local).
+    # The static gate below fails the deploy before ANY install/build
+    # compute when the uploaded build's drift report is missing, corrupt,
+    # or reports unresolved violations (verify-policy.mjs needs no
+    # node_modules — node builtins only).
+    buildCommand: git submodule update --init --recursive && npm run verify:policy && npm install && npm --prefix xp.css install --no-audit --no-fund && npm --prefix xp.css run build && npm run build
     staticPublishPath: ./dist
     routes:
       - type: redirect
