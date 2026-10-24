@@ -1,12 +1,12 @@
 {
   "slug": "herbstutil",
   "title": "herbstutil",
-  "description": "A stdin filter that turns the verbose output of herbstclient attr into clean JSON - for scripting the herbstluftwm tiling window manager.",
+  "description": "A command-line bridge that turns the verbose output of herbstclient attr into clean, typed JSON - for scripting the herbstluftwm tiling window manager.",
   "github": "https://github.com/akinevz2/herbstutil",
   "content": {
     "heading": "herbstutil - JSON bridge to herbstluftwm",
     "content": [
-      "herbstutil is a small command-line filter that post-processes the output of `herbstclient attr` into clean JSON - so the state of the herbstluftwm window manager can be consumed wherever JSON is spoken.",
+      "herbstutil is a small command-line tool that turns the output of `herbstclient attr` into clean, typed JSON - so the state of the herbstluftwm window manager can be consumed wherever JSON is spoken. It can run herbstclient itself (`herbstutil attr ...`) or parse piped output like a unix filter.",
       "[https://github.com/akinevz2/herbstutil](https://github.com/akinevz2/herbstutil)",
       {
         "heading": "herbstluftwm in a nutshell",
@@ -22,20 +22,34 @@
       {
         "heading": "What herbstutil does",
         "anchor": "about",
-        "status": "early release",
+        "status": "early release - v0.1.2",
         "theme": "open",
         "content": [
-          "herbstutil reads `herbstclient attr` output on stdin and rebuilds it as JSON, preserving the node's shape:",
-          "value - the node's description; children - the names of the child nodes; attributes - every attribute as a name-value pair.",
+          "herbstutil rebuilds `herbstclient attr` output as JSON, preserving the node's shape: value - the node's description; children - the names of the child nodes; attributes - every attribute as a name-value pair.",
           "Where herbstclient speaks humans, herbstutil speaks machine.",
+          "It does not stop at unquoting: herbstclient annotates every attribute with a type hint in the first column of its listing, and herbstutil uses that hint to emit properly typed JSON.",
+          {
+            "heading": "Value typing",
+            "theme": "open",
+            "content": [
+              "s (string) - JSON string, outer quotes stripped",
+              "b (bool) - JSON boolean",
+              "i, u (int, uint) - JSON number",
+              "R (rectangle) - `WIDTHxHEIGHT+X+Y` becomes an object { x, y, width, height }",
+              "p (point) - `XxY` becomes an object { x, y }",
+              "c, r, n, f (color, regex, named value, font) - string",
+              "Leaf values (a single attribute) print no type hint, so a heuristic decides there: true/false become booleans, integers and decimals become numbers, everything else stays a string."
+            ]
+          },
           {
             "heading": "Usage",
             "theme": "open",
             "content": [
-              "herbstutil is a stdin filter built with Bun and bunli, packaged as a single executable:",
-              "```sh\n$ herbstclient attr clients. | herbstutil\n$ herbstclient attr clients.focus. | herbstutil --space 2\n```",
+              "Two ways to the same JSON: let herbstutil run herbstclient for you, or pipe herbstclient through the parse filter (the default command). Built with Bun and bunli, packaged as a single executable:",
+              "```sh\n$ herbstutil attr clients.focus.           # runs herbstclient attr and parses it\n$ herbstclient attr clients. | herbstutil parse\n$ herbstclient attr clients. | herbstutil   # parse is the default command\n```",
               "s, --space <n> - pretty-print with `n` spaces of indentation (default 4)",
-              "It refuses to run attached to a terminal: herbstutil always reads from stdin."
+              "e, --escape - skip all type conversion and keep every value exactly as herbstclient printed it: strings keep their literal quotes, escaped inside the JSON string",
+              "`parse` refuses to run attached to a terminal: as a filter it always reads from stdin."
             ]
           }
         ]
@@ -45,15 +59,15 @@
         "anchor": "examples",
         "theme": "open",
         "content": [
-          "The same node, before and after `| herbstutil`.",
+          "The same nodes, before and after herbstutil.",
           {
             "heading": "Root node: herbstclient attr clients.",
             "theme": "open",
             "content": [
               "Raw:",
-              "```text\n$ herbstclient attr clients.\nThe managed windows. For every (managed) window id there is an entry here.\n\n5 children:\n  0x400003.\n  0x700003.\n  0xc00003.\n  0xe80003.\n  focus.\n0 attributes.\n .---- type\n | .-- writable\n | | .-- hookable\n V V V\n```",
-              "Piped through herbstutil:",
-              "```json\n{\n    \"value\": \"The managed windows. For every (managed) window id there is an entry here.\",\n    \"children\": [\n        \"0x400003.\",\n        \"0x700003.\",\n        \"0xc00003.\",\n        \"0xe80003.\",\n        \"focus.\"\n    ],\n    \"attributes\": {}\n}\n```"
+              "```text\n$ herbstclient attr clients.\nThe managed windows. For every (managed) window id there is an entry here.\n\n4 children:\n  0x280003.\n  0x680004.\n  0x900003.\n  focus.\n0 attributes.\n .---- type\n | .-- writable\n | | .-- hookable\n V V V\n```",
+              "Through herbstutil:",
+              "```json\n{\n    \"value\": \"The managed windows. For every (managed) window id there is an entry here.\",\n    \"children\": [\n        \"0x280003.\",\n        \"0x680004.\",\n        \"0x900003.\",\n        \"focus.\"\n    ],\n    \"attributes\": {}\n}\n```"
             ]
           },
           {
@@ -61,10 +75,10 @@
             "theme": "open",
             "content": [
               "Raw (excerpt):",
-              "```text\n$ herbstclient attr clients.focus.\na managed window\n\n1 child:\n  parent_frame.\n24 attributes:\n s - - class = \"Alacritty\"\n b w h decorated = true\n b w h floating = false\n i - h pid = 61763\n s - h tag = \"work\"\n s - h title = \"OC | Customizing opencode and dotfiles\"\n b - h visible = true\n```",
-              "Piped through herbstutil (excerpt - all 24 attributes arrive in the JSON):",
-              "```json\n{\n    \"value\": \"a managed window\",\n    \"children\": [\n        \"parent_frame.\"\n    ],\n    \"attributes\": {\n        \"class\": \"\\\"Alacritty\\\"\",\n        \"decorated\": \"true\",\n        \"floating\": \"false\",\n        \"pid\": \"61763\",\n        \"tag\": \"\\\"work\\\"\",\n        \"title\": \"\\\"OC | Customizing opencode and dotfiles\\\"\",\n        \"urgent\": \"false\",\n        \"visible\": \"true\",\n        \"winid\": \"\\\"0x700003\\\"\"\n    }\n}\n```",
-              "Note how attribute values stay as raw strings - a reminder that everything coming from `attr` is text until you parse it downstream."
+              "```text\n$ herbstclient attr clients.focus.\na managed window\n\n1 child:\n  parent_frame.\n24 attributes:\n .---- type\n | .-- writable\n | | .-- hookable\n V V V\n s - - class = \"Alacritty\"\n R - h content_geometry = 1255x662+13+34\n s - - class = \"Alacritty\"\n R - h content_geometry = 1255x662+13+34\n b w h decorated = true\n i - h pid = 403112\n s - - tag = \"work\"\n s - h title = \"OC | herbstutil tag 0.1.1b discrepancy\"\n b - h visible = true\n s - h winid = \"0x280003\"\n```",
+              "Through herbstutil (excerpt - all 24 attributes arrive in the JSON):",
+              "```json\n{\n    \"value\": \"a managed window\",\n    \"children\": [\n        \"parent_frame.\"\n    ],\n    \"attributes\": {\n        \"class\": \"Alacritty\",\n        \"content_geometry\": {\n            \"x\": 13,\n            \"y\": 34,\n            \"width\": 1255,\n            \"height\": 662\n        },\n        \"decorated\": true,\n        \"pid\": 403112,\n        \"tag\": \"work\",\n        \"title\": \"OC | herbstutil tag 0.1.1b discrepancy\",\n        \"visible\": true,\n        \"winid\": \"0x280003\"\n    }\n}\n```",
+              "Attribute values arrive typed: strings unquoted, booleans and numbers real, rectangles as objects - herbstclient's type hint drives the conversion. Pass `--escape` to keep the raw text instead."
             ]
           },
           {
@@ -73,7 +87,7 @@
             "content": [
               "Raw:",
               "```text\n$ herbstclient attr clients.focus.tag\nwork\n```",
-              "Piped through herbstutil:",
+              "Through herbstutil:",
               "```json\n{\n    \"value\": \"work\",\n    \"children\": [],\n    \"attributes\": {}\n}\n```"
             ]
           }
