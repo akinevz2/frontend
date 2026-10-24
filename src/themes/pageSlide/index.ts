@@ -47,7 +47,7 @@ const themes: Record<Direction | "parked", ThemeDefinition> = {
   /** Initial load ONTO a hyperlinked window target: the slide theme is
    * fully installed (its class drives minimize folds and the navigation
    * hooks) but with a zero-distance entrance — nothing visibly moves
-   * while the maximized overlay is the page's first paint. */
+   * while the reveal scrolls to the linked section. */
   parked: slide("parked", "0", "0"),
 };
 
@@ -237,6 +237,9 @@ const onPopState = () => {
     return;
   }
   transition(location.pathname, location.hash);
+  // History traversal onto another page keeps the same rule: a hashed
+  // window target lands on its element (the reveal is the store's).
+  if (location.hash) scrollToHash(location.hash);
 };
 
 /** Scrolls the hash element into view — inside its scrolling window
@@ -273,13 +276,16 @@ export function enablePageSlide(): void {
   if (originalPushState || typeof document === "undefined") return;
   current = location.pathname;
   // Initial load ONTO a hyperlinked window target (#hash or a blog
-  // ?post= the route maximizes): install the theme "parked" so the
-  // entrance slide plays from nowhere — the maximized overlay is the
-  // only visible first paint, and minimize folds / navigation hooks
-  // stay functional. Plain loads slide in from the top as before.
+  // ?post= the route reveals): install the theme "parked" so the
+  // entrance slide plays from nowhere, then land the page on the target
+  // — the return-to-page choreography (the reveal is the window store's,
+  // the landing scroll is this theme's, like every hash navigation).
+  // Minimize folds / navigation hooks stay functional. Plain loads slide
+  // in from the top as before.
   const linkedWindowTarget =
     !!location.hash || new URLSearchParams(location.search).has("post");
   applyDirection(linkedWindowTarget ? "parked" : "down");
+  if (linkedWindowTarget && location.hash) scrollToHash(location.hash);
 
   const original = history.pushState.bind(history);
   originalPushState = history.pushState;

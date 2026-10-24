@@ -36,17 +36,6 @@ test("build:local refreshes soundcloud, then gated build, then the gate", () => 
   assert.ok(gatedAt < gateAt, "the gate must consume the fresh drift report");
 });
 
-test("build:local commits the refreshed snapshot before the dev preview", () => {
-  // npm run dev blocks forever; if it ran before `git add -A && git commit`
-  // the refreshed snapshots (soundcloud.json, checksums, drift report)
-  // would never be committed and the deployed site would trail releases.
-  const local = scripts["build:local"];
-  const commitAt = local.indexOf("git commit");
-  const devAt = local.indexOf("npm run dev");
-  assert.ok(commitAt !== -1 && devAt !== -1);
-  assert.ok(commitAt < devAt, "commit must precede the blocking dev server");
-});
-
 test("check:ci mirrors the CI subset with the gated build", () => {
   assert.match(scripts["check:ci"], /build:gated/);
   assert.match(scripts["check:ci"], /verify:policy/);

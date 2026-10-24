@@ -39,7 +39,7 @@ type WindowStore = {
   permalinkMode: PermalinkMode;
   /** Replaces close/minimise of top-level windows (e.g. "go back"). */
   onLeave: (() => void) | undefined;
-  /** Records the window in the URL so returning to the page reopens it. */
+  /** Records the window in the URL so returning to the page reveals it. */
   remember: (id: string) => void;
   flagsOf: (id: string) => WindowFlags;
   patch: (id: string, flags: WindowFlags) => void;
@@ -52,20 +52,22 @@ type WindowStore = {
 const Ctx = createContext<WindowStore | null>(null);
 
 /** Seeds the store synchronously from the URL: if the location names a
- * target window (?post=slug / #tree-index), it starts maximized with the
- * whole subtree expanded on the FIRST render. usePermalinkTarget's
- * post-paint effect normally applies these flags a frame later, but then
- * the page first paints the un-maximized main DOM and scrolls — the
- * maximized element pops into view over a polluted first frame. Rendering
- * the flags from the start shows the maximized overlay immediately, with
- * nothing below it ever committed. */
+ * target window (?post=slug / #tree-index), it starts REVEALED — expanded
+ * inline, never maximized — with its whole subtree expanded on the FIRST
+ * render. Revealing inline needs every ancestor expanded too (a collapsed
+ * parent never mounts the target, leaving nothing to scroll to), hence
+ * the lineage. usePermalinkTarget's post-paint effect re-applies the
+ * identical flags a frame later, and the pageSlide theme lands the page
+ * on the element; seeding first keeps that first paint already expanded
+ * instead of popping the section open after the fact. */
 function initialFlags(roots: WindowNode[]): State {
   const windows = flatten(roots);
   const target = findTarget(windows);
   if (!target) return {};
-  const state: State = {
-    [target.id]: { maximized: true, minimized: false, expanded: true },
-  };
+  const state: State = {};
+  for (const id of lineage(target.id)) {
+    state[id] = { expanded: true, minimized: false };
+  }
   for (const id of descendantIds(windows, target.id)) {
     state[id] = { expanded: true, minimized: false };
   }
@@ -169,11 +171,14 @@ function findTarget(windows: WindowNode[]) {
 }
 
 /** Confirms the window named by the URL, once per page load. The store is
- * already seeded synchronously with the target maximized (initialFlags)
- * so the FIRST paint shows the fullscreen view with no inline flash;
- * this effect only re-applies the identical, idempotent patches. Both
- * link shapes arrive the same way: the target opens maximized in the
- * foreground with its whole subtree expanded. */
+ * already seeded synchronously with the target revealed (initialFlags) so
+ * the FIRST paint shows it expanded with no late pop-open; this effect
+ * only re-applies the identical, idempotent patches. Both link shapes
+ * arrive the same way: the target reveals inline with its whole subtree
+ * expanded — returning from a link lands back on the section instead of
+ * re-lifting it fullscreen. The landing scroll is no business of the
+ * store: the pageSlide theme owns it (scrollToHash), like every other
+ * hash choreography. */
 export function usePermalinkTarget() {
   const { windows, expand, patch } = useWindowStore();
   useEffect(() => {
@@ -182,11 +187,11 @@ export function usePermalinkTarget() {
     expand(target.id);
     // Arriving at a permalink reveals the target's whole subtree, not
     // just its own section (descendants expand, stale minimized flags
-    // clear; closed/parked windows stay parked), then lifts it.
+    // clear; closed/parked windows stay parked). Nothing lifts and
+    // nothing scrolls here — the pageSlide theme lands the page.
     for (const id of descendantIds(windows, target.id)) {
       patch(id, { expanded: true, minimized: false });
     }
-    patch(target.id, { maximized: true, minimized: false });
   }, []);
 }
 

@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { playLayeredAudio, playMinimizeClick } from "@/lib/audio";
 import { getClippyState } from "@/lib/clippy";
 import { Md } from "@/lib/markdown";
-import { suppressNextSlideClick } from "@/themes/pageSlide";
 import { CopyAddon } from "./CopyAddon";
 import { BannerView, EmbedView } from "./Embed";
 import { OkButton } from "./OkButton";
@@ -75,6 +74,7 @@ function Body({
   expanded,
   maximized,
   onOk,
+  onMaximize,
 }: {
   node: WindowNode;
   expanded: boolean;
@@ -82,9 +82,13 @@ function Body({
   maximized?: boolean | undefined;
   /** Closes the maximized view; OK keeps link navigation when linked. */
   onOk?: (() => void) | undefined;
+  /** The window's raw maximize action — the OK button's middleware lifts
+   * a linked window with it instead of navigating on the first press. */
+  onMaximize?: (() => void) | undefined;
 }) {
-  // Linked windows keep their OK button even when forced open: OK is the
-  // affordance that follows the link (e.g. the "npm package" stub windows).
+  // Linked windows keep their OK button even when forced open: OK lifts
+  // the maximized view (the maximized OK is what follows the link — e.g.
+  // the "npm package" stub windows).
   const showOk = Boolean(node.link) || (!expanded && !forcesExpanded(node));
   const copyable = Boolean(node.status && node.link?.startsWith("/addons/"));
   const showContent = expanded || Boolean(node.link);
@@ -115,7 +119,11 @@ function Body({
       <div className="maximized-content-col">
         {content}
         <div className="ok-row ok-row-bottom">
-          <OkButton node={node} onOk={node.link ? undefined : onOk} />
+          <OkButton
+            node={node}
+            onOk={node.link ? undefined : onOk}
+            onMaximize={onMaximize}
+          />
           {node.link && onOk && <CancelButton onClose={onOk} />}
           <PermalinkButton node={node} />
         </div>
@@ -136,7 +144,7 @@ function Body({
     return (
       <div className="ok-row ok-row-bottom">
         {content}
-        <OkButton node={node} />
+        <OkButton node={node} onOk={onOk} onMaximize={onMaximize} />
       </div>
     );
   }
@@ -237,34 +245,30 @@ export function Window({ node }: { node: WindowNode }) {
       maximizedCtl.dismiss();
       return;
     }
-    // The crunchy kick backs every inline ✕ press: refused closes
-    // (Clippy veto, "funny" windows) and successful ones alike.
-    playLayeredAudio(CLOSE_SOUND);
     const funnyClose = hasTheme(node, "funny");
     // Refusal keeps the window open (see window-close-attempt below);
     // successful closings park/restore/leave after the crunch.
     const refused = !document.dispatchEvent(
       new CustomEvent("window-close-attempt", { cancelable: true }),
     );
-    // "funny" windows refuse outright: the kick played, the window stays.
-    if (funnyClose) return;
-    if (!refused) {
-      // Easter egg: while Clippy is on screen, ✕ parks the window instead
-      // of leaving the page — the mascot's unhide list offers it back
-      // (restore). Never on leave-on-close pages (Projects), where ✕ means
-      // navigate.
-      if (!leaves && getClippyState().visible) {
-        patch(node.id, { closed: true });
-        return;
-      }
-      if (leaves) {
-        // ✕ on a page-exit window navigates with the kick as its sound:
-        // the navigation fold the close triggers stays silent.
-        suppressNextSlideClick();
-      }
-      minimize();
+    // The crunchy kick backs every inline ✕ press EXCEPT the navigation
+    // close: ✕ on a leave-on-close page (Projects) IS a navigation back
+    // to the index, and the pageSlide transition plays its own Click.ogg
+    // for it — no kick and no suppression, so the click is the
+    // navigation's only sound. Refused closes (Clippy veto, "funny"
+    // windows) still kick: the refusal is the kick's moment.
+    if (funnyClose || refused || !leaves) playLayeredAudio(CLOSE_SOUND);
+    if (funnyClose || refused) return;
+    // Easter egg: while Clippy is on screen, ✕ parks the window instead
+    // of leaving the page — the mascot's unhide list offers it back
+    // (restore). Never on leave-on-close pages (Projects), where ✕ means
+    // navigate.
+    if (!leaves && getClippyState().visible) {
+      patch(node.id, { closed: true });
       return;
     }
+    minimize();
+    return;
   };
 
   const window_ = (
@@ -328,7 +332,11 @@ export function Window({ node }: { node: WindowNode }) {
             // no slide — the departing animation is the minimize's alone.
             // OK on a maximized window: dismiss AND reveal its content
             // (the returned window opens along with its direct children).
+            // The raw maximize action rides along for the OK button's
+            // middleware: a linked window's first OK press lifts the
+            // maximized view, and the maximized OK navigates the link.
             onOk={maximized ? () => maximizedCtl.dismissRevealed() : undefined}
+            onMaximize={maximizedCtl.maximize}
           />
         </div>
       )}

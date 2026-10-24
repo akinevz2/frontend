@@ -11,9 +11,9 @@ document.body.classList.add("styles-loaded");
 // Always install the page-slide theme: its hooks drive window
 // minimisation, navigation choreography and sounds. When the page is
 // loaded directly ONTO a hyperlinked window target (a #hash or ?post=
-// the route maximizes), the theme starts "parked" — zero slide distance
-// — so the entrance slide plays from nowhere and disturbs nothing while
-// the maximized overlay is the only visible paint. Page loads without a
+// slug the route reveals), the theme starts "parked" — zero slide
+// distance — so the entrance plays from nowhere and disturbs nothing
+// before the reveal scrolls to the linked section. Page loads without a
 // hyperlink target slide in from the top as usual; later navigations
 // apply a real direction and slide as usual.
 enablePageSlide();

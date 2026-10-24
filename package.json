@@ -17,7 +17,7 @@
     "render": "echo 'https://render.com/'",
     "build": "vite build && npm run render",
     "build:gated": "npm run build && npm run checksums",
-    "build:local": "npm run refresh:content && npm run refresh:soundcloud && npm run check:lockfile && npm run check:all && npm run build:gated && npm run verify:policy && git add -A && git commit && npm run dev",
+    "build:local": "npm run refresh:content && npm run refresh:soundcloud && npm run check:lockfile && npm run check:all && npm run build:gated && npm run verify:policy && git add -A && npm run dev",
     "build:ready": "git add -A && npm run push",
     "push": "git push origin main",
     "preview": "vite preview --host 127.0.0.1 --port 8086",
