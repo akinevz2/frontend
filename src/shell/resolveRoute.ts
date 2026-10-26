@@ -1,4 +1,10 @@
-import { routes, type Route } from "@/content";
+import {
+  blogDirFiles,
+  blogDirListed,
+  findBlogDir,
+  routes,
+  type Route,
+} from "@/content";
 
 export const NOT_FOUND = routes.find((r) => r.path === "/404") as Route;
 
@@ -38,7 +44,40 @@ function blogDocumentRoute(pathname: string): Route {
 }
 
 export function resolveRoute(pathname: string): Route {
-  if (BLOG_PAGE.test(pathname)) return blogDocumentRoute(pathname);
+  if (BLOG_PAGE.test(pathname)) {
+    // Every /blog/** address resolves against the filesystem walk
+    // (build/blogDirsPlugin.ts), in order:
+    // 1. a directory → its listing page (or 404 when opted out);
+    // 2. a file (<base>.md or <base>.json) → its post page;
+    // 3. neither → 404. The old fallback embedded "<path>.md" blindly,
+    //    so removed files AND removed directories rendered whatever the
+    //    server's SPA fallback handed back — the site inside itself.
+    const path = normalizePath(pathname);
+    const blogDir = findBlogDir(path);
+    if (blogDir) {
+      if (!blogDirListed(blogDir.path)) return NOT_FOUND;
+      const name =
+        blogDir.path.split("/").filter(Boolean).pop() ?? blogDir.path;
+      return {
+        path: pathname,
+        title: `${name} | blog of kine`,
+        description: `${name} — the files in this blog directory.`,
+        page: "BlogDirPage",
+        hidden: true,
+      };
+    }
+    const parent = path.replace(/\/+$/, "").replace(/\/[^/]*$/, "") || "/";
+    const base = path.split("/").pop() ?? "";
+    const files = blogDirFiles(parent);
+    // The parent of any /blog/** address is /blog or a walk-known
+    // subdirectory; an unknown parent means a missing ancestor — 404.
+    if (
+      !files ||
+      (!files.includes(`${base}.md`) && !files.includes(`${base}.json`))
+    )
+      return NOT_FOUND;
+    return blogDocumentRoute(pathname);
+  }
   const path = normalizePath(pathname);
   const route = routes.find((r) => r.path === path);
   return route ?? NOT_FOUND;

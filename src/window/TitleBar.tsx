@@ -6,6 +6,7 @@ type Props = {
   onMinimize: () => void;
   onMaximize: () => void;
   onClose: () => void;
+  onDoubleClick?: (event: React.MouseEvent) => void;
 };
 
 export function TitleBar({
@@ -14,10 +15,11 @@ export function TitleBar({
   onMinimize,
   onMaximize,
   onClose,
+  onDoubleClick,
 }: Props) {
   const heading = node.heading ?? "";
   return (
-    <div className="title-bar">
+    <div className="title-bar" onDoubleClick={onDoubleClick}>
       <div className="title-bar-text">
         {node.link ? (
           <a

@@ -20,7 +20,7 @@ const ARRIVE_MS = 600;
 
 /** Hidden mascot; summoning logic lives in lib/clippy. Draggable & snappy. */
 export function Clippy() {
-  const { visible, bubble, saysNo, listOpen } = useSyncExternalStore(
+  const { visible, bubble, saysNo, offering, listOpen } = useSyncExternalStore(
     subscribeClippy,
     getClippyState,
   );
@@ -202,9 +202,16 @@ export function Clippy() {
         </div>
       )}
       {!listOpen && bubble && (
+        // ONE bubble at a time, by construction: every lib/clippy state
+        // transition clears its sibling flags in the SAME committed set()
+        // (offer clears saysNo, the veto clears nothing else, the hint
+        // clears offering, the list masks the bubble outright) — so the
+        // precedence here never renders two texts side by side.
         <div className="clippy-bubble" role="status">
           {saysNo ? (
             "haha it said no"
+          ) : offering ? (
+            "oh where did that go?.."
           ) : (
             <>
               It looks like you're trying to close something. Try clicking one

@@ -1,5 +1,6 @@
 import type { WindowNode } from "./model";
 import { hasTheme } from "./model";
+import type { SignalManifest } from "@/lib/signals";
 
 /** TEMP STUB: the "experimental" theme is switched off — its wobble and
  * flash animations are noise while the OK/maximize choreography is being
@@ -12,16 +13,17 @@ export const dataTheme = (node: WindowNode): string | undefined => {
   return themes.length ? themes.join(" ") : undefined;
 };
 
-/** The ✕ close's sound, declared. The crunchy kick plays ONLY when the
- * window does not close — a refused close (Clippy veto, "funny"
- * refusal) is the kick's moment. A navigation close (leave-on-close
- * pages: ✕ back to the index) closes, so it never kicks — its sound is
- * the pageSlide transition's own Click.ogg, which the window neither
- * plays nor suppresses. Parks and collapses close silently. */
-export type CloseSound = "kick" | "transition-click" | "none";
+/** The ✕ close's sound, declared. The crunchy kick backs every ✕ press
+ * that STAYS on the page — refusals (Clippy veto, "funny" windows),
+ * local collapses, Clippy parks, maximized restores — while the
+ * Click.ogg is reserved for the ✕ that navigates away to a new page
+ * (that gesture's pageSlide fold click is muted in closeSounds.ts, so
+ * the navigation gets exactly one click). The sound's name is owned by
+ * the window:closed manifest entry; this policy maps a press to it. */
+export type CloseSound = SignalManifest["window:closed"]["sound"];
 
-export const closeSound = (closes: boolean, navigation: boolean): CloseSound =>
-  !closes ? "kick" : navigation ? "transition-click" : "none";
+export const closeSound = (navigates: boolean): CloseSound =>
+  navigates ? "click" : "kick";
 
 /** `open` windows are always expanded and have no OK button. */
 export const forcesExpanded = (node: WindowNode): boolean =>

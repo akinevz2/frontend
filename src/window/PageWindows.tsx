@@ -3,7 +3,9 @@ import type { Section } from "@/content";
 import { buildWindows } from "./model";
 import {
   WindowProvider,
+  usePageReturn,
   usePermalinkTarget,
+  useReveal,
   useRememberLeave,
   useWindowStore,
   type PermalinkMode,
@@ -12,7 +14,12 @@ import { Window } from "./Window";
 
 function Roots({ children }: { children?: ReactNode }) {
   const { windows } = useWindowStore();
+  // The reveal handler subscribes FIRST (effects run in hook order):
+  // the permalink confirm below dispatches on mount and must not miss
+  // its handler.
+  useReveal();
   usePermalinkTarget();
+  usePageReturn();
   useRememberLeave();
   return (
     <>

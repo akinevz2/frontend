@@ -1,52 +1,55 @@
 import { useSignals } from "@/lib/signals";
-import type { WindowNode } from "./model";
+import { hasContent, type WindowNode } from "./model";
 import { useWindowStore } from "./state";
 
-/** OK follows the window's link if it has one, otherwise expands the window.
- * An `onOk` override (used by maximized windows) always wins, and a
- * middleware sits between the override and the default: a linked window's
- * first OK press lifts the maximized view instead of navigating — only the
- * maximized OK passes through to the link. */
-export function OkButton({
-  node,
-  onOk,
-  onMaximize,
-}: {
-  node: WindowNode;
-  /** Closing override handed only to maximized link-less windows. */
-  onOk?: (() => void) | undefined;
-  /** The window's raw maximize action, for the middleware below. */
-  onMaximize?: (() => void) | undefined;
-}) {
+/** OK follows the window's link if it has one, otherwise expands the
+ * window. The OK middleware is all signals with no callback threading:
+ * on the maximized rail a link-less window MINIMIZES AND REVEALS
+ * (window:minimize plays the click + slide-off, window:reveal expands
+ * the section inline), an inline linked window lifts the maximized view
+ * on its first press (window:maximize), and once maximized the press
+ * passes through to the link below. */
+export function OkButton({ node }: { node: WindowNode }) {
   const { flagsOf, expand, remember } = useWindowStore();
   const { dispatch } = useSignals();
 
   const onClick = () => {
-    if (onOk) {
-      onOk();
+    const maximized = flagsOf(node.id).maximized;
+    if (maximized && !node.link) {
+      // The maximized rail's OK on a link-less window: the minimize
+      // choreography (click + slide-off) takes the view down, then the
+      // section reveals inline — the OK button IS the back-out gesture.
+      dispatch("window:minimize", { id: node.id });
+      dispatch("window:reveal", { id: node.id, descendants: "direct" });
       return;
     }
     // OK middleware: intercept the first press on a linked window — it
-    // opens the maximized view rather than leaving the page. Once the
-    // window IS maximized (or no maximize action exists), the press
-    // passes through to the default navigation below.
-    if (node.link && onMaximize && !flagsOf(node.id).maximized) {
-      onMaximize();
+    // opens the maximized view rather than leaving the page — EXCEPT a
+    // link-section carrying no content of its own (hasContent): the
+    // maximized view would only lift an empty shell around its rail,
+    // so the press short-circuits straight to the link and the
+    // maximized view stays away. Once the window IS maximized (a
+    // permalink landing does that even content-free), the press falls
+    // through to the navigation.
+    if (node.link && !maximized && hasContent(node)) {
+      dispatch("window:maximize", { id: node.id });
       return;
     }
     const { link } = node;
-    // OK revealing a section no longer rewrites the hash — the hash follows
-    // the maximized window (Window.tsx) and off-site departures only.
+    // OK revealing a section never rewrites the URL-hash: the maximized
+    // view's push owns the URL while a window is up, and the off-site
+    // departure bookmarks its window into the entry's STATE instead.
     if (!link) {
       expand(node.id);
       return;
     }
     if (/^https?:/.test(link) || node.externalLink || /\.\w+$/.test(link)) {
-      // Leaving the site: bookmark this window into the hash first, so a
-      // return visit (via back or the external page) lands back on the
-      // section — revealed and scrolled to, never re-maximized.
+      // Leaving the site: bookmark this window into the history entry's
+      // state (history:remember) — the entry stays HASH-FREE, so
+      // returning via back, the external page or a reload lands on the
+      // section revealed and scrolled to (the store resolves the
+      // bookmark), never re-maximized.
       remember(node.id);
-      history.replaceState(null, "", `#${node.id}`);
       window.location.assign(link);
     } else {
       // Internal navigation is a signal: the shell's handler performs

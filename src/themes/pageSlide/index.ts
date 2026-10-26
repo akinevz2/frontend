@@ -5,7 +5,9 @@ import {
   type ThemeDefinition,
 } from "lightdni-jssas-toggle";
 import { playMinimizeClick } from "@/lib/audio";
+import { windowBookmark } from "@/lib/history";
 import { dispatchSignal } from "@/lib/signals";
+import { scrollToId } from "@/lib/scrollTo";
 import { resolveDirection, type Direction } from "./direction";
 import "./pageSlide.css";
 
@@ -89,8 +91,12 @@ function leaveGhost(): void {
     height: `${rect.height}px`,
     minHeight: "0",
   });
-  const pageEl = main.querySelector<HTMLElement>(".page");
-  const ghostPage = ghost.querySelector<HTMLElement>(".page");
+  const pageEl = main.matches(".page")
+    ? main
+    : main.querySelector<HTMLElement>(".page");
+  const ghostPage = ghost.matches(".page")
+    ? ghost
+    : ghost.querySelector<HTMLElement>(".page");
   if (pageEl && ghostPage) {
     // Page padding can depend on elements (debug bar) that unmount with the
     // route: freeze it on the ghost and ease the new page away from it.
@@ -154,7 +160,7 @@ function leaveGhost(): void {
     const leaving = bar.cloneNode(true) as HTMLElement;
     leaving.classList.add("page-slide-bar");
     // Layout rules key off this attribute; the clone must not keep them alive.
-    leaving.removeAttribute("data-debug-bar");
+    delete leaving.dataset.debugBar;
     document.body.appendChild(leaving);
     // The live bar yields to the clone in the same frame — visibility,
     // not display, so the body padding rules keep reserving its row —
@@ -185,8 +191,10 @@ function leaveGhost(): void {
 
 let current = "";
 let originalPushState: History["pushState"] | null = null;
-/** Mutes the next transition's fold click: a window ✕ that navigates
- * closes with its own crunchy kick — no Click.ogg on top of it. */
+let originalReplaceState: History["replaceState"] | null = null;
+/** Mutes the next transition's fold click: the navigating window ✕
+ * declares its own Click.ogg through the bus (closeSounds) — no second
+ * click on top of the navigation fold. */
 let clickSuppressed = false;
 
 export function suppressNextSlideClick(): void {
@@ -223,56 +231,52 @@ function restartArrival(): void {
   const main = document.querySelector("main");
   if (!main) return;
   main.style.animation = "none";
-  void main.offsetWidth;
+  // void main.offsetWidth;
   main.style.animation = "";
-  const pageEl = main.querySelector<HTMLElement>(".page");
-  if (pageEl) {
-    pageEl.style.animation = "none";
-    void pageEl.offsetWidth;
-    pageEl.style.animation = "";
+  // The page element is main itself in the normalized shell (main.page):
+  // a nested .page resets separately, in whatever shape the document has.
+  const page = main.matches(".page")
+    ? null
+    : main.querySelector<HTMLElement>(".page");
+  if (page) {
+    page.style.animation = "none";
+    // void page.offsetWidth;
+    page.style.animation = "";
   }
 }
 
 const onPopState = () => {
+  const arrival = { path: location.pathname, hash: location.hash };
   if (location.pathname === current) {
-    // Same-page history traversal only moves the hash: bring the
-    // hyperlinked element into view (inside its scrolling window).
+    // Same-page history traversal only moves the shape of the URL:
+    // bring the hyperlinked element into view (inside its scrolling
+    // window) — and announce the RETURN, so holders of pre-departure
+    // state (the window store, same-path traversals never remount) can
+    // repair themselves.
     if (location.hash) scrollToHash(location.hash);
+    // A hash-free bookmarked destination names its section in STATE:
+    // the same landing rule.
+    else scrollToId(windowBookmark() ?? "");
+    dispatchSignal("page:returned", arrival);
     return;
   }
   transition(location.pathname, location.hash);
-  // History traversal onto another page keeps the same rule: a hashed
-  // window target lands on its element (the reveal is the store's).
   if (location.hash) scrollToHash(location.hash);
+  // A hash-free bookmarked return (the window departures' form — the
+  // entry names its section in STATE alone): land on it like any hash
+  // target. The reveal is the store's; the landing scroll is ours.
+  else scrollToId(windowBookmark() ?? "");
+  // History traversal onto another page keeps the same rule: a hashed
+  // window target lands on its element (the reveal is the store's),
+  // and the traversal is announced as a return.
+  dispatchSignal("page:returned", arrival);
 };
 
-/** Scrolls the hash element into view — inside its scrolling window
- * (a maximized window scrolls its own revealed content) or the page.
- * A target already fully on screen is left exactly where it is: the
- * landing scroll exists to reveal an off-screen section, so yanking a
- * visible one to the top row would only scramble the reader's place.
- * The element can mount after the route commit (lazy pages), hence the
- * deferred retries. */
+/** Scrolls the hash element into view — the aim implementation lives in
+ * @/lib/scrollTo, shared with the window system's dismissal landings. */
 function scrollToHash(hash: string, attempts = 12): void {
   const id = decodeURIComponent(hash.slice(1));
-  if (!id) return;
-  const tick = () => {
-    const el = document.getElementById(id);
-    if (el) {
-      // Maximized windows are viewport-fixed overlays; scrolling the page
-      // behind them just resets the background while the overlay hides
-      // it. The restored window scrolls itself to the hash element on
-      // dismissal instead.
-      if (!el.closest(".maximized-backdrop")) {
-        const rect = el.getBoundingClientRect();
-        if (rect.top < 0 || rect.bottom > window.innerHeight)
-          el.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-      return;
-    }
-    if (attempts > 0) window.setTimeout(tick, 100);
-  };
-  tick();
+  scrollToId(id, attempts);
 }
 
 /**
@@ -292,9 +296,20 @@ export function enablePageSlide(): void {
   // Minimize folds / navigation hooks stay functional. Plain loads slide
   // in from the top as before.
   const linkedWindowTarget =
-    !!location.hash || new URLSearchParams(location.search).has("post");
+    !!location.hash ||
+    new URLSearchParams(location.search).has("post") ||
+    // A returned-to entry may name its section in STATE alone (the
+    // off-site bookmark is hash-free by design): that arrival is a
+    // landing on a target too — parked, reveal + scroll, nothing moves.
+    !!windowBookmark();
   applyDirection(linkedWindowTarget ? "parked" : "down");
-  if (linkedWindowTarget && location.hash) scrollToHash(location.hash);
+  if (linkedWindowTarget) {
+    if (location.hash) scrollToHash(location.hash);
+    // A hash-free bookmarked target (the off-site return's form): the
+    // entry names its section in STATE alone — land on it the same way
+    // the hash form lands.
+    else scrollToId(windowBookmark() ?? "");
+  }
 
   const original = history.pushState.bind(history);
   originalPushState = history.pushState;
@@ -304,12 +319,36 @@ export function enablePageSlide(): void {
       if (target.pathname !== current) {
         transition(target.pathname, target.hash);
         if (target.hash) scrollToHash(target.hash);
-      } else if (target.hash && target.hash !== location.hash) {
-        // Same pathname, new hash: no page transition — scroll instead.
-        scrollToHash(target.hash);
       }
+      // Same-path pushes stay silent: they are UI history entries (the
+      // mobile maximizer's #id anchor), NOT page arrivals — no landing
+      // scroll exists for them. Hash landings for real arrivals come
+      // from the boot branch, the popstate branches and hashchange.
     }
     original(data, unused, url);
+  };
+  // The ALIAS re-land: a shorthand path (/addons) boots as its own
+  // document and the router commits the destination (<Navigate
+  // to="/wow#addons" replace>) with a replaceState — the only
+  // path-changing commit the pushState wrapper cannot see. It is not a
+  // traversal (nothing announces it; the fresh-arrival gate decides the
+  // store's landing by the referrer alone) — but the page must still be
+  // LANDED on the destination's hash element like every boot: aim the
+  // scroll at it (the retrying scrollToId absorbs the remount delay),
+  // and take over `current` so later pushes compare against the true
+  // destination path. Same-path replaceStates (the window system's
+  // bookmark writes) stay silent.
+  const originalReplaceState = history.replaceState.bind(history);
+  history.replaceState = (data, unused, url) => {
+    if (url != null) {
+      const target = new URL(url, location.href);
+      if (target.pathname !== current) {
+        current = target.pathname;
+        if (target.hash) scrollToHash(target.hash);
+        else scrollToId(windowBookmark() ?? "");
+      }
+    }
+    originalReplaceState(data, unused, url);
   };
   // Same-page hyperlinks to hash elements change the hash natively.
   window.addEventListener("hashchange", (event) =>
@@ -323,6 +362,8 @@ export function disablePageSlide(): void {
   if (!originalPushState) return;
   history.pushState = originalPushState;
   originalPushState = null;
+  if (originalReplaceState) history.replaceState = originalReplaceState;
+  originalReplaceState = null;
   window.removeEventListener("popstate", onPopState);
   applyTheme({}, { previousClassNames: [CLASS] });
   clearThemeVariables(VARIABLES);

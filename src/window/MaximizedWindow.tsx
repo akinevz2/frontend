@@ -1,6 +1,7 @@
 import { useRef, useState, type ReactNode, type RefObject } from "react";
 import type { WindowFlags } from "./state";
-import { descendantIds } from "./model";
+import { scrollToId } from "@/lib/scrollTo";
+import { dispatchSignal } from "@/lib/signals";
 import { permalinkFor, useWindowStore } from "./state";
 
 /** Machinery for maximized-foreground windows: the dimmed sibling layer,
@@ -12,8 +13,9 @@ import { permalinkFor, useWindowStore } from "./state";
  * slot in both states and is never remounted. */
 
 export type MaximizedController = {
-  /** Enters the maximized view: anchors the section hash, reserves the
-   * flow slot (measured pre-lift) and lifts the window. Silent. */
+  /** Enters the maximized view: PUSHes the section's history entry (the
+   * bookmark the back button pops out of), reserves the flow slot
+   * (measured pre-lift) and lifts the window. Silent. */
   maximize: () => void;
   /** Silent, instant restore: ✕ on a maximized window, Escape and the
    * out-of-bounds backdrop click all restore without sound (sounds
@@ -22,7 +24,7 @@ export type MaximizedController = {
   /** OK entry: restore AND reveal the window's content on return. */
   dismissRevealed: () => void;
   /** Title-bar minimize only: restores with the slide-off ride. */
-  dismissWithSlide: () => void;
+  dismissWithSlide: (park?: boolean) => void;
   backdropRef: RefObject<HTMLDivElement | null>;
   parkedSize: { width: number; height: number } | null;
 };
@@ -61,14 +63,36 @@ export function useMaximizedController(
     ].filter((candidate) => candidate !== backdropRef.current);
     const topId = remaining[remaining.length - 1]?.dataset.windowId;
     const topNode = topId ? windows.find((w) => w.id === topId) : undefined;
-    history.replaceState(
-      history.state,
-      "",
-      topNode ? permalinkFor(topNode, permalinkMode) : `${location.pathname}`,
-    );
+    // The settle RIDES the history owner: the entry keeps the remaining
+    // maximized window's bookmark (or none, when the last one went) and
+    // lands on its permalink — pathname WITHOUT the query when none
+    // remain, so a stale ?post can't resurrect a maximized window after
+    // the last one was dismissed. The dismissed window's own backdrop is
+    // excluded via backdropRef, and ride-out clones carry no id to ever
+    // qualify.
+    dispatchSignal("history:anchor", {
+      id: topNode?.id,
+      url: topNode
+        ? permalinkFor(topNode, permalinkMode)
+        : `${location.pathname}`,
+      mode: "replace",
+    });
   };
 
-  const dismiss = (slide: boolean, revealed = false) => {
+  /** The dismissal may hand the URL off ONLY when this window still
+   * owns the active entry — the one its maximize push created, whose
+   * state bookmark names it. An in-page dismissal (✕, Escape, backdrop,
+   * title-bar restore, stacked settle) rides that entry and settles it.
+   * A history-TRAVERSAL dismissal does not: the browser back already
+   * popped onto the DESTINATION entry — whose hash and state bookmark,
+   * when present, name the section to reveal and scroll to. Rewriting
+   * that entry would strip the hash, drop the bookmark and land the
+   * return un-revealed (the reveal is then unfixable: nothing in the
+   * URL names the section any more). */
+  const stillOwnsEntry = (): boolean =>
+    (history.state as { window?: unknown } | null)?.window === nodeId;
+
+  const dismiss = (slide: boolean, revealed = false, park = false) => {
     const riders: HTMLElement[] = [];
     const shell = backdropRef.current;
     if (shell) {
@@ -112,51 +136,59 @@ export function useMaximizedController(
       riders.push(riding);
       shell.style.opacity = "0";
     }
-    settleHashAfterDismiss();
-    // The title-bar minimize parks the restored window MINIMIZED (the
-    // mascot's un-hide list / summon brings it back). Every other exit
-    // restores the window's OWN flags as they stood at maximize time —
-    // never maximizing content, only scrolling back to it; hash-navigated
-    // windows hold no snapshot and simply persist their inline state.
-    if (slide) {
-      patch(nodeId, { maximized: false, minimized: true });
-    } else {
-      patch(nodeId, { maximized: false, ...(preFlags.current ?? {}) });
-      if (revealed) {
-        const root = windows.find((w) => w.id === nodeId);
-        const direct =
-          root?.children.flatMap((c) =>
-            c.kind === "window" ? [c.node.id] : [],
-          ) ?? [];
-        for (const id of [nodeId, ...direct]) {
-          patch(id, { expanded: true, minimized: false });
-        }
-      }
+    if (stillOwnsEntry()) settleHashAfterDismiss();
+    // Every exit restores the window's OWN flags as they stood at
+    // maximize time — the minimize choreography (the click and the
+    // slide-off rider) is the departure ANIMATION. EXCEPT the parked
+    // minimize (the title-bar minimize button, and the double-click on
+    // the maximized title bar): the section underneath is minimized
+    // EXACTLY like the inline minimize handler does — collapsed
+    // (expanded:false), OK row bottom-right, the section's normal
+    // resting shape on the page. No third-state remnant: the maximized
+    // and inline minimize buttons land the window in the SAME state.
+    patch(nodeId, {
+      maximized: false,
+      minimized: false,
+      ...(park ? { expanded: false } : (preFlags.current ?? {})),
+    });
+    if (revealed) {
+      // The reveal (lineage + direct content) rides the signal bus —
+      // the store's handler expands; the controller only restores.
+      dispatchSignal("window:reveal", { id: nodeId, descendants: "direct" });
     }
     if (riders.length) {
       window.setTimeout(() => riders.forEach((rider) => rider.remove()), 400);
     }
-    // Parked windows land nowhere: a minimized window has no content to
-    // settle, so only the non-minimize exits bring the page back to
-    // their hash position.
-    if (!slide) {
-      window.setTimeout(
-        () =>
-          windowRef.current?.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-          }),
-        riders.length ? 240 : 60,
-      );
-    }
+    // NO landing scroll on dismissal: a close is not an arrival. Every
+    // exit restores the page at the exact place it was standing before
+    // the lift (the reserved flow slot keeps the layout still). Only
+    // arrivals land: history returns and permalink loads (pageSlide's
+    // scrollToHash and the store's confirm).
+    // EXCEPT the dismissal of a SEEDED landing: the maximized state
+    // came from the URL (a permalink opened the section maximized, or
+    // a refresh held it) — the reader never stood anywhere on this
+    // page, and the page rides at its arrival top with the section
+    // somewhere below the fold. The press that un-maximizes IS the
+    // reader's arrival at the section's inline resting place, so it
+    // lands the page on the section — the shared aiming scroll (the
+    // pageSlide theme's landing rules: smooth, on-screen-aware,
+    // re-aimed while the layout grows around the freshly revealed
+    // content). A snapshot exists ⇒ the lift happened in-page and the
+    // no-scroll rule stands.
+    if (preFlags.current === null) scrollToId(nodeId);
   };
-
   return {
     maximize: () => {
       // Snapshot the window's own flags first: the dismissal restores
       // exactly these (never maximizes content, re-minimizes if it was
-      // minimized before the lift).
-      preFlags.current = { ...flagsOf(nodeId) };
+      // minimized before the lift). The maximized key itself is
+      // stripped — a fresh-permalink landing seeds the window maximized
+      // with NO snapshot, and a later real maximize on such a window
+      // would otherwise spread the lifted flag straight back into the
+      // restore (dismissal un-maximizes, always).
+      const pre: WindowFlags = { ...flagsOf(nodeId) };
+      delete pre.maximized;
+      preFlags.current = pre;
       // The hash anchors the maximized window so a refresh lands back on
       // the revealed section. replaceState is untouched by the pageSlide
       // pushState patch — no transition, no sound.
@@ -170,28 +202,29 @@ export function useMaximizedController(
       }
       // Anchor the URL so a refresh lands back on the revealed section —
       // in the page's own permalink form (?post=slug on the blog, hash
-      // elsewhere). Mobile still PUSHes a #tree-index hash: the OS back
-      // button's dismissal keys off the hash leaving THIS window; a
-      // query-only change never fires hashchange, so the permalink form
-      // can't drive that choreography.
-      if (matchMedia("(max-width: 768px)").matches) {
-        history.pushState(null, "", `#${nodeId}`);
-      } else {
-        const node = windows.find((w) => w.id === nodeId);
-        const url = node ? permalinkFor(node, permalinkMode) : `#${nodeId}`;
-        history.replaceState(null, "", url);
-      }
-      // A maximized window always shows its body — a stale minimized
-      // flag would leave it title-bar-only in the foreground — and the
-      // WHOLE subtree expands: every child window reveals beneath it.
+      // elsewhere). The anchor is a history PUSH, on every screen: the
+      // maximized view is one entry deep, so the browser back button
+      // (desktop and OS-mobile alike) pops INTO the pre-maximize entry —
+      // the page:returned repair sees the maximized window no longer
+      // named by the URL and performs the minimize choreography
+      // (window:minimize). Same-path pushes stay silent in the pageSlide
+      // wrapper — no transition, no sound.
+      const node = windows.find((w) => w.id === nodeId);
+      dispatchSignal("history:anchor", {
+        id: nodeId,
+        url: node ? permalinkFor(node, permalinkMode) : `#${nodeId}`,
+        mode: "push",
+      });
+      // A maximized window shows its body — a stale minimized flag would
+      // leave it title-bar-only in the foreground. DESCENDANTS keep the
+      // flags they hold: the maximized view is a framing, not a reveal —
+      // collapsed sections stay collapsed so the OK/Cancel/Permalink
+      // rail stays on screen instead of the content scrolling it away.
       patch(nodeId, { maximized: true, minimized: false });
-      for (const id of descendantIds(windows, nodeId)) {
-        patch(id, { expanded: true, minimized: false });
-      }
     },
     dismiss: () => dismiss(false),
     dismissRevealed: () => dismiss(false, true),
-    dismissWithSlide: () => dismiss(true),
+    dismissWithSlide: (park?: boolean) => dismiss(true, false, park),
     backdropRef,
     parkedSize,
   };

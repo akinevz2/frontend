@@ -4,6 +4,7 @@ import path from "node:path";
 import { manualChunks } from "./build/chunks.ts";
 import { DEV_HOST, DEV_PORT, ROOT, SECURITY_HEADERS } from "./build/env.ts";
 import { blogDocumentsPlugin } from "./build/blogDocumentsPlugin.ts";
+import { blogDirsPlugin } from "./build/blogDirsPlugin.ts";
 import { routeSkeletonsPlugin } from "./build/routeSkeletonsPlugin.ts";
 
 const fromRoot = (p: string) => path.resolve(ROOT, p);
@@ -21,7 +22,12 @@ export default defineConfig({
       "xp.css": fromRoot("xp.css"),
     },
   },
-  plugins: [react(), blogDocumentsPlugin(), routeSkeletonsPlugin()],
+  plugins: [
+    react(),
+    blogDocumentsPlugin(),
+    blogDirsPlugin(),
+    routeSkeletonsPlugin(),
+  ],
   build: {
     cssMinify: false,
     rollupOptions: { output: { manualChunks } },

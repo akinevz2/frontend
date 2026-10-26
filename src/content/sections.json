@@ -106,16 +106,15 @@
               "content": [
                 "**public live projects**:",
                 {
-                  "heading": "website, my personal website",
-                  "link": "https://www.npmjs.com/package/website-xp-phone"
+                  "link": "https://github.com/akinevz2/",
+                  "heading": "my github",
+                  "content": [
+                    "[projects here](https://github.com/akinevz2?tab=repositories)"
+                  ]
                 },
                 {
-                  "heading": "pagerts, my first npm package",
-                  "link": "https://www.npmjs.com/package/pagerts"
-                },
-                {
-                  "heading": "rarebert, akinevz2/rarebert",
-                  "link": "https://github.com/akinevz2/rarebert/commit/936a6ff"
+                  "link": "/projects",
+                  "heading": "my projects page on this website"
                 }
               ]
             },
@@ -133,11 +132,13 @@
             "arts and expressions of free will",
             {
               "heading": "music",
-              "link": "https://soundcloud.com/akinevz"
+              "link": "https://soundcloud.com/akinevz",
+              "content": ["where i post really heavy music"]
             },
             {
               "heading": "another music",
-              "link": "https://soundcloud.com/akinevz2"
+              "link": "https://soundcloud.com/akinevz2",
+              "content": ["where i post music for the sake of memes"]
             },
             "and endlessly, deeply",
             {
