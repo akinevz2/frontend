@@ -313,19 +313,41 @@ export function enablePageSlide(): void {
 
   const original = history.pushState.bind(history);
   originalPushState = history.pushState;
+  /** Set inside the pushState wrapper when a same-path commit
+   * re-addresses the content: the announcement dispatches only after
+   * the original pushState has committed, so repair handlers read the
+   * NEW address. */
+  let samePathReaddress = false;
   history.pushState = (data, unused, url) => {
     if (url != null) {
       const target = new URL(url, location.href);
       if (target.pathname !== current) {
         transition(target.pathname, target.hash);
         if (target.hash) scrollToHash(target.hash);
+      } else if (
+        (data as { window?: unknown } | null)?.window == null &&
+        (target.search !== location.search || target.hash !== location.hash)
+      ) {
+        // Same-path CONTENT re-address: the router pushed a query or
+        // hash that names a new target (?post=, #id) — announced AFTER
+        // the commit below, so the repair reads the new address. The
+        // window system's own anchor pushes carry the state bookmark
+        // and stay silent (they are UI entries, not content addresses).
+        samePathReaddress = true;
       }
-      // Same-path pushes stay silent: they are UI history entries (the
-      // mobile maximizer's #id anchor), NOT page arrivals — no landing
-      // scroll exists for them. Hash landings for real arrivals come
-      // from the boot branch, the popstate branches and hashchange.
+      // Pure same-path pushes without a re-address stay silent: they
+      // are UI history entries, NOT page arrivals — no landing scroll
+      // exists for them. Hash landings for real arrivals come from the
+      // boot branch, the popstate branches and hashchange.
     }
     original(data, unused, url);
+    if (samePathReaddress) {
+      samePathReaddress = false;
+      dispatchSignal("page:addressed", {
+        path: location.pathname,
+        hash: location.hash,
+      });
+    }
   };
   // The ALIAS re-land: a shorthand path (/addons) boots as its own
   // document and the router commits the destination (<Navigate

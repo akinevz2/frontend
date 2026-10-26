@@ -26,6 +26,15 @@ export type SignalManifest = {
    * page RETURNED — unlike a permalink arrival, a same-path traversal
    * does not remount it, so the page holds the flags it left with. */
   "page:returned": { path: string; hash: string };
+  /** The page's ADDRESS changed within the same route: the router
+   * pushed a same-path entry whose query or hash names a new target
+   * (?post=, #id — an in-site link click, not a traversal). The page
+   * does not remount, so holders of pre-address state repair
+   * themselves the way a history RETURN does: maximized windows the
+   * new address no longer names minimize, the named target reveals.
+   * The window system's own anchor pushes carry the state bookmark and
+   * never announce (they are UI entries, not content addresses). */
+  "page:addressed": { path: string; hash: string };
   "window:close": { id: string; refuse: () => void };
   /** Notice — Clippy parked the window the ✕ was pressed on (the
    * mascot-on-screen easter egg): the successful close routed through

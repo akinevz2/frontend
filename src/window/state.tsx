@@ -369,7 +369,14 @@ export function useReveal() {
 export function usePageReturn() {
   const { windows, flagsOf } = useWindowStore();
   const { dispatch } = useSignals();
-  useSignalHandler("page:returned", () => {
+  // The repair: maximized windows the address no longer names get the
+  // minimize choreography; the URL's target — hash, ?post= slug or the
+  // off-site bookmark — re-expands, landing on the section. The
+  // query-only landing happens here too (only the store resolves
+  // ?post= to its element); hash landings stay the pageSlide theme's
+  // scrollToHash. Cross-page returns (a REMOUNTED route) don't need
+  // this — their fresh store confirms via usePermalinkTarget.
+  const repair = () => {
     const named = location.hash.slice(1);
     for (const w of windows) {
       if (!flagsOf(w.id).maximized || w.id === named) continue;
@@ -388,7 +395,12 @@ export function usePageReturn() {
     const el = document.getElementById(target.id);
     if (el)
       window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY });
-  });
+  };
+  // History traversals AND same-path re-addresses (an in-site link
+  // click pushing ?post= or #id without remounting the page) both
+  // repair: the page holds the flags it left with either way.
+  useSignalHandler("page:returned", repair);
+  useSignalHandler("page:addressed", repair);
 }
 
 /** Links clicked inside a window remember it. An off-site same-tab
