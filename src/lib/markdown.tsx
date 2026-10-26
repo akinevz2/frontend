@@ -8,7 +8,7 @@ import { CLIPPY_LINK, onClippyTriggerClick } from "./clippy";
 
 type Props = { children: string; inline?: boolean };
 
-export function Md({ children }: Props) {
+export function Md({ children }: Readonly<Props>) {
   return (
     <Markdown
       rehypePlugins={[

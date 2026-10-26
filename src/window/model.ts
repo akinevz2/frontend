@@ -123,3 +123,14 @@ export function lineage(id: string): string[] {
 export function hasTheme(node: WindowNode, theme: ThemeName): boolean {
   return node.themes.includes(theme);
 }
+
+/** Whether the section carries content of its OWN to frame in the
+ * maximized view: any child (text lines, embeds, banners, custom
+ * elements, sub-section rows) or an embed body. Derived straight from
+ * the JSON-built tree — the same metadata the renderer sees — so there
+ * is no second flag to keep in step. A LINK-section without it has
+ * nothing to lift: the maximized view would be an empty shell around
+ * its rail, and the OK press navigates instead (see OkButton's
+ * middleware). */
+export const hasContent = (node: WindowNode): boolean =>
+  node.children.length > 0 || Boolean(node.embed);

@@ -42,13 +42,11 @@ export function App() {
   return (
     <>
       <MenuBar />
-      <main>
-        <section
-          className={`page${route.path === "/configs" ? " page-configs" : ""}`}
-          key={route.path}
-        >
-          <Page />
-        </section>
+      {/* main IS the page: one element carries the scroll container and the
+          page styling — an extra <section.page> inside it only added a
+          nesting level. Pages differ in content, never in shell structure. */}
+      <main className="page" key={route.path}>
+        <Page />
       </main>
       <Clippy />
       <ToastContainer position="bottom-right" />

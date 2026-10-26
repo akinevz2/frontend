@@ -1,6 +1,6 @@
 {
   "name": "website-xp-phone",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "license": "GPL v2",
   "author": "Kirill <kine> Nevzorov <akinevz@outlook.com>",
   "type": "module",
@@ -32,7 +32,8 @@
     "check:ci": "npm run check:lockfile && npm run build:gated && npm run verify:policy",
     "checksums": "node ./scripts/write-dist-checksums.mjs",
     "verify:policy": "node ./scripts/verify-policy.mjs",
-    "postinstall": "node ./scripts/ensure-xpcss.mjs"
+    "postinstall": "node ./scripts/ensure-xpcss.mjs",
+    "open": "npm run build:local"
   },
   "dependencies": {
     "lightdni-jssas-toggle": "1.1.1",

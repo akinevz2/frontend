@@ -6,7 +6,9 @@ import "react-toastify/dist/ReactToastify.css";
 import "./styles/index.css";
 import { App } from "./shell/App";
 import { SignalProvider } from "./lib/signals";
+import { attachHistoryBookmarks } from "./lib/history";
 import { attachRouterSignals } from "./shell/routerSignals";
+import { attachCloseSounds } from "./window/closeSounds";
 import { enablePageSlide } from "./themes/pageSlide";
 
 document.body.classList.add("styles-loaded");
@@ -14,6 +16,12 @@ document.body.classList.add("styles-loaded");
 // bus carries navigation commands, route-change notices and window
 // events; handlers live here and in lib modules, not in components.
 attachRouterSignals();
+attachCloseSounds();
+// The history bookmarker (maximized-view pushes, hash-free off-site
+// bookmarks, dismissal settles) attaches at boot too: the maximized
+// view's push rides the pageSlide pushState wrapper, so the owner must
+// be live before any window can lift.
+attachHistoryBookmarks();
 // Always install the page-slide theme: its hooks drive window
 // minimisation, navigation choreography and sounds. When the page is
 // loaded directly ONTO a hyperlinked window target (a #hash or ?post=

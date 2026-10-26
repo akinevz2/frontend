@@ -28,9 +28,12 @@ html.theme-page-slide .page-slide-ghost {
     forwards;
 }
 
-/* The live <main> has an indefinite height, so its page sizes to content;
-   the ghost has a fixed height and must not stretch the page to fill it. */
-html.theme-page-slide .page-slide-ghost > .page {
+/* The live <main> has an indefinite height, so its page sizes to content
+   (a nested .page in the ghost's fixed-height main, or main itself — the
+   normalized shell makes main the page); the ghost must not stretch the
+   page to fill its box. */
+html.theme-page-slide .page-slide-ghost > .page,
+html.theme-page-slide .page-slide-ghost.page {
   height: auto;
   min-height: 0;
 }
@@ -70,7 +73,9 @@ html.theme-page-slide[data-page-slide] main:not(.page-slide-ghost) > .page {
    whole window is drawn the last stretch toward the measured fold point.
    Contents ride the squash, as in XP itself. */
 html.theme-page-slide .page-slide-ghost .page > .window,
-html.theme-page-slide .page-slide-ghost .page > .maximized-shell > .window {
+html.theme-page-slide .page-slide-ghost .page > .maximized-shell > .window,
+html.theme-page-slide .page-slide-ghost > .window,
+html.theme-page-slide .page-slide-ghost > .maximized-shell > .window {
   transform-origin: bottom center;
   /* Linear, per preference: the top edge falls towards the taskbar line
      at a constant rate for the entire fold. */
@@ -141,8 +146,7 @@ html.theme-page-slide .page-slide-ghost .page-slide-placeholder-frame {
 html.theme-page-slide .window.window-minimize {
   z-index: 4001;
   transform-origin: bottom center;
-  animation: window-minimize-exit var(--ps-minimize, 98ms) linear forwards
-    !important;
+  animation: window-minimize-exit var(--ps-minimize, 98ms) linear forwards !important;
 }
 
 @keyframes window-minimize-exit {
@@ -151,8 +155,7 @@ html.theme-page-slide .window.window-minimize {
        100% offset the squashed sliver would rest exactly AT the bottom
        edge (the page drop that normally carries it away doesn't exist
        for a standalone dismissal). */
-    transform: translateY(calc(var(--page-fold-dy, 80vh) + 100%))
-      scaleY(0.06);
+    transform: translateY(calc(var(--page-fold-dy, 80vh) + 100%)) scaleY(0.06);
   }
 }
 
@@ -167,7 +170,15 @@ html.theme-page-slide[data-page-slide="parked"] main:not(.page-slide-ghost) {
   animation: none;
 }
 
-html.theme-page-slide[data-page-slide="parked"] main:not(.page-slide-ghost)
+/* The parked "none" must also hold for the normalized shell (main.page),
+   whose combined entrance animation above declares at higher specificity
+   than the un-classed main rule: this later, equal-specificity rule wins
+   and keeps main transform-free — the maximized backdrop stays
+   viewport-anchored. */
+html.theme-page-slide[data-page-slide="parked"]
+  main:not(.page-slide-ghost).page,
+html.theme-page-slide[data-page-slide="parked"]
+  main:not(.page-slide-ghost)
   > .page {
   animation: none;
 }

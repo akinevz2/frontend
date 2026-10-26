@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useSyncExternalStore,
   type ReactNode,
 } from "react";
@@ -21,7 +22,76 @@ export type SignalManifest = {
   "app:navigate": { to: string };
   "page:loaded": { path: string };
   "page:navigated": { from: string; to: string };
+  /** History traversal landed on a route (browser back/forward): the
+   * page RETURNED — unlike a permalink arrival, a same-path traversal
+   * does not remount it, so the page holds the flags it left with. */
+  "page:returned": { path: string; hash: string };
   "window:close": { id: string; refuse: () => void };
+  /** Notice — Clippy parked the window the ✕ was pressed on (the
+   * mascot-on-screen easter egg): the successful close routed through
+   * Clippy's keep. Clippy owns the outcome and pipes up ("oh where did
+   * that go?.. I can help!"), offering its unhide roster. */
+  "clippy:hid": { id: string };
+  /** THE close's outcome NOTICE, with its sound DECLARED: the ✕ press
+   * dispatches which sound should play — the crunchy kick for every
+   * press that stays on the page (refusals, collapses, parks,
+   * maximized restores), the Click.ogg for the press that navigates
+   * away. One renderer (closeSounds.ts) plays what is declared. */
+  "window:closed": { id: string; sound: "kick" | "click" };
+  /** Command — the listening window's controller lifts the maximized
+   * view (the OK middleware rides this instead of threading a callback
+   * prop through the tree). */
+  "window:maximize": { id: string };
+  /** Command — restore/silently-dismiss the maximized view: ✕ on a
+   * maximized window, Escape, the out-of-bounds backdrop click and the
+   * title-bar Restore all ride this; the window's controller restores
+   * the flags it left with. `reveal: true` additionally reveals the
+   * content inline after the restore (the rail's OK/Cancel pair) —
+   * restore alone is the silent framing dismissal it always was. */
+  "window:dismiss": { id: string; reveal?: boolean | undefined };
+  /** Command — THE minimize: one path for every minimize gesture and
+   * its callbacks. On a maximized window the dismissal plays the
+   * minimize click (Click.ogg), slides the window off and either
+   * RESTORES the section underneath exactly as it stood at maximize
+   * time (park unset — the browser back out of the maximized view: the
+   * traversal pops the maximize push and the page:returned repair
+   * dispatches this) or COLLAPSES it the way the inline minimize
+   * handler always does (park set — the title-bar minimize button, and
+   * the double-click on the maximized title bar: the maximized overlay
+   * AND the section underneath both minimize; the section lands in its
+   * normal resting shape, OK bottom-right). Inline the depth-0 fold
+   * navigates away; every other inline window collapses to its title
+   * bar's ok row. The window's own controller performs the branch —
+   * every window listens, only the named one acts. */
+  "window:minimize": { id: string; park?: boolean };
+  /** Command — expand the named window WITHOUT lifting it: its lineage
+   * always opens (a collapsed parent never mounts its target), then
+   * either nothing but the target itself ("none" — the maximized view
+   * restored inline: a framing, not a reveal — collapsed sections stay
+   * collapsed), its direct children, or the whole subtree ("all"). The
+   * maximized framing keeps a returned section's inner sections as
+   * they stood — no force-open cascade behind the backdrop. */
+  "window:reveal": { id: string; descendants: "none" | "direct" | "all" };
+  /** Command — the history owner (lib/history) writes the named window
+   * into the CURRENT history entry: the id rides the entry's state
+   * payload ("window" key), the URL goes to what the caller computed.
+   * mode "push" is the maximized view's own history entry (browser back
+   * then pops INTO it: one entry per maximize, back un-maximizes);
+   * mode "replace" settles the URL after an in-page dismissal, dropping
+   * the bookmark when no maximized window remains. */
+  "history:anchor": {
+    /** Absent: clear the entry's bookmark (the last maximized window
+     * was dismissed); present: the window the entry names. */
+    id?: string | undefined;
+    url: string;
+    mode: "push" | "replace";
+  };
+  /** Command — bookmark the named window for an OFF-SITE departure: the
+   * CURRENT entry's state gains "window" and the URL lands on the
+   * caller's hash-free form, so navigating back to this entry (cross
+   * document, a fresh boot) reveals and scrolls to the section while
+   * the address bar carries no hash of it. */
+  "history:remember": { id: string; url: string };
   "window:hidden": {
     items: Array<{ id: string; label: string }>;
     restore: (id: string) => void;
@@ -139,6 +209,22 @@ export function useSignals(): SignalBus {
   const bus = useContext(Ctx);
   if (!bus) throw new Error("useSignals needs a SignalProvider");
   return bus;
+}
+
+/** Subscribes a handler for the component's lifetime; the latest handler
+ * closure runs on every dispatch (no resubscription churn). THE one
+ * component-scoped escape hatch: for handlers that must close over
+ * component state no module-level attach can reach (e.g. the window
+ * store's return repair). Behaviours with a module owner attach via
+ * onSignal instead of calling this. */
+export function useSignalHandler<Name extends SignalName>(
+  name: Name,
+  handler: SignalHandler<Name>,
+): void {
+  const { on } = useSignals();
+  const latest = useRef(handler);
+  latest.current = handler;
+  useEffect(() => on(name, (payload) => latest.current(payload)), [name, on]);
 }
 
 /** Reads a retained signal's current snapshot at render time: the

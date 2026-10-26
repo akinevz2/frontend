@@ -24,6 +24,9 @@ export type ClippyState = {
   saysNo: boolean;
   /** The unhide list is shown instead of a bubble (masks it completely). */
   listOpen: boolean;
+  /** The bubble carries the post-park offer ("oh where did that go?").
+   * Independent of saysNo: neither flag outlives its bubble. */
+  offering: boolean;
 };
 
 const storedVisible = () =>
@@ -35,6 +38,7 @@ let state: ClippyState = {
   bubble: false,
   saysNo: false,
   listOpen: false,
+  offering: false,
 };
 const listeners = new Set<() => void>();
 const set = (patch: Partial<ClippyState>) => {
@@ -127,12 +131,26 @@ const hint = () => {
   // The hint is the priority UI: dismiss the unhide list in the same
   // atomically-committed state update so it can never mask the bubble
   // (the stray "haha it said no"/hiding interplay of the flag mirrors).
-  set({ bubble: true, saysNo: false, listOpen: false });
+  set({ bubble: true, saysNo: false, offering: false, listOpen: false });
   bubbleTimer = setTimeout(
     // saysNo dies with its bubble: a stale veto would otherwise turn every
     // later bubble into "haha it said no" (visible the moment another
     // bubble is unmasked, e.g. dismissing the reopen list).
-    () => set({ bubble: false, saysNo: false }),
+    () => set({ bubble: false, saysNo: false, offering: false }),
+    BUBBLE_MS,
+  );
+};
+
+/** The post-park pipe-up: ✕ closed a window while Clippy was on screen,
+ * so the window went into Clippy's keep — say the line and offer the
+ * unhide roster (the roster button lives on the image which is already
+ * the tap target that opens the list). The offer bubble follows the
+ * same lifecycle and priority atomics as the hint's. */
+const offer = () => {
+  clearTimeout(bubbleTimer);
+  set({ bubble: true, saysNo: false, offering: true, listOpen: false });
+  bubbleTimer = setTimeout(
+    () => set({ bubble: false, saysNo: false, offering: false }),
     BUBBLE_MS,
   );
 };
@@ -189,11 +207,11 @@ export const toggleClippyList = () => {
   // said no" veto state — so the reopen list owns the attention; pending
   // bubble timers are cancelled alongside.
   clearTimeout(bubbleTimer);
-  set({ listOpen: true, bubble: false, saysNo: false });
+  set({ listOpen: true, bubble: false, saysNo: false, offering: false });
 };
 
 const onCrunchy = ({ refuse }: { refuse: () => void }) => {
-  if (state.listOpen || !state.bubble || state.saysNo) return;
+  if (state.listOpen || !state.bubble || state.saysNo || state.offering) return;
   refuse();
   set({ saysNo: true });
 };
@@ -202,10 +220,12 @@ const onCrunchy = ({ refuse }: { refuse: () => void }) => {
 export function attachClippy(): () => void {
   window.addEventListener("keydown", onKeyDown);
   const offWindowClose = onSignal("window:close", onCrunchy);
+  const offHid = onSignal("clippy:hid", offer);
   getAudio().addEventListener("ended", onAudioEnded);
   return () => {
     window.removeEventListener("keydown", onKeyDown);
     offWindowClose();
+    offHid();
     getAudio().removeEventListener("ended", onAudioEnded);
     clearBlip();
     activeMs = 0;
