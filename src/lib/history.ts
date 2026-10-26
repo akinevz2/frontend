@@ -39,9 +39,25 @@ export function attachHistoryBookmarks(): () => void {
   const offRemember = onSignal("history:remember", ({ id, url }) => {
     history.replaceState({ ...withBookmark(id), window: id }, "", url);
   });
+  // The arrival marker: every in-document page commit is a TRAVERSAL —
+  // this document is a browsing session, never a fresh permalink again
+  // (see traversedOnce). The pageSlide theme announces commits on the
+  // bus: page:navigated for the pushState wrapper's and the popstate
+  // theme's cross-page commits, page:returned for the same-path
+  // traversals. Both are dispatched synchronously BEFORE the router's
+  // re-render remounts a page — a landing's initialFlags reads the
+  // marker in time.
+  const offNavigated = onSignal("page:navigated", () => {
+    traversedOnce = true;
+  });
+  const offReturned = onSignal("page:returned", () => {
+    traversedOnce = true;
+  });
   return () => {
     offAnchor();
     offRemember();
+    offNavigated();
+    offReturned();
   };
 }
 
@@ -77,15 +93,47 @@ export function windowBookmark(): string | null {
   return typeof id === "string" && id ? id : null;
 }
 
+/** Whether a traversal ALREADY happened in THIS document. Any in-document
+ * page commit (the pageSlide theme announces every SPA push and every
+ * history traversal on the bus — see attachHistoryBookmarks) sets this.
+ * Module scope: a fresh document load starts false. Once set, this
+ * document is a browsing session — a hyperlink landing on a section URL
+ * must be the INLINE reveal it always was, never the maximized permalink
+ * page (a permalink page is only for genuinely fresh arrivals). */
+let traversedOnce = false;
+
+/** Whether THIS document followed a same-site hyperlink in: an in-site
+ * raw anchor's cross-document arrival carries a same-origin referrer
+ * (full document loads bypass every SPA hook, so the click is invisible
+ * to the app). That click IS the traversal into the section, not a
+ * fresh permalink — the landing is inline. Typed URLs, out-of-site
+ * shared links and the Permalink button (window.open ... noreferrer)
+ * arrive REFERRER-LESS; the maximized landing stays theirs. */
+const inSiteLinkArrival = (): boolean => {
+  if (!document.referrer) return false;
+  try {
+    return new URL(document.referrer).origin === window.location.origin;
+  } catch {
+    return false;
+  }
+};
+
 /** Whether THIS document arrived FRESH — typed, shared, or opened by a
- * permalink button in a new tab: the "navigate" timing type AND an
- * entry that carries none of our window state (a fresh entry cannot).
- * A same-document SPA traversal shares the original load's "navigate"
- * type, so this NO-BOOKMARK conjunct is what keeps it false: any of
- * our entries, reached later in this document, always carries the
- * bookmark. The permalink landing (a section's own maximized view) is
- * only for these fresh arrivals — traversals and reloads land on the
- * inline reveal they always had (returns never re-maximize). */
+ * permalink button in a new tab: the "navigate" timing type, an entry
+ * that carries none of our window state, no earlier in-document
+ * traversal (traversedOnce) and no same-site referrer
+ * (inSiteLinkArrival). A same-document SPA traversal shares the
+ * original load's "navigate" type, and an in-site hyperlink's
+ * cross-document load shares the same shape — BOTH are traversals, and
+ * both land on the inline reveal they always had. The maximized
+ * permalink landing is only for genuinely fresh arrivals: returns never
+ * re-maximize, and a hyperlink NEVER lifts the section out of the page
+ * it was read on. */
 export function freshArrival(): boolean {
-  return navigationType() === "navigate" && windowBookmark() === null;
+  return (
+    navigationType() === "navigate" &&
+    windowBookmark() === null &&
+    !traversedOnce &&
+    !inSiteLinkArrival()
+  );
 }

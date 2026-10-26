@@ -129,12 +129,21 @@ export function WindowProvider({
       permalinkMode,
       onLeave,
       remember: (id) => {
+        // Any .window[id] on the page may bookmark its departure — not
+        // only model nodes. Page-specific hand-rolled windows (the wow
+        // download form) live OUTSIDE PageWindows' tree: their id is
+        // nowhere in the model, but the browser back that returns to
+        // this entry must still land on them (the pageSlide theme's
+        // landing scroll resolves ANY id). Model nodes keep their
+        // permalink URL form (?post= on the blog); unknown ones take
+        // the current address hash-free.
         const node = windows.find((w) => w.id === id);
-        if (node)
-          dispatch("history:remember", {
-            id,
-            url: bookmarkUrlFor(node, permalinkMode),
-          });
+        dispatch("history:remember", {
+          id,
+          url: node
+            ? bookmarkUrlFor(node, permalinkMode)
+            : location.pathname + location.search,
+        });
       },
       flagsOf,
       patch: (id, flags) =>

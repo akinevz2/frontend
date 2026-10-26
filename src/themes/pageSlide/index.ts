@@ -7,6 +7,7 @@ import {
 import { playMinimizeClick } from "@/lib/audio";
 import { windowBookmark } from "@/lib/history";
 import { dispatchSignal } from "@/lib/signals";
+import { scrollToId } from "@/lib/scrollTo";
 import { resolveDirection, type Direction } from "./direction";
 import "./pageSlide.css";
 
@@ -190,6 +191,7 @@ function leaveGhost(): void {
 
 let current = "";
 let originalPushState: History["pushState"] | null = null;
+let originalReplaceState: History["replaceState"] | null = null;
 /** Mutes the next transition's fold click: the navigating window ✕
  * declares its own Click.ogg through the bus (closeSounds) — no second
  * click on top of the navigation fold. */
@@ -270,50 +272,11 @@ const onPopState = () => {
   dispatchSignal("page:returned", arrival);
 };
 
-/** Scrolls the hash element into view — inside its scrolling window
- * (a maximized window scrolls its own revealed content) or the page. */
+/** Scrolls the hash element into view — the aim implementation lives in
+ * @/lib/scrollTo, shared with the window system's dismissal landings. */
 function scrollToHash(hash: string, attempts = 12): void {
   const id = decodeURIComponent(hash.slice(1));
   scrollToId(id, attempts);
-}
-
-/** Scrolls the named element into view — inside its scrolling window (a
- * maximized window scrolls its own revealed content) or the page. A
- * target already fully on screen is left exactly where it is: the
- * landing scroll exists to reveal an off-screen section, so yanking a
- * visible one to the top row would only scramble the reader's place.
- * The element can mount after the route commit (lazy pages), and the
- * fresh page's height GROWS around the arrival (lazy embeds, images) —
- * an early scroll into a document still shorter than the target is
- * clamped to the top by the browser. So the landing re-aims on every
- * tick while it may have missed: as soon as the element mounts off
- * screen it gets aimed at, and the loop stops the moment the layout
- * settles with it on screen. */
-function scrollToId(id: string, attempts = 12): void {
-  if (!id) return;
-  const tick = (left: number) => {
-    const el = document.getElementById(id);
-    if (!el) {
-      // The element can mount after the route commit (lazy pages).
-      if (left > 0) window.setTimeout(() => tick(left - 1), 100);
-      return;
-    }
-    // Maximized windows are viewport-fixed overlays; scrolling the page
-    // behind them just resets the background while the overlay hides
-    // it. The restored window scrolls itself to the target on dismissal
-    // instead.
-    if (!el.closest(".maximized-backdrop")) {
-      const rect = el.getBoundingClientRect();
-      if (rect.top < 0 || rect.bottom > window.innerHeight) {
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
-        // The aim may have been clamped (the document was shorter than
-        // the target's position): keep aiming until it sticks.
-        if (left > 0) window.setTimeout(() => tick(left - 1), 100);
-        return;
-      }
-    }
-  };
-  tick(attempts);
 }
 
 /**
@@ -364,6 +327,29 @@ export function enablePageSlide(): void {
     }
     original(data, unused, url);
   };
+  // The ALIAS re-land: a shorthand path (/addons) boots as its own
+  // document and the router commits the destination (<Navigate
+  // to="/wow#addons" replace>) with a replaceState — the only
+  // path-changing commit the pushState wrapper cannot see. It is not a
+  // traversal (nothing announces it; the fresh-arrival gate decides the
+  // store's landing by the referrer alone) — but the page must still be
+  // LANDED on the destination's hash element like every boot: aim the
+  // scroll at it (the retrying scrollToId absorbs the remount delay),
+  // and take over `current` so later pushes compare against the true
+  // destination path. Same-path replaceStates (the window system's
+  // bookmark writes) stay silent.
+  const originalReplaceState = history.replaceState.bind(history);
+  history.replaceState = (data, unused, url) => {
+    if (url != null) {
+      const target = new URL(url, location.href);
+      if (target.pathname !== current) {
+        current = target.pathname;
+        if (target.hash) scrollToHash(target.hash);
+        else scrollToId(windowBookmark() ?? "");
+      }
+    }
+    originalReplaceState(data, unused, url);
+  };
   // Same-page hyperlinks to hash elements change the hash natively.
   window.addEventListener("hashchange", (event) =>
     scrollToHash(new URL(event.newURL).hash),
@@ -376,6 +362,8 @@ export function disablePageSlide(): void {
   if (!originalPushState) return;
   history.pushState = originalPushState;
   originalPushState = null;
+  if (originalReplaceState) history.replaceState = originalReplaceState;
+  originalReplaceState = null;
   window.removeEventListener("popstate", onPopState);
   applyTheme({}, { previousClassNames: [CLASS] });
   clearThemeVariables(VARIABLES);

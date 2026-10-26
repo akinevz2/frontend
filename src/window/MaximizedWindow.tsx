@@ -1,5 +1,6 @@
 import { useRef, useState, type ReactNode, type RefObject } from "react";
 import type { WindowFlags } from "./state";
+import { scrollToId } from "@/lib/scrollTo";
 import { dispatchSignal } from "@/lib/signals";
 import { permalinkFor, useWindowStore } from "./state";
 
@@ -163,6 +164,18 @@ export function useMaximizedController(
     // the lift (the reserved flow slot keeps the layout still). Only
     // arrivals land: history returns and permalink loads (pageSlide's
     // scrollToHash and the store's confirm).
+    // EXCEPT the dismissal of a SEEDED landing: the maximized state
+    // came from the URL (a permalink opened the section maximized, or
+    // a refresh held it) — the reader never stood anywhere on this
+    // page, and the page rides at its arrival top with the section
+    // somewhere below the fold. The press that un-maximizes IS the
+    // reader's arrival at the section's inline resting place, so it
+    // lands the page on the section — the shared aiming scroll (the
+    // pageSlide theme's landing rules: smooth, on-screen-aware,
+    // re-aimed while the layout grows around the freshly revealed
+    // content). A snapshot exists ⇒ the lift happened in-page and the
+    // no-scroll rule stands.
+    if (preFlags.current === null) scrollToId(nodeId);
   };
   return {
     maximize: () => {
