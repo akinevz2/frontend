@@ -128,12 +128,25 @@ const inSiteLinkArrival = (): boolean => {
  * both land on the inline reveal they always had. The maximized
  * permalink landing is only for genuinely fresh arrivals: returns never
  * re-maximize, and a hyperlink NEVER lifts the section out of the page
- * it was read on. */
+ * it was read on.
+ *
+ * The decision is MEMOIZED at the first call: the permalink landing
+ * itself anchors its entry (history:anchor writes the bookmark) within
+ * its first render cycle, and a later evaluation of the raw conditions
+ * would read that bookmark and un-decide the landing mid-flight —
+ * StrictMode's double-invoked effects flipped maximized landings into
+ * inline reveals in dev, and nothing could rely on the answer staying
+ * put. The memo lives until a traversal happens, after which this
+ * document is a browsing session and every answer is false. */
+let freshAtLoad: boolean | null = null;
+
 export function freshArrival(): boolean {
-  return (
-    navigationType() === "navigate" &&
-    windowBookmark() === null &&
-    !traversedOnce &&
-    !inSiteLinkArrival()
-  );
+  if (traversedOnce) return false;
+  if (freshAtLoad === null) {
+    freshAtLoad =
+      navigationType() === "navigate" &&
+      windowBookmark() === null &&
+      !inSiteLinkArrival();
+  }
+  return freshAtLoad;
 }

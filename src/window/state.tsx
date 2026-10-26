@@ -79,7 +79,17 @@ function initialFlags(roots: WindowNode[]): State {
   // un-maximized frame flashes. The view is a FRAMING, not a reveal:
   // no lineage seeding, no subtree seeding.
   if (freshArrival() && namedByUrl(target)) {
-    state[target.id] = { maximized: true, minimized: false };
+    // The maximized view IS the landing — but a nested section's
+    // collapsed ancestors never mount it (a collapsed parent never
+    // mounts its target), so the lineage opens with it: every ancestor
+    // expanded, the target itself maximized. Without the lineage the
+    // landing is an empty page for any target below the roots.
+    for (const id of lineage(target.id)) {
+      state[id] =
+        id === target.id
+          ? { maximized: true, minimized: false }
+          : { expanded: true, minimized: false };
+    }
     return state;
   }
   // A maximize push popped back (or forward) onto — its state bookmark
