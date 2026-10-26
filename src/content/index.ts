@@ -135,3 +135,4 @@ export const characters = resolveIncludes(charactersJson as Section);
 export const blog = resolveIncludes(blogJson as Section);
 export const soundcloud = soundcloudJson as SoundCloudData;
 export const musicExt = musicExtJson;
+export * from "./blogDirs";

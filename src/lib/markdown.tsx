@@ -1,6 +1,7 @@
 import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
+import remarkBreaks from "remark-breaks";
 import { Link } from "react-router-dom";
 import { rehypeYoutubeEmbed } from "@/lib/rehypeYoutubeEmbed";
 import { sanitizeSchema } from "@/lib/sanitizeSchema";
@@ -11,6 +12,11 @@ type Props = { children: string; inline?: boolean };
 export function Md({ children }: Readonly<Props>) {
   return (
     <Markdown
+      // remarkBreaks: a single newline prints as a line break, not a
+      // soft-break space — line-oriented writing (transcripts, rants,
+      // verse) keeps its authored line shape instead of flowing into
+      // one paragraph; a blank line still opens a new paragraph.
+      remarkPlugins={[remarkBreaks]}
       rehypePlugins={[
         rehypeRaw,
         rehypeYoutubeEmbed,

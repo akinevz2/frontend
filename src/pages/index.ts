@@ -1,5 +1,6 @@
 import type { ComponentType } from "react";
 import { AddonsPage } from "./AddonsPage";
+import { BlogDirPage } from "./BlogDirPage";
 import { BlogPage } from "./BlogPage";
 import { BlogPostPage } from "./BlogPostPage";
 import { ContactPage } from "./ContactPage";
@@ -16,6 +17,7 @@ import { WowPage } from "./WowPage";
 /** Maps the `page` names in content/pages.json to components. */
 export const pageRegistry: Record<string, ComponentType> = {
   AddonsPage,
+  BlogDirPage,
   BlogPage,
   BlogPostPage,
   ConfigsPage,
