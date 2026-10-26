@@ -224,9 +224,14 @@ const fetchOwnerDiscography = async (owner, clientId) => {
   let apiTracks = await fetchAllTracks(owner, user.id, clientId);
   const publicCount =
     typeof user.track_count === "number" ? user.track_count : null;
-  if (publicCount !== null && apiTracks.length !== publicCount) {
+  if (publicCount !== null && apiTracks.length < publicCount) {
+    // Refuse only TRUNCATION: the api returning fewer tracks than the
+    // public profile counts means pages were missed. MORE tracks than
+    // the profile counts is the fresh-upload case — the discography
+    // endpoint lists a just-uploaded track before the profile's
+    // counter catches up, and that is the track the refresh is FOR.
     apiTracks = await fetchAllTracks(owner, user.id, clientId);
-    if (apiTracks.length !== publicCount) {
+    if (apiTracks.length < publicCount) {
       throw new Error(
         `Discography for ${owner} returned ${apiTracks.length} track(s) ` +
           `but the public profile counts ${publicCount} — refusing to ` +
