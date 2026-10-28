@@ -19,7 +19,7 @@
      the last row of content. */
   --debug-bar-height: 2.5em;
   --clippy-border-flash-color: transparent;
-  font-size: 16px;
+  font-size: 18px;
 }
 /* Force title bar text to dark gray for readability */
 .title-bar-text,

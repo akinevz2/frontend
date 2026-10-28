@@ -97,7 +97,7 @@ body:has([data-debug-bar]) .page {
 
   .menu-bar menu a {
     padding: 6px 12px;
-    font-size: 14px;
+    font-size: 16px;
     white-space: nowrap;
   }
 
@@ -170,7 +170,7 @@ body:has([data-debug-bar]) .page {
 
   .minimized-menu-button {
     top: var(--menu-bar-height);
-    font-size: 14px !important;
+    font-size: 16px !important;
     text-align: center;
     z-index: 98;
   }
