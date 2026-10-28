@@ -15,9 +15,11 @@ export * from "./schema";
  * A content file can embed another content file's window tree with an
  * include directive instead of duplicating it:
  *
- *   { "include": "characters" }  →  the Section of includes/characters.json
+ *   { "include": "make-recipes.md" } → the markdown file, wrapped as a Section
+ *   { "include": "characters.json" }  →  the Section of includes/characters.json
  *
- * ANY file under src/content/includes/ is includable — no registration:
+ * ANY file under src/content/includes/ is includable — no registration,
+ * and the directive carries the FULL FILE NAME (extension included):
  *  - `.json`: must hold a Section (the window-tree shape of a content file).
  *  - `.md`: author-written markdown (literal newlines), imported raw and
  *    wrapped as `{ heading, anchor: <stem>, theme: "open", content: <md> }`.
@@ -36,13 +38,13 @@ export * from "./schema";
  * by then (const declarations do not hoist).
  */
 
-/** Every includable .json Section, keyed by stem ("characters"). */
+/** Every includable .json Section, keyed by file name ("characters.json"). */
 const sectionModules = import.meta.glob<Section>("./includes/*.json", {
   eager: true,
   import: "default",
 });
 
-/** Every includable .md document, keyed by path — imported raw. */
+/** Every includable .md document, keyed by file name — imported raw. */
 const mdModules = import.meta.glob<string>("./includes/*.md", {
   eager: true,
   import: "default",
@@ -82,26 +84,28 @@ const mdSection = (stem: string, md: string): Section => {
   };
 };
 
-/** Includable Sections by directive name. A stem present as .json AND .md
- * is ambiguous — ambiguity is worse than a loud crash, so both fail at
- * load. */
-const includes: Record<string, Section> = {};
-for (const [path, section] of Object.entries(sectionModules)) {
-  const stem = stemOf(path);
-  if (Object.keys(mdModules).some((mdPath) => stemOf(mdPath) === stem)) {
+/** Includable Sections, keyed by FULL file name ("make-recipes.md"). */
+const includes: Record<string, Section> = {
+  ...sectionModules,
+  ...Object.fromEntries(
+    Object.entries(mdModules).map(([path, md]) => {
+      const stem = stemOf(path);
+      return [path.split("/").pop()!, mdSection(stem, md)];
+    }),
+  ),
+};
+
+/** The include target a directive file name resolves to. The name must
+ * be a bare file name (no directories) with an includable extension;
+ * unknown names throw — the same loud failure the renderer would
+ * otherwise paper over. */
+const includeTarget = (name: string): Section => {
+  if (!/^[a-z0-9][a-z0-9._-]*\.(json|md)$/i.test(name) || name.includes("/")) {
     throw new Error(
-      `Ambiguous include target: includes/${stem} exists as both .json and .md`,
+      `Unknown include directive: ${name} ` +
+        "(targets are bare .json/.md file names under src/content/includes/)",
     );
   }
-  includes[stem] = section;
-}
-for (const [path, md] of Object.entries(mdModules)) {
-  includes[stemOf(path)] = mdSection(stemOf(path), md);
-}
-
-/** The include target a directive name resolves to. Unknown names throw —
- * the same loud failure the renderer would otherwise paper over. */
-const includeTarget = (name: string): Section => {
   const target = includes[name];
   if (!target) {
     throw new Error(

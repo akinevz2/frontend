@@ -65,7 +65,7 @@
         "theme": "open",
         "content": [
           "Each recipe's effect includes its prerequisite recipes (run first, in listed order).",
-          { "include": "make-recipes" },
+          { "include": "make-recipes.md" },
           "Secrets: deploy-time (`sonarqube.env`, `*.admin`) gitignored; `~/.my-credentials` (name + email) tracked"
         ]
       }

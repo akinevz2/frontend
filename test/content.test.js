@@ -51,21 +51,16 @@ test("include directives target a file under src/content/includes/", async () =>
   );
   assert.ok(directives.length > 0, "the repo carries at least one directive");
   for (const directive of directives) {
-    const name = directive
-      .match(/"include"\s*:\s*"([^"]+)"/)[1]
-      .replace(/^\/+|\/+$/g, "");
-    const stem = name.split("/").pop();
-    // Targets are NOT name-joined paths (the resolver looks stems up in
-    // glob-built maps, so traversal names simply miss); the test mirrors
-    // that: the stem must exist under includes/ as .json or .md.
-    const mdPath = `src/content/includes/${stem}.md`;
-    let mdExists = false;
-    try {
-      mdExists = readFileSync(mdPath, "utf8").length > 0;
-    } catch {
-      /* no markdown variant */
-    }
-    const target = mdExists ? mdPath : `src/content/includes/${stem}.json`;
+    // The directive carries the FULL FILE NAME (extension included); the
+    // resolver looks bare file names up in glob-built maps, so a name
+    // with directory parts cannot escape includes/.
+    const name = directive.match(/"include"\s*:\s*"([^"]+)"/)[1];
+    assert.match(
+      name,
+      /^[a-z0-9][a-z0-9._-]*\.(json|md)$/i,
+      `${directive}: full file name with an includable extension`,
+    );
+    const target = `src/content/includes/${name}`;
     assert.ok(
       readFileSync(target, "utf8").length > 0,
       `include target ${target} exists`,
