@@ -36,11 +36,12 @@ test("page aliases target an existing route (+optional section anchor)", () => {
   }
 });
 
-test("include directives target a registered content file", async () => {
+test("include directives target a file under src/content/includes/", async () => {
   const { readdirSync } = await import("node:fs");
-  const indexTs = readFileSync("src/content/index.ts", "utf8");
-  const jsonFiles = readdirSync("src/content").filter((f) =>
-    f.endsWith(".json"),
+  // Every content JSON anywhere in src/content/ may carry directives —
+  // page content files and project pages alike.
+  const jsonFiles = readdirSync("src/content", { recursive: true }).filter(
+    (f) => f.endsWith(".json") && !f.startsWith("includes/"),
   );
   const directives = jsonFiles.flatMap(
     (file) =>
@@ -48,17 +49,26 @@ test("include directives target a registered content file", async () => {
         /"include"\s*:\s*"([^"]+)"/g,
       ) ?? [],
   );
+  assert.ok(directives.length > 0, "the repo carries at least one directive");
   for (const directive of directives) {
-    const name = directive.match(/"include"\s*:\s*"([^"]+)"/)[1];
-    const target = `src/content/${name}.json`;
+    const name = directive
+      .match(/"include"\s*:\s*"([^"]+)"/)[1]
+      .replace(/^\/+|\/+$/g, "");
+    const stem = name.split("/").pop();
+    // Targets are NOT name-joined paths (the resolver looks stems up in
+    // glob-built maps, so traversal names simply miss); the test mirrors
+    // that: the stem must exist under includes/ as .json or .md.
+    const mdPath = `src/content/includes/${stem}.md`;
+    let mdExists = false;
+    try {
+      mdExists = readFileSync(mdPath, "utf8").length > 0;
+    } catch {
+      /* no markdown variant */
+    }
+    const target = mdExists ? mdPath : `src/content/includes/${stem}.json`;
     assert.ok(
       readFileSync(target, "utf8").length > 0,
       `include target ${target} exists`,
-    );
-    assert.match(
-      indexTs,
-      new RegExp(`\\b${name}\\b`),
-      `${name} registered in includeRegistry`,
     );
   }
 });

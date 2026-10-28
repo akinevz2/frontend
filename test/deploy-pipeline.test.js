@@ -41,6 +41,17 @@ test("check:ci mirrors the CI subset with the gated build", () => {
   assert.match(scripts["check:ci"], /verify:policy/);
 });
 
+test("build:local serves regardless of the repo's git state", () => {
+  // The dev server must come up on any working tree — dirty, staged,
+  // mid-rebase. check:lockfile is a git-diff gate, so it stays a CI
+  // concern (check:ci); `git add -A` is the commit flow's job
+  // (build:ready), not a precondition of serving.
+  const local = scripts["build:local"];
+  assert.doesNotMatch(local, /\bgit\b/);
+  assert.doesNotMatch(local, /check:lockfile/);
+  assert.match(local, /npm run dev$/);
+});
+
 test("CI runs the gated build so the drift report is recomputed there", () => {
   assert.match(ciYml, /npm run build:gated/);
 });

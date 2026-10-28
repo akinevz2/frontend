@@ -1,19 +1,72 @@
 {
   "slug": "doftiles",
   "title": "doftiles",
-  "description": "A personal dotfiles setup based with deployment, stow, and window manager.",
+  "description": "Personal dotfiles: GNU Stow packages, Makefile deployment with hooks, herbstluftwm on WSL2.",
   "github": "https://github.com/akinevz2/doftiles",
   "content": {
     "heading": "doftiles",
     "content": [
-      "A window manager setup based on herbstluftwm, almost ready for public use.",
+      "dots - herbstluftwm on WSL2, deployed with GNU Stow and Make.",
       "[https://github.com/akinevz2/doftiles](https://github.com/akinevz2/doftiles)",
       {
         "heading": "From the README",
+        "anchor": "readme",
         "theme": "open",
         "content": [
-          "configs for kine@home - Ubuntu deploys are as simple as `make install` now.",
-          "Deployed with GNU stow: the repo is cloned into ~/dots and its packages (bar, dunst, herbst, rofi, shell, vim) are adopted into $HOME."
+          "Every top-level directory is a stow package whose contents mirror `$HOME`; recipes link them with `stow -R -t $HOME <package>`. Deploy through make, never bare stow.",
+          "```sh\ncd ~/dots\ngit submodule update --init --recursive   # polywins + opencode-screencast\nmake install                              # full WM host\nmake bash                                 # headless / container\n```",
+          "WSL2 needs VcXsrv on the Windows side; convention is `DISPLAY=localhost:0.0`."
+        ]
+      },
+      {
+        "heading": "Packages provided",
+        "anchor": "packages",
+        "theme": "open",
+        "content": [
+          "14 stow packages:",
+          {
+            "heading": "Shell and tooling",
+            "theme": "open",
+            "content": [
+              "shell - `.bashrcx`, `.profile`, aliases, exports; firefox -> Windows Firefox; `check-wsl`",
+              "git - `~/.my-credentials`, `load-credentials` hook, `dekineify`, home `~/Makefile`",
+              "llms - OpenCode + poolside config, SonarQube/MCP tooling",
+              "task - Taskwarrior config",
+              "vim - Vim config",
+              "zshell - Oh My Zsh config"
+            ]
+          },
+          {
+            "heading": "Window manager stack",
+            "theme": "open",
+            "content": [
+              "herbst - autostart, keybinds, ~40 scripts (`hc_*`, `rofi_*`, `polyctl`, `winbarctl`)",
+              "polybar - `config.ini`, `polywins` (submodule), `polyframes`, `ewmh_labels`",
+              "compton - compositor config, rofi context-menu helpers",
+              "rofi - themes, applets, ~40 `bin/` helpers",
+              "dunst - notification config, mail scripts",
+              "alacritty - terminal config"
+            ]
+          },
+          {
+            "heading": "Services and maintenance",
+            "theme": "open",
+            "content": [
+              "services - systemd units: `herbst`, `compton`, `dunst` (+ disabled `xvfb`/`x11vnc`/`novnc`)",
+              "maintenance - `check-msi-dirs` oneshot (dunst alert)"
+            ]
+          },
+          "Caveat: `wm.packages` is stale - pre-rename `opencode`, omits `vim`/`zshell`/`maintenance`; stow those individually."
+        ]
+      },
+      {
+        "heading": "Deployment via Make",
+        "anchor": "deployment",
+        "theme": "open",
+        "content": [
+          "Each recipe's effect includes its prerequisite recipes (run first, in listed order).",
+          { "include": "make-recipes" },
+          "Secrets: deploy-time (`sonarqube.env`, `*.admin`) gitignored; `~/.my-credentials` (name + email) tracked"
         ]
       }
     ]

@@ -12,9 +12,12 @@ export type Embed = {
 
 /**
  * A content-file include directive: `{"include": "<name>"}` expands, at
- * load time (src/content/index.ts), into the referenced content file's
- * top-level Section as a nested child — JSON cannot import, so this is
- * the "include" mechanism for reusing a section across pages.
+ * load time (src/content/index.ts), into the referenced Section under
+ * src/content/includes/ as a nested child — JSON cannot import, so this
+ * is the "include" mechanism for reusing a section across pages.
+ * Targets: a `.json` holding a Section, or an author-written `.md` file
+ * wrapped as one. Anything dropped into that directory is includable —
+ * no registration needed.
  */
 export type IncludeRef = { include: string };
 
