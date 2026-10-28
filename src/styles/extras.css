@@ -405,3 +405,23 @@ main.feef69-page {
 .window-body iframe:not(.embed) {
   max-width: 100%;
 }
+
+/* Content tables: GFM pipe tables via remark-gfm (added to the Md
+   pipeline) — content files stay plain markdown. td/th are missing from
+   window.css's color list — color inherits fine, but UA styles leave the
+   cells plain (and th centered): give them terminal-style rules and
+   even, padded cells. */
+.window-body table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: var(--gap-size) 0;
+  font-size: inherit;
+}
+
+.window-body th,
+.window-body td {
+  border: 1px solid var(--text-color);
+  padding: 0.25em 0.5em;
+  text-align: left;
+  vertical-align: top;
+}

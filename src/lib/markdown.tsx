@@ -2,6 +2,7 @@ import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
 import remarkBreaks from "remark-breaks";
+import remarkGfm from "remark-gfm";
 import { Link } from "react-router-dom";
 import { rehypeYoutubeEmbed } from "@/lib/rehypeYoutubeEmbed";
 import { sanitizeSchema } from "@/lib/sanitizeSchema";
@@ -16,7 +17,10 @@ export function Md({ children }: Readonly<Props>) {
       // soft-break space — line-oriented writing (transcripts, rants,
       // verse) keeps its authored line shape instead of flowing into
       // one paragraph; a blank line still opens a new paragraph.
-      remarkPlugins={[remarkBreaks]}
+      // remarkGfm: CommonMark pipes tables (| Recipe | Effect |) so
+      // content files need no raw <table> HTML; strikethrough and
+      // task lists come along (unused today).
+      remarkPlugins={[remarkBreaks, remarkGfm]}
       rehypePlugins={[
         rehypeRaw,
         rehypeYoutubeEmbed,
