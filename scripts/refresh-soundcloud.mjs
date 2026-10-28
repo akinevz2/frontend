@@ -29,7 +29,7 @@
  * the 401s came from stale hard-coded client_ids, not from the endpoint
  * itself.  Scraping a fresh one per run sidesteps rotation entirely.
  */
-import { writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -37,6 +37,33 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const projectRoot = resolve(__dirname, "..");
 const outputFile = resolve(projectRoot, "src/content/soundcloud.json");
+
+/** Read the snapshot currently on disk, if it exists and parses. */
+const readExistingSnapshot = async () => {
+  try {
+    return JSON.parse(await readFile(outputFile, "utf8"));
+  } catch (error) {
+    // A missing or unparseable file is not an error condition for the
+    // refresh: there is simply nothing to compare against, so write.
+    if (error.code === "ENOENT" || error instanceof SyntaxError) return null;
+    throw error;
+  }
+};
+
+/**
+ * Equality of two snapshots ignoring the volatile `generatedAt` stamp:
+ * every other byte of shape (source, counts, tracks, profiles) must be
+ * identical.  Key order is stable because both documents are produced by
+ * this same code path, so a stringify comparison is exact.
+ */
+export const snapshotsMatch = (existing, fresh) => {
+  if (existing === null || typeof existing !== "object") return false;
+  const withoutStamp = ({ generatedAt, ...rest }) => rest;
+  return (
+    JSON.stringify(withoutStamp(existing)) ===
+    JSON.stringify(withoutStamp(fresh))
+  );
+};
 
 /** SoundCloud usernames whose discographies should be published. */
 const SOUND_CLOUD_OWNERS = ["akinevz", "akinevz2"];
@@ -282,15 +309,29 @@ export const run = async () => {
     profiles,
   };
 
+  const existing = await readExistingSnapshot();
+  const unchanged = snapshotsMatch(existing, result);
+  const profileSummary = profiles
+    .map((profile) => `  @${profile.owner}: ${profile.trackCount} track(s)\n`)
+    .join("");
+
+  if (unchanged) {
+    // Track data is identical to the snapshot on disk; the refreshed
+    // document would differ only in its `generatedAt` stamp.  Discard the
+    // rewrite so the file (its timestamp, and any diffs downstream of it)
+    // stays untouched.
+    process.stdout.write(
+      `Discography unchanged (${trackCount} track(s)); ${outputFile} left untouched\n` +
+        profileSummary,
+    );
+    return result;
+  }
+
   await writeFile(outputFile, `${JSON.stringify(result, null, 2)}\n`, "utf8");
 
   process.stdout.write(
     `Refreshed ${result.tracks.length} SoundCloud track(s) into ${outputFile}\n` +
-      profiles
-        .map(
-          (profile) => `  @${profile.owner}: ${profile.trackCount} track(s)\n`,
-        )
-        .join(""),
+      profileSummary,
   );
 
   return result;
