@@ -10,7 +10,6 @@
       "[https://github.com/akinevz2/herbstutil](https://github.com/akinevz2/herbstutil)",
       {
         "heading": "herbstluftwm in a nutshell",
-        "anchor": "herbstluftwm",
         "theme": "open",
         "content": [
           "herbstluftwm is a manual tiling window manager for Linux. Its core idea: the whole desktop is one global object tree - monitors, tags, clients (windows), settings - queried and modified over IPC with the companion tool herbstclient.",
@@ -21,7 +20,6 @@
       },
       {
         "heading": "What herbstutil does",
-        "anchor": "about",
         "status": "early release - v0.1.2",
         "theme": "open",
         "content": [
@@ -56,7 +54,6 @@
       },
       {
         "heading": "Examples",
-        "anchor": "examples",
         "theme": "open",
         "content": [
           "The same nodes, before and after herbstutil.",

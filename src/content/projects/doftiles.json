@@ -10,18 +10,16 @@
       "[https://github.com/akinevz2/doftiles](https://github.com/akinevz2/doftiles)",
       {
         "heading": "From the README",
-        "anchor": "readme",
         "theme": "open",
         "content": [
           "Every top-level directory is a stow package whose contents mirror `$HOME`; recipes link them with `stow -R -t $HOME <package>`. Deploy through make, never bare stow.",
           "```sh\ncd ~/dots\ngit submodule update --init --recursive",
-          "WSL2 needs VcXsrv on the Windows side;",
+          "WSL2 needs VcXsrv on the Windows side",
           "use `DISPLAY=localhost:0.0`."
         ]
       },
       {
         "heading": "Packages provided",
-        "anchor": "packages",
         "theme": "open",
         "content": [
           "14 stow packages:",
@@ -62,7 +60,6 @@
       },
       {
         "heading": "Deployment via Make",
-        "anchor": "deployment",
         "theme": "open",
         "content": [
           "Each recipe's effect includes its prerequisite recipes (run first, in listed order).",

@@ -6,9 +6,10 @@ import { useWindowStore } from "./state";
  * window. The OK middleware is all signals with no callback threading:
  * on the maximized rail a link-less window MINIMIZES AND REVEALS
  * (window:minimize plays the click + slide-off, window:reveal expands
- * the section inline), an inline linked window lifts the maximized view
- * on its first press (window:maximize), and once maximized the press
- * passes through to the link below. */
+ * the section inline), an inline linked window whose section carries no
+ * content of its own lifts the maximized view on its first press
+ * (window:maximize), and once maximized the press passes through to the
+ * link below. A linked window with content navigates directly. */
 export function OkButton({ node }: { node: WindowNode }) {
   const { flagsOf, expand, remember } = useWindowStore();
   const { dispatch } = useSignals();
@@ -23,15 +24,14 @@ export function OkButton({ node }: { node: WindowNode }) {
       dispatch("window:reveal", { id: node.id, descendants: "direct" });
       return;
     }
-    // OK middleware: intercept the first press on a linked window — it
-    // opens the maximized view rather than leaving the page — EXCEPT a
-    // link-section carrying no content of its own (hasContent): the
-    // maximized view would only lift an empty shell around its rail,
-    // so the press short-circuits straight to the link and the
-    // maximized view stays away. Once the window IS maximized (a
-    // permalink landing does that even content-free), the press falls
-    // through to the navigation.
-    if (node.link && !maximized && hasContent(node)) {
+    // OK middleware: intercept the first press on a linked window whose
+    // section carries no content of its own (hasContent): it opens the
+    // maximized view rather than leaving the page. A link-section WITH
+    // content navigates directly — the maximized view would only frame
+    // what the reader already has inline. Once the window IS maximized
+    // (a permalink landing also does that even content-free), the press
+    // falls through to the navigation.
+    if (node.link && !maximized && !hasContent(node)) {
       dispatch("window:maximize", { id: node.id });
       return;
     }
