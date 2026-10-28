@@ -86,7 +86,12 @@ const mdSection = (stem: string, md: string): Section => {
 
 /** Includable Sections, keyed by FULL file name ("make-recipes.md"). */
 const includes: Record<string, Section> = {
-  ...sectionModules,
+  ...Object.fromEntries(
+    Object.entries(sectionModules).map(([path, section]) => [
+      path.split("/").pop()!,
+      section,
+    ]),
+  ),
   ...Object.fromEntries(
     Object.entries(mdModules).map(([path, md]) => {
       const stem = stemOf(path);

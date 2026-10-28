@@ -25,7 +25,9 @@
 .title-bar-text,
 .title-bar-text a {
   color: #eee !important;
-  font-size: 0.85rem;
+  /* Titles ride the same 1rem the window body follows (the Win98 11px
+     cap would leave them smaller than the content they name). */
+  font-size: 1rem;
 }
 
 :root.theme-border-flash .window,
@@ -420,6 +422,13 @@ form#form > label {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   word-break: break-word;
+}
+
+/* 98.css pins window text to its Win98 chrome size: .window{font-size:11px}.
+   Content windows read like documents — body text follows the root size,
+   the same 1rem the pre blocks above (98.css) already render at. */
+.window-body {
+  font-size: 0.78rem;
 }
 
 /* xp.css sets very large heading sizes; keep markdown headings readable in content windows. */
