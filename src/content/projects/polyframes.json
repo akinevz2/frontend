@@ -26,13 +26,10 @@
         ]
       },
       {
-        "heading": "Float registers: mod-f / mod-x / mod-ctrl-f",
+        "heading": "The keybind registers live in doftiles",
         "theme": "open",
         "content": [
-          "mod-f toggles the WINDOW's floating state: tiled to float (size preserved, decoration-aware center, fit pass, focus follows) and back. A single-float policy: when a visible float exists, the press focuses the floating layer instead of stacking a second float.",
-          "mod-x toggles the LAYER focus: float focused hands focus to the tiling layer (the float stays); tiling focus + visible float slurps the float into the frame (via hc_tile when the frame is populated and non-max); tiling focus + no floats yanks the focused window out (float + center in the monitor), and closes the vacated frame when the yanked window was its only client.",
-          "mod-ctrl-f zooms: the fresh float is stretched to the frame with its decoration outline flush to the frame's content rect (content = frame minus the theme's floating margins), then a fit pass keeps the full outline on-screen.",
-          "Geometry writes reconcile against hlwm's real content rect afterwards: float size hints can snap sizes, and the placement re-runs once from the read-back truth - verified against decoration_geometry reads, not the values we wrote."
+          "The float registers bound to the binary (mod-f / mod-x / mod-ctrl-f: state toggles, layer focus, yank/slurp, deco-flush fill) are herbstluftwm configuration - they are documented in the [doftiles project](/projects/doftiles), which owns the WM config."
         ]
       },
       {

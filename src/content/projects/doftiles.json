@@ -40,7 +40,7 @@
             "theme": "open",
             "content": [
               "herbst - autostart, keybinds, ~40 scripts (`hc_*`, `rofi_*`, `polyctl`, `winbarctl`)",
-              "polybar - `config.ini`, `polywins` (submodule), `polyframes`, `ewmh_labels`",
+              "polybar - `config.ini`, `polywins` (submodule), [polyframes](/projects/polyframes) (the renderer binary, now its own project), `ewmh_labels`",
               "compton - compositor config, rofi context-menu helpers",
               "rofi - themes, applets, ~40 `bin/` helpers",
               "dunst - notification config, mail scripts",
@@ -56,6 +56,40 @@
             ]
           },
           "Caveat: `wm.packages` is stale - pre-rename `opencode`, omits `vim`/`zshell`/`maintenance`; stow those individually."
+        ]
+      },
+      {
+        "heading": "The polyframes renderer",
+        "theme": "open",
+        "content": [
+          "The bar's window-list renderer is a standalone native binary: [polyframes](/projects/polyframes) — a bunli/Bun TypeScript CLI compiled with `bun build --compile` (its own repo; the dots tree carries none of it).",
+          "It renders the center module (one label per frame+class group, state-decorated, click/scroll actions) and hosts the helpers that used to live here: the rofi menus (`tags`, `hidden`, `windows`, `launch`), `hc_tile`/`hc_center`/`hc_resize` equivalents, `hc_fit_to`-style constraint passes, one-shot `rule once` spawns, and `hc_unmaximize`'s janitor daemon trigger.",
+          "Why a binary: polybar's spawn environment has no nvm PATH — the compiled executable embeds its runtime and re-executes ITSELF in the bar's click-action strings, so no shim and no node setup is needed.",
+          "`hc_center`/`hc_resize` remain here as two-line exec-shims delegating to the binary (dots-side callers keep their names). All WM reads go through [herbstutil](https://github.com/akinevz2/herbstutil) (typed JSON). Install: `make install` in the polyframes repo; bar wiring: `[module/polyframes]` in `config.ini`.",
+          {
+            "heading": "Links",
+            "content": [
+              {
+                "heading": "polyframes project page",
+                "link": "/projects/polyframes"
+              },
+              {
+                "heading": "polyframes on GitHub",
+                "link": "https://github.com/akinevz2/polyframes"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "heading": "Float registers: mod-f / mod-x / mod-ctrl-f",
+        "theme": "open",
+        "content": [
+          "The float registers are hlwm configuration wired to the [polyframes](/projects/polyframes) binary. The state machines live in `herbst/.local/bin` (`hc_focus`, `hc_floatx`, `hc_zoom`).",
+          "mod-f toggles the WINDOW's floating state: tiled to float (size preserved, decoration-aware center, fit pass, focus follows) and back. A single-float policy: when a visible float exists, the press focuses the floating layer instead of stacking a second float.",
+          "mod-x toggles the LAYER focus: float focused hands focus to the tiling layer (the float stays); tiling focus + visible float slurps the float into the frame (via hc_tile when the frame is populated and non-max); tiling focus + no floats yanks the focused window out (float + center in the monitor), and closes the vacated frame when the yanked window was its only client.",
+          "mod-ctrl-f zooms: the fresh float is stretched to the frame with its decoration outline flush to the frame's content rect (content = frame minus the theme's floating margins), then a fit pass keeps the full outline on-screen.",
+          "Geometry writes reconcile against hlwm's real content rect afterwards: float size hints can snap sizes, and the placement re-runs once from the read-back truth - verified against decoration_geometry reads, not the values we wrote."
         ]
       },
       {
