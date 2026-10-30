@@ -1,6 +1,6 @@
 {
   "baselineUrl": "https://akinevz.com/checksums.txt",
-  "generatedAt": "2026-10-28T05:12:11.685Z",
+  "generatedAt": "2026-10-30T22:46:15.576Z",
   "mutablePaths": [
     "blog/",
     "stories/",
@@ -38,6 +38,8 @@
     "music/index.html",
     "pagerts.html",
     "pagerts/index.html",
+    "polyframes.html",
+    "polyframes/index.html",
     "projects.html",
     "projects/development.html",
     "projects/development/index.html",
@@ -54,6 +56,8 @@
     "projects/lightdni-jssas-toggle/index.html",
     "projects/pagerts.html",
     "projects/pagerts/index.html",
+    "projects/polyframes.html",
+    "projects/polyframes/index.html",
     "projects/rarebert.html",
     "projects/rarebert/index.html",
     "projects/webuser.html",
