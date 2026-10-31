@@ -1,6 +1,6 @@
 {
   "baselineUrl": "https://akinevz.com/checksums.txt",
-  "generatedAt": "2026-10-31T04:38:25.335Z",
+  "generatedAt": "2026-10-31T13:08:53.935Z",
   "mutablePaths": [
     "blog/",
     "stories/",
@@ -40,6 +40,8 @@
     "music/index.html",
     "on-deploy.html",
     "on-deploy/index.html",
+    "opencode-screencast.html",
+    "opencode-screencast/index.html",
     "pagerts.html",
     "pagerts/index.html",
     "polyframes.html",
@@ -62,6 +64,8 @@
     "projects/lightdni-jssas-toggle/index.html",
     "projects/on-deploy.html",
     "projects/on-deploy/index.html",
+    "projects/opencode-screencast.html",
+    "projects/opencode-screencast/index.html",
     "projects/pagerts.html",
     "projects/pagerts/index.html",
     "projects/polyframes.html",
