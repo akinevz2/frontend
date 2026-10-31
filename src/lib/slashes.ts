@@ -1,4 +1,4 @@
-/** Path-slash trimming without regex backtracking scans (Sonar S8786).
+/** Path-slash trimming without regex backtracking scans.
  *  A trailing run of one character is O(1) per position but the regex
  *  matcher re-tries every start position on failure — O(n²) on long
  *  paths. These string walks are strictly linear. */

@@ -207,7 +207,7 @@ export const toSlug = (heading: string): string => {
     .normalize("NFKD")
     .replace(/[^\p{L}\p{N}]+/gu, "-");
   // Leading/trailing dash trim by string walk — the anchored regexes
-  // scan every start position on failure (Sonar S8786).
+  // scan every start position on failure.
   let start = 0;
   let end = dashed.length;
   while (start < end && dashed[start] === "-") start++;
