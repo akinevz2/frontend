@@ -10,7 +10,7 @@
       "[https://github.com/akinevz2/webuser](https://github.com/akinevz2/webuser)",
       {
         "heading": "From the README",
-        "theme": "open",
+        
         "content": [
           "A CLI built with Bunli on the Bun runtime: `bun install`, `bun dev -- [command]`, `bun run build`.",
           "MIT licensed."

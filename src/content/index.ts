@@ -22,7 +22,7 @@ export * from "./schema";
  * and the directive carries the FULL FILE NAME (extension included):
  *  - `.json`: must hold a Section (the window-tree shape of a content file).
  *  - `.md`: author-written markdown (literal newlines), imported raw and
- *    wrapped as `{ heading, anchor: <stem>, theme: "open", content: <md> }`.
+ *    wrapped as `{ heading, anchor: <stem>, content: <md> }` (no theme:
  *    An optional leading `# Heading` line names the window; otherwise the
  *    humanized file stem does ("make-recipes" → "Make recipes").
  * Directives are expanded at load time, recursively (an included tree may
@@ -79,7 +79,6 @@ const mdSection = (stem: string, md: string): Section => {
   return {
     heading: heading ?? humanize(stem),
     anchor: stem,
-    theme: "open",
     content: lines.join("\n"),
   };
 };

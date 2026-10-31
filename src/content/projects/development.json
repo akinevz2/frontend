@@ -13,7 +13,7 @@
       "[https://github.com/akinevz2/development](https://github.com/akinevz2/development)",
       {
         "heading": "From the README",
-        "theme": "open",
+        
         "content": [
           "The repo runs as a persistent Development Workstation Devcontainer for VS Code.",
           "Ships the latest Git and GitHub CLI, bootstraps Node.js LTS via nvm, restores akinevz2/doftiles into ~/dots, and stows the bar, dunst, herbst, rofi, shell and vim packages with `stow --adopt`."

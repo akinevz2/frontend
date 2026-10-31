@@ -10,7 +10,7 @@
       "[https://github.com/akinevz2/polyframes](https://github.com/akinevz2/polyframes)",
       {
         "heading": "The bar daemon",
-        "theme": "open",
+        
         "content": [
           "A bare invocation is polybar's contract: print one bar line, then keep it fresh - a `herbstclient --idle` hook listener for instant focus/tag/title updates, plus a 1s layout poll that hashes `herbstclient dump` (frame splits and removals emit no hook in hlwm 0.9.5).",
           "`polyframes bar` prints a single line and exits - the same pure renderer, scriptable."
@@ -18,7 +18,7 @@
       },
       {
         "heading": "Grouping model",
-        "theme": "open",
+        
         "content": [
           "Clients on the focused tag arrive in WM order, enriched per window: class, title, minimized, floating, and its parent frame's flat index (`-1` when the root is unsplit).",
           "Group keys: `minflt|wid` and `unframed|wid` are solo labels; `frame|frame|class` groups same-class windows sharing a frame. A group's representative is the frame's selected client - but only when it belongs to the group's class, so a mixed-class frame never leaks another group's title.",
@@ -27,14 +27,14 @@
       },
       {
         "heading": "The keybind registers live in doftiles",
-        "theme": "open",
+        
         "content": [
-          "The float registers bound to the binary (mod-f / mod-x / mod-ctrl-f: state toggles, layer focus, yank/slurp, deco-flush fill) are herbstluftwm configuration - they are documented in the [doftiles project](/projects/doftiles), which owns the WM config."
+          "The float-register state machines (mod-f / mod-x / mod-ctrl-f: float-focus, float-yank, zoom) live in herbctl - the keybinds spawn those herbctl verbs; they are documented in the [herbctl project](/projects/herbctl). The polyframes side of the same bindings is the frame surgery: tile/center/resize/fit re-executed in the bar's click actions."
         ]
       },
       {
         "heading": "The helper suite, migrated in",
-        "theme": "open",
+        
         "content": [
           "The dotfiles' herbst helpers moved in as subcommands, so one binary manages them all:",
           "`tags`, `hidden`, `windows`, `launch` - the rofi menus (script-mode protocol, NUL-separated rows, per-row icons and states)",
@@ -48,7 +48,7 @@
       },
       {
         "heading": "herbstutil + herbctl inside",
-        "theme": "open",
+        
         "content": [
           "Two sibling libraries ride along at build time:",
           "herbstutil (npm) - parseAttr for every WM read: typed JSON out of hlwm's attr output, one round trip instead of a per-client attribute walk.",
@@ -58,7 +58,7 @@
       },
       {
         "heading": "Links",
-        "theme": "open",
+        
         "content": [
           {
             "heading": "GitHub repository",
