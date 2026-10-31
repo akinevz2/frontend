@@ -10,7 +10,6 @@
       "[https://github.com/akinevz2/doftiles](https://github.com/akinevz2/doftiles)",
       {
         "heading": "Packages provided",
-        
         "content": [
           "herbstluftwm - THE window manager stack: the autostart (the WM bootstrap + keybinds), the theme (theme, theme.d/titles.theme, reload_theme, winbarctl), the float machinery + focus helpers (hc_focus, hc_floatx, hc_zoom, the maximize family, hc_center/hc_resize/hc_tile/hc_fit_to shims, hc_bounce, hc_peek, hc_full_focus), the generic hc_* and hlwm_* tools, and all systemd user units (herbst, compton, dunst, hc_send-error-daemon, xvfb, x11vnc, novnc).",
           "polybar - .config/polybar (config.ini + polybar.sh + polywins.sh), polyctl, ewmh_labels, the bar control Makefile; the [module/polyframes] section execs the polyframes binary directly.",
@@ -18,31 +17,31 @@
           "dunst - .config/dunst, check-mail.sh, read-mail.sh.",
           "depends - deployment + dependency management: the on-deploy submodule sources, the per-distro <target>.deploy resolvers, the polyframes submodule, and .config/doftiles.conf (the deploy-method state).",
           "agents - .config/opencode + .config/poolside, the opencode-screencast submodule, .local/bin and .local/share."
-        ]
+        ],
+        "theme": "open"
       },
       {
         "heading": "How deployment works",
-        
         "content": [
           "Every top-level directory with .config/.local content is a stow package; each package target stows it, records it as remembered (in ~/.local/state/doftiles/stowed - machine-local, the stowed set differs per host), and runs its post-stow hook. Hooks needing a running WM are guarded and no-op with a note on headless targets.",
           "make deploy - selective deployment: an interactive run first walks the deploy.profile TUI (distro target, session model, features, units, env) and provisions BEFORE any package is stowed; then a whiptail checklist picks the packages. P=\"a b\" is the fine-grained non-interactive form; PROFILE=skip bypasses the profile TUI.",
           "make bootstrap - full deployment in one call: the toolchain assurances (on-deploy toolchain: bun, postinstall trust, the herbctl binary), stow everything, the polyframes artifact (on-deploy deps), verify wm.requires binaries, daemon-reload + enable --now per service.order, status report, credentials last.",
           "make update - safe pull (fast-forward, fallback rebase --autostash), submodule sync, then on-deploy deps --force refreshes the polyframes artifact per the recorded method.",
           "Bare make - restow exactly the remembered subset. The service units needing X stay enabled-but-failed until X exists; the WSL2 host's herbst.service waits for the Windows-side VcXsrv X server to be reachable."
-        ]
+        ],
+        "theme": "open"
       },
       {
         "heading": "The float registers are herbctl verbs",
-        
         "content": [
           "The composite mod-bindings that used to be inline herbstluftwm chains in the autostart (or dots helper scripts) are herbctl verbs now - the autostart spawns the compiled binary: ~/.local/bin/herbctl <verb>.",
           "mod-f / float-focus, mod-x / float-yank, mod-ctrl-f / zoom - the float-register state machines (the hc_focus / hc_floatx / hc_zoom ports), and the plain functional verbs for every navigation, split, close and toggle binding.",
           "The full verb table lives in the [herbctl project](/projects/herbctl); the dots-side helpers it delegates to (hc_center, hc_tile, hc_fit_to and the maximize family) are documented in the [polyframes project](/projects/polyframes) - tile/center are polyframes subcommands behind two-line exec shims."
-        ]
+        ],
+        "theme": "open"
       },
       {
         "heading": "The session model",
-        
         "content": [
           "deploy.profile declares how the graphical session starts: wsl-systemd (no display manager - hlwm as the systemd user unit herbst.service, DISPLAY localhost:0.0, waiting for the Windows-side X server; the WSL2 host), greetd (a display manager owns the console; bare-OS targets), xinit (startx runs ~/.xinitrc), or nested (hlwm inside the Xvfb framebuffer, shared over VNC and browser noVNC - co-installable with a primary one, and the xrdp feature layers RDP onto the same shared framebuffer).",
           "on-deploy provision reads the profile and installs the per-feature platform services; the profile's units are enabled additively - activating a second profile never disables the first's."
@@ -50,7 +49,6 @@
       },
       {
         "heading": "Links",
-        
         "content": [
           {
             "heading": "GitHub repository",

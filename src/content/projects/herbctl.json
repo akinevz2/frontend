@@ -10,203 +10,176 @@
       "[https://github.com/akinevz2/herbctl](https://github.com/akinevz2/herbctl)",
       {
         "heading": "The verbs",
-        
         "content": [
           "25 verbs, one per keybind. Each verb gets its own section below."
-        ]
+        ],
+        "theme": "open"
       },
       {
         "heading": "get-south",
-        
         "content": [
           "[$Mod-s] The zoom/peek grid, under lock: urgent jumpto when the tag has urgent windows, frame-down focus, the floating-layer branch (focusing the float layer AND failing through when it is empty), the cycle fallbacks, and a pseudotile toggle. One chained spawn, held under the hlwm lock."
         ]
       },
       {
         "heading": "get-forward",
-        
         "content": [
           "[$Mod-w] Leave the floating layer, then cycle window/frame upward: focus --level=frame up, then cycle_frame. Under lock."
         ]
       },
       {
         "heading": "get-deck",
-        
         "content": [
           "[$Mod-d] The layout cycler, count-gated: with 4+ windows in the focused frame it cycles max/vertical/grid/horizontal; with exactly 2 it cycles max/horizontal; otherwise a bare -1 rotation fallback."
         ]
       },
       {
         "heading": "get-dedeck",
-        
         "content": [
           "[$ModShift-d] The shift-complement of get-deck: with >1 window in the focused frame it mixes in the max/grid/vertical layouts, otherwise it removes the focused frame."
         ]
       },
       {
         "heading": "explode-frame",
-        
         "content": [
           "[$Mod-e] With >1 frame, cycle frames backward; otherwise explode the frame and cycle forward. The last split is never a dead end."
         ]
       },
       {
         "heading": "focus-frame-left",
-        
         "content": [
           "[$Mod-a] Focus the frame to the left, or split one off at a third of the width when there is nothing to focus."
         ]
       },
       {
         "heading": "focus-frame-down",
-        
         "content": [
           "[$Mod-b] Focus the frame down, else split a bottom frame at half and cycle into it."
         ]
       },
       {
         "heading": "shift-up",
-        
         "content": [
           "[$ModShift-w] The shift-up ladder: first shift the window up into the frame above (--level=all); when there is nothing above, with >1 window in the focused frame cycle -1, otherwise try cycle_frame, then fall through to rotating the frame tree."
         ]
       },
       {
         "heading": "rotate-tree",
-        
         "content": [
           "[$ModCtrl-r] Rotate the tree (<3 frames) or cycle frames forward; on a single frame it cycles windows in the opposite direction of the shift-up fallback."
         ]
       },
       {
         "heading": "shift-down",
-        
         "content": [
           "[$ModShift-s] An empty focused frame is removed; a multi-window frame shifts the window down, splitting a bottom frame first when there is nothing below. A lone-window frame in a multi-frame tag deliberately does NOTHING (the neither-branch)."
         ]
       },
       {
         "heading": "split-down",
-        
         "content": [
           "[$ModShift-b] With >1 window in the focused frame, split a bottom frame and shift the window down into it."
         ]
       },
       {
         "heading": "shift-left",
-        
         "content": [
           "[$ModCtrl-a] Shift the window left; with nothing to the left focus the frame left, else split left and shift the window into the new frame."
         ]
       },
       {
         "heading": "shift-right",
-        
         "content": [
           "[$ModCtrl-e] Shift the window right, else split right and focus the new frame right."
         ]
       },
       {
         "heading": "new-frame",
-        
         "content": [
           "[$ModShift-t] The FRAME LOGIC ONLY of the open-a-second-frame binding: split auto + cycle_frame ONLY when the focused frame holds >0 windows; an empty frame stays as is (the terminal then opens into it). The spawn $TERMINAL half stays a dots concern - herbctl never spawns terminals; the dots keybind chains this with the spawn."
         ]
       },
       {
         "heading": "split-right-cycle",
-        
         "content": [
           "[$Mod-v] Split right at half and cycle into the new frame."
         ]
       },
       {
         "heading": "split-right-focus",
-        
         "content": [
           "[$ModCtrl-v] Split right at half and focus -e right into the new frame (exploding focus)."
         ]
       },
       {
         "heading": "split-bottom-focus",
-        
         "content": [
           "[$ModCtrl-b] Split bottom at half and focus -i down into the new frame (insertion focus)."
         ]
       },
       {
         "heading": "close-window",
-        
         "content": [
           "[$Mod-q] A focused float is ONLY un-floated; tiling windows get closed, with a lone-window frame removed afterwards (close_and_remove / close_or_remove). Under lock."
         ]
       },
       {
         "heading": "close-or-remove",
-        
         "content": [
           "[$ModShift-q] A focused float is closed and its frame removed; otherwise close_or_remove (close, and remove the frame when it is left empty)."
         ]
       },
       {
         "heading": "xkill-or-close",
-        
         "content": [
           "[$ModCtrl-q] The xkill-or-close chain: a focused client exists -> spawn xkill (targeted kill), else close_and_remove."
         ]
       },
       {
         "heading": "fullscreen-toggle",
-        
         "content": [
           "[$ModShift-f] Fullscreen toggle on the focused client."
         ]
       },
       {
         "heading": "minimize-toggle",
-        
         "content": [
           "[$ModShift-z] Minimized toggle on the focused client."
         ]
       },
       {
         "heading": "The float-register state machines",
-        
+        "theme": "open",
         "content": [
           "Three bindings carry whole register machines, ported branch for branch:"
         ]
       },
       {
         "heading": "float-focus",
-        
         "content": [
           "[$Mod-f] The float-register machine: try focusing a float (un-float it into an EMPTY focused frame; with children the float stays, no stacking) / no floats + max layout -> the size-keeping lift (hc_center frame, vacated-frame removal, hc_fit_to frame, then the algorithm=max tail) / a focused float -> direct un-float (no hc_tile). No script-level lock."
         ]
       },
       {
         "heading": "float-yank",
-        
         "content": [
           "[$Mod-x] The layer-yank machine (the hc_floatx port): focus-a-float-then-unfloat / yank (float + center into the float session, frame left alone) / defer / un-float-into-empty-frame / tidying (remove, reveal, polyframes hidden, use_previous)."
         ]
       },
       {
         "heading": "zoom",
-        
         "content": [
           "[$ModCtrl-f] The three-state press machine (the hc_zoom port): tiled -> float (flag reset + center + deco-flush frame fill + fit) / floating -> maximize onto a <tag>-max tag (PF_MAX state owned by the delegated hc_maximize / hc_unmaximize helpers) / maximized -> restore. The -max check runs BEFORE the floating check. Exit 1 when no window is focused."
         ]
       },
       {
         "heading": "The herbstutil dependency",
-        
         "content": [
           "herbctl imports herbstutil for its PURE primitives only - parseAttr, the typed attribute reader. herbctl does not (and must not) import herbstutil's command functions: the composite keybind commands live here, and herbstutil ships none of them."
         ]
       },
       {
         "heading": "Fail-soft, and pinned by tests",
-        
         "content": [
           "Every spawn (herbstclient and the dots helper binaries) carries the 5-second timeout inherited from herbstutil's spawn layer: a vanished window resolves null instead of wedging the bar or the keybind.",
           "Every command is verified against the recorded argv of a mocked herbstclient binary (plus mocked helper binaries) - bun test covers all 25 commands; nothing here needs a live WM to test.",
@@ -215,7 +188,6 @@
       },
       {
         "heading": "Links",
-        
         "content": [
           {
             "heading": "GitHub repository",
@@ -233,7 +205,8 @@
             "heading": "polyframes (the sibling binary)",
             "link": "/projects/polyframes"
           }
-        ]
+        ],
+        "theme": "open"
       }
     ]
   }
