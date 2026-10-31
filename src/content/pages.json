@@ -33,7 +33,8 @@
     "menuLabel": "configs",
     "title": "configs files from kine",
     "description": "where you can find my configuration files",
-    "page": "ConfigsPage"
+    "page": "ConfigsPage",
+    "hidden": true
   },
   {
     "path": "/wow",

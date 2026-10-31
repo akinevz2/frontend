@@ -1,6 +1,6 @@
 {
   "name": "website-xp-phone",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "license": "GPL v2",
   "author": "Kirill <kine> Nevzorov <akinevz@outlook.com>",
   "type": "module",
@@ -61,6 +61,7 @@
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
+    "jsdom": "^30.1.3",
     "pagerts": "^2.0.5",
     "prettier": "^3.9.10",
     "sonarqube-scanner": "^5.0.2",

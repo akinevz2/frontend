@@ -4,6 +4,7 @@ import { ToastContainer } from "react-toastify";
 import { pageRegistry } from "@/pages";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { applyStoredTheme } from "@/lib/theme";
+import { installTabNavigation } from "@/lib/tabNav";
 import { bindNavigate } from "./routerSignals";
 import { Clippy } from "./Clippy";
 import { MenuBar } from "./MenuBar";
@@ -33,6 +34,10 @@ export function App() {
     return () => document.body.classList.remove("feef69-page");
   }, [blank]);
   useEffect(applyStoredTheme, []);
+  // Tab navigation: menu items first, then the foreground's visible
+  // buttons — maximized windows keep focus inside their backdrop and
+  // window decorations are never traversed. See lib/tabNav.
+  useEffect(installTabNavigation, []);
 
   if (blank) return <main className="feef69-page" />;
 

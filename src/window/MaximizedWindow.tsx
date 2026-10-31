@@ -278,16 +278,6 @@ export function MaximizedWindow({
               }
             : undefined
         }
-        onKeyDown={
-          maximized
-            ? (event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  event.preventDefault();
-                  onOutsideClick();
-                }
-              }
-            : undefined
-        }
       >
         {windowEl}
       </div>
