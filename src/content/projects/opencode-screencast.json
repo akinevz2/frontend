@@ -19,15 +19,13 @@
         "heading": "The audience is an actor",
         "content": [
           "Whispers (dunst notifications) can replace themselves in a stable slot, or carry a click action that yoinks the user back to the orchestrating window — the click fires a detached handler through herbstclient, no blocked tooling. The stranded roll-call audits the backstage windows (orchestrator, narration) for wrong tags, minimization, or drifting off-screen, and the guarded close refuses to ever terminate the conversation window: its winid churns when reopened, so identity comes from capture-at-start, verified at every assert."
-        ],
-        "theme": "open"
+        ]
       },
       {
         "heading": "Scenarios: typed, replayable, checked",
         "content": [
           "The scenario layer authors presentations as typed OOP: branded winids and tag names, a Camera that carries the performance with it, managed Clients, and Scenes that record every action with millisecond offsets — saved as replayable .scenario.json files. The User surface reads like a test framework: expect, await, recover, awaitClick — predicates over hlwm observables (focus, floating state, rects, command exit codes, current tag) with recovery strategies instead of blind sleeps. A backprop-style checker walks each scene's action stream against simulated state and flags the churn that reads as screen flashes: duplicated camera moves, yo-yo focus, undone moves, float oscillation."
-        ],
-        "theme": "open"
+        ]
       }
     ]
   }
