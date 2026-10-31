@@ -1,0 +1,34 @@
+{
+  "slug": "opencode-screencast",
+  "title": "opencode-screencast",
+  "description": "An OpenCode plugin for live herbstluftwm screencasts: floating narration and delegation windows, a geometry toolkit for the floating layer (disjoin_rects partitioning, batch fitting, tiling surgery), audience callbacks over dunst, and a typed OOP scenario layer whose runs serialize to replayable script files.",
+  "github": "https://github.com/akinevz2/opencode-screencast",
+  "content": {
+    "heading": "opencode-screencast — the agent performs, the audience watches",
+    "content": [
+      "opencode-screencast turns an OpenCode agent into a screencast performer: it spawns floating narration windows the audience reads while the agent drives herbstluftwm live — every hlwm operation logged into the narration feed, every delegated command typed visibly into managed terminals, completion signaled by sentinels instead of window-title guesses.",
+      "[https://github.com/akinevz2/opencode-screencast](https://github.com/akinevz2/opencode-screencast)",
+      {
+        "heading": "The floating layer, handled honestly",
+        "content": [
+          "The plugin treats floating-vs-tiling occlusion as a layout bug, not cosmetics: disjoin_rects partitions the monitor against every decorated float, the largest unobscured rect becomes the placement slot, and a fit_floating_layer pass walks the whole floating layer into non-overlapping positions — nudging visibly by default, or snapping at once under the hlwm lock. A single misplaced tile gets frame surgery instead: the split runs along the floating window's decorated edge so the covered tiled window lands on the free side."
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "The audience is an actor",
+        "content": [
+          "Whispers (dunst notifications) can replace themselves in a stable slot, or carry a click action that yoinks the user back to the orchestrating window — the click fires a detached handler through herbstclient, no blocked tooling. The stranded roll-call audits the backstage windows (orchestrator, narration) for wrong tags, minimization, or drifting off-screen, and the guarded close refuses to ever terminate the conversation window: its winid churns when reopened, so identity comes from capture-at-start, verified at every assert."
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "Scenarios: typed, replayable, checked",
+        "content": [
+          "The scenario layer authors presentations as typed OOP: branded winids and tag names, a Camera that carries the performance with it, managed Clients, and Scenes that record every action with millisecond offsets — saved as replayable .scenario.json files. The User surface reads like a test framework: expect, await, recover, awaitClick — predicates over hlwm observables (focus, floating state, rects, command exit codes, current tag) with recovery strategies instead of blind sleeps. A backprop-style checker walks each scene's action stream against simulated state and flags the churn that reads as screen flashes: duplicated camera moves, yo-yo focus, undone moves, float oscillation."
+        ],
+        "theme": "open"
+      }
+    ]
+  }
+}
