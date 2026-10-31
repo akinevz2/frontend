@@ -51,6 +51,7 @@
     "vite": "^8.3.5"
   },
   "overrides": {
+    "node-forge": "^1.4.2",
     "lodash": "^4.17.21",
     "protobufjs": ">=7.6.5",
     "minimatch": "^11.0.1"
