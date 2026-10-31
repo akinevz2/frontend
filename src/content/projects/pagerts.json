@@ -9,11 +9,11 @@
       "pagerts fetches a URL (or reads a local HTML file) and prints every external resource it references - links, meta tags, scripts, styles - as JSON.",
       {
         "heading": "From the README",
-        
         "content": [
           "PagerTS fetches web pages, parses their HTML, and reports each page's title, URL, and external resources - inspecting common resource-bearing tags, or scanning every element for selected link properties.",
           "Requires Node.js 20 or later; installs globally with `npm install --global pagerts`."
-        ]
+        ],
+        "theme": "open"
       },
       {
         "heading": "Quick start",
@@ -21,7 +21,8 @@
           "npm install -g pagerts",
           "",
           "pagerts https://example.com"
-        ]
+        ],
+        "theme": "open"
       },
       {
         "heading": "What you get",
@@ -29,7 +30,8 @@
           "Output is a JSON array with one entry per input URL: a `title`, the `url`, and a `resources` array of `tag` / `key` / `value` / `link` objects.",
           "A page that fails to load still gets an entry: `{\"error\": \"Failed to load <url>: <reason>\"}`.",
           "Add `--no-json` for the same report as a human-readable log."
-        ]
+        ],
+        "theme": "open"
       },
       {
         "heading": "Useful options",
@@ -39,11 +41,11 @@
           "pagerts --tags a,img - restrict extraction to specific tags",
           "pagerts -p data-href - add link properties to search",
           "pagerts --timeout 5000 - abort fetches that take longer than 5s"
-        ]
+        ],
+        "theme": "open"
       },
       {
         "heading": "Links",
-        
         "content": [
           {
             "heading": "npm package",
@@ -57,7 +59,8 @@
             "heading": "CHANGELOG",
             "link": "https://github.com/akinevz2/pagerts/blob/main/CHANGELOG.md"
           }
-        ]
+        ],
+        "theme": "open"
       }
     ]
   }

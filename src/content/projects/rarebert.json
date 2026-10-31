@@ -10,13 +10,13 @@
       "[https://github.com/akinevz2/rarebert](https://github.com/akinevz2/rarebert)",
       {
         "heading": "From the README",
-        
         "content": [
           "Rarebert scaffolds modules, opens them in your editor side-by-side with opencode, lets the model implement them, summarises the diff, and commits - then runs the result and remembers what happened.",
           "Built around a TypeScript runtime (`lib/runtime/` + Bun) that orchestrates $EDITOR, git, and opencode, and a memo subsystem that threads observations between the model and your shell.",
           "Each turn ends in a commit, so the working tree is always clean before the next cycle.",
           "Work in progress: the branch is mid-port from Node.js/ESM to TypeScript/Bun, not yet stable for daily use."
-        ]
+        ],
+        "theme": "open"
       }
     ]
   }

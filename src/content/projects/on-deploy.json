@@ -10,7 +10,6 @@
       "[https://github.com/akinevz2/on-deploy](https://github.com/akinevz2/on-deploy)",
       {
         "heading": "The verbs",
-        
         "content": [
           "check - report the requirement state; exit 1 when anything is missing (also --json).",
           "deploy - install every missing binary: resolve the package, show the command, confirm (Enter = yes), run it, then re-verify - a binary still missing after its command fails the run. --yes for non-interactive runs; --dry-run to preview.",
@@ -19,11 +18,11 @@
           "deps - the dependency deployment: polyframes (the bar module / rofi menus binary), ensured on install, --force redeployed on update, --method source|npm|release per machine. The install method is recorded in ~/.config/doftiles.conf (stowed from the repo, so method changes show up as tracked diffs).",
           "snapshot - collect a machine's pre-existing config into doftiles' defaults/ (a stow-shaped package) BEFORE the first deploy overwrites it - the machine's prior state, versioned in git, restorable with one make target.",
           "configure - edit the deploy target and the required-package list from an interactive menu (or --target/--add/--remove flags)."
-        ]
+        ],
+        "theme": "open"
       },
       {
         "heading": "The profiles",
-        
         "content": [
           "Four session models, co-installable where it makes sense:",
           "wsl-systemd - NO display manager: hlwm runs as the systemd user unit herbst.service, waiting for the Windows-side X server (VcXsrv) to be reachable. The historical bypass; provision even checks the Windows partition for VcXsrv and offers a silent install from the SourceForge feed.",
@@ -31,18 +30,18 @@
           "xinit - startx runs ~/.xinitrc; no display manager.",
           "greetd - greetd + tuigreet own the console (the bare-OS target).",
           "A profile declares units (systemd user units, enabled additively) and env overrides (written to ~/.config/doftiles/env, read by the units via EnvironmentFile). The make deploy TUI selects the session model, the features, the units and the env - and writes deploy.profile before stowing anything."
-        ]
+        ],
+        "theme": "open"
       },
       {
         "heading": "Built to not hang, not lie",
-        
         "content": [
           "Non-interactive runs abort cleanly demanding --yes instead of blocking on prompts; every install is re-verified; a failed install fails the run. The prompts ride a raw line reader (bun's readline wedges), and the menu works scripted or interactive. The deploy script contract is <target>.deploy <binary> -> the providing package, install <binary> -> the install command - the resolver per distro, not a package list."
-        ]
+        ],
+        "theme": "open"
       },
       {
         "heading": "Links",
-        
         "content": [
           {
             "heading": "GitHub repository",
@@ -60,7 +59,8 @@
             "heading": "polyframes (the artifact the deps step deploys)",
             "link": "/projects/polyframes"
           }
-        ]
+        ],
+        "theme": "open"
       }
     ]
   }

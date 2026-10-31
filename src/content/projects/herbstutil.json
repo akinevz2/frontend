@@ -10,25 +10,23 @@
       "[https://github.com/akinevz2/herbstutil](https://github.com/akinevz2/herbstutil)",
       {
         "heading": "herbstluftwm in a nutshell",
-        
         "content": [
           "herbstluftwm is a manual tiling window manager for Linux. Its core idea: the whole desktop is one global object tree - monitors, tags, clients (windows), settings - queried and modified over IPC with the companion tool herbstclient.",
           "The tree is probed with `herbstclient attr <path>`: it prints a short description of the node, its children, and a table of every attribute (typed, writable, hookable).",
           "```sh\n$ herbstclient attr clients.            # children of the clients node\n$ herbstclient attr clients.focus.      # introspect the focused window\n$ herbstclient attr clients.focus.tag   # read a single leaf value\n```",
           "The catch: `attr` output is written for humans first - padded type tables, prose, legends. Great to read, fragile to parse."
-        ]
+        ],
+        "theme": "open"
       },
       {
         "heading": "What herbstutil does",
         "status": "v0.3.x - the compatibility layer",
-        
         "content": [
           "herbstutil rebuilds `herbstclient attr` output as JSON, preserving the node's shape: value - the node's description; children - the names of the child nodes; attributes - every attribute as a name-value pair.",
           "Where herbstclient speaks humans, herbstutil speaks machine.",
           "It does not stop at unquoting: herbstclient annotates every attribute with a type hint in the first column of its listing, and herbstutil uses that hint to emit properly typed JSON.",
           {
             "heading": "Value typing",
-            
             "content": [
               "s (string) - JSON string, outer quotes stripped",
               "b (bool) - JSON boolean",
@@ -37,81 +35,82 @@
               "p (point) - `XxY` becomes an object { x, y }",
               "c, r, n, f (color, regex, named value, font) - string",
               "Leaf values (a single attribute) print no type hint, so a heuristic decides there: true/false become booleans, integers and decimals become numbers, everything else stays a string."
-            ]
+            ],
+            "theme": "open"
           },
           {
             "heading": "Usage",
-            
             "content": [
               "Two ways to the same JSON: let herbstutil run herbstclient for you, or pipe herbstclient through the parse filter (the default command). Built with Bun and bunli, packaged as a single executable:",
               "```sh\n$ herbstutil attr clients.focus.           # runs herbstclient attr and parses it\n$ herbstclient attr clients. | herbstutil parse\n$ herbstclient attr clients. | herbstutil   # parse is the default command\n```",
               "s, --space <n> - pretty-print with `n` spaces of indentation (default 4)",
               "e, --escape - skip all type conversion and keep every value exactly as herbstclient printed it: strings keep their literal quotes, escaped inside the JSON string",
               "`parse` refuses to run attached to a terminal: as a filter it always reads from stdin."
-            ]
+            ],
+            "theme": "open"
           }
-        ]
+        ],
+        "theme": "open"
       },
       {
         "heading": "Examples",
-        
         "content": [
           "The same nodes, before and after herbstutil.",
           {
             "heading": "Root node: herbstclient attr clients.",
-            
             "content": [
               "Raw:",
               "```text\n$ herbstclient attr clients.\nThe managed windows. For every (managed) window id there is an entry here.\n\n4 children:\n  0x280003.\n  0x680004.\n  0x900003.\n  focus.\n0 attributes.\n .---- type\n | .-- writable\n | | .-- hookable\n V V V\n```",
               "Through herbstutil:",
               "```json\n{\n    \"value\": \"The managed windows. For every (managed) window id there is an entry here.\",\n    \"children\": [\n        \"0x280003.\",\n        \"0x680004.\",\n        \"0x900003.\",\n        \"focus.\"\n    ],\n    \"attributes\": {}\n}\n```"
-            ]
+            ],
+            "theme": "open"
           },
           {
             "heading": "Node with attributes: herbstclient attr clients.focus.",
-            
             "content": [
               "Raw (excerpt):",
               "```text\n$ herbstclient attr clients.focus.\na managed window\n\n1 child:\n  parent_frame.\n24 attributes:\n .---- type\n | .-- writable\n | | .-- hookable\n V V V\n s - - class = \"Alacritty\"\n R - h content_geometry = 1255x662+13+34\n s - - class = \"Alacritty\"\n R - h content_geometry = 1255x662+13+34\n b w h decorated = true\n i - h pid = 403112\n s - - tag = \"work\"\n s - h title = \"OC | herbstutil tag 0.1.1b discrepancy\"\n b - h visible = true\n s - h winid = \"0x280003\"\n```",
               "Through herbstutil (excerpt - all 24 attributes arrive in the JSON):",
               "```json\n{\n    \"value\": \"a managed window\",\n    \"children\": [\n        \"parent_frame.\"\n    ],\n    \"attributes\": {\n        \"class\": \"Alacritty\",\n        \"content_geometry\": {\n            \"x\": 13,\n            \"y\": 34,\n            \"width\": 1255,\n            \"height\": 662\n        },\n        \"decorated\": true,\n        \"pid\": 403112,\n        \"tag\": \"work\",\n        \"title\": \"OC | herbstutil tag 0.1.1b discrepancy\",\n        \"visible\": true,\n        \"winid\": \"0x280003\"\n    }\n}\n```",
               "Attribute values arrive typed: strings unquoted, booleans and numbers real, rectangles as objects - herbstclient's type hint drives the conversion. Pass `--escape` to keep the raw text instead."
-            ]
+            ],
+            "theme": "open"
           },
           {
             "heading": "Leaf node: herbstclient attr clients.focus.tag",
-            
             "content": [
               "Raw:",
               "```text\n$ herbstclient attr clients.focus.tag\nwork\n```",
               "Through herbstutil:",
               "```json\n{\n    \"value\": \"work\",\n    \"children\": [],\n    \"attributes\": {}\n}\n```"
-            ]
+            ],
+            "theme": "open"
           }
-        ]
+        ],
+        "theme": "open"
       },
       {
         "heading": "The pure layer (the v0.3 split)",
-        
         "content": [
           "herbstutil stayed deliberately small: parse/attr primitives only. The keybind state machines that briefly lived here (the mod-s/w/d/e/a/q/f/x compositions and the float registers) moved out to herbctl - its own project, one floor down on this page.",
           "Everything downstream (herbctl, polyframes) imports parseAttr directly, bundled at build time; the CLI verbs stay for scripts and humans."
-        ]
+        ],
+        "theme": "open"
       },
       {
         "heading": "Shell completion, mirroring herbstclient",
-        
         "content": [
           "herbstclient's completion model: the binary does the thinking (complete_shell <pos> <words...>), the shell scripts just delegate. herbstutil mirrors it - the complete-shell verb, plus bash/zsh scripts that are byte-structure twins of hlwm's own.",
           "The attr verb's positional completes LIVE hlwm object paths: the request is delegated to herbstclient -q complete_shell itself, so clients.0x…, tags.by-name. and every attribute name arrive straight from the running WM.",
           "Install the completion with the package scripts:",
           "```sh\n$ npm run completion:install     # bash + zsh, user-level\n$ herbstutil attr clients.<TAB>  # the live tree, in your shell\n```",
           "Published on npm: `npm i -g herbstutil` gives the command (it runs through bun) - or install from source with bun run build."
-        ]
+        ],
+        "theme": "open"
       },
       {
         "heading": "Links",
-        
         "content": [
           {
             "heading": "GitHub repository",
@@ -125,7 +124,8 @@
             "heading": "herbstclient reference",
             "link": "https://herbstluftwm.org/herbstclient.html"
           }
-        ]
+        ],
+        "theme": "open"
       }
     ]
   }

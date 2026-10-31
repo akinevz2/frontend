@@ -266,12 +266,25 @@ export function MaximizedWindow({
         ref={controller.backdropRef}
         className={maximized ? "maximized-backdrop" : "maximized-shell"}
         data-window-id={nodeId}
+        role={maximized ? "button" : undefined}
+        tabIndex={maximized ? 0 : undefined}
+        aria-label={maximized ? "Exit maximized view" : undefined}
         onClick={
           maximized
             ? (event) => {
                 // Clicks inside the window bubble up to the backdrop
                 // (containment!) — only dimmed-area clicks dismiss.
                 if (event.target === event.currentTarget) onOutsideClick();
+              }
+            : undefined
+        }
+        onKeyDown={
+          maximized
+            ? (event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  onOutsideClick();
+                }
               }
             : undefined
         }

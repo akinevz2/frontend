@@ -1,6 +1,5 @@
 {
   "heading": "Welcome to kine's website!",
-  
   "content": [
     "I sometimes change the blurb on the front page here,",
     "Enjoy your visit!",
@@ -48,7 +47,9 @@
       "content": [
         "recently:",
         {
-          "content": ["graduated University of Sussex!"]
+          "content": [
+            "graduated University of Sussex!"
+          ]
         },
         "currently:",
         {
@@ -133,12 +134,16 @@
             {
               "heading": "music",
               "link": "https://soundcloud.com/akinevz",
-              "content": ["where i post really heavy music"]
+              "content": [
+                "where i post really heavy music"
+              ]
             },
             {
               "heading": "another music",
               "link": "https://soundcloud.com/akinevz2",
-              "content": ["where i post music for the sake of memes"]
+              "content": [
+                "where i post music for the sake of memes"
+              ]
             },
             "and endlessly, deeply",
             {
@@ -174,5 +179,6 @@
         }
       ]
     }
-  ]
+  ],
+  "theme": "open"
 }

@@ -201,12 +201,19 @@ export function useWindowStore(): WindowStore {
   return store;
 }
 
-export const toSlug = (heading: string): string =>
-  heading
+export const toSlug = (heading: string): string => {
+  const dashed = heading
     .toLowerCase()
     .normalize("NFKD")
-    .replace(/[^\p{L}\p{N}]+/gu, "-")
-    .replace(/^-+|-+$/g, "");
+    .replace(/[^\p{L}\p{N}]+/gu, "-");
+  // Leading/trailing dash trim by string walk — the anchored regexes
+  // scan every start position on failure (Sonar S8786).
+  let start = 0;
+  let end = dashed.length;
+  while (start < end && dashed[start] === "-") start++;
+  while (end > start && dashed[end - 1] === "-") end--;
+  return dashed.slice(start, end);
+};
 
 /** Blog posts are addressed as ?post=slug, everything else by #tree-index.
  * The depth-0 root is excluded from ?post= addressing: findTarget's

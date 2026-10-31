@@ -1,5 +1,6 @@
 import generated from "virtual:blog-dirs";
 import type { Section } from "./schema";
+import { stripTrailingSlashes } from "@/lib/slashes";
 
 /**
  * Directory listings for the static directories under /blog/ — driven by
@@ -130,7 +131,7 @@ export function blogDirFiles(path: string): string[] | undefined {
   } catch {
     /* keep the raw path */
   }
-  p = p.replace(/\/+$/, "").toLowerCase();
+  p = stripTrailingSlashes(p).toLowerCase();
   return directories.find((dir) => dir.path.toLowerCase() === p)?.files;
 }
 
@@ -144,7 +145,7 @@ export function findBlogDir(pathname: string) {
   } catch {
     /* keep the raw path */
   }
-  path = path.replace(/\/+$/, "").toLowerCase();
+  path = stripTrailingSlashes(path).toLowerCase();
   if (path === "/blog") return undefined;
   return directories.find((dir) => dir.path.toLowerCase() === path);
 }

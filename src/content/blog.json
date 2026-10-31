@@ -1,5 +1,4 @@
 {
-  
   "heading": "kine's blog posts",
   "content": [
     {
@@ -33,11 +32,11 @@
       "content": "check out kaine.sh",
       "link": "https://kaine.sh"
     },
-
     {
       "heading": "the archive",
       "content": "the past blog posts",
       "link": "/blog/archive"
     }
-  ]
+  ],
+  "theme": "open"
 }

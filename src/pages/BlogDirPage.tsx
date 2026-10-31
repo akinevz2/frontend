@@ -2,6 +2,7 @@ import { blogDirListed, blogDirListing, findBlogDir } from "@/content";
 import { useSignals } from "@/lib/signals";
 import { useLocation } from "react-router-dom";
 import { PageWindows } from "@/window";
+import { stripTrailingSlashes } from "@/lib/slashes";
 
 /** A configured directory under /blog/ (src/content/blogDirs.ts): the
  * page is the directory's LISTING — one window naming each shown file,
@@ -21,7 +22,7 @@ export const BlogDirPage = () => {
   const { dispatch } = useSignals();
   const listing = blogDirListing(pathname);
   if (!listing) return null;
-  const parent = pathname.replace(/\/+$/, "").replace(/\/[^/]*$/, "") || "/";
+  const parent = stripTrailingSlashes(pathname).replace(/\/[^/]*$/, "") || "/";
   const parentLists =
     parent === "/blog" ||
     (Boolean(findBlogDir(parent)) && blogDirListed(parent));

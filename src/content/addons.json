@@ -1,6 +1,5 @@
 {
   "heading": "Welcome to Rueg's UI homepage — Simple WoW UI Pack",
-  
   "anchor": "addons",
   "content": [
     {
@@ -97,5 +96,6 @@
         }
       ]
     }
-  ]
+  ],
+  "theme": "open"
 }

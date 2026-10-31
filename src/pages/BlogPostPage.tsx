@@ -8,6 +8,7 @@ import { useSignals } from "@/lib/signals";
 import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { PageWindows } from "@/window";
+import { stripTrailingSlashes } from "@/lib/slashes";
 
 /** A markdown file from public/blog/, addressed directly by its URL.
  *
@@ -34,7 +35,8 @@ export const BlogPostPage = () => {
     };
   }, [pathname]);
   const isJson = useMemo(() => {
-    const parent = pathname.replace(/\/+$/, "").replace(/\/[^/]*$/, "") || "/";
+    const parent =
+      stripTrailingSlashes(pathname).replace(/\/[^/]*$/, "") || "/";
     const base = decodeURI(pathname).split("/").pop() ?? "";
     return Boolean(findBlogDir(parent)?.files.includes(`${base}.json`));
   }, [pathname]);
@@ -58,7 +60,7 @@ export const BlogPostPage = () => {
       live = false;
     };
   }, [isJson, pathname]);
-  const parent = pathname.replace(/\/+$/, "").replace(/\/[^/]*$/, "") || "/";
+  const parent = stripTrailingSlashes(pathname).replace(/\/[^/]*$/, "") || "/";
   const parentDir = findBlogDir(parent);
   const foldsUp = Boolean(parentDir) && blogDirListed(parentDir?.path ?? "");
   // A .md post's embed forces its window expanded; a .json post's tree

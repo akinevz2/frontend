@@ -25,8 +25,8 @@ float-register state machines (mod-f / mod-x / mod-ctrl-f) live here
 too. fail-soft throughout: a vanished window resolves null instead of
 wedging the keybind.
 
-**[polyframes](https://github.com/akinevz2/polyframes)** — the
-compiled binary. renders the polybar center module (one label per
+**[polyframes](https://github.com/akinevz2/polyframes)** — the frames.
+renders the polybar center module (one label per
 frame+class group, state-decorated), hosts the rofi menus
 (`tags`, `windows`, `launch`, `hidden`), the tile/center/resize
 frame surgery, and the one-shot window rules. no node, no nvm PATH,
@@ -56,5 +56,13 @@ because the config file kept accreting `herbstclient chain ...` one
 them names, mock the binary, and pin the argv. 53 tests, one binary
 per layer, one repo to stow.
 
+```bash
+ glm-5.3-flash says:
 if you are on a fresh machine: `make deploy`, pick the profile, let
 the toolchain pass, and the window manager comes up when X does.
+```
+
+> this entire post was mostly written by GLM-5.3-Flash, he's really friendly!
+> I'll add corrections, details and screenshots when time allows it
+>
+> - akinevz

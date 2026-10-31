@@ -10,31 +10,30 @@
       "[https://github.com/akinevz2/polyframes](https://github.com/akinevz2/polyframes)",
       {
         "heading": "The bar daemon",
-        
         "content": [
           "A bare invocation is polybar's contract: print one bar line, then keep it fresh - a `herbstclient --idle` hook listener for instant focus/tag/title updates, plus a 1s layout poll that hashes `herbstclient dump` (frame splits and removals emit no hook in hlwm 0.9.5).",
           "`polyframes bar` prints a single line and exits - the same pure renderer, scriptable."
-        ]
+        ],
+        "theme": "open"
       },
       {
         "heading": "Grouping model",
-        
         "content": [
           "Clients on the focused tag arrive in WM order, enriched per window: class, title, minimized, floating, and its parent frame's flat index (`-1` when the root is unsplit).",
           "Group keys: `minflt|wid` and `unframed|wid` are solo labels; `frame|frame|class` groups same-class windows sharing a frame. A group's representative is the frame's selected client - but only when it belongs to the group's class, so a mixed-class frame never leaks another group's title.",
           "Render order keeps WM order, pushes minimized labels last, truncates to `char_limit` with an ellipsis, folds forbidden classes (the bar itself), and emits a `+N` overflow marker past `max_windows`."
-        ]
+        ],
+        "theme": "open"
       },
       {
         "heading": "The keybind registers live in doftiles",
-        
         "content": [
           "The float-register state machines (mod-f / mod-x / mod-ctrl-f: float-focus, float-yank, zoom) live in herbctl - the keybinds spawn those herbctl verbs; they are documented in the [herbctl project](/projects/herbctl). The polyframes side of the same bindings is the frame surgery: tile/center/resize/fit re-executed in the bar's click actions."
-        ]
+        ],
+        "theme": "open"
       },
       {
         "heading": "The helper suite, migrated in",
-        
         "content": [
           "The dotfiles' herbst helpers moved in as subcommands, so one binary manages them all:",
           "`tags`, `hidden`, `windows`, `launch` - the rofi menus (script-mode protocol, NUL-separated rows, per-row icons and states)",
@@ -44,21 +43,21 @@
           "`resize` - delta nudges, frame/root deco-flush fills, explicit content rects",
           "`fit` - constraint pass: shrink oversized, nudge off-screen (monitor or frame target)",
           "`spawn` - one-shot `herbstclient rule once` spawns with typed flags (`--class/--float/--center/--tag`)"
-        ]
+        ],
+        "theme": "open"
       },
       {
         "heading": "herbstutil + herbctl inside",
-        
         "content": [
           "Two sibling libraries ride along at build time:",
           "herbstutil (npm) - parseAttr for every WM read: typed JSON out of hlwm's attr output, one round trip instead of a per-client attribute walk.",
           "herbctl - the imperatives the scroll/click actions run: float+center, minimize-keep-frame, empty-frame removal - the keybind state machines as importable functions.",
           "Both resolve as sibling submodules in the doftiles depends/ layout and from the npm/GitHub registries everywhere else."
-        ]
+        ],
+        "theme": "open"
       },
       {
         "heading": "Links",
-        
         "content": [
           {
             "heading": "GitHub repository",
@@ -76,7 +75,8 @@
             "heading": "herbstutil (the JSON bridge)",
             "link": "https://github.com/akinevz2/herbstutil"
           }
-        ]
+        ],
+        "theme": "open"
       }
     ]
   }

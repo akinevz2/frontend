@@ -1,6 +1,5 @@
 {
   "heading": "Contacts",
-  
   "content": [
     "[akinevz.com/resume](/resume)",
     "[pagerts](/pagerts) - my CLI project",
@@ -20,7 +19,10 @@
     {
       "heading": "funny within",
       "theme": "funny",
-      "content": ["click here to look at the [fuckingclippy](#fuckingclippy)"]
+      "content": [
+        "click here to look at the [fuckingclippy](#fuckingclippy)"
+      ]
     }
-  ]
+  ],
+  "theme": "open"
 }

@@ -5,6 +5,7 @@ import {
   routes,
   type Route,
 } from "@/content";
+import { stripEdgeSlashes, stripTrailingSlashes } from "@/lib/slashes";
 
 export const NOT_FOUND = routes.find((r) => r.path === "/404") as Route;
 
@@ -17,7 +18,7 @@ export function normalizePath(pathname: string): string {
     return pathname;
   }
   path = path.replace(/\/index(\.html)?$/i, "").replace(/\.html$/i, "");
-  path = `/${path.replace(/^\/+|\/+$/g, "")}`;
+  path = `/${stripEdgeSlashes(path)}`;
   const lower = path.toLowerCase();
   return routes.some((r) => r.path === lower) ? lower : path;
 }
@@ -66,7 +67,7 @@ export function resolveRoute(pathname: string): Route {
         hidden: true,
       };
     }
-    const parent = path.replace(/\/+$/, "").replace(/\/[^/]*$/, "") || "/";
+    const parent = stripTrailingSlashes(path).replace(/\/[^/]*$/, "") || "/";
     const base = path.split("/").pop() ?? "";
     const files = blogDirFiles(parent);
     // The parent of any /blog/** address is /blog or a walk-known

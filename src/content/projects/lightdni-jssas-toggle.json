@@ -10,11 +10,11 @@
       "[https://github.com/akinevz2/lightdni-jssas-toggle](https://github.com/akinevz2/lightdni-jssas-toggle)",
       {
         "heading": "From the README",
-        
         "content": [
           "TypeScript utility package for applying and toggling CSS themes: theme classes and attributes on the root element, dynamic CSS variables, localStorage/cookie persistence, and accessibility metadata (color-scheme and aria-live announcements).",
           "A consolidated one-call setTheme API - dependency-safe, and works in vanilla JS/TS, React, and Vue projects."
-        ]
+        ],
+        "theme": "open"
       }
     ]
   }

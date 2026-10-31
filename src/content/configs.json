@@ -1,6 +1,5 @@
 {
   "heading": "Configs",
-  
   "content": [
     {
       "heading": "Linux Configs",
@@ -25,9 +24,12 @@
       "content": [
         "My World of Warcraft configuration files — the window layout of Rueg's UI, the Simple WoW UI Pack, running wow classic.",
         "[everything world of warcraft](/wow)",
-        { "include": "characters.json" }
+        {
+          "include": "characters.json"
+        }
       ],
       "link": "/wow"
     }
-  ]
+  ],
+  "theme": "open"
 }
