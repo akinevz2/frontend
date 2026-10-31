@@ -410,16 +410,18 @@ form#form > label {
   box-sizing: border-box;
 }
 
-.resource-embed-scroll pre {
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-
+.resource-embed-scroll pre,
 .window-body pre {
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  word-break: break-word;
+  /* Code does NOT soft-wrap: pre-wrap + overflow-wrap:anywhere distorts
+   * the box's min-content width (a flex child may shrink below the
+   * code's natural width), so every line's last word dangles onto its
+   * own line and the source newline then renders a second break —
+   * the "wrapped word then an inserted line break" artifact. Long
+   * lines scroll horizontally instead; short lines keep their shape. */
+  white-space: pre;
+  overflow-x: auto;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* 98.css pins window text to its Win98 chrome size: .window{font-size:11px}.

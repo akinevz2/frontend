@@ -3,7 +3,7 @@
  *  matcher re-tries every start position on failure — O(n²) on long
  *  paths. These string walks are strictly linear. */
 
-/** Strip trailing slashes ("​/blog/" → "/blog", "/" stays "/"). */
+/** Strip trailing slashes ("/blog/" -> "/blog", "/" stays "/"). */
 export function stripTrailingSlashes(path: string): string {
   let end = path.length;
   while (end > 1 && path[end - 1] === "/") end--;
