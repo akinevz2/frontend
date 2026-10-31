@@ -412,14 +412,17 @@ form#form > label {
 
 .resource-embed-scroll pre,
 .window-body pre {
-  /* Code does NOT soft-wrap: pre-wrap + overflow-wrap:anywhere distorts
-   * the box's min-content width (a flex child may shrink below the
-   * code's natural width), so every line's last word dangles onto its
-   * own line and the source newline then renders a second break —
-   * the "wrapped word then an inserted line break" artifact. Long
-   * lines scroll horizontally instead; short lines keep their shape. */
-  white-space: pre;
-  overflow-x: auto;
+  /* Code soft-wraps, but NOT the min-content-destroying way:
+   * pre-wrap + overflow-wrap:anywhere on a pre inside a flex column
+   * reports the box's min-content width as ~one character, so the
+   * window can shrink below the code's natural width and every
+   * line's last word dangles onto its own line. overflow-wrap:
+   * break-word keeps the full natural width as the minimum (the
+   * window is sized to the code's longest line) and only breaks a
+   * word when the code is genuinely wider than the window. */
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: break-word;
   max-width: 100%;
   box-sizing: border-box;
 }

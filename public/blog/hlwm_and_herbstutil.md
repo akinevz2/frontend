@@ -57,12 +57,18 @@ them names, mock the binary, and pin the argv. 53 tests, one binary
 per layer, one repo to stow.
 
 ```bash
- glm-5.3-flash says:
-if you are on a fresh machine: `make deploy`, pick the profile, let
-the toolchain pass, and the window manager comes up when X does.
+>glm-5.3-flash says:
+if you are on a fresh machine: `make deploy`, pick the profile,
+let the toolchain pass, and the window manager comes up when
+the X server does.
 ```
 
 > this entire post was mostly written by GLM-5.3-Flash, he's really friendly!
 > I'll add corrections, details and screenshots when time allows it
 >
 > - akinevz
+
+*P.S.:* in cases your session is managed and the X server is not a free and  
+unoccupied concept, that is - you're running an actual operating system, fear  
+not, I will soon develop a legitimate deployment and initialisation process  
+that will launch via a greeter
