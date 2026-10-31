@@ -23,7 +23,7 @@
     "preview": "vite preview --host 127.0.0.1 --port 8086",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.node.json --noEmit",
     "lint": "prettier --write \"src/**/*.{ts,tsx}\" && eslint ./src --ext .ts,.tsx",
-    "test": "node --test",
+    "test": "node --import tsx --test",
     "test:watch": "node --test --watch",
     "check:audit": "npm audit --audit-level=low",
     "check:security": "npm run lint && npm run test",
@@ -52,7 +52,8 @@
   },
   "overrides": {
     "lodash": "^4.17.21",
-    "protobufjs": ">=7.6.5"
+    "protobufjs": ">=7.6.5",
+    "minimatch": "^11.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -62,6 +63,7 @@
     "@vitejs/plugin-react": "^6.1.2",
     "pagerts": "^2.0.5",
     "prettier": "^3.9.10",
+    "tsx": "^4.23.15",
     "zod": "^4.6.7"
   }
 }
