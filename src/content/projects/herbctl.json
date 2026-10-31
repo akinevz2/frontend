@@ -1,0 +1,58 @@
+{
+  "slug": "herbctl",
+  "title": "herbctl",
+  "description": "The herbstluftwm keybind imperatives: every composite mod- binding as a get-* verb - the float-layer state machines, the zoom register, the navigation chains - compiled to a standalone bunli binary.",
+  "github": "https://github.com/akinevz2/herbctl",
+  "content": {
+    "heading": "herbctl - the keybind imperatives, as a native binary",
+    "content": [
+      "herbctl owns what the keybinds used to express as inline herbstluftwm chains: one verb per mod-key binding, each a faithful port of the tuned chain (or state machine) it replaces - compiled to a standalone executable with Bun and bunli, so the keybinds spawn binaries, not scripts.",
+      "[https://github.com/akinevz2/herbctl](https://github.com/akinevz2/herbctl)",
+      {
+        "heading": "The verbs",
+        "theme": "open",
+        "content": [
+          "Named for what they fetch, not for the key that triggers them:",
+          "get-south (mod-s) - the zoom/peek grid: urgent first (gated on the tag's urgent count), frame-down focus, the floating-layer branch (focus the layer and un-float via the tag's focused_client - the alias resolves stale mid-chain), cycle and pseudotile fallbacks.",
+          "get-forward (mod-w), get-shuffle (mod-shift-w) - leave-float and cycle-up; the shift ladder ends in a frame-tree rotate.",
+          "get-deck (mod-d), get-dedeck (mod-shift-d) - layout cyclers gated on frame occupancy; dedeck collapses to remove.",
+          "get-explore (mod-e), get-advice (mod-a) - explode/cycle and frame-focus-or-split pairs.",
+          "get-below (mod-shift-b), get-dive (mod-ctrl-a), get-toss (mod-ctrl-e) - split+shift directions.",
+          "get-quiet (mod-q), get-hold (mod-shift-q), get-wrench (mod-ctrl-q) - the close/quit family: floats only un-float, empty frames collapse, xkill for the stubborn.",
+          "get-tuck (mod-shift-t) - the frame half of split-auto: the dots keybind chains it with the terminal spawn so the split only happens for a window that actually arrives.",
+          "get-vex/get-bend (mod-v/mod-b) and get-vexi/get-bendi (mod-ctrl-v/mod-ctrl-b) - the split-into-direction family.",
+          "get-hush (mod-shift-f) - fullscreen toggle; get-nap (mod-shift-z) - minimize toggle."
+        ]
+      },
+      {
+        "heading": "The state machines",
+        "theme": "open",
+        "content": [
+          "Three bindings carry whole register machines, ported branch for branch with the dots scripts as the contract:",
+          "get-zoom (mod-ctrl-f, the hc_zoom port) - press-count register: tile the float, maximize onto a dedicated <tag>-max tag (state recorded in hlwm env, a per-tag janitor daemon tidies up), restore.",
+          "get-extracted (mod-x, the hc_floatx port) - the layer-yank machine: focus a float and un-float it, yank the focused window into the float session (the vacated frame is never closed), defer to the tiling layer, drop a float back into an empty frame, and the no-floats tidying branch.",
+          "get-focus (mod-f, the hc_focus port) - the quick float toggle: no focus chasing, the register handled by hlwm itself.",
+          "Every branch is pinned by tests that mock the herbstclient binary and assert the exact command argv - no live WM is ever touched by the suite."
+        ]
+      },
+      {
+        "heading": "Links",
+        "theme": "open",
+        "content": [
+          {
+            "heading": "GitHub repository",
+            "link": "https://github.com/akinevz2/herbctl"
+          },
+          {
+            "heading": "herbstutil (the primitives underneath)",
+            "link": "https://github.com/akinevz2/herbstutil"
+          },
+          {
+            "heading": "doftiles (the keybinds that spawn it)",
+            "link": "https://github.com/akinevz2/doftiles"
+          }
+        ]
+      }
+    ]
+  }
+}

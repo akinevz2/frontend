@@ -1,7 +1,7 @@
 {
   "slug": "polyframes",
   "title": "polyframes",
-  "description": "Polybar window-list renderer for herbstluftwm: a bunli/Bun CLI compiled to a standalone native binary - floating-state keybind registers, typed one-shot window rules, and rofi menus reading the WM as typed JSON via herbstutil.",
+  "description": "Polybar window-list renderer for herbstluftwm: a bunli/Bun CLI compiled to a standalone native binary - rofi menus, typed one-shot window rules, and the WM read as typed JSON via herbstutil; the float-register imperatives come from herbctl.",
   "github": "https://github.com/akinevz2/polyframes",
   "content": {
     "heading": "polyframes - the polybar window-list renderer, as a native binary",
@@ -47,10 +47,13 @@
         ]
       },
       {
-        "heading": "herbstutil inside",
+        "heading": "herbstutil + herbctl inside",
         "theme": "open",
         "content": [
-          "Every WM read goes through herbstutil's `parseAttr` (imported directly, bundled at build time): hlwm's typed attr output becomes typed JSON - real booleans, geometries as `{x, y, width, height}` objects - collapsing a per-client attribute walk into one round trip, with a plain per-field fallback when a read fails."
+          "Two sibling libraries ride along at build time:",
+          "herbstutil (npm) - parseAttr for every WM read: typed JSON out of hlwm's attr output, one round trip instead of a per-client attribute walk.",
+          "herbctl - the imperatives the scroll/click actions run: float+center, minimize-keep-frame, empty-frame removal - the keybind state machines as importable functions.",
+          "Both resolve as sibling submodules in the doftiles depends/ layout and from the npm/GitHub registries everywhere else."
         ]
       },
       {
@@ -64,6 +67,10 @@
           {
             "heading": "doftiles (the dotfiles it ships from)",
             "link": "https://github.com/akinevz2/doftiles"
+          },
+          {
+            "heading": "herbctl (the keybind imperatives)",
+            "link": "https://github.com/akinevz2/herbctl"
           },
           {
             "heading": "herbstutil (the JSON bridge)",

@@ -1,0 +1,57 @@
+{
+  "slug": "on-deploy",
+  "title": "on-deploy",
+  "description": "The doftiles deployment orchestrator: verifies the WM-stack binaries, installs the missing ones through per-platform deploy scripts, and provisions the session stack from declarative profiles.",
+  "github": "https://github.com/akinevz2/on-deploy",
+  "content": {
+    "heading": "on-deploy - the deployment orchestrator",
+    "content": [
+      "on-deploy turns the dotfiles repo into a one-command deployment. It runs inside the doftiles checkout and reads two manifests: wm.requires (the required binaries; the last line names the platform - ubuntu, arch, ... - selecting the <target>.deploy resolver) and deploy.profile (how the graphical session starts).",
+      "[https://github.com/akinevz2/on-deploy](https://github.com/akinevz2/on-deploy)",
+      {
+        "heading": "The verbs",
+        "theme": "open",
+        "content": [
+          "check - report the requirement state; exit 1 when anything is missing (also --json).",
+          "deploy - install every missing binary: resolve the package, show the command, confirm (Enter = yes), run it, then re-verify - a binary still missing after its command fails the run. --yes for non-interactive runs; --dry-run to preview.",
+          "provision - platform services per profile: the X server set, the ~/.xinitrc session line, a greetd + tuigreet greeter, the nested stack packages.",
+          "snapshot - collect a machine's pre-existing config into doftiles' defaults/ (a stow-shaped package) BEFORE the first deploy overwrites it - the machine's prior state, versioned in git, restorable with one make target.",
+          "configure - edit the deploy target and the required-package list from an interactive menu (or --target/--add/--remove flags)."
+        ]
+      },
+      {
+        "heading": "The profiles",
+        "theme": "open",
+        "content": [
+          "Four session models, co-installable where it makes sense:",
+          "wsl - hlwm as a systemd user unit waiting for the Windows-side X server (VcXsrv); provision even checks the Windows partition for VcXsrv and offers a silent install from the SourceForge feed.",
+          "nested - hlwm inside an Xvfb framebuffer, shared over VNC and browser noVNC - the temporary profile, additive to a primary one.",
+          "xinit - startx runs ~/.xinitrc; no display manager.",
+          "greetd - greetd + tuigreet own the console.",
+          "A profile declares units (systemd user units, enabled additively) and env overrides (written to ~/.config/doftiles/env, read by the units via EnvironmentFile)."
+        ]
+      },
+      {
+        "heading": "Built to not hang, not lie",
+        "theme": "open",
+        "content": [
+          "Non-interactive runs abort cleanly demanding --yes instead of blocking on prompts; every install is re-verified; a failed install fails the run. The prompts ride a raw line reader (bun's readline wedges), and the menu works scripted or interactive."
+        ]
+      },
+      {
+        "heading": "Links",
+        "theme": "open",
+        "content": [
+          {
+            "heading": "GitHub repository",
+            "link": "https://github.com/akinevz2/on-deploy"
+          },
+          {
+            "heading": "doftiles (what it deploys)",
+            "link": "https://github.com/akinevz2/doftiles"
+          }
+        ]
+      }
+    ]
+  }
+}
