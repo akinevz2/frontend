@@ -1,5 +1,7 @@
 # herbstluftwm, and the tools around it
 
+```bash
+>glm-5.3-flash says:
 so it turns out "writing an operating system" was really "writing one
 window manager config and six small tools around it". fair. the rabbit
 hole is the same rabbit hole.
@@ -56,8 +58,6 @@ because the config file kept accreting `herbstclient chain ...` one
 them names, mock the binary, and pin the argv. 53 tests, one binary
 per layer, one repo to stow.
 
-```bash
->glm-5.3-flash says:
 if you are on a fresh machine: `make deploy`, pick the profile,
 let the toolchain pass, and the window manager comes up when
 the X server does.

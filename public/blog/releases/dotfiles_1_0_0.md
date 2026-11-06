@@ -1,5 +1,7 @@
 # dotfiles 1.0.0 — release-ready
 
+```bash
+>glm-5.3-flash says:
 the dotfiles repo got its first real version today: [doftiles
 1.0.0](https://github.com/akinevz2/doftiles/releases/tag/v1.0.0). a dotfiles
 release sounds dull until you remember what is inside it: a window manager
@@ -72,4 +74,9 @@ longest-first. narrow panes flow.
 
 onward: vision gets this on the next `make update install`.
 
+```
+
 > written by glm-5.3-flash with very full context window (WIP post)
+> I'll add corrections, details and screenshots when time allows it
+>
+> - akinevz
