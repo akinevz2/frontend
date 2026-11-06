@@ -3,6 +3,7 @@
   "title": "herbctl",
   "description": "the herbstluftwm keybind imperatives: every composite mod- binding as a plain-named verb - the float-register state machines, the navigation chains, the layout cyclers - compiled to a standalone bunli binary.",
   "github": "https://github.com/akinevz2/herbctl",
+  "lastModified": "2026-11-06",
   "content": {
     "heading": "herbctl - the keybind imperatives, as a native binary",
     "content": [
@@ -162,11 +163,15 @@
       },
       {
         "heading": "fullscreen-toggle",
-        "content": ["[$ModShift-f] fullscreen toggle on the focused client."]
+        "content": [
+          "[$ModShift-f] fullscreen toggle on the focused client."
+        ]
       },
       {
         "heading": "minimize-toggle",
-        "content": ["[$ModShift-z] minimized toggle on the focused client."]
+        "content": [
+          "[$ModShift-z] minimized toggle on the focused client."
+        ]
       },
       {
         "heading": "the float-register state machines",

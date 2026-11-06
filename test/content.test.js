@@ -104,3 +104,20 @@ test("every project document is complete and routable", async () => {
     );
   }
 });
+
+test("every project carries a lastModified stamp (the listing sorts on it)", async () => {
+  const { readdirSync } = await import("node:fs");
+  const files = readdirSync("src/content/projects").filter((f) =>
+    f.endsWith(".json"),
+  );
+  for (const file of files) {
+    const project = JSON.parse(
+      readFileSync(`src/content/projects/${file}`, "utf8"),
+    );
+    assert.match(
+      project.lastModified ?? "",
+      /^\d{4}-\d{2}-\d{2}$/,
+      `${file}: lastModified is an ISO date (YYYY-MM-DD)`,
+    );
+  }
+});

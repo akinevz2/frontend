@@ -3,6 +3,7 @@
   "title": "development",
   "description": "the master repository: the submodule projects, the content that powers this website, and the workstation devcontainer they are developed in.",
   "github": "https://github.com/akinevz2/development",
+  "lastModified": "2026-11-06",
   "content": {
     "heading": "development - the master repository",
     "content": [

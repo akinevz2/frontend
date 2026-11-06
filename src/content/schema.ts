@@ -53,6 +53,9 @@ export type Project = {
   title: string;
   description: string;
   github: string;
+  /** ISO date (YYYY-MM-DD) the page's content was last updated — the
+   * projects listing sorts on it, most recently updated first. */
+  lastModified?: string;
   content: Section;
 };
 

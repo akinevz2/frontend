@@ -3,6 +3,7 @@
   "title": "herbstutil",
   "description": "the herbstluftwm compatibility layer: herbstclient attr output as clean typed JSON, shell completion mirroring herbstclient's own, and the parse/attr primitives every sibling tool builds on.",
   "github": "https://github.com/akinevz2/herbstutil",
+  "lastModified": "2026-11-06",
   "content": {
     "heading": "herbstutil - the JSON bridge to herbstluftwm",
     "content": [

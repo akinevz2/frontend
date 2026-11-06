@@ -171,7 +171,13 @@ export const projects = Object.values(projectModules)
     ...project,
     content: resolveIncludes(project.content),
   }))
-  .sort((a, b) => a.title.localeCompare(b.title));
+  // Most recently updated first; the title breaks ties (a fresh stamp
+  // on every page keeps the listing in its familiar alphabetical shape
+  // until the pages start drifting apart in update time).
+  .sort((a, b) => {
+    const byDate = (b.lastModified ?? "").localeCompare(a.lastModified ?? "");
+    return byDate !== 0 ? byDate : a.title.localeCompare(b.title);
+  });
 
 /**
  * Short-hand URL for a project: /<slug>. Redirects to the canonical

@@ -3,6 +3,7 @@
   "title": "polyframes",
   "description": "polybar window-list renderer for herbstluftwm: a bunli/bun CLI compiled to a standalone native binary - rofi menus, typed one-shot window rules, and the WM read as typed JSON via herbstutil; the float-register imperatives come from herbctl.",
   "github": "https://github.com/akinevz2/polyframes",
+  "lastModified": "2026-11-06",
   "content": {
     "heading": "polyframes - the polybar window-list renderer, as a native binary",
     "content": [

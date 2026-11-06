@@ -3,6 +3,7 @@
   "title": "doftiles",
   "description": "personal dotfiles as a GNU stow repository: one package per directory, a makefile deployment with hooks, herbstluftwm as the window manager, and on-deploy as the one-command installer.",
   "github": "https://github.com/akinevz2/doftiles",
+  "lastModified": "2026-11-06",
   "content": {
     "heading": "doftiles - the stow packages",
     "content": [
