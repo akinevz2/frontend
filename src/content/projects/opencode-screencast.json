@@ -8,6 +8,7 @@
     "heading": "opencode-screencast - the agent performs, the audience watches",
     "content": [
       "**opencode-screencast** turns an **OpenCode** agent into a screencast performer: it spawns floating narration windows the audience reads while the agent drives **herbstluftwm** live - every hlwm operation logged into the narration feed, every delegated command typed visibly into managed terminals, completion signaled by sentinels instead of window-title guesses.",
+      "",
       "[https://github.com/akinevz2/opencode-screencast](https://github.com/akinevz2/opencode-screencast)",
       {
         "heading": "the stage it performs on",
@@ -58,6 +59,7 @@
         "status": "v0.1.0",
         "content": [
           "sentinel-based completion (no window-title guesses), capture-at-start window identity, and the disjoin_rects placement slot are the stable floor of the plugin.",
+          "",
           "the scenario layer's recording format (.scenario.json) is the replayable surface."
         ],
         "theme": "open"

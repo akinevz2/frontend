@@ -8,6 +8,7 @@
     "heading": "lightdni-jssas-toggle - the theme toggle, no integration needed",
     "content": [
       "**lightdni** (Doesn't Need Integration) provides a simple declarative API for adding a theme toggle to your website.",
+      "",
       "[https://github.com/akinevz2/lightdni-jssas-toggle](https://github.com/akinevz2/lightdni-jssas-toggle)",
       {
         "heading": "how a website wears its theme",
@@ -39,6 +40,7 @@
         "status": "v1.1.1",
         "content": [
           "the one-call `setTheme` API is the stable surface; the persisted-theme reader is back with tests.",
+          "",
           "published on npm: lightdni-jssas-toggle 1.1.1."
         ],
         "theme": "open"

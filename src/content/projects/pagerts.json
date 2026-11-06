@@ -8,6 +8,7 @@
     "heading": "pagerts - the webpage resource extractor",
     "content": [
       "**pagerts** fetches a URL (or reads a local HTML file) and prints every external resource it references - links, meta tags, scripts, styles - as JSON.",
+      "",
       "[https://github.com/akinevz2/pagerts](https://github.com/akinevz2/pagerts)",
       {
         "heading": "what a webpage offers up",
@@ -31,11 +32,17 @@
         "heading": "usage",
         "content": [
           "```sh\n$ npm install --global pagerts\n$ pagerts https://example.com\n```",
+          "",
           "**pagerts** all <urls...> - scan every element instead of the default tags",
+          "",
           "**pagerts** --dry-run <urls...> - preview the effective settings without fetching",
+          "",
           "**pagerts** --tags a,img - restrict extraction to specific tags",
+          "",
           "**pagerts** -p data-href - add link properties to search",
+          "",
           "**pagerts** --timeout 5000 - abort fetches that take longer than 5s",
+          "",
           "**pagerts** --no-json - the same report as a human-readable log"
         ],
         "theme": "open"
@@ -54,8 +61,11 @@
         "status": "v2.0.5",
         "content": [
           "`--timeout <ms>` aborts each network fetch after the given number of milliseconds.",
+          "",
           "failures are verbose entries, not silent gaps - JSON and human-readable modes agree on the shape.",
+          "",
           "the CLI exits promptly after printing output; npm pack ships only the current build.",
+          "",
           "JSON is the default output; `--no-json` flips to the log form."
         ],
         "theme": "open"

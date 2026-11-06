@@ -2,10 +2,11 @@
  * Inert until lightdni-jssas-toggle adds `theme-page-slide` to <html> and
  * sets --ps-* variables and data-page-slide on it.
  *
- * Exit choreography: each top-level window folds down onto the taskbar
- * line at the bottom of the page (XP-style outline squash, linear over
- * --ps-minimize), then the whole page drops straight out of the bottom in
- * one fast stroke — a jump, not a scroll-away.
+ * Exit choreography: the page drops straight out of the bottom while the
+ * windows fold - the top-level windows squash down onto the taskbar line
+ * (XP-style outline squash, linear over --ps-minimize) IN STEP with the
+ * whole-page drop over --ps-drop-dur: squeeze while moving down, fully
+ * off screen, no stationary beat first.
  */
 html.theme-page-slide {
   overflow-x: clip;
@@ -23,7 +24,8 @@ html.theme-page-slide .page-slide-ghost {
   margin: 0;
   overflow: hidden;
   pointer-events: none;
-  /* Hold in place while windows minimise (--ps-drop-delay), then drop. */
+  /* Drops IN STEP with the fold (--ps-drop-delay is zero): the page
+     squeezes while it moves down, one motion, not fold-then-jump. */
   animation: page-slide-drop var(--ps-drop-dur) linear var(--ps-drop-delay)
     forwards;
 }
@@ -43,7 +45,7 @@ html.theme-page-slide .page-slide-ghost.page {
    visibly rides out instead of blinking away at the route commit. */
 html.theme-page-slide .page-slide-bar {
   pointer-events: none;
-  animation: page-slide-bar-exit 280ms ease-in forwards;
+  animation: page-slide-bar-exit var(--ps-drop-dur, 280ms) ease-in forwards;
 }
 
 @keyframes page-slide-bar-exit {
@@ -100,7 +102,9 @@ html.theme-page-slide .page-slide-ghost .page-slide-placeholder-frame {
 
 @keyframes page-slide-drop {
   to {
-    translate: 0 100vh;
+    /* The extra 10vh clears the folded sliver: at exactly 100vh the
+       squashed windows would rest AT the bottom edge, still visible. */
+    translate: 0 110vh;
   }
 }
 

@@ -8,6 +8,7 @@
     "heading": "rarebert - the AI-driven development loop",
     "content": [
       "**rarebert** is a self-modifying scripting environment for interactive, AI-driven development.",
+      "",
       "[https://github.com/akinevz2/rarebert](https://github.com/akinevz2/rarebert)",
       {
         "heading": "the loop it lives in",

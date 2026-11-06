@@ -13,12 +13,14 @@ import "./pageSlide.css";
 
 const CLASS = "theme-page-slide";
 const ATTRIBUTE = "data-page-slide";
-const DURATION_MS = 400;
-/** Total fold duration (windows squash into the taskbar line). */
-const MINIMIZE_MS = 98;
-/** After the minimise beat, the page drops out of the bottom in one stroke. */
-const DROP_DURATION_MS = 180;
-const REMOVAL_MS = MINIMIZE_MS + DROP_DURATION_MS + 200;
+const DURATION_MS = 500;
+/** The fold (windows squash into the taskbar line) rides the WHOLE drop:
+ * squeeze while moving down, not a stationary beat first - a sub-300ms
+ * two-beat exit reads as a blink and the page just vanishes. */
+const MINIMIZE_MS = 450;
+/** The page drops out of the bottom in step with the fold (zero delay). */
+const DROP_DURATION_MS = 450;
+const REMOVAL_MS = DROP_DURATION_MS + 200;
 const VARIABLES = [
   "--ps-duration",
   "--ps-minimize",
@@ -36,7 +38,7 @@ const slide = (name: string, inX: string, inY: string): ThemeDefinition => ({
   variables: {
     "--ps-duration": `${DURATION_MS}ms`,
     "--ps-minimize": `${MINIMIZE_MS}ms`,
-    "--ps-drop-delay": `${MINIMIZE_MS}ms`,
+    "--ps-drop-delay": "0ms",
     "--ps-drop-dur": `${DROP_DURATION_MS}ms`,
     "--ps-in-x": inX,
     "--ps-in-y": inY,
@@ -226,12 +228,16 @@ function transition(to: string, hash: string): void {
 }
 
 /** Restart the just-applied destination slide so it runs in step with the
- * exit choreography (fold + drop happen while the page slides in). */
+ * exit choreography (fold + drop happen while the page slides in). The
+ * forced style flush between "none" and "" is REQUIRED: without it both
+ * writes resolve in one style pass, the CSS animation never restarts, and
+ * a same-direction navigation (every mobile move - mobile is always
+ * "down") pops the new page in with no slide at all. */
 function restartArrival(): void {
   const main = document.querySelector("main");
   if (!main) return;
   main.style.animation = "none";
-  // void main.offsetWidth;
+  void main.offsetWidth;
   main.style.animation = "";
   // The page element is main itself in the normalized shell (main.page):
   // a nested .page resets separately, in whatever shape the document has.
@@ -240,7 +246,7 @@ function restartArrival(): void {
     : main.querySelector<HTMLElement>(".page");
   if (page) {
     page.style.animation = "none";
-    // void page.offsetWidth;
+    void page.offsetWidth;
     page.style.animation = "";
   }
 }

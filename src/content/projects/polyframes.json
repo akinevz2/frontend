@@ -10,6 +10,7 @@
       "**polyframes** renders **herbstluftwm**'s window state as the **polybar** center module: one label per (frame, window-class) group, decorated by state (focused gold underline, floating, minimized dimmed), with click/scroll actions that re-exec the binary itself.",
       "",
       "built with bun and bunli, compiled to a standalone executable - so it runs wherever the bar runs: no node, no nvm PATH, no shim.",
+      "",
       "[https://github.com/akinevz2/polyframes](https://github.com/akinevz2/polyframes)",
       {
         "heading": "the bar contract it fills",
@@ -35,12 +36,19 @@
         "heading": "usage - the subcommands",
         "content": [
           "`tags`, `hidden`, `windows`, `launch` - the rofi menus (script-mode protocol, NUL-separated rows, per-row icons and states)",
+          "",
           "`switcher-menu`, `window-menu` - detached menu targets the click actions spawn",
+          "",
           "`tile` - closest-empty-frame navigation or split (the frame-tree surgery)",
+          "",
           "`center` - decoration-aware centering (`--wid` targets a specific window's own frame)",
+          "",
           "`resize` - delta nudges, frame/root deco-flush fills, explicit content rects",
+          "",
           "`fit` - constraint pass: shrink oversized, nudge off-screen (monitor or frame target)",
+          "",
           "`spawn` - one-shot `herbstclient rule once` spawns with typed flags (`--class`/`--float`/`--center`/`--tag`)",
+          "",
           "`bar` - the one-shot renderer line"
         ],
         "theme": "open"
@@ -62,6 +70,7 @@
         "content": [
           "the releases page ships a standalone linux-x64 (glibc) binary - no toolchain, no runtime deps:",
           "```sh\nu=https://github.com/akinevz2/polyframes/releases/latest/download\ncurl -fL $u/polyframes-linux-x64 -o ~/.local/bin/polyframes\nchmod +x ~/.local/bin/polyframes\n```",
+          "",
           "the deps resolve through the herbstutil/herbctl split; the help text is terse one-liners that fit polybar's narrow world."
         ],
         "theme": "open"

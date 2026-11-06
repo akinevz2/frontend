@@ -10,6 +10,7 @@
       "**development** is the master repository where the software gets written: the submodule projects, the configurations and the content that power this personal website.",
       "",
       "everything runs inside a WSL Ubuntu environment, with the repository mounted as a devcontainer.",
+      "",
       "[https://github.com/akinevz2/development](https://github.com/akinevz2/development)",
       {
         "heading": "the devcontainer",

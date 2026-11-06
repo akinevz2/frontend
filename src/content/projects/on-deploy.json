@@ -8,14 +8,18 @@
     "heading": "on-deploy - the deployment orchestrator",
     "content": [
       "**on-deploy** turns the **doftiles** repo into a one-command deployment. it runs inside the doftiles checkout, reads the deployment manifests, and provisions the session stack from them - all four manifests are configurable through configure (tui or flags).",
+      "",
       "[https://github.com/akinevz2/on-deploy](https://github.com/akinevz2/on-deploy)",
       {
         "heading": "the repo it walks",
         "content": [
           "the doftiles checkout is a structured deployment scope, declared in four manifests:",
           "**wm.required** - required binaries, the deployment model and the deploy target",
+          "",
           "**stows.required** - the stow packages",
+          "",
           "**system.required** - each submodule with its dots-relative paths - the scope of the depends walk",
+          "",
           "**services.required** - the unit order",
           "",
           "each stow package owns its own dots/<pkg>/.local/state/depends/<pkg>.makefile (toolchain/build/link/install), and the session runs as systemd user units - on-deploy provisions both."
@@ -37,12 +41,19 @@
         "heading": "usage - the verbs",
         "content": [
           "`install` / `check` - the requirement walk; check reports and exits 1 on missing (--json).",
+          "",
           "`deploy` - install every missing binary: resolve the package, show the command, confirm (Enter = yes), run it, then re-verify - a binary still missing after its command fails the run. `--yes` for non-interactive runs, `--dry-run` to preview.",
+          "",
           "`services` - the service.order (services.required) runner: check/start/stop/restart/status over the systemd user units, --no-block, stow-safe disable.",
+          "",
           "`detect-server` - the reachable-X probe (localhost:0.0 style): `--persist-to-systemd` writes DISPLAY into the manager env, `--persist-to-env` writes an rc.d-includable file.",
+          "",
           "`toolchain` - the make install assurances: bun through npm when missing, trust of the global bun packages' postinstall scripts, the **herbctl** binary built from the submodule checkout when missing.",
+          "",
           "`depends` - the per-package walk over system.required: every listed package runs its depends makefile; `--only` narrows, `--build` for sync+build.",
+          "",
           "`snapshot` - collect a machine's pre-existing config into doftiles' defaults/ (a stow-shaped package) before the first deploy overwrites it - the machine's prior state, versioned in git, restorable with one make target.",
+          "",
           "`configure` - edit the deploy target and the required-package list from an interactive menu (or `--target`/`--add`/`--remove` flags)."
         ],
         "theme": "open"
@@ -52,8 +63,11 @@
         "content": [
           "four session models, co-installable where it makes sense:",
           "**wsl-systemd** - no display manager: hlwm runs as the systemd user unit herbst.service, waiting for the Windows-side X server (VcXsrv) to be reachable; provision even checks the Windows partition for VcXsrv and offers a silent install from the SourceForge feed",
+          "",
           "**nested** - hlwm inside an Xvfb framebuffer, shared over VNC (:5900) and browser noVNC (:6080), with an RDP surface layered on top (xrdp's Xvnc module attaches to the same framebuffer; 3389 stays free for the Windows side)",
+          "",
           "**xinit** - startx runs ~/.xinitrc; no display manager",
+          "",
           "**greetd** - greetd + tuigreet own the console (the bare-OS target)",
           "",
           "a profile declares units (systemd user units) and env overrides (written to ~/.config/doftiles/env, read by the units via EnvironmentFile). the make deploy tui selects the session model, the features, the units and the env - and writes deploy.profile before stowing anything."
@@ -76,7 +90,9 @@
         "status": "v1.4.2",
         "content": [
           "version probing reads the package manager (dpkg-query, pacman) instead of spawning the binary - GUI programs no longer initialize a display backend on the walk and flash a window mid-deploy.",
+          "",
           "the managed status reports `installed <version>`, read from the same package-manager query.",
+          "",
           "the four manifests, configure and the profile walk are the stable surface since 1.4.0."
         ],
         "theme": "open"
