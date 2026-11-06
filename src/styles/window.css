@@ -412,6 +412,12 @@ form#form > label {
 
 .resource-embed-scroll pre,
 .window-body pre {
+  /* Own vertical rhythm: 98.css gives pre no margins, so spacing
+   * depends on the NEXT element keeping browser defaults — a p gets
+   * its 1em top margin, but this design system zeroes ul margins
+   * (.page > ul / .window-body ul { margin: 0 }), which pulls a list
+   * hard against the code block. The gap belongs to pre. */
+  margin: var(--gap-size) 0;
   /* Code soft-wraps, but NOT the min-content-destroying way:
    * pre-wrap + overflow-wrap:anywhere on a pre inside a flex column
    * reports the box's min-content width as ~one character, so the
