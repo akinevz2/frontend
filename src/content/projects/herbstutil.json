@@ -6,7 +6,9 @@
   "content": {
     "heading": "herbstutil - the JSON bridge to herbstluftwm",
     "content": [
-      "herbstutil is a small command-line tool that turns the output of `herbstclient attr` into clean, typed JSON - so the state of the herbstluftwm window manager can be consumed wherever JSON is spoken. it can run herbstclient itself (`herbstutil attr ...`) or parse piped output like a unix filter.",
+      "**herbstutil** is a small command-line tool that turns the output of `herbstclient attr` into clean, typed JSON - so the state of the **herbstluftwm** window manager can be consumed wherever JSON is spoken.",
+      "",
+      "it can run herbstclient itself (`herbstutil attr ...`) or parse piped output like a unix filter.",
       "[https://github.com/akinevz2/herbstutil](https://github.com/akinevz2/herbstutil)",
       {
         "heading": "herbstluftwm in a nutshell",
@@ -14,7 +16,9 @@
           "herbstluftwm is a manual tiling window manager for Linux. its core idea: the whole desktop is one global object tree - monitors, tags, clients (windows), settings - queried and modified over IPC with the companion tool herbstclient.",
           "the tree is probed with `herbstclient attr <path>`: it prints a short description of the node, its children, and a table of every attribute (typed, writable, hookable).",
           "```sh\n$ herbstclient attr clients.            # children of the clients node\n$ herbstclient attr clients.focus.      # introspect the focused window\n$ herbstclient attr clients.focus.tag   # read a single leaf value\n```",
-          "the catch: `attr` output is written for humans first - padded type tables, prose, legends. great to read, fragile to parse."
+          "the catch: `attr` output is written for humans first - padded type tables, prose, legends.",
+          "",
+          "great to read, fragile to parse."
         ],
         "theme": "open"
       },
@@ -22,8 +26,9 @@
         "heading": "what herbstutil does",
         "status": "v0.3.x - the compatibility layer",
         "content": [
-          "herbstutil rebuilds `herbstclient attr` output as JSON, preserving the node's shape: value - the node's description; children - the names of the child nodes; attributes - every attribute as a name-value pair.",
-          "where herbstclient speaks humans, herbstutil speaks machine.",
+          "**herbstutil** rebuilds `herbstclient attr` output as JSON, preserving the node's shape: value - the node's description; children - the names of the child nodes; attributes - every attribute as a name-value pair.",
+          "where herbstclient speaks humans, **herbstutil** speaks machine.",
+          "",
           "it does not stop at unquoting: herbstclient annotates every attribute with a type hint in the first column of its listing, and herbstutil uses that hint to emit properly typed JSON.",
           {
             "heading": "value typing",
@@ -93,7 +98,8 @@
       {
         "heading": "the pure layer (the v0.3 split)",
         "content": [
-          "herbstutil stayed deliberately small: parse/attr primitives only. the keybind state machines that briefly lived here (the mod-s/w/d/e/a/q/f/x compositions and the float registers) moved out to herbctl - its own project, one floor down on this page.",
+          "**herbstutil** stayed deliberately small: parse/attr primitives only. the keybind state machines that briefly lived here (the mod-s/w/d/e/a/q/f/x compositions and the float registers) moved out to **herbctl** - its own project, one floor down on this page.",
+          "",
           "everything downstream (herbctl, polyframes) imports parseAttr directly, bundled at build time; the CLI verbs stay for scripts and humans."
         ],
         "theme": "open"
@@ -101,8 +107,10 @@
       {
         "heading": "shell completion, mirroring herbstclient",
         "content": [
-          "herbstclient's completion model: the binary does the thinking (complete_shell <pos> <words...>), the shell scripts just delegate. herbstutil mirrors it - the complete-shell verb, plus bash/zsh scripts that are byte-structure twins of hlwm's own.",
+          "**herbstclient**'s completion model: the binary does the thinking (complete_shell <pos> <words...>), the shell scripts just delegate. **herbstutil** mirrors it - the complete-shell verb, plus bash/zsh scripts that are byte-structure twins of hlwm's own.",
+          "",
           "the attr verb's positional completes live hlwm object paths: the request is delegated to herbstclient -q complete_shell itself, so clients.0x…, tags.by-name. and every attribute name arrive straight from the running WM.",
+          "",
           "install the completion with the package scripts:",
           "```sh\n$ npm run completion:install     # bash + zsh, user-level\n$ herbstutil attr clients.<TAB>  # the live tree, in your shell\n```",
           "published on npm: `npm i -g herbstutil` gives the command (it runs through bun) - or install from source with `bun run build`."

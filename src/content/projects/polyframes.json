@@ -6,13 +6,15 @@
   "content": {
     "heading": "polyframes - the polybar window-list renderer, as a native binary",
     "content": [
-      "polyframes renders herbstluftwm's window state as the polybar center module: one label per (frame, window-class) group, decorated by state (focused gold underline, floating, minimized dimmed), with click/scroll actions that re-exec the binary itself. built with bun and bunli, compiled to a standalone executable - so it runs wherever the bar runs: no node, no nvm PATH, no shim.",
+      "**polyframes** renders **herbstluftwm**'s window state as the polybar center module: one label per (frame, window-class) group, decorated by state (focused gold underline, floating, minimized dimmed), with click/scroll actions that re-exec the binary itself.",
+      "",
+      "built with bun and bunli, compiled to a standalone executable - so it runs wherever the bar runs: no node, no nvm PATH, no shim.",
       "[https://github.com/akinevz2/polyframes](https://github.com/akinevz2/polyframes)",
       {
         "heading": "the bar daemon",
         "content": [
           "a bare invocation is polybar's contract: print one bar line, then keep it fresh - a `herbstclient --idle` hook listener for instant focus/tag/title updates, plus a 1s layout poll that hashes `herbstclient dump` (frame splits and removals emit no hook in hlwm 0.9.5).",
-          "`polyframes bar` prints a single line and exits - the same pure renderer, scriptable."
+          "**polyframes** bar prints a single line and exits - the same pure renderer, scriptable."
         ],
         "theme": "open"
       },
@@ -28,7 +30,9 @@
       {
         "heading": "the keybind registers live in doftiles",
         "content": [
-          "the float-register state machines (mod-f / mod-x / mod-ctrl-f: float-focus, float-yank, zoom) live in herbctl - the keybinds spawn those herbctl verbs; they are documented in the [herbctl project](/projects/herbctl). the polyframes side of the same bindings is the frame surgery: tile/center/resize/fit re-executed in the bar's click actions."
+          "the float-register state machines (mod-f / mod-x / mod-ctrl-f: float-focus, float-yank, zoom) live in **herbctl** - the keybinds spawn those herbctl verbs; they are documented in the [**herbctl** project](/projects/herbctl).",
+          "",
+          "the polyframes side of the same bindings is the frame surgery: tile/center/resize/fit re-executed in the bar's click actions."
         ],
         "theme": "open"
       },
@@ -50,8 +54,9 @@
         "heading": "herbstutil + herbctl inside",
         "content": [
           "two sibling libraries ride along at build time:",
-          "`herbstutil` - parseAttr for every WM read: typed JSON out of hlwm's attr output, one round trip instead of a per-client attribute walk.",
-          "`herbctl` - the imperatives the scroll/click actions run: float+center, minimize-keep-frame, empty-frame removal - the keybind state machines as importable functions.",
+          "**herbstutil** - parseAttr for every WM read: typed JSON out of hlwm's attr output, one round trip instead of a per-client attribute walk.",
+          "**herbctl** - the imperatives the scroll/click actions run: float+center, minimize-keep-frame, empty-frame removal - the keybind state machines as importable functions.",
+          "",
           "both resolve as sibling submodules in the doftiles depends/ layout and from the npm/GitHub registries everywhere else."
         ],
         "theme": "open"

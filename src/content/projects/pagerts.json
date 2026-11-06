@@ -6,12 +6,13 @@
   "content": {
     "heading": "pagerts - the webpage resource extractor",
     "content": [
-      "pagerts fetches a URL (or reads a local HTML file) and prints every external resource it references - links, meta tags, scripts, styles - as JSON.",
+      "**pagerts** fetches a URL (or reads a local HTML file) and prints every external resource it references - links, meta tags, scripts, styles - as JSON.",
       "[https://github.com/akinevz2/pagerts](https://github.com/akinevz2/pagerts)",
       {
         "heading": "what it parses",
         "content": [
-          "pagerts fetches web pages, parses their HTML, and reports each page's title, URL, and external resources - inspecting the common resource-bearing tags, or scanning every element for selected link properties.",
+          "**pagerts** fetches web pages, parses their HTML, and reports each page's title, URL, and external resources - inspecting the common resource-bearing tags, or scanning every element for selected link properties.",
+          "",
           "requires Node.js 20 or later; installs globally with `npm install --global pagerts`."
         ],
         "theme": "open"
@@ -35,7 +36,7 @@
       {
         "heading": "useful options",
         "content": [
-          "`pagerts all <urls...>` - scan every element instead of the default tags",
+          "**pagerts** all <urls...> - scan every element instead of the default tags",
           "`pagerts --dry-run <urls...>` - preview the effective settings without fetching",
           "`pagerts --tags a,img` - restrict extraction to specific tags",
           "`pagerts -p data-href` - add link properties to search",

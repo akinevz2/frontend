@@ -6,13 +6,14 @@
   "content": {
     "heading": "graphbrowser - the dependency graph, one layer at a time",
     "content": [
-      "graphbrowser describes a website's external dependency graph one layer at a time, as structured markdown with hyperlinks for navigating between graph nodes.",
+      "**graphbrowser** describes a website's external dependency graph one layer at a time, as structured markdown with hyperlinks for navigating between graph nodes.",
       "[https://github.com/akinevz2/graphbrowser](https://github.com/akinevz2/graphbrowser)",
       {
         "heading": "the pagerts counterpart, as a GUI",
         "content": [
           "a way to visualise page dependencies without having to view the page content: the set of navigable items of a webpage, linking from page to page across the web.",
-          "graphbrowser is the GUI counterpart of [pagerts](/projects/pagerts), built with Quarkus and web technologies - the same dependency list pagerts parses with JSDOM into `title`, `url` and `resources`."
+          "",
+          "**graphbrowser** is the GUI counterpart of [**pagerts**](/projects/pagerts), built with Quarkus and web technologies - the same dependency list pagerts parses with JSDOM into `title`, `url` and `resources`."
         ],
         "theme": "open"
       }

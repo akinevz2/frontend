@@ -6,7 +6,9 @@
   "content": {
     "heading": "herbctl - the keybind imperatives, as a native binary",
     "content": [
-      "herbctl owns what the keybinds used to express as inline herbstluftwm chains: one verb per mod-binding, each issuing the exact hlwm chains the binding expresses, token for token - compiled to a standalone binary with bunli, so the keybinds spawn binaries, not scripts. stable: herbctl 0.2.0 (the registry track). the verbs are named by what they do: split-right-cycle, shift-up, minimize-toggle - no whimsy (the original whimsical names were retired 2026-10; only the historical get-south/get-forward/get-deck/get-dedeck quartet keeps its name).",
+      "**herbctl** owns what the keybinds used to express as inline **herbstluftwm** chains: one verb per mod-binding, each issuing the exact hlwm chains the binding expresses, token for token - compiled to a standalone binary with bunli, so the keybinds spawn binaries, not scripts.",
+      "",
+      "stable: herbctl 0.2.0 (the registry track). the verbs are named by what they do: split-right-cycle, shift-up, minimize-toggle - no whimsy (the original whimsical names were retired 2026-10; only the historical get-south/get-forward/get-deck/get-dedeck quartet keeps its name).",
       "[https://github.com/akinevz2/herbctl](https://github.com/akinevz2/herbctl)",
       {
         "heading": "the verbs",
@@ -171,15 +173,19 @@
       {
         "heading": "the herbstutil dependency",
         "content": [
-          "herbctl imports herbstutil for its pure primitives only - parseAttr, the typed attribute reader. herbctl does not (and must not) import herbstutil's command functions: the composite keybind commands live here, and herbstutil ships none of them."
+          "**herbctl** imports **herbstutil** for its pure primitives only - parseAttr, the typed attribute reader.",
+          "",
+          "herbctl does not (and must not) import herbstutil's command functions: the composite keybind commands live here, and herbstutil ships none of them."
         ]
       },
       {
         "heading": "fail-soft, and pinned by tests",
         "content": [
           "every spawn (herbstclient and the dots helper binaries) carries the 5-second timeout inherited from herbstutil's spawn layer: a vanished window resolves null instead of wedging the bar or the keybind.",
+          "",
           "every command is verified against the recorded argv of a mocked herbstclient binary (plus mocked helper binaries) - bun test covers all 25 commands; nothing here needs a live WM to test.",
-          "the dots keybinds spawn the compiled standalone binary at ~/.local/bin/herbctl (built with bunli); the dots deployment toolchain (on-deploy) ensures the binary is built and installed."
+          "",
+          "the dots keybinds spawn the compiled standalone binary at ~/.local/bin/herbctl (built with bunli); the dots deployment toolchain (**on-deploy**) ensures the binary is built and installed."
         ]
       },
       {

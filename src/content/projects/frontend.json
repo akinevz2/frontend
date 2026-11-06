@@ -6,7 +6,7 @@
   "content": {
     "heading": "frontend - the source of this website",
     "content": [
-      "the source of this personal website: a landing page and a point-of-interest for those that stumble upon it - personal storytelling through ui, JSON-driven content that is easy to edit, and small interactive features (windows, modals, media embeds).",
+      "**frontend** is the source of this personal website: a landing page and a point-of-interest for those that stumble upon it - personal storytelling through ui, JSON-driven content that is easy to edit, and small interactive features (windows, modals, media embeds).",
       "[https://github.com/akinevz2/frontend](https://github.com/akinevz2/frontend)",
       {
         "heading": "the stack",

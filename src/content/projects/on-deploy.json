@@ -6,7 +6,14 @@
   "content": {
     "heading": "on-deploy - the deployment orchestrator",
     "content": [
-      "on-deploy turns the dotfiles repo into a one-command deployment. it runs inside the doftiles checkout and reads the deployment manifests: wm.required (required binaries, the deployment model and the deploy target), stows.required (the stow packages), system.required (each submodule with its dots-relative paths - the scope of the depends walk) and services.required (the unit order). all four are configurable through configure (tui or flags).",
+      "**on-deploy** turns the dotfiles repo into a one-command deployment. it runs inside the **doftiles** checkout and reads the deployment manifests:",
+      "",
+      "**wm.required** - required binaries, the deployment model and the deploy target",
+      "**stows.required** - the stow packages",
+      "**system.required** - each submodule with its dots-relative paths - the scope of the depends walk",
+      "**services.required** - the unit order",
+      "",
+      "all four are configurable through configure (tui or flags).",
       "[https://github.com/akinevz2/on-deploy](https://github.com/akinevz2/on-deploy)",
       {
         "heading": "the verbs",
@@ -30,14 +37,20 @@
           "`nested` - hlwm inside an Xvfb framebuffer, shared over VNC (:5900) and browser noVNC (:6080), with an RDP surface layered on top (xrdp's Xvnc module attaches to the same framebuffer; 3389 stays free for the Windows side). the temporary profile, additive to a primary one.",
           "`xinit` - startx runs ~/.xinitrc; no display manager.",
           "`greetd` - greetd + tuigreet own the console (the bare-OS target).",
-          "a profile declares units (systemd user units, enabled additively) and env overrides (written to ~/.config/doftiles/env, read by the units via EnvironmentFile). the make deploy tui selects the session model, the features, the units and the env - and writes deploy.profile before stowing anything."
+          "a profile declares units (systemd user units, enabled additively) and env overrides (written to ~/.config/doftiles/env, read by the units via EnvironmentFile).",
+          "",
+          "the make deploy tui selects the session model, the features, the units and the env - and writes deploy.profile before stowing anything."
         ],
         "theme": "open"
       },
       {
         "heading": "built to not hang, not lie",
         "content": [
-          "non-interactive runs abort cleanly demanding --yes instead of blocking on prompts; every install is re-verified; a failed install fails the run. the prompts ride a raw line reader (bun's readline wedges), and the menu works scripted or interactive. the deploy script contract is `<target>.deploy <binary>` → the providing package, `install <binary>` → the install command - the resolver per distro, not a package list."
+          "non-interactive runs abort cleanly demanding --yes instead of blocking on prompts; every install is re-verified; a failed install fails the run.",
+          "",
+          "the prompts ride a raw line reader (bun's readline wedges), and the menu works scripted or interactive.",
+          "",
+          "the deploy script contract is `<target>.deploy <binary>` → the providing package, `install <binary>` → the install command - the resolver per distro, not a package list."
         ],
         "theme": "open"
       },

@@ -6,14 +6,17 @@
   "content": {
     "heading": "rarebert - the AI-driven development loop",
     "content": [
-      "a self-modifying scripting environment for interactive, AI-driven development.",
+      "**rarebert** is a self-modifying scripting environment for interactive, AI-driven development.",
       "[https://github.com/akinevz2/rarebert](https://github.com/akinevz2/rarebert)",
       {
         "heading": "the loop",
         "content": [
-          "rarebert scaffolds modules, opens them in your editor side-by-side with opencode, lets the model implement them, summarises the diff, and commits - then runs the result and remembers what happened.",
+          "**rarebert** scaffolds modules, opens them in your editor side-by-side with **opencode**, lets the model implement them, summarises the diff, and commits - then runs the result and remembers what happened.",
+          "",
           "built around a TypeScript runtime (`lib/runtime/` + bun) that orchestrates $EDITOR, git, and opencode, and a memo subsystem that threads observations between the model and your shell.",
+          "",
           "each turn ends in a commit, so the working tree is always clean before the next cycle.",
+          "",
           "the branch is mid-port from Node.js/ESM to TypeScript/bun - not yet stable for daily use."
         ],
         "theme": "open"

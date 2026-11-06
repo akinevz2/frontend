@@ -6,13 +6,14 @@
   "content": {
     "heading": "development - the master repository",
     "content": [
-      "development is the master repository where the software gets written: the submodule projects, the configurations and the content that power this personal website.",
+      "**development** is the master repository where the software gets written: the submodule projects, the configurations and the content that power this personal website.",
+      "",
       "everything runs inside a WSL Ubuntu environment, with the repository mounted as a devcontainer.",
       "[https://github.com/akinevz2/development](https://github.com/akinevz2/development)",
       {
         "heading": "the devcontainer",
         "content": [
-          "a persistent Development Workstation Devcontainer for VS Code: the latest git and GitHub CLI, Node.js LTS bootstrapped through nvm, akinevz2/doftiles restored into ~/dots, and the bar, dunst, herbst, rofi, shell and vim packages stowed with `stow --adopt`."
+          "a persistent Development Workstation Devcontainer for VS Code: the latest git and GitHub CLI, Node.js LTS bootstrapped through nvm, **doftiles** restored into ~/dots, and the bar, dunst, herbst, rofi, shell and vim packages stowed with `stow --adopt`."
         ],
         "theme": "open"
       }
