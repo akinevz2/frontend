@@ -32,7 +32,20 @@ const ARRIVAL_MAX_DURATION_MS = 880;
 const DROP_SPEED_PX_MS = 3.4;
 const DROP_MIN_DURATION_MS = 480;
 const DROP_MAX_DURATION_MS = 820;
+/** The fall speed for the cascade folds: distance-derived, so a tall
+ * page's LONG falls play at the same pace as short ones - fixed
+ * durations made tall-page windows drop-kick to the taskbar. */
+const FALL_SPEED_PX_MS = 4;
+const FALL_MIN_DURATION_MS = 300;
+const FALL_MAX_DURATION_MS = 900;
 const REMOVAL_MARGIN_MS = 200;
+const fallDuration = (distancePx: number): number =>
+  Math.round(
+    Math.min(
+      FALL_MAX_DURATION_MS,
+      Math.max(FALL_MIN_DURATION_MS, distancePx / FALL_SPEED_PX_MS),
+    ),
+  );
 const arrivalDuration = (distancePx: number): number =>
   Math.round(
     Math.min(
@@ -219,15 +232,17 @@ function leaveGhost(): SlideScale {
   // THE CASCADE: the top-level windows fall ONE AT A TIME. Each main
   // window squashes AND FALLS to the taskbar line (its own measured
   // distance), raised above every not-yet-falling window while it does;
-  // the next one begins CASCADE_GAP_MS after the previous has FINISHED.
-  // Nested windows carry no fall of their own (the custom property is
-  // reset on descendants in css) - they squash in the parent's stage
-  // and ride the parent's fall. The page's gentle glide waits for the
-  // whole cascade: the drop delay is the cascade tail.
+  // the fall DURATION is distance-derived (a tall page's windows fall
+  // at the same pace as low ones instead of drop-kicking) and the next
+  // one begins CASCADE_GAP_MS after the previous has FINISHED. Nested
+  // windows carry no fall of their own (the custom property is reset on
+  // descendants in css) - they squash in the parent's stage and ride
+  // the parent's fall. The page's gentle glide waits for the whole
+  // cascade: the drop delay is the cascade tail.
   const taskbarLine = window.innerHeight;
-  const step = FOLD_MS + CASCADE_GAP_MS;
   const topLevel = ".page > .window, .page > .maximized-shell > .window";
   const liveWins = [...main.querySelectorAll<HTMLElement>(topLevel)];
+  let delay = 0;
   ghost.querySelectorAll<HTMLElement>(topLevel).forEach((win, i) => {
     const liveWin = liveWins[i];
     if (!liveWin) return;
@@ -236,17 +251,19 @@ function leaveGhost(): SlideScale {
       0,
       taskbarLine - liveWin.getBoundingClientRect().bottom,
     );
+    const foldMs = fallDuration(fall);
     win.style.setProperty("--page-fold-dy", `${Math.round(fall)}px`);
-    win.style.setProperty(
-      "--ps-fold-delay",
-      `${Math.round(i * step)}ms`,
-    );
+    win.style.setProperty("--ps-fold-delay", `${Math.round(delay)}ms`);
+    // per-window fold duration: the inline custom property inherits
+    // down the window's subtree, so its children fold in the same beat
+    win.style.setProperty("--ps-minimize", `${foldMs}ms`);
     // the falling window rides OVER the rest while it falls
     win.style.position = "relative";
     win.style.zIndex = `${100 - i}`;
+    delay += foldMs + CASCADE_GAP_MS;
   });
-  const tailMs =
-    Math.max(0, liveWins.length - 1) * step + (liveWins.length ? FOLD_MS : 0);
+  // the drop begins as the LAST window finishes its fall
+  const tailMs = Math.max(0, delay - CASCADE_GAP_MS);
   root().style.setProperty("--ps-drop-delay", `${tailMs}ms`);
   const removalMs = tailMs + dropMs + REMOVAL_MARGIN_MS;
   document.body.appendChild(ghost);

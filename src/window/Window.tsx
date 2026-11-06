@@ -153,10 +153,12 @@ export function Window({ node }: { node: WindowNode }) {
   const flags = flagsOf(node.id);
   const maximized = Boolean(flags.maximized);
   const windowRef = useRef<HTMLDivElement | null>(null);
-  // The experimental wobble plays ONCE per visit: the first body
-  // pointer-contact sets data-wobbled on the root, and MINIMIZING
-  // re-arms it (removeAttribute) - so the identifier never re-fires
-  // while the mouse wiggles, and the next visit identifies again.
+  // The experimental wobble plays ONCE per visit: the body pointer
+  // LEAVE arms data-wobbled on the root (the visit ended - the next
+  // entry does not re-fire), and MINIMIZING re-arms it
+  // (removeAttribute). Arm-on-enter was a dead loop: the attribute
+  // saturated the :not([data-wobbled]) guard in the very event that
+  // created the hover, and the rule never matched.
   useEffect(() => {
     if (flags.minimized) windowRef.current?.removeAttribute("data-wobbled");
   }, [flags.minimized]);
@@ -370,7 +372,7 @@ export function Window({ node }: { node: WindowNode }) {
       ) : (
         <div
           className={`window-body${maximized ? " maximized-window-body" : ""}`}
-          onPointerEnter={
+          onPointerLeave={
             hasTheme(node, "experimental")
               ? () => windowRef.current?.setAttribute("data-wobbled", "")
               : undefined
