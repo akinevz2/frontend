@@ -71,20 +71,24 @@ html.theme-page-slide[data-page-slide] main:not(.page-slide-ghost) > .page {
   animation: page-slide-pad var(--ps-duration) ease-in-out backwards;
 }
 
-/* XP minimise: every top-level window SQUASHES IN PLACE - the window's
-   own bottom edge stays anchored and the top edge falls to meet it (the
-   outline sucks downward, as in XP). No translation: the window slides
-   out FROM ITS CURRENT POSITION, carried by the whole-page drop - the
-   old fold translated each window down to the taskbar line, which read
-   as a teleport below the arriving page's windows. Contents ride the
-   squash, as in XP itself. The fall is EASE-IN throughout - gravity,
-   not a metronome: XP's minimize accelerates as the outline collapses. */
-html.theme-page-slide .page-slide-ghost .page > .window,
-html.theme-page-slide .page-slide-ghost .page > .maximized-shell > .window,
-html.theme-page-slide .page-slide-ghost > .window,
-html.theme-page-slide .page-slide-ghost > .maximized-shell > .window {
+/* XP minimise: EVERY window in the ghost squashes IN PLACE - top-level
+   or not. The old selectors matched only direct children of the page,
+   and any window wrapped one node deeper (or nested inside another
+   window) escaped the fold entirely: it rode the page drop at full
+   height beside fully-squashing siblings - the child read as falling
+   slower than the main window, the whole exit as the window
+   disassembling. One rule, every window. No translation: the window
+   slides out FROM ITS CURRENT POSITION, carried by the whole-page drop
+   (the old fold translated each window down to the taskbar line, which
+   read as a teleport below the arriving page's windows). Contents ride
+   the squash, as in XP itself. The fall is EASE-IN throughout -
+   gravity, not a metronome: XP's minimize accelerates as the outline
+   collapses. !important holds the fold against the window stylesheets
+   inside the inert ghost - the exit is one motion, not a play of
+   competing animations. */
+html.theme-page-slide .page-slide-ghost .window {
   transform-origin: bottom center;
-  animation: page-slide-fold var(--ps-minimize, 98ms) ease-in forwards;
+  animation: page-slide-fold var(--ps-minimize, 98ms) ease-in forwards !important;
 }
 
 /* Fallback look for the swapped-out iframes (music embeds etc.) - the
