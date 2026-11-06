@@ -31,7 +31,7 @@ html.theme-page-slide .page-slide-ghost {
 }
 
 /* The live <main> has an indefinite height, so its page sizes to content
-   (a nested .page in the ghost's fixed-height main, or main itself — the
+   (a nested .page in the ghost's fixed-height main, or main itself - the
    normalized shell makes main the page); the ghost must not stretch the
    page to fill its box. */
 html.theme-page-slide .page-slide-ghost > .page,
@@ -55,7 +55,7 @@ html.theme-page-slide .page-slide-bar {
   }
 }
 
-/* The live bar yields to its ride-out clone for the exit (visibility —
+/* The live bar yields to its ride-out clone for the exit (visibility -
    display would collapse the reserved body padding row). */
 html.theme-page-slide .page-slide-bar-hide {
   visibility: hidden;
@@ -86,11 +86,11 @@ html.theme-page-slide .page-slide-ghost > .maximized-shell > .window {
   animation: page-slide-fold var(--ps-minimize, 98ms) linear forwards;
 }
 
-/* Fallback look for the swapped-out iframes (music embeds etc.) — the
+/* Fallback look for the swapped-out iframes (music embeds etc.) - the
    PAGE's background colour: the placeholder is what shows through while
    the page fades/slides, and a white flash reads as visual pollution
    against the themed background. Document frames that carry their own
-   opaque background (the white resume preview) adopt it in JS instead —
+   opaque background (the white resume preview) adopt it in JS instead -
    a dark placeholder there reads as the PDF unloading mid-exit. */
 html.theme-page-slide .page-slide-ghost .page-slide-placeholder-frame {
   background: var(--background-color);
@@ -115,7 +115,7 @@ html.theme-page-slide .page-slide-ghost .page-slide-placeholder-frame {
 /* Departing dimmed overlays: the dark level fades in step with the
    departing windows (slide-off on dismissal, page fold on navigation);
    ride clones keep the fade going even when the portals unmount
-   mid-animation. The ride carries its OWN full backdrop look — it must
+   mid-animation. The ride carries its OWN full backdrop look - it must
    drop the .maximized-backdrop class, or body:has() would keep the page
    raised over the menu bar for the ride's whole lifetime. */
 .maximized-backdrop.page-slide-backdrop-close,
@@ -168,7 +168,7 @@ html.theme-page-slide .window.window-minimize {
 }
 
 /* Parked (a hyperlink/maximized seed load): play NOTHING. Aiming the
-   entrance at zero distance would still emit translate(0,0) — a live
+   entrance at zero distance would still emit translate(0,0) - a live
    transform on <main> makes it the containing block for the in-tree
    position:fixed maximized backdrop, which then centers against main's
    box instead of the viewport. No animation = no transform = the
@@ -181,7 +181,7 @@ html.theme-page-slide[data-page-slide="parked"] main:not(.page-slide-ghost) {
 /* The parked "none" must also hold for the normalized shell (main.page),
    whose combined entrance animation above declares at higher specificity
    than the un-classed main rule: this later, equal-specificity rule wins
-   and keeps main transform-free — the maximized backdrop stays
+   and keeps main transform-free - the maximized backdrop stays
    viewport-anchored. */
 html.theme-page-slide[data-page-slide="parked"]
   main:not(.page-slide-ghost).page,

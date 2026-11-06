@@ -13,14 +13,21 @@ import "./pageSlide.css";
 
 const CLASS = "theme-page-slide";
 const ATTRIBUTE = "data-page-slide";
-const DURATION_MS = 500;
-/** The fold (windows squash into the taskbar line) rides the WHOLE drop:
- * squeeze while moving down, not a stationary beat first - a sub-300ms
- * two-beat exit reads as a blink and the page just vanishes. */
-const MINIMIZE_MS = 450;
-/** The page drops out of the bottom in step with the fold (zero delay). */
-const DROP_DURATION_MS = 450;
-const REMOVAL_MS = DROP_DURATION_MS + 200;
+/** One speed for the whole choreography: the slide durations derive from
+ * the distance each page actually travels, so a large page sweeps at the
+ * same pace as a small one - fixed durations made large pages move so
+ * fast the transition read as screen tearing. Clamped: small pages stay
+ * brisk, huge pages never outstay their welcome. */
+const SPEED_PX_MS = 2.8;
+const MIN_DURATION_MS = 600;
+const MAX_DURATION_MS = 950;
+/** Milliseconds a page travelling `distancePx` takes, clamped. */
+const durationFor = (distancePx: number): number =>
+  Math.round(
+    Math.min(MAX_DURATION_MS, Math.max(MIN_DURATION_MS, distancePx / SPEED_PX_MS)),
+  );
+/** Retired after the exit: fold and drop run in step (one motion). */
+const REMOVAL_MARGIN_MS = 200;
 const VARIABLES = [
   "--ps-duration",
   "--ps-minimize",
@@ -32,41 +39,58 @@ const VARIABLES = [
   "--ps-pad-from",
 ];
 
-/** Where the new page starts, per direction. */
-const slide = (name: string, inX: string, inY: string): ThemeDefinition => ({
+/** Where the new page starts, per direction. From above: the offset is
+ * the page's OWN height plus a viewport - a bare -100vh only clears the
+ * first viewport of a tall page, so its mid-page band (windows included)
+ * sat inside the viewport at animation start. -100% (translate % = the
+ * element's own height) puts the whole page above the screen; the extra
+ * viewport is runway. */
+const START: Record<Direction | "parked", [string, string]> = {
+  right: ["100vw", "0"],
+  left: ["-100vw", "0"],
+  down: ["0", "calc(-100% - 100vh)"],
+  // Initial load ONTO a hyperlinked window target: the theme is fully
+  // installed (its class drives the minimize folds and navigation hooks)
+  // but the entrance is zero-distance - nothing visibly moves while the
+  // reveal scrolls to the linked section.
+  parked: ["0", "0"],
+};
+
+/** The per-transition durations: the arrival's and the exit's (the exit
+ * is the drop AND its windows' fold - one in-step motion). */
+interface SlideScale {
+  arrivalMs: number;
+  exitMs: number;
+}
+
+const slide = (
+  name: string,
+  inX: string,
+  inY: string,
+  scale: SlideScale,
+): ThemeDefinition => ({
   className: CLASS,
   attributes: { [ATTRIBUTE]: name },
   variables: {
-    "--ps-duration": `${DURATION_MS}ms`,
-    "--ps-minimize": `${MINIMIZE_MS}ms`,
+    "--ps-duration": `${scale.arrivalMs}ms`,
+    "--ps-minimize": `${scale.exitMs}ms`,
     "--ps-drop-delay": "0ms",
-    "--ps-drop-dur": `${DROP_DURATION_MS}ms`,
+    "--ps-drop-dur": `${scale.exitMs}ms`,
     "--ps-in-x": inX,
     "--ps-in-y": inY,
   },
 });
 
-const themes: Record<Direction | "parked", ThemeDefinition> = {
-  right: slide("right", "100vw", "0"),
-  left: slide("left", "-100vw", "0"),
-  /** From above: the offset is the page's OWN height plus a viewport -
-   * a bare -100vh only clears the first viewport of a tall page, so its
-   * mid-page band (windows included) sat inside the viewport at
-   * animation start. -100% (translate % = the element's own height)
-   * puts the whole page above the screen; the extra viewport is runway. */
-  down: slide("down", "0", "calc(-100% - 100vh)"),
-  /** Initial load ONTO a hyperlinked window target: the slide theme is
-   * fully installed (its class drives minimize folds and the navigation
-   * hooks) but with a zero-distance entrance — nothing visibly moves
-   * while the reveal scrolls to the linked section. */
-  parked: slide("parked", "0", "0"),
-};
+const themeFor = (
+  name: Direction | "parked",
+  scale: SlideScale,
+): ThemeDefinition => slide(name, START[name][0], START[name][1], scale);
 
 const root = () => document.documentElement;
-const applyDirection = (themeName: Direction | "parked") =>
+const applyDirection = (themeName: Direction | "parked", scale: SlideScale) =>
   setTheme({
     themeName,
-    themes,
+    themes: { [themeName]: themeFor(themeName, scale) },
     previousClassNames: [CLASS],
     persistence: "none",
     accessibility: { setColorScheme: false },
@@ -79,12 +103,14 @@ const menuOrder = () =>
 
 /** Static copy of the outgoing page: windows minimise into their title bars,
  * then the whole page drops out of the bottom in one fast stroke. */
-function leaveGhost(): void {
+function leaveGhost(): SlideScale {
   root().style.removeProperty("--ps-pad-from");
   root().style.removeProperty("--ps-drop-distance");
   const main = document.querySelector("main");
-  if (!main) return;
-  // Measure the LIVE layout first — the detached clone reports zero-size
+  if (!main) {
+    return { arrivalMs: MIN_DURATION_MS, exitMs: MIN_DURATION_MS };
+  }
+  // Measure the LIVE layout first - the detached clone reports zero-size
   // boxes, which is what used to blank the placeholders and collapse
   // windows instantly. querySelectorAll order is stable across cloneNode.
   const liveMedias = [...main.querySelectorAll("iframe, audio, video")];
@@ -96,10 +122,21 @@ function leaveGhost(): void {
   // offset (rect.top goes negative as the page scrolls) - plus margin to
   // clear the folded sliver. A fixed 110vh left the ghost's tail on
   // screen whenever the old page was scrolled down.
+  const exitDistance =
+    window.innerHeight - rect.top + window.innerHeight * 0.1;
   root().style.setProperty(
     "--ps-drop-distance",
-    `${Math.round(window.innerHeight - rect.top + window.innerHeight * 0.1)}px`,
+    `${Math.round(exitDistance)}px`,
   );
+  // The exit duration derives from the measured distance (one speed for
+  // every page size) and is set BEFORE the ghost attaches, so its
+  // animation starts at its final timing; applyDirection re-states the
+  // same values through the theme right after - a no-op on the running
+  // animation.
+  const exitMs = durationFor(exitDistance);
+  root().style.setProperty("--ps-drop-dur", `${exitMs}ms`);
+  root().style.setProperty("--ps-minimize", `${exitMs}ms`);
+  const removalMs = exitMs + REMOVAL_MARGIN_MS;
   const ghost = main.cloneNode(true) as HTMLElement;
   ghost.classList.add("page-slide-ghost");
   Object.assign(ghost.style, {
@@ -140,7 +177,7 @@ function leaveGhost(): void {
       // drops: the resume preview is styled white, and falling back to the
       // themed (dark) background reads as the PDF unloading mid-exit.
       // Transparent iframes (music embeds) keep the themed placeholder
-      // background — a white flash there is visual pollution.
+      // background - a white flash there is visual pollution.
       const background = getComputedStyle(live).backgroundColor;
       if (
         background &&
@@ -160,7 +197,7 @@ function leaveGhost(): void {
   document.body.appendChild(ghost);
   // Maximized overlays ride INSIDE the ghost now (they are in-tree), so
   // the dimmed layer and the maximized window fold and drop with the
-  // page — no portal ride-out is needed on navigation.
+  // page - no portal ride-out is needed on navigation.
   document.querySelectorAll<HTMLElement>("body > .debug-bar").forEach((bar) => {
     // A bar hidden by the maximized overlay rides nothing: cloning it
     // only paints a flash after the unlock (the folded ghost unparks
@@ -171,18 +208,18 @@ function leaveGhost(): void {
     // Layout rules key off this attribute; the clone must not keep them alive.
     delete leaving.dataset.debugBar;
     document.body.appendChild(leaving);
-    // The live bar yields to the clone in the same frame — visibility,
-    // not display, so the body padding rules keep reserving its row —
+    // The live bar yields to the clone in the same frame - visibility,
+    // not display, so the body padding rules keep reserving its row -
     // and the clone drops (and fades) with the page instead of the bar
     // blinking out at the route commit.
     bar.classList.add("page-slide-bar-hide");
     window.setTimeout(() => {
       leaving.remove();
       bar.classList.remove("page-slide-bar-hide");
-    }, REMOVAL_MS);
+    }, removalMs);
   });
   const remove = (event?: Event) => {
-    // Child windows bubbling their minimise-end must NOT retire the ghost —
+    // Child windows bubbling their minimise-end must NOT retire the ghost -
     // wait for the drop animation on the ghost itself, or the timeout.
     if (
       event &&
@@ -195,15 +232,22 @@ function leaveGhost(): void {
     ghost.remove();
   };
   ghost.addEventListener("animationend", remove);
-  window.setTimeout(() => remove(), REMOVAL_MS);
+  window.setTimeout(() => remove(), removalMs);
+  // The arrival's distance uses the OLD page's height as the estimate of
+  // the new page's (the route has not rendered yet); both durations
+  // derive from the same speed.
+  return {
+    arrivalMs: durationFor(rect.height + window.innerHeight),
+    exitMs,
+  };
 }
 
 let current = "";
 let originalPushState: History["pushState"] | null = null;
 let originalReplaceState: History["replaceState"] | null = null;
-/** Mutes the next transition's fold click: the navigating window ✕
- * declares its own Click.ogg through the bus (closeSounds) — no second
- * click on top of the navigation fold. */
+/** Mutes the next transition's fold click: the navigating window X
+ * (close) declares its own Click.ogg through the bus (closeSounds) - no
+ * second click on top of the navigation fold. */
 let clickSuppressed = false;
 
 export function suppressNextSlideClick(): void {
@@ -211,13 +255,13 @@ export function suppressNextSlideClick(): void {
 }
 
 /** On mobile screens the appearing page always slides straight down
- * (from above) — the side-by-side menu-order metaphor doesn't read on
+ * (from above) - the side-by-side menu-order metaphor doesn't read on
  * a narrow, wrapped menu. Matches the layout.css 768px breakpoint. */
 const isMobileLayout = () => window.matchMedia("(max-width: 768px)").matches;
 
 function transition(to: string, hash: string): void {
   if (to === current) return;
-  // The committed navigation rides the signal bus as a notice —
+  // The committed navigation rides the signal bus as a notice -
   // monitoring handlers subscribe; the choreography itself stays here.
   dispatchSignal("page:navigated", { from: current, to });
   if (clickSuppressed) clickSuppressed = false;
@@ -225,11 +269,11 @@ function transition(to: string, hash: string): void {
   const direction = isMobileLayout()
     ? "down"
     : resolveDirection(current, to, menuOrder());
-  leaveGhost();
-  applyDirection(direction);
+  const scale = leaveGhost();
+  applyDirection(direction, scale);
   restartArrival();
   current = to;
-  // A new page starts at the top — unless the url carries a hash, whose
+  // A new page starts at the top - unless the url carries a hash, whose
   // element the navigation scrolls itself to (scrollToHash).
   if (!hash) window.scrollTo({ top: 0 });
 }
@@ -263,7 +307,7 @@ const onPopState = () => {
   if (location.pathname === current) {
     // Same-page history traversal only moves the shape of the URL:
     // bring the hyperlinked element into view (inside its scrolling
-    // window) — and announce the RETURN, so holders of pre-departure
+    // window) - and announce the RETURN, so holders of pre-departure
     // state (the window store, same-path traversals never remount) can
     // repair themselves.
     if (location.hash) scrollToHash(location.hash);
@@ -275,7 +319,7 @@ const onPopState = () => {
   }
   transition(location.pathname, location.hash);
   if (location.hash) scrollToHash(location.hash);
-  // A hash-free bookmarked return (the window departures' form — the
+  // A hash-free bookmarked return (the window departures' form - the
   // entry names its section in STATE alone): land on it like any hash
   // target. The reveal is the store's; the landing scroll is ours.
   else scrollToId(windowBookmark() ?? "");
@@ -285,7 +329,7 @@ const onPopState = () => {
   dispatchSignal("page:returned", arrival);
 };
 
-/** Scrolls the hash element into view — the aim implementation lives in
+/** Scrolls the hash element into view - the aim implementation lives in
  * @/lib/scrollTo, shared with the window system's dismissal landings. */
 function scrollToHash(hash: string, attempts = 12): void {
   const id = decodeURIComponent(hash.slice(1));
@@ -304,7 +348,7 @@ export function enablePageSlide(): void {
   // Initial load ONTO a hyperlinked window target (#hash or a blog
   // ?post= the route reveals): install the theme "parked" so the
   // entrance slide plays from nowhere, then land the page on the target
-  // — the return-to-page choreography (the reveal is the window store's,
+  // - the return-to-page choreography (the reveal is the window store's,
   // the landing scroll is this theme's, like every hash navigation).
   // Minimize folds / navigation hooks stay functional. Plain loads slide
   // in from the top as before.
@@ -313,13 +357,24 @@ export function enablePageSlide(): void {
     new URLSearchParams(location.search).has("post") ||
     // A returned-to entry may name its section in STATE alone (the
     // off-site bookmark is hash-free by design): that arrival is a
-    // landing on a target too — parked, reveal + scroll, nothing moves.
+    // landing on a target too - parked, reveal + scroll, nothing moves.
     !!windowBookmark();
-  applyDirection(linkedWindowTarget ? "parked" : "down");
+  // The boot scale measures the landing page (main exists by now): the
+  // initial plain load slides in from above at the same speed every
+  // navigation uses.
+  const bootMain = document.querySelector("main");
+  const bootScale: SlideScale = {
+    arrivalMs: durationFor(
+      (bootMain?.getBoundingClientRect().height ?? window.innerHeight) +
+        window.innerHeight,
+    ),
+    exitMs: durationFor(window.innerHeight * 1.1),
+  };
+  applyDirection(linkedWindowTarget ? "parked" : "down", bootScale);
   if (linkedWindowTarget) {
     if (location.hash) scrollToHash(location.hash);
     // A hash-free bookmarked target (the off-site return's form): the
-    // entry names its section in STATE alone — land on it the same way
+    // entry names its section in STATE alone - land on it the same way
     // the hash form lands.
     else scrollToId(windowBookmark() ?? "");
   }
@@ -342,14 +397,14 @@ export function enablePageSlide(): void {
         (target.search !== location.search || target.hash !== location.hash)
       ) {
         // Same-path CONTENT re-address: the router pushed a query or
-        // hash that names a new target (?post=, #id) — announced AFTER
+        // hash that names a new target (?post=, #id) - announced AFTER
         // the commit below, so the repair reads the new address. The
         // window system's own anchor pushes carry the state bookmark
         // and stay silent (they are UI entries, not content addresses).
         samePathReaddress = true;
       }
       // Pure same-path pushes without a re-address stay silent: they
-      // are UI history entries, NOT page arrivals — no landing scroll
+      // are UI history entries, NOT page arrivals - no landing scroll
       // exists for them. Hash landings for real arrivals come from the
       // boot branch, the popstate branches and hashchange.
     }
@@ -364,10 +419,10 @@ export function enablePageSlide(): void {
   };
   // The ALIAS re-land: a shorthand path (/addons) boots as its own
   // document and the router commits the destination (<Navigate
-  // to="/wow#addons" replace>) with a replaceState — the only
+  // to="/wow#addons" replace>) with a replaceState - the only
   // path-changing commit the pushState wrapper cannot see. It is not a
   // traversal (nothing announces it; the fresh-arrival gate decides the
-  // store's landing by the referrer alone) — but the page must still be
+  // store's landing by the referrer alone) - but the page must still be
   // LANDED on the destination's hash element like every boot: aim the
   // scroll at it (the retrying scrollToId absorbs the remount delay),
   // and take over `current` so later pushes compare against the true
