@@ -26,6 +26,7 @@ const VARIABLES = [
   "--ps-minimize",
   "--ps-drop-delay",
   "--ps-drop-dur",
+  "--ps-drop-distance",
   "--ps-in-x",
   "--ps-in-y",
   "--ps-pad-from",
@@ -48,7 +49,12 @@ const slide = (name: string, inX: string, inY: string): ThemeDefinition => ({
 const themes: Record<Direction | "parked", ThemeDefinition> = {
   right: slide("right", "100vw", "0"),
   left: slide("left", "-100vw", "0"),
-  down: slide("down", "0", "-100vh"),
+  /** From above: the offset is the page's OWN height plus a viewport -
+   * a bare -100vh only clears the first viewport of a tall page, so its
+   * mid-page band (windows included) sat inside the viewport at
+   * animation start. -100% (translate % = the element's own height)
+   * puts the whole page above the screen; the extra viewport is runway. */
+  down: slide("down", "0", "calc(-100% - 100vh)"),
   /** Initial load ONTO a hyperlinked window target: the slide theme is
    * fully installed (its class drives minimize folds and the navigation
    * hooks) but with a zero-distance entrance — nothing visibly moves
@@ -75,6 +81,7 @@ const menuOrder = () =>
  * then the whole page drops out of the bottom in one fast stroke. */
 function leaveGhost(): void {
   root().style.removeProperty("--ps-pad-from");
+  root().style.removeProperty("--ps-drop-distance");
   const main = document.querySelector("main");
   if (!main) return;
   // Measure the LIVE layout first — the detached clone reports zero-size
@@ -84,6 +91,15 @@ function leaveGhost(): void {
   const mediaBoxes = liveMedias.map((el) => el.getBoundingClientRect());
 
   const rect = main.getBoundingClientRect();
+  // The drop distance is measured, not fixed: the ghost's TOP edge must
+  // pass the viewport bottom, which is 100vh MINUS the old page's scroll
+  // offset (rect.top goes negative as the page scrolls) - plus margin to
+  // clear the folded sliver. A fixed 110vh left the ghost's tail on
+  // screen whenever the old page was scrolled down.
+  root().style.setProperty(
+    "--ps-drop-distance",
+    `${Math.round(window.innerHeight - rect.top + window.innerHeight * 0.1)}px`,
+  );
   const ghost = main.cloneNode(true) as HTMLElement;
   ghost.classList.add("page-slide-ghost");
   Object.assign(ghost.style, {

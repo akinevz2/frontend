@@ -104,9 +104,11 @@ html.theme-page-slide .page-slide-ghost .page-slide-placeholder-frame {
 
 @keyframes page-slide-drop {
   to {
-    /* The extra 10vh clears the folded sliver: at exactly 100vh the
-       squashed windows would rest AT the bottom edge, still visible. */
-    translate: 0 110vh;
+    /* Measured in JS (leaveGhost): the ghost's top edge must pass the
+       viewport bottom - 100vh MINUS the old page's scroll offset (a
+       fixed 110vh left the tail on screen for scrolled pages) - plus
+       margin to clear the folded sliver. */
+    translate: 0 var(--ps-drop-distance, 110vh);
   }
 }
 
