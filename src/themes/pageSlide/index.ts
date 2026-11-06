@@ -27,20 +27,7 @@ const ARRIVAL_MAX_DURATION_MS = 880;
 const DROP_SPEED_PX_MS = 3.4;
 const DROP_MIN_DURATION_MS = 480;
 const DROP_MAX_DURATION_MS = 820;
-/** The fall speed for the cascade folds: distance-derived, so a tall
- * page's LONG falls play at the same pace as short ones - fixed
- * durations made tall-page windows drop-kick to the taskbar. */
-const FALL_SPEED_PX_MS = 4;
-const FALL_MIN_DURATION_MS = 300;
-const FALL_MAX_DURATION_MS = 900;
 const REMOVAL_MARGIN_MS = 200;
-const fallDuration = (distancePx: number): number =>
-  Math.round(
-    Math.min(
-      FALL_MAX_DURATION_MS,
-      Math.max(FALL_MIN_DURATION_MS, distancePx / FALL_SPEED_PX_MS),
-    ),
-  );
 const arrivalDuration = (distancePx: number): number =>
   Math.round(
     Math.min(
@@ -245,7 +232,12 @@ function leaveGhost(): SlideScale {
         0,
         taskbarLine - (liveWin?.getBoundingClientRect().bottom ?? 0),
       );
-      const foldMs = fallDuration(fall);
+      // ONE THIRD FASTER than the page's own slide-down: the shrink's
+      // duration is the drop's duration minus a third (0.75x), so the
+      // two motions hold their relative pace at every page size and
+      // scroll offset instead of pulling apart from two independent
+      // distance scales.
+      const foldMs = Math.round(dropMs * 0.75);
       win.style.setProperty("--page-fold-dy", `${Math.round(fall)}px`);
       win.style.setProperty("--ps-fold-delay", "0ms");
       // the fold duration inherits down the window's subtree, so its
