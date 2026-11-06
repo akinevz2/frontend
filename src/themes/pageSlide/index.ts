@@ -21,9 +21,13 @@ const ATTRIBUTE = "data-page-slide";
  * compound through them). The glide is distance-aware (same pace for
  * every page size, clamped). */
 const FOLD_MS = 200;
-const ARRIVAL_SPEED_PX_MS = 3.1;
-const ARRIVAL_MIN_DURATION_MS = 520;
-const ARRIVAL_MAX_DURATION_MS = 880;
+/* TWICE the old pace: the speed doubled (3.1 -> 6.2px/ms) and the
+ * clamps halved with it (520-880 -> 260-440ms), so the distance-aware
+ * scaling survives intact - the arrival is just twice as fast at
+ * every page size. */
+const ARRIVAL_SPEED_PX_MS = 6.2;
+const ARRIVAL_MIN_DURATION_MS = 260;
+const ARRIVAL_MAX_DURATION_MS = 440;
 const DROP_SPEED_PX_MS = 3.4;
 const DROP_MIN_DURATION_MS = 480;
 const DROP_MAX_DURATION_MS = 820;
