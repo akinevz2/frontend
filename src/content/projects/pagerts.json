@@ -3,7 +3,7 @@
   "title": "pagerts",
   "description": "a TypeScript CLI that lists every link and resource a webpage references, as plain JSON.",
   "github": "https://github.com/akinevz2/pagerts",
-  "lastModified": "2026-11-06",
+  "lastModified": "2026-10-28",
   "content": {
     "heading": "pagerts - the webpage resource extractor",
     "content": [

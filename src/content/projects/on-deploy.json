@@ -3,7 +3,7 @@
   "title": "on-deploy",
   "description": "the doftiles deployment orchestrator: verifies the WM-stack binaries, installs the missing ones through per-distro deploy scripts, runs the make install assurances (bun, postinstall trust, the herbctl binary), deploys the dependencies, and provisions the session stack from declarative profiles.",
   "github": "https://github.com/akinevz2/on-deploy",
-  "lastModified": "2026-11-06",
+  "lastModified": "2026-11-05",
   "content": {
     "heading": "on-deploy - the deployment orchestrator",
     "content": [

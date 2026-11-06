@@ -3,7 +3,7 @@
   "title": "graphbrowser",
   "description": "describes a website's external dependency graph one layer at a time as structured markdown, with hyperlinks for navigating between graph nodes.",
   "github": "https://github.com/akinevz2/graphbrowser",
-  "lastModified": "2026-11-06",
+  "lastModified": "2026-10-27",
   "content": {
     "heading": "graphbrowser - the dependency graph, one layer at a time",
     "content": [

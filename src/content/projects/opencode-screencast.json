@@ -3,7 +3,7 @@
   "title": "opencode-screencast",
   "description": "an OpenCode plugin for live herbstluftwm screencasts: floating narration and delegation windows, a geometry toolkit for the floating layer (disjoin_rects partitioning, batch fitting, tiling surgery), audience callbacks over dunst, and a typed OOP scenario layer whose runs serialize to replayable script files.",
   "github": "https://github.com/akinevz2/opencode-screencast",
-  "lastModified": "2026-11-06",
+  "lastModified": "2026-10-31",
   "content": {
     "heading": "opencode-screencast - the agent performs, the audience watches",
     "content": [
