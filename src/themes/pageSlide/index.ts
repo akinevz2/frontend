@@ -21,6 +21,11 @@ const ATTRIBUTE = "data-page-slide";
  * compound through them). The glide is distance-aware (same pace for
  * every page size, clamped). */
 const FOLD_MS = 200;
+/** The pause between one main window FINISHING its fall and the next
+ * BEGINNING: the clear beat the cascade reads by (zero-gap chaining was
+ * invisible - the folds blurred into one motion). The step is the fold
+ * plus this gap. */
+const CASCADE_GAP_MS = 150;
 const ARRIVAL_SPEED_PX_MS = 3.1;
 const ARRIVAL_MIN_DURATION_MS = 520;
 const ARRIVAL_MAX_DURATION_MS = 880;
@@ -70,11 +75,13 @@ const START: Record<Direction | "parked", [string, string]> = {
   parked: ["0", "0"],
 };
 
-/** The per-transition durations: the arrival's, and the drop's (the fold
- * beat is a constant - FOLD_MS - written straight into the variables). */
+/** The per-transition durations: the arrival's, the drop's, and the
+ * cascade tail (the drop may not begin until the last window's fold has
+ * finished - the tail is that wait). */
 interface SlideScale {
   arrivalMs: number;
   dropMs: number;
+  tailMs: number;
 }
 
 const slide = (
@@ -88,7 +95,7 @@ const slide = (
   variables: {
     "--ps-duration": `${scale.arrivalMs}ms`,
     "--ps-minimize": `${FOLD_MS}ms`,
-    "--ps-drop-delay": "0ms",
+    "--ps-drop-delay": `${scale.tailMs}ms`,
     "--ps-drop-dur": `${scale.dropMs}ms`,
     "--ps-in-x": inX,
     "--ps-in-y": inY,
@@ -122,7 +129,7 @@ function leaveGhost(): SlideScale {
   root().style.removeProperty("--ps-drop-distance");
   const main = document.querySelector("main");
   if (!main) {
-    return { arrivalMs: ARRIVAL_MIN_DURATION_MS, dropMs: DROP_MIN_DURATION_MS };
+    return { arrivalMs: ARRIVAL_MIN_DURATION_MS, dropMs: DROP_MIN_DURATION_MS, tailMs: 0 };
   }
   // Measure the LIVE layout first - the detached clone reports zero-size
   // boxes, which is what used to blank the placeholders and collapse
@@ -150,7 +157,6 @@ function leaveGhost(): SlideScale {
   const dropMs = dropDuration(exitDistance);
   root().style.setProperty("--ps-drop-dur", `${dropMs}ms`);
   root().style.setProperty("--ps-minimize", `${FOLD_MS}ms`);
-  const removalMs = dropMs + REMOVAL_MARGIN_MS;
   const ghost = main.cloneNode(true) as HTMLElement;
   ghost.classList.add("page-slide-ghost");
   Object.assign(ghost.style, {
@@ -208,15 +214,39 @@ function leaveGhost(): SlideScale {
   // translateY-to-the-taskbar-line fold teleported top-of-page windows
   // below the arriving page before sliding out). The whole-page drop
   // carries every window out from where it sits.
-  // Cascade the mains: each top-level window's fold BEGINS when the
-  // previous one has FINISHED (the step is the fold duration itself -
-  // zero gap between one folding closed and the next starting). Nested
-  // windows inherit the custom property from their parent, folding in
-  // the parent's stage rather than against it.
+  // THE CASCADE: the top-level windows fall ONE AT A TIME. Each main
+  // window squashes AND FALLS to the taskbar line (its own measured
+  // distance), raised above every not-yet-falling window while it does;
+  // the next one begins CASCADE_GAP_MS after the previous has FINISHED.
+  // Nested windows carry no fall of their own (the custom property is
+  // reset on descendants in css) - they squash in the parent's stage
+  // and ride the parent's fall. The page's gentle glide waits for the
+  // whole cascade: the drop delay is the cascade tail.
+  const taskbarLine = window.innerHeight;
+  const step = FOLD_MS + CASCADE_GAP_MS;
   const topLevel = ".page > .window, .page > .maximized-shell > .window";
+  const liveWins = [...main.querySelectorAll<HTMLElement>(topLevel)];
   ghost.querySelectorAll<HTMLElement>(topLevel).forEach((win, i) => {
-    win.style.setProperty("--ps-fold-delay", `${Math.round(i * FOLD_MS)}ms`);
+    const liveWin = liveWins[i];
+    if (!liveWin) return;
+    // the fall: the window's bottom edge to the taskbar line
+    const fall = Math.max(
+      0,
+      taskbarLine - liveWin.getBoundingClientRect().bottom,
+    );
+    win.style.setProperty("--page-fold-dy", `${Math.round(fall)}px`);
+    win.style.setProperty(
+      "--ps-fold-delay",
+      `${Math.round(i * step)}ms`,
+    );
+    // the falling window rides OVER the rest while it falls
+    win.style.position = "relative";
+    win.style.zIndex = `${100 - i}`;
   });
+  const tailMs =
+    Math.max(0, liveWins.length - 1) * step + (liveWins.length ? FOLD_MS : 0);
+  root().style.setProperty("--ps-drop-delay", `${tailMs}ms`);
+  const removalMs = tailMs + dropMs + REMOVAL_MARGIN_MS;
   document.body.appendChild(ghost);
   // Maximized overlays ride INSIDE the ghost now (they are in-tree), so
   // the dimmed layer and the maximized window fold and drop with the
@@ -262,6 +292,7 @@ function leaveGhost(): SlideScale {
   return {
     arrivalMs: arrivalDuration(rect.height + window.innerHeight),
     dropMs,
+    tailMs,
   };
 }
 
@@ -392,6 +423,7 @@ export function enablePageSlide(): void {
         window.innerHeight,
     ),
     dropMs: dropDuration(window.innerHeight * 1.1),
+    tailMs: 0,
   };
   applyDirection(linkedWindowTarget ? "parked" : "down", bootScale);
   if (linkedWindowTarget) {

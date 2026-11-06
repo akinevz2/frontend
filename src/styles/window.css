@@ -123,26 +123,73 @@
   }
 }
 
-/* The WOBBLE identifies an experimental window by hovering its BODY:
-   the bob lives on .window-body, so the TITLE BAR never moves - the
-   menu buttons stay stable under the cursor (a wobbling maximize
-   button was the defect). It plays only in the default DOM: the
-   :not(.maximized) root guard keeps the fullscreen view flat, the
-   maximized-window-body class MaximizedWindow adds inside the portal
-   DOM is belt-and-braces flat, and the suppression below keeps inline
-   experimental children under a maximized ancestor flat too. */
-.window[data-theme~="experimental"]:not(.maximized) .window-body:hover,
-.window[data-theme~="experimental"]:not(.maximized) .window-body:focus-within {
+/* The WOBBLE identifies an experimental window, ONCE per visit: the
+   first body pointer-contact sets data-wobbled on the root (Window.tsx)
+   and MINIMIZING re-arms it, so mouse wiggles never re-fire it and the
+   effects stay calm while the cursor rides over and across the window.
+
+   The bob targets the WINDOW ROOT - frame, background, body and the OK
+   buttons together, so the buttons bounce WITH the window instead of
+   swimming against the static frame (the defect of wobbling the body
+   in isolation). The TITLE BAR counter-bobs the negated keyframes with
+   the same duration, delay and curve - triggered through the SAME
+   :has() condition, so the two animations start in one frame: the
+   title holds visually still while everything below it bobs, keeping
+   the maximize button steady even mid-bob.
+
+   Maximised DOM stays flat on every path: the :not(.maximized) root
+   guard, the maximized-window-body belt, and the inline-children
+   suppression below. */
+.window[data-theme~="experimental"]:not(.maximized):not([data-wobbled])
+  .window-body:hover,
+.window[data-theme~="experimental"]:not(.maximized):not([data-wobbled])
+  .window-body:focus-within {
   animation: theme-experimental-wobble 0.6s ease-in-out;
+}
+.window[data-theme~="experimental"]:not(.maximized):not([data-wobbled]):has(
+    .window-body:hover,
+    .window-body:focus-within
+  )
+  .title-bar {
+  animation: theme-experimental-counter 0.6s ease-in-out;
 }
 
 /* Only the DEEPEST hovered window bobs: the hover chain matches
    ancestors too, so an experimental ancestor whose body contains the
    hovered experimental child body holds still instead of bobbing in
    double. */
-.window[data-theme~="experimental"]:not(.maximized)
+.window[data-theme~="experimental"]:not(.maximized):not([data-wobbled])
   .window-body:has(.window-body:hover) {
   animation: none;
+}
+.window[data-theme~="experimental"]:not(.maximized):not([data-wobbled]):has(
+    .window-body:hover
+  )
+  .title-bar {
+  animation: none;
+}
+
+/* The negated bob: the title bar holds its visual place while the
+   window around it bobs. */
+@keyframes theme-experimental-counter {
+  0% {
+    transform: translateY(0);
+  }
+  20% {
+    transform: translateY(6px);
+  }
+  40% {
+    transform: translateY(3px);
+  }
+  60% {
+    transform: translateY(6px);
+  }
+  80% {
+    transform: translateY(2px);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
 
 /* Maximised stability: inside the fullscreen view no experimental body
@@ -163,8 +210,10 @@
 /* Respect reduced-motion: no glow, no wobble. */
 @media (prefers-reduced-motion: reduce) {
   .window.maximized[data-theme~="experimental"] .title-bar-text,
-  .window[data-theme~="experimental"]:not(.maximized) .window-body:hover,
-  .window[data-theme~="experimental"]:not(.maximized) .window-body:focus-within {
+  .window[data-theme~="experimental"]:not(.maximized):not([data-wobbled])
+    .window-body:hover,
+  .window[data-theme~="experimental"]:not(.maximized):not([data-wobbled])
+    .window-body:focus-within {
     animation: none;
   }
 }

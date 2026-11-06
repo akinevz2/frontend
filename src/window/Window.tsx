@@ -153,6 +153,13 @@ export function Window({ node }: { node: WindowNode }) {
   const flags = flagsOf(node.id);
   const maximized = Boolean(flags.maximized);
   const windowRef = useRef<HTMLDivElement | null>(null);
+  // The experimental wobble plays ONCE per visit: the first body
+  // pointer-contact sets data-wobbled on the root, and MINIMIZING
+  // re-arms it (removeAttribute) - so the identifier never re-fires
+  // while the mouse wiggles, and the next visit identifies again.
+  useEffect(() => {
+    if (flags.minimized) windowRef.current?.removeAttribute("data-wobbled");
+  }, [flags.minimized]);
   const maximizedCtl = useMaximizedController(
     node.id,
     patch,
@@ -363,6 +370,11 @@ export function Window({ node }: { node: WindowNode }) {
       ) : (
         <div
           className={`window-body${maximized ? " maximized-window-body" : ""}`}
+          onPointerEnter={
+            hasTheme(node, "experimental")
+              ? () => windowRef.current?.setAttribute("data-wobbled", "")
+              : undefined
+          }
         >
           <Body
             node={node}

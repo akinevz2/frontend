@@ -117,8 +117,19 @@ html.theme-page-slide .page-slide-ghost .page-slide-placeholder-frame {
 
 @keyframes page-slide-fold {
   to {
-    transform: scaleY(0.06);
+    /* The fold is a squash AND A FALL: the window's bottom edge travels
+       its measured distance to the taskbar line (--page-fold-dy, set per
+       main window in JS) while the outline collapses - gravity, ease-in,
+       oneXP minimize. */
+    transform: translateY(var(--page-fold-dy, 0px)) scaleY(0.06);
   }
+}
+
+/* The fall distance belongs to the top-level window alone: nested
+   windows reset it, so they squash in the parent's stage and RIDE the
+   parent's fall instead of compounding it. */
+html.theme-page-slide .page-slide-ghost .window .window {
+  --page-fold-dy: 0px;
 }
 
 @keyframes page-slide-drop {
