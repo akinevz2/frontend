@@ -379,6 +379,28 @@ export function Window({ node }: { node: WindowNode }) {
         .filter(Boolean)
         .join(" ")}
       data-theme={dataTheme(node)}
+      onPointerEnter={
+        hasTheme(node, "experimental")
+          ? () => {
+              const el = windowRef.current;
+              if (!el) return;
+              // TOUCHING THE WINDOW - anywhere (title bar, controls,
+              // frame, body) - starts the run: a marker, not a
+              // hover-keyed rule - see the css note. Losing the hover
+              // mid-run never unmatches the trigger, so the cursor
+              // roaming across the window never restarts the wobble
+              // before it finishes - only LEAVING the window (the
+              // document-capture arming below) re-arms a fresh one.
+              if (
+                el.hasAttribute("data-wobbled") ||
+                el.hasAttribute("data-wobble-playing")
+              ) {
+                return;
+              }
+              el.setAttribute("data-wobble-playing", "");
+            }
+          : undefined
+      }
     >
       <TitleBar
         node={node}
@@ -419,24 +441,6 @@ export function Window({ node }: { node: WindowNode }) {
       ) : (
         <div
           className={`window-body${maximized ? " maximized-window-body" : ""}`}
-          onPointerEnter={
-            experimental
-              ? () => {
-                  const el = windowRef.current;
-                  if (!el) return;
-                  // the first body contact STARTS the run: a marker,
-                  // not a hover-keyed rule - see the css note. Losing
-                  // the hover mid-run never unmatches the trigger.
-                  if (
-                    el.hasAttribute("data-wobbled") ||
-                    el.hasAttribute("data-wobble-playing")
-                  ) {
-                    return;
-                  }
-                  el.setAttribute("data-wobble-playing", "");
-                }
-              : undefined
-          }
         >
           <Body
             node={node}
