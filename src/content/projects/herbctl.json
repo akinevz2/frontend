@@ -3,7 +3,7 @@
   "title": "herbctl",
   "description": "the herbstluftwm keybind imperatives: every composite mod- binding as a plain-named verb - the float-register state machines, the navigation chains, the layout cyclers - compiled to a standalone bunli binary.",
   "github": "https://github.com/akinevz2/herbctl",
-  "lastModified": "2026-11-01",
+  "lastModified": "2026-11-05",
   "content": {
     "heading": "herbctl - the keybind imperatives, as a native binary",
     "content": [
@@ -23,7 +23,7 @@
       {
         "heading": "the package, architecturally",
         "content": [
-          "one **bunli** binary, 25 verbs, one per keybind. each verb is a function that emits the exact herbstclient argv the binding expresses - nothing is re-derived at runtime.",
+          "one **bunli** binary, 26 verbs, one per keybind. each verb is a function that emits the exact herbstclient argv the binding expresses - nothing is re-derived at runtime.",
           "",
           "it imports **herbstutil** for its pure primitives only - parseAttr, the typed attribute reader. it does not (and must not) import herbstutil's command functions: the composite keybind commands live here, and herbstutil ships none of them.",
           "",
@@ -35,7 +35,7 @@
       },
       {
         "heading": "usage - the verbs",
-        "status": "v1.2.1",
+        "status": "v1.6.1",
         "content": [
           "the dots keybinds spawn the compiled standalone binary at ~/.local/bin/herbctl; **on-deploy**'s toolchain step builds and installs it on deploy. each verb gets its own section below."
         ],
@@ -189,7 +189,13 @@
       {
         "heading": "float-yank",
         "content": [
-          "[$Mod-x] the layer-yank machine (the hc_floatx port): focus-a-float-then-unfloat / yank (float + center into the float session, frame left alone) / defer / un-float-into-empty-frame / tidying (remove, reveal, polyframes hidden, use_previous)."
+          "[$Mod-x] the layer-yank machine (the hc_floatx port): a float holding focus is UN-FLOATED - the register chain re-tiles it into the focused frame below whatever it holds, every former sub-case (the one-frame use_previous + hc_tile register, the multi-frame defer, the empty-frame un-float) unified into that one behavior - then the tiling layer gets its focus back (floating_focused off as a separate follow-up write; hlwm tracks the register on un-float). the tiling-focused press keeps the older branches: focus-a-float-then-unfloat / yank (float + center into the float session, frame left alone) / tidying (remove, reveal, polyframes hidden, use_previous)."
+        ]
+      },
+      {
+        "heading": "float-unfocus",
+        "content": [
+          "[$ModCtrl-x] the float-recall machine: a float holding focus un-floats into an empty focused frame (the register chain), else hands focus to the tiling layer untouched. from the tiling layer the focused window unconditionally becomes a companion float: hc_resize frame adopts its tiled size first, any dimension over half the work area comes DOWN to half (shrink-only, never grow), and the capped rect lands flush in the top-left corner - the +0+0 outline, content inset by the floating deco margins. on top of that a pre-existing float is recalled (floating_focused on + jumpto + hc_center root); with no float parked, the companion takes the float session itself."
         ]
       },
       {
@@ -199,12 +205,12 @@
         ]
       },
       {
-        "heading": "stable in v1.2.x",
-        "status": "v1.2.1",
+        "heading": "stable in v1.6.x",
+        "status": "v1.6.1",
         "content": [
-          "the verb names are the shipped surface: plain, functional names - split-right-cycle, shift-up, minimize-toggle - one per keybind, all 25 covered by the mocked-herbstclient suite.",
+          "the verb names are the shipped surface: plain, functional names - split-right-cycle, shift-up, minimize-toggle - one per keybind, all 26 covered by the mocked-herbstclient suite.",
           "the binary is standalone: built with bunli, spawned by the dots keybinds at ~/.local/bin/herbctl, built and installed by on-deploy's toolchain step.",
-          "the registry track publishes on npm: herbctl 1.2.1."
+          "the registry track publishes on npm: herbctl 1.6.1."
         ],
         "theme": "open"
       },
@@ -213,7 +219,7 @@
         "content": [
           {
             "heading": "github repository",
-            "content": "v1.2.1",
+            "content": "v1.6.1",
             "link": "https://github.com/akinevz2/herbctl"
           },
           {

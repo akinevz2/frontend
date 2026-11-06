@@ -28,10 +28,10 @@
       {
         "heading": "the packages",
         "content": [
-          "**herbstluftwm** - the window manager stack: the autostart (the WM bootstrap + keybinds), the theme (theme, theme.d/titles.theme, reload_theme, winbarctl), the float machinery + focus helpers (hc_focus, hc_floatx, hc_zoom, the maximize family, the hc_center/hc_resize/hc_tile/hc_fit_to shims, hc_bounce, hc_peek, hc_full_focus), the generic hc_* and hlwm_* tools, and all systemd user units (herbst, compton, dunst, hc_send-error-daemon, xvfb, x11vnc, novnc).",
+          "**herbstluftwm** - the window manager stack: the autostart (the WM bootstrap + keybinds), the theme (theme, theme.d/titles.theme, reload_theme, winbarctl), the float machinery + focus helpers (hc_focus, the x-family - hc_floatx on Mod-x, herbctl float-unfocus on ModCtrl-x, use_previous on ModShift-x - hc_zoom, the maximize family, the hc_center/hc_resize/hc_tile/hc_fit_to shims, hc_bounce, hc_peek, hc_full_focus), hc_command (the rofi command palette enumerating the hc_*/rofi_*/hlwm* helpers off the PATH), launch_alacritty (the terminal spawner whose floating is owned entirely by a class-scoped once-rule), the generic hc_* and hlwm_* tools, and all systemd user units (herbst, compton, dunst, hc_send-error-daemon, xvfb, x11vnc, novnc).",
           "**polybar** - .config/polybar (config.ini + polybar.sh + polywins.sh), polyctl, ewmh_labels, the bar control makefile; the [module/polyframes] section execs the **polyframes** binary directly.",
-          "**shell** - .bashrcx, .profile, .aliases, .exports, .zshrc, .vim, .taskrc, .my-credentials, the mimeapps/xdg plumbing, and .local/bin (install hooks, firefox wrapper, check-wsl, load-credentials).",
-          "**dunst** - .config/dunst, check-mail.sh, read-mail.sh.",
+          "**shell** - .bashrcx, .profile, .aliases, .exports, .zshrc, .vim, .taskrc, .my-credentials, the mimeapps/xdg plumbing, and .local/bin (install hooks, the runtime-conditional firefox wrapper, check-wsl, got, green/yellow).",
+          "**dunst** - .config/dunst (dunstrc) + the dunst user unit; the dunst keybind helpers (hc_dunst-pop, hc_dismiss-notifs, hc_dunst-action) live in the herbstluftwm package.",
           "**on-deploy** / **herbctl** / **herbstutil** / **polyframes** - each submodule is its own stow package: dots/<pkg>/.local/state/depends/<pkg>.makefile owns the toolchain/build/link/install recipe, the artifact lands in dots/<pkg>/.local/bin and stow ships it.",
           "",
           "depends is remnants-only: the on.deploy shim, the per-distro <target>.deploy resolvers and .config/doftiles.conf.",
@@ -77,7 +77,7 @@
         "heading": "stable in v1.0.0",
         "status": "v1.0.0",
         "content": [
-          "the deployment scope is defined by four manifests (wm.required, stows.required, system.required, services.required) - no per-package code, no hardcoded paths; the manifests decide what gets deployed, the per-package makefiles decide how.",
+          "the deployment scope is defined by four manifests - stows.depends, wm.depends, system.depends, services.depends, one file each, force-add tracked so machines can personalize them under skip-worktree - no per-package code, no hardcoded paths; the manifests decide what gets deployed, the per-package makefiles decide how.",
           "the display is resolved in exactly one place: check-x-server.service runs first, probes for the display, and exports it to the systemd user manager; every WM-side unit requires it.",
           "the install step is one chain - configure, preserve, packages install, status - and the wizard opens only on a clean install or when the manifests actually changed.",
           "`make update` never rebuilds what it does not need to; a fresh submodule pin lands its binary through the unconditional on-deploy rebuild."
@@ -88,7 +88,7 @@
         "heading": "examples",
         "content": [
           "the whole system deploys from one repository with one chain of recipes:",
-          "```sh\ngit clone https://github.com/akinevz2/doftiles ~/dots && cd ~/dots\nmake bootstrap    # the on-deploy binary, submodule checkouts, bun trust\nmake toolchain    # the language toolchains the packages build with\nmake deps         # build and install every submodule artifact\nmake install      # stow the packages, apply the recorded config\n```",
+          "```sh\ngit clone https://github.com/akinevz2/doftiles ~/dots && cd ~/dots\nmake bootstrap    # the on-deploy binary, submodule checkouts, bun trust -\n                  # the full submodule artifact walk lives here\nmake toolchain    # the language toolchains the packages build with\nmake install      # stow the packages, apply the recorded config\n```",
           "once deployed, updating is two recipes:",
           "```sh\nmake update          # fetch, fast-forward, materialize the pinned submodules\nmake update install  # ...and run the install step exactly once\n```",
           "the full walkthrough (profiles, headless runs, the update path) is a separate post: [try it out](/blog/releases/try_it_out)."
@@ -110,7 +110,7 @@
           },
           {
             "heading": "herbctl - the keybind verbs",
-            "content": "v1.2.1",
+            "content": "v1.6.1",
             "link": "/projects/herbctl"
           },
           {
