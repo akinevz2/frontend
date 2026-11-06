@@ -153,29 +153,61 @@ export function Window({ node }: { node: WindowNode }) {
   const flags = flagsOf(node.id);
   const maximized = Boolean(flags.maximized);
   const windowRef = useRef<HTMLDivElement | null>(null);
-  // The experimental wobble plays ONCE per visit: data-wobbled is armed
-  // on the ROOT when its own wobble ANIMATION ENDS, and MINIMIZING
-  // re-arms it (removeAttribute). Arm-on-leave was an abrupt cancel:
-  // the attribute stopped the :not([data-wobbled]) rule matching
-  // mid-flight, so an accidental swipe over the element snipped the
-  // animation short. Arming on animationend lets the bob ALWAYS finish
-  // - even when the pointer is long gone - and only then saturates the
-  // guard, so the next visit does not re-fire.
+  // The experimental wobble plays ONCE per visit. Three attributes on
+  // the root drive it (see the Experimental block in window.css):
+  //   data-wobble-playing  the run has STARTED (first body contact);
+  //                        the trigger rule keys off MARKER, not
+  //                        :hover, so losing the hover mid-flight
+  //                        never unmatches the rule - the animation
+  //                        ALWAYS finishes, an accidental swipe does
+  //                        not snip it, and it never restarts
+  //   data-wobbled         the run FINISHED (armed on animationend)
+  // Minimizing re-arms both (a fresh visit may identify again).
+  // Rearm on outside contact lives in the effect below: pointer
+  // touching anything outside the window sets data-wobbled, unless a
+  // wobble is still running (arming would saturate the trigger and
+  // cancel it mid-flight) - then the animationend arms instead.
   const experimental = hasTheme(node, "experimental");
   useEffect(() => {
-    if (flags.minimized) windowRef.current?.removeAttribute("data-wobbled");
+    if (flags.minimized) {
+      windowRef.current?.removeAttribute("data-wobbled");
+      windowRef.current?.removeAttribute("data-wobble-playing");
+    }
   }, [flags.minimized]);
   useEffect(() => {
     if (!experimental) return;
-    const root = windowRef.current;
-    if (!root) return;
-    const arm = (e: AnimationEvent) => {
+    const el = windowRef.current;
+    if (!el) return;
+    const finish = (animationEvent: AnimationEvent) => {
       // only the ROOT's own wobble arms the flag: a nested experimental
       // child's animationend must not saturate its ancestor early
-      if (e.target === root) root.setAttribute("data-wobbled", "");
+      if (animationEvent.target !== el) return;
+      el.removeAttribute("data-wobble-playing");
+      el.setAttribute("data-wobbled", "");
     };
-    root.addEventListener("animationend", arm);
-    return () => root.removeEventListener("animationend", arm);
+    const cancelRun = (animationEvent: AnimationEvent) => {
+      if (animationEvent.target !== el) return;
+      el.removeAttribute("data-wobble-playing");
+    };
+    const outside = (event: PointerEvent) => {
+      if (event.composedPath().includes(el)) return;
+      if (el.hasAttribute("data-wobble-playing")) {
+        // still running: finish first (the animationend arms)
+        if (el.getAnimations().length) return;
+        // stale suppression (an ancestor held still by a nested
+        // playing child never animates, so it never ends itself)
+        el.removeAttribute("data-wobble-playing");
+      }
+      el.setAttribute("data-wobbled", "");
+    };
+    el.addEventListener("animationend", finish);
+    el.addEventListener("animationcancel", cancelRun);
+    document.addEventListener("pointerenter", outside, true);
+    return () => {
+      el.removeEventListener("animationend", finish);
+      el.removeEventListener("animationcancel", cancelRun);
+      document.removeEventListener("pointerenter", outside, true);
+    };
   }, [experimental]);
   const maximizedCtl = useMaximizedController(
     node.id,
@@ -387,6 +419,24 @@ export function Window({ node }: { node: WindowNode }) {
       ) : (
         <div
           className={`window-body${maximized ? " maximized-window-body" : ""}`}
+          onPointerEnter={
+            experimental
+              ? () => {
+                  const el = windowRef.current;
+                  if (!el) return;
+                  // the first body contact STARTS the run: a marker,
+                  // not a hover-keyed rule - see the css note. Losing
+                  // the hover mid-run never unmatches the trigger.
+                  if (
+                    el.hasAttribute("data-wobbled") ||
+                    el.hasAttribute("data-wobble-playing")
+                  ) {
+                    return;
+                  }
+                  el.setAttribute("data-wobble-playing", "");
+                }
+              : undefined
+          }
         >
           <Body
             node={node}

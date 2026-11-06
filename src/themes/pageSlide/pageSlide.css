@@ -97,11 +97,33 @@ html.theme-page-slide .page-slide-ghost .window {
   animation-delay: var(--ps-fold-delay, 0ms);
 }
 
-/* MAIN windows: the top-level folds are the gravity beat (ease-in). */
+/* MULTI-window pages exit FLAT: the ghost runs NO window animations -
+   not even the base fold. Every differential beat the cascade family
+   tried (staggered, simultaneous, raised-over) tore at the exit -
+   revealed sections collapsed at their own pace against the page's
+   slide-out. The whole page slides out as one piece instead: no
+   per-window motion whatsoever, only the page's drop. Single-window
+   pages keep the shrink (the base + gravity rules above). */
+html.theme-page-slide .page-slide-ghost.page-slide-ghost-flat .window,
+html.theme-page-slide
+  .page-slide-ghost.page-slide-ghost-flat
+  .window
+  .window {
+  animation: none !important;
+  transform: none !important;
+}
+
+/* MAIN windows: the top-level folds are the gravity beat (ease-in).
+   The same maximized-shell/backdrop pair as the JS cascade: the
+   maximized wrapper swaps its class to .maximized-backdrop while the
+   window is lifted, and missing it there keeps maximized windows on
+   the flat base beat while everything else falls with gravity. */
 html.theme-page-slide .page-slide-ghost > .window,
 html.theme-page-slide .page-slide-ghost > .maximized-shell > .window,
+html.theme-page-slide .page-slide-ghost > .maximized-backdrop > .window,
 html.theme-page-slide .page-slide-ghost .page > .window,
-html.theme-page-slide .page-slide-ghost .page > .maximized-shell > .window {
+html.theme-page-slide .page-slide-ghost .page > .maximized-shell > .window,
+html.theme-page-slide .page-slide-ghost .page > .maximized-backdrop > .window {
   animation-timing-function: ease-in !important;
 }
 

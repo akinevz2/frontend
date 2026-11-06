@@ -219,47 +219,42 @@ function leaveGhost(): SlideScale {
         : "";
     el.replaceWith(placeholder);
   });
-  // XP-style minimise: the ghost's windows squash IN PLACE (CSS handles
-  // the scaleY; no per-window fold distance is measured - the old
-  // translateY-to-the-taskbar-line fold teleported top-of-page windows
-  // below the arriving page before sliding out). The whole-page drop
-  // carries every window out from where it sits.
-  // THE CASCADE: the top-level windows fall TOGETHER, each to the
-  // taskbar line over its own measured distance (the distance-derived
-  // duration makes windows fall at their own pace - tall windows take
-  // longer). NO stagger: no delays, no gap beats. The stacking makes
-  // the migration read: windows EARLIER in the DOM are raised OVER
-  // windows later in the DOM for the whole fall (descending z-index),
-  // so the first window sweeps over the rest regardless of original
-  // stacking. Nested windows carry no fall of their own (the custom
-  // property is reset on descendants in css) - they squash in the
-  // parent's stage and ride the parent's fall. The page's gentle glide
-  // waits for the SLOWEST fall: the drop delay is the longest fold.
+  // THE EXIT: single-window pages keep the shrink - one window's XP
+  // minimise (squash-and-fall to the taskbar line, distance-derived
+  // speed, gravity) IS the page's exit story. MULTI-window pages exit
+  // HOMOGENEOUSLY: no per-window fold at all - every differential beat
+  // (staggered, simultaneous, raised, any of it) tore the exit apart
+  // with revealed sections collapsing at different rates - the whole
+  // page just slides out as one piece. The maximized wrapper swaps its
+  // class to .maximized-backdrop while the window is lifted (the same
+  // in-tree element), so the count must match BOTH states.
   const taskbarLine = window.innerHeight;
-  const topLevel = ".page > .window, .page > .maximized-shell > .window";
+  const topLevel =
+    ".page > .window, .page > .maximized-shell > .window, .page > .maximized-backdrop > .window";
   const liveWins = [...main.querySelectorAll<HTMLElement>(topLevel)];
-  let longestFoldMs = 0;
-  ghost.querySelectorAll<HTMLElement>(topLevel).forEach((win, i) => {
-    const liveWin = liveWins[i];
-    if (!liveWin) return;
-    // the fall: the window's bottom edge to the taskbar line
-    const fall = Math.max(
-      0,
-      taskbarLine - liveWin.getBoundingClientRect().bottom,
-    );
-    const foldMs = fallDuration(fall);
-    longestFoldMs = Math.max(longestFoldMs, foldMs);
-    win.style.setProperty("--page-fold-dy", `${Math.round(fall)}px`);
-    win.style.setProperty("--ps-fold-delay", "0ms");
-    // per-window fold duration: the inline custom property inherits
-    // down the window's subtree, so its children fold in the same beat
-    win.style.setProperty("--ps-minimize", `${foldMs}ms`);
-    // the falling window rides OVER the rest while it falls
-    win.style.position = "relative";
-    win.style.zIndex = `${100 - i}`;
-  });
-  // the drop begins as the LAST (slowest) window's fall finishes
-  const tailMs = liveWins.length ? longestFoldMs : 0;
+  const flatExit = liveWins.length > 1;
+  let tailMs = 0;
+  if (flatExit) {
+    ghost.classList.add("page-slide-ghost-flat");
+  } else {
+    const win = ghost.querySelector<HTMLElement>(topLevel);
+    if (win) {
+      const liveWin = liveWins[0];
+      // the fall: the window's bottom edge to the taskbar line
+      const fall = Math.max(
+        0,
+        taskbarLine - (liveWin?.getBoundingClientRect().bottom ?? 0),
+      );
+      const foldMs = fallDuration(fall);
+      win.style.setProperty("--page-fold-dy", `${Math.round(fall)}px`);
+      win.style.setProperty("--ps-fold-delay", "0ms");
+      // the fold duration inherits down the window's subtree, so its
+      // children squash in the same beat
+      win.style.setProperty("--ps-minimize", `${foldMs}ms`);
+      // the drop begins as the one window's fall finishes
+      tailMs = foldMs;
+    }
+  }
   root().style.setProperty("--ps-drop-delay", `${tailMs}ms`);
   const removalMs = tailMs + dropMs + REMOVAL_MARGIN_MS;
   document.body.appendChild(ghost);

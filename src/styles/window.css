@@ -123,37 +123,39 @@
   }
 }
 
-/* The WOBBLE identifies an experimental window, ONCE per visit:
-   data-wobbled is armed on the root when the window's own wobble
-   ANIMATION ENDS (Window.tsx) - an accidental swipe over the element
-   lets the bob FINISH instead of being snipped short, and the next
-   hover does not re-fire - and MINIMIZING re-arms it, so mouse wiggles
-   never restart the effect mid-visit.
+/* The WOBBLE identifies an experimental window, ONCE per visit. The
+   trigger keys off data-wobble-playing (set by the FIRST body
+   pointer-contact in Window.tsx), NOT :hover: a hover-keyed rule
+   unmatches the moment the pointer leaves, and the browser cancels an
+   animation whose rule stopped matching mid-flight. The marker keeps
+   the rule matched for the whole run - the bob ALWAYS finishes, an
+   accidental swipe over the element never snips it short, and it never
+   restarts. data-wobbled (armed on the root's animationend, or on
+   outside pointer contact) saturates the once-per-visit state;
+   MINIMIZING removes both attributes and re-arms a fresh visit. Arms
+   on the root: mouse-touch outside the window (document-level
+   pointerenter in Window.tsx), without interrupting a running run.
 
    The bob targets the WINDOW ROOT - frame, background, title bar, body
    and the OK buttons together, one paint. NO paired counter-animation
    on the title bar: two synchronized animations snap out of phase the
    moment one recalculates late, and the title then bounces SEPARATE
    from the buttons - the paired design is what made the ok buttons
-   bounce apart. The trigger still requires BODY contact (title-only
-   hovering never starts anything), and the once-per-visit flag means
-   the pointer reaches the title bar after the bob has spent itself.
+   bounce apart.
 
    Maximised DOM stays flat on every path: the :not(.maximized) root
    guard, and the suppression below for inline experimental children
-   under a maximized ancestor (the deepest-hover rule keeps experimental
-   ancestors from double-bobbing behind a hovered experimental child). */
-.window[data-theme~="experimental"]:not(.maximized):not([data-wobbled]):has(
-    .window-body:hover,
-    .window-body:focus-within
-  ) {
+   under a maximized ancestor (the deepest-playing rule keeps experimental
+   ancestors from double-bobbing behind a playing experimental child). */
+.window[data-theme~="experimental"]:not(.maximized)[data-wobble-playing] {
   animation: theme-experimental-wobble 0.6s ease-in-out;
 }
 
-/* Only the DEEPEST hovered window bobs: an experimental ancestor whose
-   subtree contains the hovered experimental child holds still. */
-.window[data-theme~="experimental"]:not(.maximized):not([data-wobbled]):has(
-    .window .window-body:hover
+/* Only the DEEPEST playing window bobs: an experimental ancestor whose
+   subtree holds a playing child stays still (its own run never starts;
+   the stale-suppression cleanup in Window.tsx tidies the marker). */
+.window[data-theme~="experimental"]:not(.maximized)[data-wobble-playing]:has(
+    .window[data-wobble-playing]
   ) {
   animation: none;
 }
@@ -161,21 +163,17 @@
 /* Maximised stability: inline experimental children under a
    .window.maximized ancestor never bob in the fullscreen view
    (Maximizing force-expands the whole subtree; an animated child used
-   to break the overlay's scroll). */
-.window.maximized .window[data-theme~="experimental"]:has(
-    .window-body:hover,
-    .window-body:focus-within
-  ) {
+   to break the overlay's scroll). An animation: none on a claimed run
+   raises animationcancel - the Window.tsx listener clears the marker
+   so the overlay's windows do not stay saturated. */
+.window.maximized .window[data-theme~="experimental"][data-wobble-playing] {
   animation: none;
 }
 
 /* Respect reduced-motion: no glow, no wobble. */
 @media (prefers-reduced-motion: reduce) {
   .window.maximized[data-theme~="experimental"] .title-bar-text,
-  .window[data-theme~="experimental"]:not(.maximized):not([data-wobbled]):has(
-      .window-body:hover,
-      .window-body:focus-within
-    ) {
+  .window[data-theme~="experimental"]:not(.maximized)[data-wobble-playing] {
     animation: none;
   }
 }
