@@ -21,10 +21,26 @@ const ATTRIBUTE = "data-page-slide";
 const SPEED_PX_MS = 2.8;
 const MIN_DURATION_MS = 600;
 const MAX_DURATION_MS = 950;
+/** The slide OUT runs faster than the slide IN: a higher speed with its
+ * own, lower clamps - and since the arriving page always travels the
+ * longer distance (its own height plus a viewport, against the exit's
+ * viewport plus scroll), the out is roughly 80% of the in at worst.
+ * The out must never linger; the in is the one that gets to breathe. */
+const EXIT_SPEED_PX_MS = 3.6;
+const EXIT_MIN_DURATION_MS = 420;
+const EXIT_MAX_DURATION_MS = 760;
 /** Milliseconds a page travelling `distancePx` takes, clamped. */
-const durationFor = (distancePx: number): number =>
+const arrivalDuration = (distancePx: number): number =>
   Math.round(
     Math.min(MAX_DURATION_MS, Math.max(MIN_DURATION_MS, distancePx / SPEED_PX_MS)),
+  );
+/** Same contract, the exit's profile. */
+const exitDuration = (distancePx: number): number =>
+  Math.round(
+    Math.min(
+      EXIT_MAX_DURATION_MS,
+      Math.max(EXIT_MIN_DURATION_MS, distancePx / EXIT_SPEED_PX_MS),
+    ),
   );
 /** Retired after the exit: fold and drop run in step (one motion). */
 const REMOVAL_MARGIN_MS = 200;
@@ -108,7 +124,7 @@ function leaveGhost(): SlideScale {
   root().style.removeProperty("--ps-drop-distance");
   const main = document.querySelector("main");
   if (!main) {
-    return { arrivalMs: MIN_DURATION_MS, exitMs: MIN_DURATION_MS };
+    return { arrivalMs: MIN_DURATION_MS, exitMs: EXIT_MIN_DURATION_MS };
   }
   // Measure the LIVE layout first - the detached clone reports zero-size
   // boxes, which is what used to blank the placeholders and collapse
@@ -133,7 +149,7 @@ function leaveGhost(): SlideScale {
   // animation starts at its final timing; applyDirection re-states the
   // same values through the theme right after - a no-op on the running
   // animation.
-  const exitMs = durationFor(exitDistance);
+  const exitMs = exitDuration(exitDistance);
   root().style.setProperty("--ps-drop-dur", `${exitMs}ms`);
   root().style.setProperty("--ps-minimize", `${exitMs}ms`);
   const removalMs = exitMs + REMOVAL_MARGIN_MS;
@@ -237,7 +253,7 @@ function leaveGhost(): SlideScale {
   // the new page's (the route has not rendered yet); both durations
   // derive from the same speed.
   return {
-    arrivalMs: durationFor(rect.height + window.innerHeight),
+    arrivalMs: arrivalDuration(rect.height + window.innerHeight),
     exitMs,
   };
 }
@@ -364,11 +380,11 @@ export function enablePageSlide(): void {
   // navigation uses.
   const bootMain = document.querySelector("main");
   const bootScale: SlideScale = {
-    arrivalMs: durationFor(
+    arrivalMs: arrivalDuration(
       (bootMain?.getBoundingClientRect().height ?? window.innerHeight) +
         window.innerHeight,
     ),
-    exitMs: durationFor(window.innerHeight * 1.1),
+    exitMs: exitDuration(window.innerHeight * 1.1),
   };
   applyDirection(linkedWindowTarget ? "parked" : "down", bootScale);
   if (linkedWindowTarget) {

@@ -25,8 +25,10 @@ html.theme-page-slide .page-slide-ghost {
   overflow: hidden;
   pointer-events: none;
   /* Drops IN STEP with the fold (--ps-drop-delay is zero): the page
-     squeezes while it moves down, one motion, not fold-then-jump. */
-  animation: page-slide-drop var(--ps-drop-dur) linear var(--ps-drop-delay)
+     squeezes while it moves down, one motion, not fold-then-jump.
+     Ease-in: the page falls with gravity, like the windows - the whole
+     exit is one XP minimise applied to the page itself. */
+  animation: page-slide-drop var(--ps-drop-dur) ease-in var(--ps-drop-delay)
     forwards;
 }
 
@@ -75,15 +77,14 @@ html.theme-page-slide[data-page-slide] main:not(.page-slide-ghost) > .page {
    out FROM ITS CURRENT POSITION, carried by the whole-page drop - the
    old fold translated each window down to the taskbar line, which read
    as a teleport below the arriving page's windows. Contents ride the
-   squash, as in XP itself. */
+   squash, as in XP itself. The fall is EASE-IN throughout - gravity,
+   not a metronome: XP's minimize accelerates as the outline collapses. */
 html.theme-page-slide .page-slide-ghost .page > .window,
 html.theme-page-slide .page-slide-ghost .page > .maximized-shell > .window,
 html.theme-page-slide .page-slide-ghost > .window,
 html.theme-page-slide .page-slide-ghost > .maximized-shell > .window {
   transform-origin: bottom center;
-  /* Linear, per preference: the top edge falls at a constant rate for
-     the entire exit, in step with the page drop. */
-  animation: page-slide-fold var(--ps-minimize, 98ms) linear forwards;
+  animation: page-slide-fold var(--ps-minimize, 98ms) ease-in forwards;
 }
 
 /* Fallback look for the swapped-out iframes (music embeds etc.) - the
@@ -154,7 +155,7 @@ html.theme-page-slide .page-slide-ghost .page-slide-placeholder-frame {
 html.theme-page-slide .window.window-minimize {
   z-index: 4001;
   transform-origin: bottom center;
-  animation: window-minimize-exit var(--ps-minimize, 98ms) linear forwards !important;
+  animation: window-minimize-exit var(--ps-minimize, 98ms) ease-in forwards !important;
 }
 
 @keyframes window-minimize-exit {
