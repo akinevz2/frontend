@@ -389,14 +389,14 @@ export function Window({ node }: { node: WindowNode }) {
               // hover-keyed rule - see the css note. Losing the hover
               // mid-run never unmatches the trigger, so the cursor
               // roaming across the window never restarts the wobble
-              // before it finishes - only LEAVING the window (the
-              // document-capture arming below) re-arms a fresh one.
-              if (
-                el.hasAttribute("data-wobbled") ||
-                el.hasAttribute("data-wobble-playing")
-              ) {
+              // before it finishes. LEAVING the window and entering
+              // again is a fresh visit: data-wobbled (the finished
+              // marker, set on animationend or on outside contact) is
+              // cleared on every re-entry, so the next touch replays.
+              if (el.hasAttribute("data-wobble-playing")) {
                 return;
               }
+              el.removeAttribute("data-wobbled");
               el.setAttribute("data-wobble-playing", "");
             }
           : undefined

@@ -123,18 +123,21 @@
   }
 }
 
-/* The WOBBLE identifies an experimental window, ONCE per visit. The
-   trigger keys off data-wobble-playing (set by the FIRST body
-   pointer-contact in Window.tsx), NOT :hover: a hover-keyed rule
+/* The WOBBLE identifies an experimental window, ONCE per cursor
+   visit. The trigger keys off data-wobble-playing (set by the FIRST
+   pointer contact with anywhere on the window - title bar, controls,
+   frame, body - in Window.tsx), NOT :hover: a hover-keyed rule
    unmatches the moment the pointer leaves, and the browser cancels an
    animation whose rule stopped matching mid-flight. The marker keeps
    the rule matched for the whole run - the bob ALWAYS finishes, an
    accidental swipe over the element never snips it short, and it never
-   restarts. data-wobbled (armed on the root's animationend, or on
-   outside pointer contact) saturates the once-per-visit state;
-   MINIMIZING removes both attributes and re-arms a fresh visit. Arms
-   on the root: mouse-touch outside the window (document-level
-   pointerenter in Window.tsx), without interrupting a running run.
+   restarts. data-wobbled (the finished marker, armed on the root's
+   animationend or on outside pointer contact) saturates the
+   once-per-CURSOR-VISIT state: the Window.tsx root handler clears it
+   on every fresh re-entry, so the wobble replays after the mouse has
+   left the window and re-touches it - and never restarts while the
+   cursor roams inside (no new pointerenter fires on the root, and a
+   play-in-progress is guarded too).
 
    The bob targets the WINDOW ROOT - frame, background, title bar, body
    and the OK buttons together, one paint. NO paired counter-animation
