@@ -2,14 +2,13 @@ import type { WindowNode } from "./model";
 import { hasTheme } from "./model";
 import type { SignalManifest } from "@/lib/signals";
 
-/** TEMP STUB: the "experimental" theme is switched off — its wobble and
- * flash animations are noise while the OK/maximize choreography is being
- * reworked. Filtering it here disables every effect at once (all CSS keys
- * on [data-theme~="experimental"] and nothing in TS reads the theme)
- * without touching content files or stylesheets. Restore by deleting the
- * filter. */
+/** The themes a WindowNode carries, rendered onto its data-theme
+ * attribute. The temporary experimental filter is GONE (2026-11): the
+ * wobble css is now scoped to the window BODY (the title bar never
+ * moves) and guarded against the maximized portal DOM - see the
+ * Experimental block in window.css. */
 export const dataTheme = (node: WindowNode): string | undefined => {
-  const themes = node.themes.filter((theme) => theme !== "experimental");
+  const themes = node.themes;
   return themes.length ? themes.join(" ") : undefined;
 };
 

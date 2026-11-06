@@ -123,32 +123,48 @@
   }
 }
 
-/* The WOBBLE is back on the window itself: an experimental section bobs
-   gently on hover/focus in the page (a11y + character); the window root
-   stays untouched when lifted (nothing retriggers in the fullscreen
-   view) — see the descendant suppression right below. */
-.window[data-theme~="experimental"]:not(.maximized):hover,
-.window[data-theme~="experimental"]:not(.maximized):focus-within {
+/* The WOBBLE identifies an experimental window by hovering its BODY:
+   the bob lives on .window-body, so the TITLE BAR never moves - the
+   menu buttons stay stable under the cursor (a wobbling maximize
+   button was the defect). It plays only in the default DOM: the
+   :not(.maximized) root guard keeps the fullscreen view flat, the
+   maximized-window-body class MaximizedWindow adds inside the portal
+   DOM is belt-and-braces flat, and the suppression below keeps inline
+   experimental children under a maximized ancestor flat too. */
+.window[data-theme~="experimental"]:not(.maximized) .window-body:hover,
+.window[data-theme~="experimental"]:not(.maximized) .window-body:focus-within {
   animation: theme-experimental-wobble 0.6s ease-in-out;
 }
 
-/* The :not(.maximized) guard above only covers the lifted ROOT window.
-   Maximizing force-expands the whole subtree (MaximizedWindow patches
-   every descendant expanded), so inline experimental child windows
-   inside the fullscreen view still match hover/focus and bob with a
-   translateY animation inside the fixed overlay's overflow-y scroll
-   surface — breaking its scroll positioning. Suppress them: the page
-   wobble is a page-context effect only. */
-.window.maximized .window[data-theme~="experimental"]:hover,
-.window.maximized .window[data-theme~="experimental"]:focus-within {
+/* Only the DEEPEST hovered window bobs: the hover chain matches
+   ancestors too, so an experimental ancestor whose body contains the
+   hovered experimental child body holds still instead of bobbing in
+   double. */
+.window[data-theme~="experimental"]:not(.maximized)
+  .window-body:has(.window-body:hover) {
+  animation: none;
+}
+
+/* Maximised stability: inside the fullscreen view no experimental body
+   bobs - neither the lifted window's own body (its maximized-window-body
+   class, portal DOM or in-tree) nor inline experimental children under
+   a .window.maximized ancestor (Maximizing force-expands the whole
+   subtree; an animated child used to break the overlay's scroll). */
+.window .window-body.maximized-window-body {
+  animation: none;
+}
+.window.maximized .window[data-theme~="experimental"] .window-body:hover,
+.window.maximized
+  .window[data-theme~="experimental"]
+  .window-body:focus-within {
   animation: none;
 }
 
 /* Respect reduced-motion: no glow, no wobble. */
 @media (prefers-reduced-motion: reduce) {
   .window.maximized[data-theme~="experimental"] .title-bar-text,
-  .window[data-theme~="experimental"]:not(.maximized):hover,
-  .window[data-theme~="experimental"]:not(.maximized):focus-within {
+  .window[data-theme~="experimental"]:not(.maximized) .window-body:hover,
+  .window[data-theme~="experimental"]:not(.maximized) .window-body:focus-within {
     animation: none;
   }
 }
