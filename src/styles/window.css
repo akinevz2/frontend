@@ -170,10 +170,12 @@
   animation: none;
 }
 
-/* Respect reduced-motion: no glow, no wobble. */
+/* Respect reduced-motion ONLY for the maximized rail's entry glow. The
+   wobble itself plays regardless (the slide theme's doctrine here:
+   b82cda8 - this environment reports reduced-motion while the user
+   actively wants the site's own motion). */
 @media (prefers-reduced-motion: reduce) {
-  .window.maximized[data-theme~="experimental"] .title-bar-text,
-  .window[data-theme~="experimental"]:not(.maximized)[data-wobble-playing] {
+  .window.maximized[data-theme~="experimental"] .title-bar-text {
     animation: none;
   }
 }
