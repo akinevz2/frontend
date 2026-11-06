@@ -53,7 +53,12 @@ export function OkButton({ node }: { node: WindowNode }) {
       window.location.assign(link);
     } else {
       // Internal navigation is a signal: the shell's handler performs
-      // the route change, so the window system stays router-free.
+      // the route change, so the window system stays router-free. The
+      // bookmark rides FIRST — the router's push below makes the
+      // DESTINATION entry current, and only the leaving entry can take
+      // the section's bookmark (the same contract the external branch
+      // and the capture-phase link listener run on).
+      remember(node.id);
       dispatch("app:navigate", { to: link });
     }
   };
