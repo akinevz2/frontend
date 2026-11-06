@@ -6,14 +6,37 @@
   "content": {
     "heading": "herbctl - the keybind imperatives, as a native binary",
     "content": [
-      "**herbctl** owns what the keybinds used to express as inline **herbstluftwm** chains: one verb per mod-binding, each issuing the exact hlwm chains the binding expresses, token for token - compiled to a standalone binary with bunli, so the keybinds spawn binaries, not scripts.",
+      "**herbctl** owns what the keybinds of **herbstluftwm** express as spawn chains: one verb per mod-binding, each issuing the exact hlwm chains the binding expresses, token for token - compiled to a standalone binary with bunli, so the keybinds spawn binaries, not scripts.",
       "",
-      "stable: herbctl 0.2.0 (the registry track). the verbs are named by what they do: split-right-cycle, shift-up, minimize-toggle - no whimsy (the original whimsical names were retired 2026-10; only the historical get-south/get-forward/get-deck/get-dedeck quartet keeps its name).",
+      "the verbs are named by what they do: split-right-cycle, shift-up, minimize-toggle.",
       "[https://github.com/akinevz2/herbctl](https://github.com/akinevz2/herbctl)",
       {
-        "heading": "the verbs",
+        "heading": "the chains a keybind spawns",
         "content": [
-          "25 verbs, one per keybind. each verb gets its own section below."
+          "an hlwm keybind is a spawn command: the compositor runs one shell line on every key press. the dots bindings chain several herbstclient calls into that line - focus moves, frame splits, layout rotations - held under the hlwm lock so no other client interleaves.",
+          "",
+          "the composite bindings (the float registers especially) outgrew the one-line form: whole state machines, branched on the frame tree, the floating layer and the layout algorithm. that is what herbctl compiles - the autostart spawns ~/.local/bin/herbctl <verb>, and the dots keybind stays a one-word spawn."
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "the package, architecturally",
+        "content": [
+          "one **bunli** binary, 25 verbs, one per keybind. each verb is a function that emits the exact herbstclient argv the binding expresses - nothing is re-derived at runtime.",
+          "",
+          "it imports **herbstutil** for its pure primitives only - parseAttr, the typed attribute reader. it does not (and must not) import herbstutil's command functions: the composite keybind commands live here, and herbstutil ships none of them.",
+          "",
+          "every spawn (herbstclient and the dots helper binaries) carries the 5-second timeout inherited from herbstutil's spawn layer: a vanished window resolves null instead of wedging the bar or the keybind.",
+          "",
+          "every command is verified against the recorded argv of a mocked herbstclient binary (plus mocked helper binaries) - bun test covers all 25 commands; nothing here needs a live WM to test."
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "usage - the verbs",
+        "status": "v1.2.1",
+        "content": [
+          "the dots keybinds spawn the compiled standalone binary at ~/.local/bin/herbctl; **on-deploy**'s toolchain step builds and installs it on deploy. each verb gets its own section below."
         ],
         "theme": "open"
       },
@@ -147,10 +170,10 @@
       },
       {
         "heading": "the float-register state machines",
-        "theme": "open",
         "content": [
           "three bindings carry whole register machines, ported branch for branch:"
-        ]
+        ],
+        "theme": "open"
       },
       {
         "heading": "float-focus",
@@ -171,40 +194,36 @@
         ]
       },
       {
-        "heading": "the herbstutil dependency",
+        "heading": "stable in v1.2.x",
+        "status": "v1.2.1",
         "content": [
-          "**herbctl** imports **herbstutil** for its pure primitives only - parseAttr, the typed attribute reader.",
-          "",
-          "herbctl does not (and must not) import herbstutil's command functions: the composite keybind commands live here, and herbstutil ships none of them."
-        ]
-      },
-      {
-        "heading": "fail-soft, and pinned by tests",
-        "content": [
-          "every spawn (herbstclient and the dots helper binaries) carries the 5-second timeout inherited from herbstutil's spawn layer: a vanished window resolves null instead of wedging the bar or the keybind.",
-          "",
-          "every command is verified against the recorded argv of a mocked herbstclient binary (plus mocked helper binaries) - bun test covers all 25 commands; nothing here needs a live WM to test.",
-          "",
-          "the dots keybinds spawn the compiled standalone binary at ~/.local/bin/herbctl (built with bunli); the dots deployment toolchain (**on-deploy**) ensures the binary is built and installed."
-        ]
+          "the verb names are the shipped surface: plain, functional names - split-right-cycle, shift-up, minimize-toggle - one per keybind, all 25 covered by the mocked-herbstclient suite.",
+          "the binary is standalone: built with bunli, spawned by the dots keybinds at ~/.local/bin/herbctl, built and installed by on-deploy's toolchain step.",
+          "the registry track publishes on npm: herbctl 1.2.1."
+        ],
+        "theme": "open"
       },
       {
         "heading": "links",
         "content": [
           {
             "heading": "github repository",
+            "content": "v1.2.1",
             "link": "https://github.com/akinevz2/herbctl"
           },
           {
             "heading": "herbstutil - the primitives underneath",
+            "content": "targets herbstutil ^0.3.0",
             "link": "https://github.com/akinevz2/herbstutil"
           },
           {
             "heading": "doftiles - the keybinds that spawn it",
+            "content": "v1.0.0",
             "link": "/projects/doftiles"
           },
           {
             "heading": "polyframes - the sibling binary",
+            "content": "v2.2.0",
             "link": "/projects/polyframes"
           }
         ],

@@ -6,58 +6,62 @@
   "content": {
     "heading": "polyframes - the polybar window-list renderer, as a native binary",
     "content": [
-      "**polyframes** renders **herbstluftwm**'s window state as the polybar center module: one label per (frame, window-class) group, decorated by state (focused gold underline, floating, minimized dimmed), with click/scroll actions that re-exec the binary itself.",
+      "**polyframes** renders **herbstluftwm**'s window state as the **polybar** center module: one label per (frame, window-class) group, decorated by state (focused gold underline, floating, minimized dimmed), with click/scroll actions that re-exec the binary itself.",
       "",
       "built with bun and bunli, compiled to a standalone executable - so it runs wherever the bar runs: no node, no nvm PATH, no shim.",
       "[https://github.com/akinevz2/polyframes](https://github.com/akinevz2/polyframes)",
       {
-        "heading": "the bar daemon",
+        "heading": "the bar contract it fills",
         "content": [
-          "a bare invocation is polybar's contract: print one bar line, then keep it fresh - a `herbstclient --idle` hook listener for instant focus/tag/title updates, plus a 1s layout poll that hashes `herbstclient dump` (frame splits and removals emit no hook in hlwm 0.9.5).",
-          "**polyframes** bar prints a single line and exits - the same pure renderer, scriptable."
-        ],
-        "theme": "open"
-      },
-      {
-        "heading": "grouping model",
-        "content": [
-          "clients on the focused tag arrive in WM order, enriched per window: class, title, minimized, floating, and its parent frame's flat index (`-1` when the root is unsplit).",
-          "group keys: `minflt|wid` and `unframed|wid` are solo labels; `frame|frame|class` groups same-class windows sharing a frame. a group's representative is the frame's selected client - but only when it belongs to the group's class, so a mixed-class frame never leaks another group's title.",
-          "render order keeps WM order, pushes minimized labels last, truncates to `char_limit` with an ellipsis, folds forbidden classes (the bar itself), and emits a `+N` overflow marker past `max_windows`."
-        ],
-        "theme": "open"
-      },
-      {
-        "heading": "the keybind registers live in doftiles",
-        "content": [
-          "the float-register state machines (mod-f / mod-x / mod-ctrl-f: float-focus, float-yank, zoom) live in **herbctl** - the keybinds spawn those herbctl verbs; they are documented in the [**herbctl** project](/projects/herbctl).",
+          "a polybar module owns its slot of the bar: print one formatted line, then keep it fresh. polyframes fills that contract twice over - as a daemon (a `herbstclient --idle` hook listener for instant focus/tag/title updates) and as a one-shot (`polyframes bar` prints a single line and exits - the same pure renderer, scriptable).",
           "",
-          "the polyframes side of the same bindings is the frame surgery: tile/center/resize/fit re-executed in the bar's click actions."
+          "the freshness race has one hole: hlwm 0.9.5 emits no hook for frame splits and removals - a 1s layout poll that hashes `herbstclient dump` covers those."
         ],
         "theme": "open"
       },
       {
-        "heading": "the helper suite, migrated in",
+        "heading": "the package, architecturally",
         "content": [
-          "the dotfiles' herbst helpers moved in as subcommands, so one binary manages them all:",
+          "a pure renderer (window state in, one bar line out) under a command layer that manages the dotfiles' whole herbst helper suite as subcommands - one binary, no loose scripts.",
+          "",
+          "clients on the focused tag arrive in WM order, enriched per window: class, title, minimized, floating, and its parent frame's flat index (`-1` when the root is unsplit). group keys: `minflt|wid` and `unframed|wid` are solo labels; `frame|frame|class` groups same-class windows sharing a frame.",
+          "",
+          "two sibling libraries ride along at build time: **herbstutil** (parseAttr for every WM read - typed JSON in one round trip) and **herbctl** (the imperatives the scroll/click actions run: float+center, minimize-keep-frame, empty-frame removal). both resolve as sibling submodules in the doftiles depends/ layout and from the npm/GitHub registries everywhere else."
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "usage - the subcommands",
+        "content": [
           "`tags`, `hidden`, `windows`, `launch` - the rofi menus (script-mode protocol, NUL-separated rows, per-row icons and states)",
           "`switcher-menu`, `window-menu` - detached menu targets the click actions spawn",
           "`tile` - closest-empty-frame navigation or split (the frame-tree surgery)",
           "`center` - decoration-aware centering (`--wid` targets a specific window's own frame)",
           "`resize` - delta nudges, frame/root deco-flush fills, explicit content rects",
           "`fit` - constraint pass: shrink oversized, nudge off-screen (monitor or frame target)",
-          "`spawn` - one-shot `herbstclient rule once` spawns with typed flags (`--class`/`--float`/`--center`/`--tag`)"
+          "`spawn` - one-shot `herbstclient rule once` spawns with typed flags (`--class`/`--float`/`--center`/`--tag`)",
+          "`bar` - the one-shot renderer line"
         ],
         "theme": "open"
       },
       {
-        "heading": "herbstutil + herbctl inside",
+        "heading": "quirks",
         "content": [
-          "two sibling libraries ride along at build time:",
-          "**herbstutil** - parseAttr for every WM read: typed JSON out of hlwm's attr output, one round trip instead of a per-client attribute walk.",
-          "**herbctl** - the imperatives the scroll/click actions run: float+center, minimize-keep-frame, empty-frame removal - the keybind state machines as importable functions.",
+          "a group's representative is the frame's selected client - but only when it belongs to the group's class, so a mixed-class frame never leaks another group's title.",
           "",
-          "both resolve as sibling submodules in the doftiles depends/ layout and from the npm/GitHub registries everywhere else."
+          "render order keeps WM order, pushes minimized labels last, truncates to `char_limit` with an ellipsis, folds forbidden classes (the bar itself), and emits a `+N` overflow marker past `max_windows`.",
+          "",
+          "the float-register state machines (mod-f / mod-x / mod-ctrl-f: float-focus, float-yank, zoom) live in **herbctl** - documented in the [**herbctl** project](/projects/herbctl); the polyframes side of the same bindings is the frame surgery: tile/center/resize/fit re-executed in the bar's click actions."
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "stable in v2.x",
+        "status": "v2.2.0",
+        "content": [
+          "the releases page ships a standalone linux-x64 (glibc) binary - no toolchain, no runtime deps:",
+          "```sh\ncurl -fL https://github.com/akinevz2/polyframes/releases/latest/download/polyframes-linux-x64 -o ~/.local/bin/polyframes\nchmod +x ~/.local/bin/polyframes\n```",
+          "the deps resolve through the herbstutil/herbctl split; the help text is terse one-liners that fit polybar's narrow world."
         ],
         "theme": "open"
       },
@@ -66,18 +70,22 @@
         "content": [
           {
             "heading": "github repository",
+            "content": "v2.2.0",
             "link": "https://github.com/akinevz2/polyframes"
           },
           {
             "heading": "doftiles - the dotfiles it ships from",
+            "content": "v1.0.0",
             "link": "https://github.com/akinevz2/doftiles"
           },
           {
             "heading": "herbctl - the keybind imperatives",
+            "content": "targets herbctl (github main, unpinned)",
             "link": "/projects/herbctl"
           },
           {
             "heading": "herbstutil - the JSON bridge",
+            "content": "targets herbstutil ^0.3.1",
             "link": "/projects/herbstutil"
           }
         ],

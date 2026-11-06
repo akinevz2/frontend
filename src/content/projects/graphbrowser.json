@@ -9,11 +9,36 @@
       "**graphbrowser** describes a website's external dependency graph one layer at a time, as structured markdown with hyperlinks for navigating between graph nodes.",
       "[https://github.com/akinevz2/graphbrowser](https://github.com/akinevz2/graphbrowser)",
       {
-        "heading": "the pagerts counterpart, as a GUI",
+        "heading": "the graph a page exposes",
         "content": [
-          "a way to visualise page dependencies without having to view the page content: the set of navigable items of a webpage, linking from page to page across the web.",
+          "every webpage names its dependencies - the navigable items a reader can move to. one layer of that graph is the page's own set of links; the next layer lives one hop away.",
           "",
-          "**graphbrowser** is the GUI counterpart of [**pagerts**](/projects/pagerts), built with Quarkus and web technologies - the same dependency list pagerts parses with JSDOM into `title`, `url` and `resources`."
+          "**graphbrowser** renders that walk as a GUI: page dependencies visualised without having to view the page content, node by node, link by link.",
+          "",
+          "it is the GUI counterpart of [**pagerts**](/projects/pagerts), built with Quarkus and web technologies - the same dependency list pagerts parses with JSDOM into `title`, `url` and `resources`."
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "the package, architecturally",
+        "content": [
+          "a Quarkus application whose UI renders each graph node as structured markdown; every node's outbound links are the hyperlinks to the next nodes - the traversal IS the document."
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "links",
+        "content": [
+          {
+            "heading": "github repository",
+            "content": "no tagged release yet",
+            "link": "https://github.com/akinevz2/graphbrowser"
+          },
+          {
+            "heading": "pagerts - the CLI counterpart",
+            "content": "v2.0.5",
+            "link": "/projects/pagerts"
+          }
         ],
         "theme": "open"
       }

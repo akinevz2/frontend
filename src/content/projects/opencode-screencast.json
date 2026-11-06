@@ -9,31 +9,73 @@
       "**opencode-screencast** turns an **OpenCode** agent into a screencast performer: it spawns floating narration windows the audience reads while the agent drives **herbstluftwm** live - every hlwm operation logged into the narration feed, every delegated command typed visibly into managed terminals, completion signaled by sentinels instead of window-title guesses.",
       "[https://github.com/akinevz2/opencode-screencast](https://github.com/akinevz2/opencode-screencast)",
       {
-        "heading": "the floating layer, handled honestly",
+        "heading": "the stage it performs on",
         "content": [
-          "the plugin treats floating-vs-tiling occlusion as a layout bug, not cosmetics: disjoin_rects partitions the monitor against every decorated float, the largest unobscured rect becomes the placement slot, and a fit_floating_layer pass walks the whole floating layer into non-overlapping positions - nudging visibly by default, or snapping at once under the hlwm lock.",
+          "three systems host the show: **herbstluftwm** (the floating layer is the stage floor - every narration and delegation window lives there), **dunst** (the audience's channel - whispers replace themselves in a stable slot or carry click actions), and **OpenCode** (the performer - a plugin host whose tool calls drive hlwm over herbstclient).",
           "",
-          "a single misplaced tile gets frame surgery instead: the split runs along the floating window's decorated edge so the covered tiled window lands on the free side."
+          "the floating layer is finite screen space shared with the user's own floats - occlusion is a layout bug, not cosmetics."
         ],
         "theme": "open"
       },
       {
-        "heading": "the audience is an actor",
+        "heading": "the package, architecturally",
         "content": [
-          "whispers (dunst notifications) can replace themselves in a stable slot, or carry a click action that yoinks the user back to the orchestrating window - the click fires a detached handler through herbstclient, no blocked tooling.",
+          "an OpenCode plugin (hook-based tool integration) over a geometry toolkit and a typed scenario layer.",
           "",
-          "the stranded roll-call audits the backstage windows (orchestrator, narration) for wrong tags, minimization, or drifting off-screen, and the guarded close refuses to ever terminate the conversation window: its winid churns when reopened, so identity comes from capture-at-start, verified at every assert."
-        ]
+          "the geometry toolkit partitions the monitor with disjoin_rects against every decorated float: the largest unobscured rect becomes the placement slot, and a fit_floating_layer pass walks the whole floating layer into non-overlapping positions - nudging visibly by default, or snapping at once under the hlwm lock.",
+          "",
+          "a single misplaced tile gets frame surgery instead: the split runs along the floating window's decorated edge so the covered tiled window lands on the free side.",
+          "",
+          "the scenario layer authors presentations as typed OOP: branded winids and tag names, a Camera that carries the performance with it, managed Clients, and Scenes that record every action with millisecond offsets - saved as replayable .scenario.json files."
+        ],
+        "theme": "open"
       },
       {
-        "heading": "scenarios: typed, replayable, checked",
+        "heading": "usage - the scenario surface",
         "content": [
-          "the scenario layer authors presentations as typed OOP: branded winids and tag names, a Camera that carries the performance with it, managed Clients, and Scenes that record every action with millisecond offsets - saved as replayable .scenario.json files.",
-          "",
           "the User surface reads like a test framework: expect, await, recover, awaitClick - predicates over hlwm observables (focus, floating state, rects, command exit codes, current tag) with recovery strategies instead of blind sleeps.",
           "",
+          "scenes record as they run; the saved .scenario.json replays the performance step for step.",
+          "",
           "a backprop-style checker walks each scene's action stream against simulated state and flags the churn that reads as screen flashes: duplicated camera moves, yo-yo focus, undone moves, float oscillation."
-        ]
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "quirks",
+        "content": [
+          "the conversation window's winid churns when reopened - identity comes from capture-at-start, verified at every assert; the guarded close refuses to ever terminate it.",
+          "",
+          "whisper click actions fire detached handlers through herbstclient - no blocked tooling.",
+          "",
+          "the stranded roll-call audits the backstage windows (orchestrator, narration) for wrong tags, minimization, or drifting off-screen."
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "stable so far - v0.1.x",
+        "status": "v0.1.0",
+        "content": [
+          "sentinel-based completion (no window-title guesses), capture-at-start window identity, and the disjoin_rects placement slot are the stable floor of the plugin.",
+          "the scenario layer's recording format (.scenario.json) is the replayable surface."
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "links",
+        "content": [
+          {
+            "heading": "github repository",
+            "content": "0.1.0 (no tags yet)",
+            "link": "https://github.com/akinevz2/opencode-screencast"
+          },
+          {
+            "heading": "doftiles - the agents package that ships it",
+            "content": "v1.0.0",
+            "link": "/projects/doftiles"
+          }
+        ],
+        "theme": "open"
       }
     ]
   }

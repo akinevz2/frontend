@@ -9,10 +9,52 @@
       "**lightdni** (Doesn't Need Integration) provides a simple declarative API for adding a theme toggle to your website.",
       "[https://github.com/akinevz2/lightdni-jssas-toggle](https://github.com/akinevz2/lightdni-jssas-toggle)",
       {
-        "heading": "what it does",
+        "heading": "how a website wears its theme",
         "content": [
-          "a TypeScript utility package for applying and toggling CSS themes: theme classes and attributes on the root element, dynamic CSS variables, localStorage/cookie persistence, and accessibility metadata (`color-scheme`, `aria-live` announcements).",
-          "one consolidated `setTheme` call - dependency-safe, and at home in vanilla JS/TS, React and Vue projects."
+          "a website's theme is conventionally worn on the root element: a class or a data attribute selects the palette, CSS variables carry the colors, and persistence rides localStorage or a cookie. the platform adds the rest - `color-scheme` for the browser's own widgets, `prefers-color-scheme` for the system setting.",
+          "",
+          "every framework re-implements this wiring. **lightdni** is that wiring, once, declaratively - in vanilla JS/TS, React and Vue projects alike."
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "the package, architecturally",
+        "content": [
+          "a TypeScript utility package: one consolidated `setTheme` call that applies theme classes and attributes on the root element, resolves dynamic CSS variables, persists through localStorage/cookie, and maintains the accessibility metadata (`color-scheme`, `aria-live` announcements).",
+          "",
+          "dependency-safe - no framework runtime, no peer installs."
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "quirks",
+        "content": [
+          "the persisted theme name is read back defensively - a stored value that names no known theme resolves to the default, not to a broken palette."
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "stable in v1.x",
+        "status": "v1.1.1",
+        "content": [
+          "the one-call `setTheme` API is the stable surface; the persisted-theme reader is back with tests.",
+          "published on npm: lightdni-jssas-toggle 1.1.1."
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "links",
+        "content": [
+          {
+            "heading": "github repository",
+            "content": "v1.1.1",
+            "link": "https://github.com/akinevz2/lightdni-jssas-toggle"
+          },
+          {
+            "heading": "npm package",
+            "content": "1.1.1",
+            "link": "https://www.npmjs.com/package/lightdni-jssas-toggle"
+          }
         ],
         "theme": "open"
       }

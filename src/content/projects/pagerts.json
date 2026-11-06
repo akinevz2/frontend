@@ -9,38 +9,60 @@
       "**pagerts** fetches a URL (or reads a local HTML file) and prints every external resource it references - links, meta tags, scripts, styles - as JSON.",
       "[https://github.com/akinevz2/pagerts](https://github.com/akinevz2/pagerts)",
       {
-        "heading": "what it parses",
+        "heading": "what a webpage offers up",
         "content": [
-          "**pagerts** fetches web pages, parses their HTML, and reports each page's title, URL, and external resources - inspecting the common resource-bearing tags, or scanning every element for selected link properties.",
+          "an HTML document advertises its dependencies in predictable places: the `<script src>` and `<link href>` heads, `<img src>` and `<a href>` bodies, meta tags with content URLs. a page fetches, the DOM tree materializes, and every resource-bearing tag is a candidate.",
+          "",
+          "**pagerts** parses with JSDOM and inspects either the common resource-bearing tags or every element for selected link properties - the same dependency list [**graphbrowser**](/projects/graphbrowser) renders as a navigable graph."
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "the package, architecturally",
+        "content": [
+          "a commander/extra-typings CLI over a JSDOM parser. the build splits the executable entry (bin/main.js) from the library API (bin/lib.js) - tests import `run`, `runAll` and `printDryRun` without executing the CLI.",
           "",
           "requires Node.js 20 or later; installs globally with `npm install --global pagerts`."
         ],
         "theme": "open"
       },
       {
-        "heading": "quick start",
+        "heading": "usage",
         "content": [
-          "```sh\n$ npm install --global pagerts\n$ pagerts https://example.com\n```"
-        ],
-        "theme": "open"
-      },
-      {
-        "heading": "what you get",
-        "content": [
-          "output is a JSON array with one entry per input URL: a `title`, the `url`, and a `resources` array of `tag` / `key` / `value` / `link` objects.",
-          "a page that fails to load still gets an entry: `{\"error\": \"Failed to load <url>: <reason>\"}`.",
-          "add `--no-json` for the same report as a human-readable log."
-        ],
-        "theme": "open"
-      },
-      {
-        "heading": "useful options",
-        "content": [
+          "```sh\n$ npm install --global pagerts\n$ pagerts https://example.com\n```",
           "**pagerts** all <urls...> - scan every element instead of the default tags",
-          "`pagerts --dry-run <urls...>` - preview the effective settings without fetching",
-          "`pagerts --tags a,img` - restrict extraction to specific tags",
-          "`pagerts -p data-href` - add link properties to search",
-          "`pagerts --timeout 5000` - abort fetches that take longer than 5s"
+          "**pagerts** --dry-run <urls...> - preview the effective settings without fetching",
+          "**pagerts** --tags a,img - restrict extraction to specific tags",
+          "**pagerts** -p data-href - add link properties to search",
+          "**pagerts** --timeout 5000 - abort fetches that take longer than 5s",
+          "**pagerts** --no-json - the same report as a human-readable log"
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "quirks",
+        "content": [
+          "a page that fails to load still gets an entry: `{\"error\": \"Failed to load <url>: <reason>\"}` - verbose on both channels, URL and reason included.",
+          "",
+          "the default is no timeout - pass `--timeout <ms>` to abort slow fetches; the CLI exits promptly after printing either way (a timed-out fetch leaves no pending socket hanging)."
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "stable in v2.x",
+        "status": "v2.0.5",
+        "content": [
+          "`--timeout <ms>` aborts each network fetch after the given number of milliseconds.",
+          "failures are verbose entries, not silent gaps - JSON and human-readable modes agree on the shape.",
+          "the CLI exits promptly after printing output; npm pack ships only the current build.",
+          "JSON is the default output; `--no-json` flips to the log form."
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "examples",
+        "content": [
+          "output is a JSON array with one entry per input URL: a `title`, the `url`, and a `resources` array of `tag` / `key` / `value` / `link` objects."
         ],
         "theme": "open"
       },
@@ -49,14 +71,17 @@
         "content": [
           {
             "heading": "npm package",
+            "content": "2.0.5",
             "link": "https://www.npmjs.com/package/pagerts"
           },
           {
             "heading": "github repository",
+            "content": "v2.0.5",
             "link": "https://github.com/akinevz2/pagerts"
           },
           {
             "heading": "changelog",
+            "content": "through v2.0.5",
             "link": "https://github.com/akinevz2/pagerts/blob/main/CHANGELOG.md"
           }
         ],

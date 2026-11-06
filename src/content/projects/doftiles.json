@@ -14,6 +14,17 @@
       "",
       "[https://github.com/akinevz2/doftiles](https://github.com/akinevz2/doftiles)",
       {
+        "heading": "the system it moves into",
+        "content": [
+          "the session stack is **herbstluftwm** as a systemd user unit, a compositor and a notification daemon beside it - all user units, no display manager required.",
+          "",
+          "every package is a stow tree: GNU stow symlinks the package's tree over $HOME, restowing replaces the links, and the remembered stowed set (in ~/.local/state/doftiles/stowed) is machine-local - hosts differ.",
+          "",
+          "the WSL2 host is a first-class target: herbst.service waits for the Windows-side VcXsrv X server to be reachable."
+        ],
+        "theme": "open"
+      },
+      {
         "heading": "the packages",
         "content": [
           "**herbstluftwm** - the window manager stack: the autostart (the WM bootstrap + keybinds), the theme (theme, theme.d/titles.theme, reload_theme, winbarctl), the float machinery + focus helpers (hc_focus, hc_floatx, hc_zoom, the maximize family, the hc_center/hc_resize/hc_tile/hc_fit_to shims, hc_bounce, hc_peek, hc_full_focus), the generic hc_* and hlwm_* tools, and all systemd user units (herbst, compton, dunst, hc_send-error-daemon, xvfb, x11vnc, novnc).",
@@ -30,26 +41,11 @@
       {
         "heading": "how deployment works",
         "content": [
-          "every top-level directory with .config/.local content is a stow package; each package target stows it, records it as remembered (in ~/.local/state/doftiles/stowed - machine-local, the stowed set differs per host), and runs its post-stow hook.",
-          "",
-          "hooks needing a running WM are guarded and no-op with a note on headless targets.",
+          "each package target stows it, records it as remembered, and runs its post-stow hook.",
           "`make deploy` - selective deployment: an interactive run first walks the deploy.profile tui (distro target, session model, features, units, env) and provisions before any package is stowed; then a whiptail checklist picks the packages. `P=\"a b\"` is the fine-grained non-interactive form; `PROFILE=skip` bypasses the profile tui.",
           "`make install` - the single-run chain: configure (the wizard opens only on a clean install, required-file changes or doftiles.conf modifications), preserve (conflict-safe restow), packages install, status.",
           "`make update` - the pinned-only pull (recorded submodule pins, no --remote) plus an unconditional on-deploy rebuild; no installs - `make update install` runs the install step exactly once.",
-          "bare `make` - restow exactly the remembered subset.",
-          "",
-          "the service units needing X stay enabled-but-failed until X exists; the WSL2 host's herbst.service waits for the Windows-side VcXsrv X server to be reachable."
-        ],
-        "theme": "open"
-      },
-      {
-        "heading": "the float registers are herbctl verbs",
-        "content": [
-          "the composite mod-bindings that used to be inline herbstluftwm chains in the autostart (or dots helper scripts) are **herbctl** verbs now - the autostart spawns the compiled binary: ~/.local/bin/herbctl <verb>.",
-          "",
-          "`mod-f` / float-focus, `mod-x` / float-yank, `mod-ctrl-f` / zoom - the float-register state machines (the hc_focus / hc_floatx / hc_zoom ports), plus the plain functional verbs for every navigation, split, close and toggle binding.",
-          "",
-          "the full verb table lives in the [**herbctl** project](/projects/herbctl); the dots-side helpers it delegates to (hc_center, hc_tile, hc_fit_to and the maximize family) are documented in the [**polyframes** project](/projects/polyframes) - tile/center are polyframes subcommands behind two-line exec shims."
+          "bare `make` - restow exactly the remembered subset."
         ],
         "theme": "open"
       },
@@ -57,7 +53,7 @@
         "heading": "the session model",
         "content": [
           "deploy.profile declares how the graphical session starts:",
-          "**wsl-systemd** - no display manager: hlwm runs as the systemd user unit herbst.service, DISPLAY localhost:0.0, waiting for the Windows-side X server (VcXsrv); the WSL2 host",
+          "**wsl-systemd** - no display manager: hlwm as the systemd user unit herbst.service, DISPLAY localhost:0.0, waiting for the Windows-side X server (VcXsrv)",
           "**greetd** - a display manager owns the console; bare-OS targets",
           "**xinit** - startx runs ~/.xinitrc",
           "**nested** - hlwm inside the Xvfb framebuffer, shared over VNC and browser noVNC - co-installable with a primary one, and the xrdp feature layers RDP onto the same shared framebuffer",
@@ -66,26 +62,64 @@
         ]
       },
       {
+        "heading": "quirks",
+        "content": [
+          "hooks needing a running WM are guarded and no-op with a note on headless targets.",
+          "",
+          "the service units needing X stay enabled-but-failed until X exists - on WSL2 that is the VcXsrv server on the Windows side.",
+          "",
+          "the stowed set is machine-local; a fresh host starts empty and grows by deploy."
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "stable in v1.0.0",
+        "status": "v1.0.0",
+        "content": [
+          "the deployment scope is defined by four manifests (wm.required, stows.required, system.required, services.required) - no per-package code, no hardcoded paths; the manifests decide what gets deployed, the per-package makefiles decide how.",
+          "the display is resolved in exactly one place: check-x-server.service runs first, probes for the display, and exports it to the systemd user manager; every WM-side unit requires it.",
+          "the install step is one chain - configure, preserve, packages install, status - and the wizard opens only on a clean install or when the manifests actually changed.",
+          "`make update` never rebuilds what it does not need to; a fresh submodule pin lands its binary through the unconditional on-deploy rebuild."
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "examples",
+        "content": [
+          "the whole system deploys from one repository with one chain of recipes:",
+          "```sh\ngit clone https://github.com/akinevz2/doftiles ~/dots && cd ~/dots\nmake bootstrap    # the on-deploy binary, submodule checkouts, bun trust\nmake toolchain    # the language toolchains the packages build with\nmake deps         # build and install every submodule artifact\nmake install      # stow the packages, apply the recorded config\n```",
+          "once deployed, updating is two recipes:",
+          "```sh\nmake update          # fetch, fast-forward, materialize the pinned submodules\nmake update install  # ...and run the install step exactly once\n```",
+          "the full walkthrough (profiles, headless runs, the update path) is a separate post: [try it out](/blog/releases/try_it_out)."
+        ],
+        "theme": "open"
+      },
+      {
         "heading": "links",
         "content": [
           {
             "heading": "github repository",
+            "content": "v1.0.0",
             "link": "https://github.com/akinevz2/doftiles"
           },
           {
             "heading": "on-deploy - the orchestrator",
+            "content": "v1.4.2",
             "link": "/projects/on-deploy"
           },
           {
             "heading": "herbctl - the keybind verbs",
+            "content": "v1.2.1",
             "link": "/projects/herbctl"
           },
           {
             "heading": "polyframes - the bar module + rofi menus",
+            "content": "v2.2.0",
             "link": "/projects/polyframes"
           },
           {
             "heading": "herbstutil - the parse/attr layer underneath",
+            "content": "v1.1.0",
             "link": "/projects/herbstutil"
           }
         ]
