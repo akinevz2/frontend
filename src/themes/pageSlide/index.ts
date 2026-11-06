@@ -136,20 +136,11 @@ function leaveGhost(): void {
     }
     el.replaceWith(placeholder);
   });
-  // XP-style minimise: each top-level window folds down onto the taskbar
-  // line — the bottom edge of the page — sucked toward it while shrinking.
-  // The fold distance is measured per window; CSS does the squash.
-  const taskbarLine = window.innerHeight;
-  const topLevel = ".page > .window, .page > .maximized-shell > .window";
-  ghost.querySelectorAll<HTMLElement>(topLevel).forEach((win, i) => {
-    const liveWin = main.querySelectorAll(topLevel)[i];
-    if (!liveWin) return;
-    const dy = Math.max(
-      0,
-      taskbarLine - liveWin.getBoundingClientRect().bottom,
-    );
-    win.style.setProperty("--page-fold-dy", `${Math.round(dy)}px`);
-  });
+  // XP-style minimise: the ghost's windows squash IN PLACE (CSS handles
+  // the scaleY; no per-window fold distance is measured - the old
+  // translateY-to-the-taskbar-line fold teleported top-of-page windows
+  // below the arriving page before sliding out). The whole-page drop
+  // carries every window out from where it sits.
   document.body.appendChild(ghost);
   // Maximized overlays ride INSIDE the ghost now (they are in-tree), so
   // the dimmed layer and the maximized window fold and drop with the

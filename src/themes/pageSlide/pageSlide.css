@@ -69,18 +69,20 @@ html.theme-page-slide[data-page-slide] main:not(.page-slide-ghost) > .page {
   animation: page-slide-pad var(--ps-duration) ease-in-out backwards;
 }
 
-/* XP minimise: every top-level window folds down onto the taskbar line —
-   the bottom edge of the page. The BOTTOM edge stays anchored and the top
-   edge falls to meet it (the outline sucks downward, as in XP), while the
-   whole window is drawn the last stretch toward the measured fold point.
-   Contents ride the squash, as in XP itself. */
+/* XP minimise: every top-level window SQUASHES IN PLACE - the window's
+   own bottom edge stays anchored and the top edge falls to meet it (the
+   outline sucks downward, as in XP). No translation: the window slides
+   out FROM ITS CURRENT POSITION, carried by the whole-page drop - the
+   old fold translated each window down to the taskbar line, which read
+   as a teleport below the arriving page's windows. Contents ride the
+   squash, as in XP itself. */
 html.theme-page-slide .page-slide-ghost .page > .window,
 html.theme-page-slide .page-slide-ghost .page > .maximized-shell > .window,
 html.theme-page-slide .page-slide-ghost > .window,
 html.theme-page-slide .page-slide-ghost > .maximized-shell > .window {
   transform-origin: bottom center;
-  /* Linear, per preference: the top edge falls towards the taskbar line
-     at a constant rate for the entire fold. */
+  /* Linear, per preference: the top edge falls at a constant rate for
+     the entire exit, in step with the page drop. */
   animation: page-slide-fold var(--ps-minimize, 98ms) linear forwards;
 }
 
@@ -96,7 +98,7 @@ html.theme-page-slide .page-slide-ghost .page-slide-placeholder-frame {
 
 @keyframes page-slide-fold {
   to {
-    transform: translateY(var(--page-fold-dy, 80vh)) scaleY(0.06);
+    transform: scaleY(0.06);
   }
 }
 
