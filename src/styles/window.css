@@ -128,92 +128,52 @@
    and MINIMIZING re-arms it, so mouse wiggles never re-fire it and the
    effects stay calm while the cursor rides over and across the window.
 
-   The bob targets the WINDOW ROOT - frame, background, body and the OK
-   buttons together, so the buttons bounce WITH the window instead of
-   swimming against the static frame (the defect of wobbling the body
-   in isolation). The TITLE BAR counter-bobs the negated keyframes with
-   the same duration, delay and curve - triggered through the SAME
-   :has() condition, so the two animations start in one frame: the
-   title holds visually still while everything below it bobs, keeping
-   the maximize button steady even mid-bob.
+   The bob targets the WINDOW ROOT - frame, background, title bar, body
+   and the OK buttons together, one paint. NO paired counter-animation
+   on the title bar: two synchronized animations snap out of phase the
+   moment one recalculates late, and the title then bounces SEPARATE
+   from the buttons - the paired design is what made the ok buttons
+   bounce apart. The trigger still requires BODY contact (title-only
+   hovering never starts anything), and the once-per-visit flag means
+   the pointer reaches the title bar after the bob has spent itself.
 
    Maximised DOM stays flat on every path: the :not(.maximized) root
-   guard, the maximized-window-body belt, and the inline-children
-   suppression below. */
-.window[data-theme~="experimental"]:not(.maximized):not([data-wobbled])
-  .window-body:hover,
-.window[data-theme~="experimental"]:not(.maximized):not([data-wobbled])
-  .window-body:focus-within {
-  animation: theme-experimental-wobble 0.6s ease-in-out;
-}
+   guard, and the suppression below for inline experimental children
+   under a maximized ancestor (the deepest-hover rule keeps experimental
+   ancestors from double-bobbing behind a hovered experimental child). */
 .window[data-theme~="experimental"]:not(.maximized):not([data-wobbled]):has(
     .window-body:hover,
     .window-body:focus-within
-  )
-  .title-bar {
-  animation: theme-experimental-counter 0.6s ease-in-out;
+  ) {
+  animation: theme-experimental-wobble 0.6s ease-in-out;
 }
 
-/* Only the DEEPEST hovered window bobs: the hover chain matches
-   ancestors too, so an experimental ancestor whose body contains the
-   hovered experimental child body holds still instead of bobbing in
-   double. */
-.window[data-theme~="experimental"]:not(.maximized):not([data-wobbled])
-  .window-body:has(.window-body:hover) {
-  animation: none;
-}
+/* Only the DEEPEST hovered window bobs: an experimental ancestor whose
+   subtree contains the hovered experimental child holds still. */
 .window[data-theme~="experimental"]:not(.maximized):not([data-wobbled]):has(
-    .window-body:hover
-  )
-  .title-bar {
+    .window .window-body:hover
+  ) {
   animation: none;
 }
 
-/* The negated bob: the title bar holds its visual place while the
-   window around it bobs. */
-@keyframes theme-experimental-counter {
-  0% {
-    transform: translateY(0);
-  }
-  20% {
-    transform: translateY(6px);
-  }
-  40% {
-    transform: translateY(3px);
-  }
-  60% {
-    transform: translateY(6px);
-  }
-  80% {
-    transform: translateY(2px);
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
-
-/* Maximised stability: inside the fullscreen view no experimental body
-   bobs - neither the lifted window's own body (its maximized-window-body
-   class, portal DOM or in-tree) nor inline experimental children under
-   a .window.maximized ancestor (Maximizing force-expands the whole
-   subtree; an animated child used to break the overlay's scroll). */
-.window .window-body.maximized-window-body {
-  animation: none;
-}
-.window.maximized .window[data-theme~="experimental"] .window-body:hover,
-.window.maximized
-  .window[data-theme~="experimental"]
-  .window-body:focus-within {
+/* Maximised stability: inline experimental children under a
+   .window.maximized ancestor never bob in the fullscreen view
+   (Maximizing force-expands the whole subtree; an animated child used
+   to break the overlay's scroll). */
+.window.maximized .window[data-theme~="experimental"]:has(
+    .window-body:hover,
+    .window-body:focus-within
+  ) {
   animation: none;
 }
 
 /* Respect reduced-motion: no glow, no wobble. */
 @media (prefers-reduced-motion: reduce) {
   .window.maximized[data-theme~="experimental"] .title-bar-text,
-  .window[data-theme~="experimental"]:not(.maximized):not([data-wobbled])
-    .window-body:hover,
-  .window[data-theme~="experimental"]:not(.maximized):not([data-wobbled])
-    .window-body:focus-within {
+  .window[data-theme~="experimental"]:not(.maximized):not([data-wobbled]):has(
+      .window-body:hover,
+      .window-body:focus-within
+    ) {
     animation: none;
   }
 }

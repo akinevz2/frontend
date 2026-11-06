@@ -192,21 +192,23 @@ function leaveGhost(): SlideScale {
       ? "page-slide-placeholder page-slide-placeholder-frame"
       : "page-slide-placeholder";
     placeholder.style.cssText = `width:${box.width}px;height:${box.height}px`;
-    if (isIframe && live) {
-      // Document frames keep their own paper background while the page
-      // drops: the resume preview is styled white, and falling back to the
-      // themed (dark) background reads as the PDF unloading mid-exit.
-      // Transparent iframes (music embeds) keep the themed placeholder
-      // background - a white flash there is visual pollution.
-      const background = getComputedStyle(live).backgroundColor;
-      if (
-        background &&
-        background !== "transparent" &&
-        background !== "rgba(0, 0, 0, 0)"
-      ) {
-        placeholder.style.backgroundColor = background;
-      }
-    }
+    // The MAINTAIN pass: a placeholder NEVER shows the bare page
+    // background - the blank flash reported inside expanded sections
+    // during the fall. It takes the owning window's paper (the section
+    // keeps its surface); document frames that carry their own opaque
+    // background (the white resume preview) keep it.
+    const ownBg = live ? getComputedStyle(live).backgroundColor : "";
+    const hasOwnBg =
+      !!ownBg && ownBg !== "transparent" && ownBg !== "rgba(0, 0, 0, 0)";
+    const owner = live?.closest(".window-body") ?? live?.closest(".window");
+    const paper = owner ? getComputedStyle(owner).backgroundColor : "";
+    const hasPaper =
+      !!paper && paper !== "transparent" && paper !== "rgba(0, 0, 0, 0)";
+    placeholder.style.backgroundColor = hasOwnBg
+      ? (ownBg ?? "")
+      : hasPaper
+        ? (paper ?? "")
+        : "";
     el.replaceWith(placeholder);
   });
   // XP-style minimise: the ghost's windows squash IN PLACE (CSS handles
