@@ -8,6 +8,10 @@
         {
           "heading": "herbstluftwm and herbstutil",
           "embed": "/blog/hlwm_and_herbstutil.md"
+        },
+        {
+          "heading": "dotfiles 1.0.0",
+          "embed": "/blog/dotfiles_1_0_0.md"
         }
       ]
     },

@@ -6,16 +6,16 @@
   "content": {
     "heading": "on-deploy - the deployment orchestrator",
     "content": [
-      "on-deploy turns the dotfiles repo into a one-command deployment. It runs inside the doftiles checkout and reads two manifests: wm.requires (the required binaries; the last line names the platform - ubuntu, manjaro, arch, ... - selecting the <target>.deploy resolver) and deploy.profile (how the graphical session starts, which features, which units, which env). The make deploy TUI configures both before anything is stowed.",
+      "on-deploy turns the dotfiles repo into a one-command deployment. It runs inside the doftiles checkout and reads the deployment manifests: wm.required (required binaries, the deployment model and the deploy target), stows.required (the stow packages), system.required (each submodule with its dots-relative paths - THE scope of the depends walk) and services.required (the unit order). All four are configurable through configure (tui or flags).",
       "[https://github.com/akinevz2/on-deploy](https://github.com/akinevz2/on-deploy)",
       {
         "heading": "The verbs",
         "content": [
-          "check - report the requirement state; exit 1 when anything is missing (also --json).",
+          "install/check - the requirement walk: resolve every missing binary per <target>.deploy, confirm, run with the tty unlocked (sudo prompts visible), print the command BEFORE running, re-verify. check reports/exit 1 on missing (--json).",
           "deploy - install every missing binary: resolve the package, show the command, confirm (Enter = yes), run it, then re-verify - a binary still missing after its command fails the run. --yes for non-interactive runs; --dry-run to preview.",
-          "provision - platform services per profile: the X server set, the ~/.xinitrc session line, a greetd + tuigreet greeter, the nested stack packages, the xrdp layer.",
+          "services - the service.order (services.required) runner: check/start/stop/restart/status over the systemd user units, --no-block, stow-safe disable. detect-server - the reachable-X probe (localhost:0.0 style), --persist-to-systemd writes DISPLAY into the manager env, --persist-to-env writes an rc.d-includable file.",
           "toolchain - the make install assurances: bun through npm when missing, trust of the global bun packages' postinstall scripts, the herbctl binary built from the submodule checkout when missing. (These used to be four separate Makefile recipes - bun-toolchain, bun-trust, on-deploy-ensure, herbctl-ensure - they are steps of one command now.)",
-          "deps - the dependency deployment: polyframes (the bar module / rofi menus binary), ensured on install, --force redeployed on update, --method source|npm|release per machine. The install method is recorded in ~/.config/doftiles.conf (stowed from the repo, so method changes show up as tracked diffs).",
+          "depends - the per-package walk over system.required: every listed package runs dots/<pkg>/.local/state/depends/<pkg>.Makefile (toolchain/build/link/install), --only narrows, --build for sync+build.",
           "snapshot - collect a machine's pre-existing config into doftiles' defaults/ (a stow-shaped package) BEFORE the first deploy overwrites it - the machine's prior state, versioned in git, restorable with one make target.",
           "configure - edit the deploy target and the required-package list from an interactive menu (or --target/--add/--remove flags)."
         ],

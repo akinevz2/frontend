@@ -6,7 +6,7 @@
   "content": {
     "heading": "herbctl - the keybind imperatives, as a native binary",
     "content": [
-      "herbctl owns what the keybinds used to express as inline herbstluftwm chains: one verb per mod-binding, each issuing the exact hlwm chains the binding expresses, token for token - compiled to a standalone binary with bunli, so the keybinds spawn binaries, not scripts. The verbs are named by what they do: split-right-cycle, shift-up, minimize-toggle - no whimsy (the original whimsical names were retired 2026-10; only the historical get-south/get-forward/get-deck/get-dedeck quartet keeps its name).",
+      "herbctl owns what the keybinds used to express as inline herbstluftwm chains: one verb per mod-binding, each issuing the exact hlwm chains the binding expresses, token for token - compiled to a standalone binary with bunli, so the keybinds spawn binaries, not scripts. stable: herbctl 0.2.0 (the registry track). The verbs are named by what they do: split-right-cycle, shift-up, minimize-toggle - no whimsy (the original whimsical names were retired 2026-10; only the historical get-south/get-forward/get-deck/get-dedeck quartet keeps its name).",
       "[https://github.com/akinevz2/herbctl](https://github.com/akinevz2/herbctl)",
       {
         "heading": "The verbs",
