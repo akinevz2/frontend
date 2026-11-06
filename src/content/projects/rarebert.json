@@ -1,20 +1,20 @@
 {
   "slug": "rarebert",
   "title": "rarebert",
-  "description": "AI-powered notification daemon. On hold until there is time to port it to Opencode V2.",
+  "description": "AI-powered notification daemon. on hold until there is time to port it to OpenCode V2.",
   "github": "https://github.com/akinevz2/rarebert",
   "content": {
-    "heading": "rarebert",
+    "heading": "rarebert - the AI-driven development loop",
     "content": [
-      "A self-modifying scripting environment for interactive, AI-driven development.",
+      "a self-modifying scripting environment for interactive, AI-driven development.",
       "[https://github.com/akinevz2/rarebert](https://github.com/akinevz2/rarebert)",
       {
-        "heading": "From the README",
+        "heading": "the loop",
         "content": [
-          "Rarebert scaffolds modules, opens them in your editor side-by-side with opencode, lets the model implement them, summarises the diff, and commits - then runs the result and remembers what happened.",
-          "Built around a TypeScript runtime (`lib/runtime/` + Bun) that orchestrates $EDITOR, git, and opencode, and a memo subsystem that threads observations between the model and your shell.",
-          "Each turn ends in a commit, so the working tree is always clean before the next cycle.",
-          "Work in progress: the branch is mid-port from Node.js/ESM to TypeScript/Bun, not yet stable for daily use."
+          "rarebert scaffolds modules, opens them in your editor side-by-side with opencode, lets the model implement them, summarises the diff, and commits - then runs the result and remembers what happened.",
+          "built around a TypeScript runtime (`lib/runtime/` + bun) that orchestrates $EDITOR, git, and opencode, and a memo subsystem that threads observations between the model and your shell.",
+          "each turn ends in a commit, so the working tree is always clean before the next cycle.",
+          "the branch is mid-port from Node.js/ESM to TypeScript/bun - not yet stable for daily use."
         ],
         "theme": "open"
       }

@@ -16,10 +16,10 @@ Force yourself into a completely different emotional space by using bright, hype
 
 3. Corporate Liminal Space
 
-Step away from "Hell" and move into a bizarrely sterile, eerie, yet brightly lit office building. It is unsettling, but not evil—just completely empty and synthetic.
+Step away from "Hell" and move into a bizarrely sterile, eerie, yet brightly lit office building. It is unsettling, but not evil - just completely empty and synthetic.
 • The Sound: Use ultra-clean department store elevator music chords, distant printer noises, telephone dial tones, and smooth, plasticky synth pads.
 • The Contrast: Introduce a very corporate, jazzy, or muzak-style melody, then aggressively sidechain it to a chaotic, glitchy drum pattern that doesn't match the time signature.
 • Cipher Track Title Idea: "ИГН УУУУУУ ЦГФЕ ИГГЗ???" (Maps to: "BUY YYYYYY WHAT BUZZ???")
-Which of these worlds—Digital Ice, Toybox Glitch, or Corporate Sterile—feels like the refreshing break you need? I can help you brainstorm specific arrangement ideas or generate a massive list of Cyrillic-cipher titles for it!
+Which of these worlds - Digital Ice, Toybox Glitch, or Corporate Sterile - feels like the refreshing break you need? I can help you brainstorm specific arrangement ideas or generate a massive list of Cyrillic-cipher titles for it!
 
 > thanks google, these are hilarious

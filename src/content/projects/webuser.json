@@ -1,17 +1,17 @@
 {
   "slug": "webuser",
   "title": "webuser",
-  "description": "A jail and shell with mounted paths, packaged as a bun CLI.",
+  "description": "a jail and shell with mounted paths, packaged as a bun CLI.",
   "github": "https://github.com/akinevz2/webuser",
   "content": {
-    "heading": "webuser",
+    "heading": "webuser - a jail and shell, as a bun CLI",
     "content": [
-      "A jail and shell with mounted paths, packaged as a bun CLI.",
+      "a jail and a shell with mounted paths, packaged as a bun CLI.",
       "[https://github.com/akinevz2/webuser](https://github.com/akinevz2/webuser)",
       {
-        "heading": "From the README",
+        "heading": "usage",
         "content": [
-          "A CLI built with Bunli on the Bun runtime: `bun install`, `bun dev -- [command]`, `bun run build`.",
+          "a CLI built with bunli on the bun runtime: `bun install`, `bun dev -- [command]`, `bun run build`.",
           "MIT licensed."
         ],
         "theme": "open"

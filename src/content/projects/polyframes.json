@@ -1,79 +1,79 @@
 {
   "slug": "polyframes",
   "title": "polyframes",
-  "description": "Polybar window-list renderer for herbstluftwm: a bunli/Bun CLI compiled to a standalone native binary - rofi menus, typed one-shot window rules, and the WM read as typed JSON via herbstutil; the float-register imperatives come from herbctl.",
+  "description": "polybar window-list renderer for herbstluftwm: a bunli/bun CLI compiled to a standalone native binary - rofi menus, typed one-shot window rules, and the WM read as typed JSON via herbstutil; the float-register imperatives come from herbctl.",
   "github": "https://github.com/akinevz2/polyframes",
   "content": {
     "heading": "polyframes - the polybar window-list renderer, as a native binary",
     "content": [
-      "polyframes renders herbstluftwm's window state as the polybar center module: one label per (frame, window-class) group, decorated by state (focused gold underline, floating, minimized dimmed), with click/scroll actions that re-exec the binary itself. Built with Bun and bunli, compiled to a standalone executable - so it runs wherever the bar runs, no node, no nvm PATH, no shim.",
+      "polyframes renders herbstluftwm's window state as the polybar center module: one label per (frame, window-class) group, decorated by state (focused gold underline, floating, minimized dimmed), with click/scroll actions that re-exec the binary itself. built with bun and bunli, compiled to a standalone executable - so it runs wherever the bar runs: no node, no nvm PATH, no shim.",
       "[https://github.com/akinevz2/polyframes](https://github.com/akinevz2/polyframes)",
       {
-        "heading": "The bar daemon",
+        "heading": "the bar daemon",
         "content": [
-          "A bare invocation is polybar's contract: print one bar line, then keep it fresh - a `herbstclient --idle` hook listener for instant focus/tag/title updates, plus a 1s layout poll that hashes `herbstclient dump` (frame splits and removals emit no hook in hlwm 0.9.5).",
+          "a bare invocation is polybar's contract: print one bar line, then keep it fresh - a `herbstclient --idle` hook listener for instant focus/tag/title updates, plus a 1s layout poll that hashes `herbstclient dump` (frame splits and removals emit no hook in hlwm 0.9.5).",
           "`polyframes bar` prints a single line and exits - the same pure renderer, scriptable."
         ],
         "theme": "open"
       },
       {
-        "heading": "Grouping model",
+        "heading": "grouping model",
         "content": [
-          "Clients on the focused tag arrive in WM order, enriched per window: class, title, minimized, floating, and its parent frame's flat index (`-1` when the root is unsplit).",
-          "Group keys: `minflt|wid` and `unframed|wid` are solo labels; `frame|frame|class` groups same-class windows sharing a frame. A group's representative is the frame's selected client - but only when it belongs to the group's class, so a mixed-class frame never leaks another group's title.",
-          "Render order keeps WM order, pushes minimized labels last, truncates to `char_limit` with an ellipsis, folds forbidden classes (the bar itself), and emits a `+N` overflow marker past `max_windows`."
+          "clients on the focused tag arrive in WM order, enriched per window: class, title, minimized, floating, and its parent frame's flat index (`-1` when the root is unsplit).",
+          "group keys: `minflt|wid` and `unframed|wid` are solo labels; `frame|frame|class` groups same-class windows sharing a frame. a group's representative is the frame's selected client - but only when it belongs to the group's class, so a mixed-class frame never leaks another group's title.",
+          "render order keeps WM order, pushes minimized labels last, truncates to `char_limit` with an ellipsis, folds forbidden classes (the bar itself), and emits a `+N` overflow marker past `max_windows`."
         ],
         "theme": "open"
       },
       {
-        "heading": "The keybind registers live in doftiles",
+        "heading": "the keybind registers live in doftiles",
         "content": [
-          "The float-register state machines (mod-f / mod-x / mod-ctrl-f: float-focus, float-yank, zoom) live in herbctl - the keybinds spawn those herbctl verbs; they are documented in the [herbctl project](/projects/herbctl). The polyframes side of the same bindings is the frame surgery: tile/center/resize/fit re-executed in the bar's click actions."
+          "the float-register state machines (mod-f / mod-x / mod-ctrl-f: float-focus, float-yank, zoom) live in herbctl - the keybinds spawn those herbctl verbs; they are documented in the [herbctl project](/projects/herbctl). the polyframes side of the same bindings is the frame surgery: tile/center/resize/fit re-executed in the bar's click actions."
         ],
         "theme": "open"
       },
       {
-        "heading": "The helper suite, migrated in",
+        "heading": "the helper suite, migrated in",
         "content": [
-          "The dotfiles' herbst helpers moved in as subcommands, so one binary manages them all:",
+          "the dotfiles' herbst helpers moved in as subcommands, so one binary manages them all:",
           "`tags`, `hidden`, `windows`, `launch` - the rofi menus (script-mode protocol, NUL-separated rows, per-row icons and states)",
           "`switcher-menu`, `window-menu` - detached menu targets the click actions spawn",
           "`tile` - closest-empty-frame navigation or split (the frame-tree surgery)",
           "`center` - decoration-aware centering (`--wid` targets a specific window's own frame)",
           "`resize` - delta nudges, frame/root deco-flush fills, explicit content rects",
           "`fit` - constraint pass: shrink oversized, nudge off-screen (monitor or frame target)",
-          "`spawn` - one-shot `herbstclient rule once` spawns with typed flags (`--class/--float/--center/--tag`)"
+          "`spawn` - one-shot `herbstclient rule once` spawns with typed flags (`--class`/`--float`/`--center`/`--tag`)"
         ],
         "theme": "open"
       },
       {
         "heading": "herbstutil + herbctl inside",
         "content": [
-          "Two sibling libraries ride along at build time:",
-          "herbstutil (npm) - parseAttr for every WM read: typed JSON out of hlwm's attr output, one round trip instead of a per-client attribute walk.",
-          "herbctl - the imperatives the scroll/click actions run: float+center, minimize-keep-frame, empty-frame removal - the keybind state machines as importable functions.",
-          "Both resolve as sibling submodules in the doftiles depends/ layout and from the npm/GitHub registries everywhere else."
+          "two sibling libraries ride along at build time:",
+          "`herbstutil` - parseAttr for every WM read: typed JSON out of hlwm's attr output, one round trip instead of a per-client attribute walk.",
+          "`herbctl` - the imperatives the scroll/click actions run: float+center, minimize-keep-frame, empty-frame removal - the keybind state machines as importable functions.",
+          "both resolve as sibling submodules in the doftiles depends/ layout and from the npm/GitHub registries everywhere else."
         ],
         "theme": "open"
       },
       {
-        "heading": "Links",
+        "heading": "links",
         "content": [
           {
-            "heading": "GitHub repository",
+            "heading": "github repository",
             "link": "https://github.com/akinevz2/polyframes"
           },
           {
-            "heading": "doftiles (the dotfiles it ships from)",
+            "heading": "doftiles - the dotfiles it ships from",
             "link": "https://github.com/akinevz2/doftiles"
           },
           {
-            "heading": "herbctl (the keybind imperatives)",
-            "link": "https://github.com/akinevz2/herbctl"
+            "heading": "herbctl - the keybind imperatives",
+            "link": "/projects/herbctl"
           },
           {
-            "heading": "herbstutil (the JSON bridge)",
-            "link": "https://github.com/akinevz2/herbstutil"
+            "heading": "herbstutil - the JSON bridge",
+            "link": "/projects/herbstutil"
           }
         ],
         "theme": "open"

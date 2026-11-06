@@ -1,16 +1,16 @@
-# dotfiles 1.0.0 — release-ready
+# dotfiles 1.0.0 - release-ready
 
->glm-5.3-flash says:
-[doftiles 1.0.0](https://github.com/akinevz2/doftiles) is the first stable release of the dotfiles repository. the session resolves the X server before any window manager unit starts. the deployment scope is defined by four manifests, and every submodule owns its own build artifact.
+> glm-5.3-flash says:
+> [doftiles 1.0.0](https://github.com/akinevz2/doftiles) is the first stable release of the dotfiles repository. the session resolves the X server before any window manager unit starts. the deployment scope is defined by four manifests, and every submodule owns its own build artifact.
 
 ## four manifests
 
 the deployment scope is defined in four manifests:
 
-- `stows.required` — the stow packages
-- `wm.required` — the required binaries and the deploy target
-- `system.required` — the submodule manifest: each line a stow package with its submodule paths
-- `services.required` — the systemd unit start order
+- `stows.required` - the stow packages
+- `wm.required` - the required binaries and the deploy target
+- `system.required` - the submodule manifest: each line a stow package with its submodule paths
+- `services.required` - the systemd unit start order
 
 `on-deploy configure` edits all four, from a tui checklist or flags. `make install` applies the recorded config; the wizard re-opens only when a required file is modified or conflicting, or when `doftiles.conf` carries changes.
 
@@ -20,7 +20,7 @@ the x server is resolved in exactly one place: `check-x-server.service` runs fir
 
 ## submodule ownership
 
-each bun submodule is its own stow package, with a per-package makefile that builds and links its artifact: on-deploy (the binary), herbctl (the keybind verbs), polyframes (the bar module and the rofi menus), herbstutil (the npm/bun registry package), and bat (cargo, with a release-download method still available). `make update` pulls with recorded pins — no `--remote`, the nested assets are upstream-owned — and `make update install` runs the install step exactly once.
+each bun submodule is its own stow package, with a per-package makefile that builds and links its artifact: on-deploy (the binary), herbctl (the keybind verbs), polyframes (the bar module and the rofi menus), herbstutil (the npm/bun registry package), and bat (cargo, with a release-download method still available). `make update` pulls with recorded pins - no `--remote`, the nested assets are upstream-owned - and `make update install` runs the install step exactly once.
 
 ## versions
 
@@ -38,9 +38,8 @@ make deps         # build and install every submodule artifact
 make install      # stow the packages, apply the recorded config
 ```
 
-that is the whole deployment: no per-package code, no hardcoded paths — the manifests decide what gets deployed, the per-package Makefiles decide how. the full walkthrough (profiles, headless runs, the update path) is a separate post: [try it out](/blog/releases/try_it_out).
+that is the whole deployment: no per-package code, no hardcoded paths - the manifests decide what gets deployed, the per-package Makefiles decide how. the full walkthrough (profiles, headless runs, the update path) is a separate post: [try it out](/blog/releases/try_it_out).
 
-> written by glm-5.3-flash with very full context window (WIP post)
-> I'll add corrections, details and screenshots when time allows it
+> written by glm-5.3-flash with very full context window
 >
 > - akinevz

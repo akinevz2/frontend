@@ -1,62 +1,61 @@
 {
   "slug": "pagerts",
   "title": "pagerts",
-  "description": "A TypeScript CLI that lists every link and resource a webpage references, as plain JSON.",
+  "description": "a TypeScript CLI that lists every link and resource a webpage references, as plain JSON.",
   "github": "https://github.com/akinevz2/pagerts",
   "content": {
-    "heading": "pagerts - Webpage resource extractor",
+    "heading": "pagerts - the webpage resource extractor",
     "content": [
       "pagerts fetches a URL (or reads a local HTML file) and prints every external resource it references - links, meta tags, scripts, styles - as JSON.",
+      "[https://github.com/akinevz2/pagerts](https://github.com/akinevz2/pagerts)",
       {
-        "heading": "From the README",
+        "heading": "what it parses",
         "content": [
-          "PagerTS fetches web pages, parses their HTML, and reports each page's title, URL, and external resources - inspecting common resource-bearing tags, or scanning every element for selected link properties.",
-          "Requires Node.js 20 or later; installs globally with `npm install --global pagerts`."
+          "pagerts fetches web pages, parses their HTML, and reports each page's title, URL, and external resources - inspecting the common resource-bearing tags, or scanning every element for selected link properties.",
+          "requires Node.js 20 or later; installs globally with `npm install --global pagerts`."
         ],
         "theme": "open"
       },
       {
-        "heading": "Quick start",
+        "heading": "quick start",
         "content": [
-          "npm install -g pagerts",
-          "",
-          "pagerts https://example.com"
+          "```sh\n$ npm install --global pagerts\n$ pagerts https://example.com\n```"
         ],
         "theme": "open"
       },
       {
-        "heading": "What you get",
+        "heading": "what you get",
         "content": [
-          "Output is a JSON array with one entry per input URL: a `title`, the `url`, and a `resources` array of `tag` / `key` / `value` / `link` objects.",
-          "A page that fails to load still gets an entry: `{\"error\": \"Failed to load <url>: <reason>\"}`.",
-          "Add `--no-json` for the same report as a human-readable log."
+          "output is a JSON array with one entry per input URL: a `title`, the `url`, and a `resources` array of `tag` / `key` / `value` / `link` objects.",
+          "a page that fails to load still gets an entry: `{\"error\": \"Failed to load <url>: <reason>\"}`.",
+          "add `--no-json` for the same report as a human-readable log."
         ],
         "theme": "open"
       },
       {
-        "heading": "Useful options",
+        "heading": "useful options",
         "content": [
-          "pagerts all <urls...> - scan every element instead of the default tags",
-          "pagerts --dry-run <urls...> - preview the effective settings without fetching",
-          "pagerts --tags a,img - restrict extraction to specific tags",
-          "pagerts -p data-href - add link properties to search",
-          "pagerts --timeout 5000 - abort fetches that take longer than 5s"
+          "`pagerts all <urls...>` - scan every element instead of the default tags",
+          "`pagerts --dry-run <urls...>` - preview the effective settings without fetching",
+          "`pagerts --tags a,img` - restrict extraction to specific tags",
+          "`pagerts -p data-href` - add link properties to search",
+          "`pagerts --timeout 5000` - abort fetches that take longer than 5s"
         ],
         "theme": "open"
       },
       {
-        "heading": "Links",
+        "heading": "links",
         "content": [
           {
             "heading": "npm package",
             "link": "https://www.npmjs.com/package/pagerts"
           },
           {
-            "heading": "GitHub repository",
+            "heading": "github repository",
             "link": "https://github.com/akinevz2/pagerts"
           },
           {
-            "heading": "CHANGELOG",
+            "heading": "changelog",
             "link": "https://github.com/akinevz2/pagerts/blob/main/CHANGELOG.md"
           }
         ],
