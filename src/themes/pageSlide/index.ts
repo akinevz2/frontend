@@ -13,12 +13,13 @@ import "./pageSlide.css";
 
 const CLASS = "theme-page-slide";
 const ATTRIBUTE = "data-page-slide";
-/** Two beats, XP order: a RAPID fold first (every window squashes
- * together in one short snap - too brief to read as disassembly), then
- * the already-collapsed page GLIDES off the bottom gently. One uniform
- * motion made mid-flight squashes read as the window falling apart; the
- * split keeps each beat honest. The glide is distance-aware (same pace
- * for every page size, clamped). */
+/** Two-part, one motion: the fold plays DURING the fall (zero delay -
+ * the squish happens while the page moves downwards), the glide itself
+ * stays gentle (ease-in-out off-screen). The gravity read lives in the
+ * MAIN windows' fold curve (see the css: top-level folds ease-in,
+ * nested children fold linearly so the parent's acceleration doesn't
+ * compound through them). The glide is distance-aware (same pace for
+ * every page size, clamped). */
 const FOLD_MS = 200;
 const ARRIVAL_SPEED_PX_MS = 3.1;
 const ARRIVAL_MIN_DURATION_MS = 520;
@@ -41,8 +42,6 @@ const dropDuration = (distancePx: number): number =>
       Math.max(DROP_MIN_DURATION_MS, distancePx / DROP_SPEED_PX_MS),
     ),
   );
-/** Retired after the exit: fold and drop run in step (one motion). */
-const REMOVAL_MARGIN_MS = 200;
 const VARIABLES = [
   "--ps-duration",
   "--ps-minimize",
@@ -89,7 +88,7 @@ const slide = (
   variables: {
     "--ps-duration": `${scale.arrivalMs}ms`,
     "--ps-minimize": `${FOLD_MS}ms`,
-    "--ps-drop-delay": `${FOLD_MS}ms`,
+    "--ps-drop-delay": "0ms",
     "--ps-drop-dur": `${scale.dropMs}ms`,
     "--ps-in-x": inX,
     "--ps-in-y": inY,
@@ -151,7 +150,7 @@ function leaveGhost(): SlideScale {
   const dropMs = dropDuration(exitDistance);
   root().style.setProperty("--ps-drop-dur", `${dropMs}ms`);
   root().style.setProperty("--ps-minimize", `${FOLD_MS}ms`);
-  const removalMs = FOLD_MS + dropMs + REMOVAL_MARGIN_MS;
+  const removalMs = dropMs + REMOVAL_MARGIN_MS;
   const ghost = main.cloneNode(true) as HTMLElement;
   ghost.classList.add("page-slide-ghost");
   Object.assign(ghost.style, {
@@ -209,6 +208,15 @@ function leaveGhost(): SlideScale {
   // translateY-to-the-taskbar-line fold teleported top-of-page windows
   // below the arriving page before sliding out). The whole-page drop
   // carries every window out from where it sits.
+  // Cascade the mains: each top-level window's fold BEGINS when the
+  // previous one has FINISHED (the step is the fold duration itself -
+  // zero gap between one folding closed and the next starting). Nested
+  // windows inherit the custom property from their parent, folding in
+  // the parent's stage rather than against it.
+  const topLevel = ".page > .window, .page > .maximized-shell > .window";
+  ghost.querySelectorAll<HTMLElement>(topLevel).forEach((win, i) => {
+    win.style.setProperty("--ps-fold-delay", `${Math.round(i * FOLD_MS)}ms`);
+  });
   document.body.appendChild(ghost);
   // Maximized overlays ride INSIDE the ghost now (they are in-tree), so
   // the dimmed layer and the maximized window fold and drop with the
