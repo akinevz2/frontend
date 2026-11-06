@@ -109,6 +109,7 @@
                 {
                   "link": "https://github.com/akinevz2/",
                   "heading": "my github",
+                  "theme": "experimental",
                   "content": [
                     "[projects here](https://github.com/akinevz2?tab=repositories)"
                   ]
