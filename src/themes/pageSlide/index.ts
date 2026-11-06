@@ -236,12 +236,11 @@ function leaveGhost(): SlideScale {
         0,
         taskbarLine - (liveWin?.getBoundingClientRect().bottom ?? 0),
       );
-      // ONE THIRD FASTER than the page's own slide-down: the shrink's
-      // duration is the drop's duration minus a third (0.75x), so the
-      // two motions hold their relative pace at every page size and
-      // scroll offset instead of pulling apart from two independent
-      // distance scales.
-      const foldMs = Math.round(dropMs * 0.75);
+      // TWICE as fast as the page's own slide-down: the shrink's
+      // duration is HALF the drop's (0.5x), while the page's own
+      // slide-down keeps its distance-derived pace - the two motions
+      // hold their relative pace at every page size and scroll offset.
+      const foldMs = Math.round(dropMs * 0.5);
       win.style.setProperty("--page-fold-dy", `${Math.round(fall)}px`);
       win.style.setProperty("--ps-fold-delay", "0ms");
       // the fold duration inherits down the window's subtree, so its
