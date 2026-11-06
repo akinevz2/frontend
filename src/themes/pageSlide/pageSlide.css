@@ -24,12 +24,11 @@ html.theme-page-slide .page-slide-ghost {
   margin: 0;
   overflow: hidden;
   pointer-events: none;
-  /* Drops IN STEP with the fold (--ps-drop-delay is zero): the page
-     squeezes while it moves down, one motion, not fold-then-jump.
-     Ease-in: the page falls with gravity, like the windows - the whole
-     exit is one XP minimise applied to the page itself. */
-  animation: page-slide-drop var(--ps-drop-dur) ease-in var(--ps-drop-delay)
-    forwards;
+  /* Two beats: the rapid fold snaps first (--ps-drop-delay == the fold
+     beat), THEN the collapsed page glides off gently - ease in and out,
+     not a slam. */
+  animation: page-slide-drop var(--ps-drop-dur) ease-in-out
+    var(--ps-drop-delay) forwards;
 }
 
 /* The live <main> has an indefinite height, so its page sizes to content
@@ -47,7 +46,8 @@ html.theme-page-slide .page-slide-ghost.page {
    visibly rides out instead of blinking away at the route commit. */
 html.theme-page-slide .page-slide-bar {
   pointer-events: none;
-  animation: page-slide-bar-exit var(--ps-drop-dur, 280ms) ease-in forwards;
+  animation: page-slide-bar-exit var(--ps-drop-dur, 280ms) ease-in-out
+    var(--ps-drop-delay, 0ms) forwards;
 }
 
 @keyframes page-slide-bar-exit {
@@ -81,11 +81,11 @@ html.theme-page-slide[data-page-slide] main:not(.page-slide-ghost) > .page {
    slides out FROM ITS CURRENT POSITION, carried by the whole-page drop
    (the old fold translated each window down to the taskbar line, which
    read as a teleport below the arriving page's windows). Contents ride
-   the squash, as in XP itself. The fall is EASE-IN throughout -
-   gravity, not a metronome: XP's minimize accelerates as the outline
-   collapses. !important holds the fold against the window stylesheets
-   inside the inert ghost - the exit is one motion, not a play of
-   competing animations. */
+   the squash, as in XP itself. The fold is EASE-IN and RAPID
+   (--ps-minimize, one short beat) - gravity snapping shut - while the
+   off-screen glide is the gentle pass. !important holds the fold
+   against the window stylesheets inside the inert ghost - the exit is
+   one motion, not a play of competing animations. */
 html.theme-page-slide .page-slide-ghost .window {
   transform-origin: bottom center;
   animation: page-slide-fold var(--ps-minimize, 98ms) ease-in forwards !important;

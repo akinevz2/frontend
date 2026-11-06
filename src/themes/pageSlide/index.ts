@@ -13,33 +13,32 @@ import "./pageSlide.css";
 
 const CLASS = "theme-page-slide";
 const ATTRIBUTE = "data-page-slide";
-/** One speed for the whole choreography: the slide durations derive from
- * the distance each page actually travels, so a large page sweeps at the
- * same pace as a small one - fixed durations made large pages move so
- * fast the transition read as screen tearing. Clamped: small pages stay
- * brisk, huge pages never outstay their welcome. */
-const SPEED_PX_MS = 2.8;
-const MIN_DURATION_MS = 600;
-const MAX_DURATION_MS = 950;
-/** The slide OUT runs faster than the slide IN: a higher speed with its
- * own, lower clamps - and since the arriving page always travels the
- * longer distance (its own height plus a viewport, against the exit's
- * viewport plus scroll), the out is roughly 80% of the in at worst.
- * The out must never linger; the in is the one that gets to breathe. */
-const EXIT_SPEED_PX_MS = 3.6;
-const EXIT_MIN_DURATION_MS = 420;
-const EXIT_MAX_DURATION_MS = 760;
-/** Milliseconds a page travelling `distancePx` takes, clamped. */
+/** Two beats, XP order: a RAPID fold first (every window squashes
+ * together in one short snap - too brief to read as disassembly), then
+ * the already-collapsed page GLIDES off the bottom gently. One uniform
+ * motion made mid-flight squashes read as the window falling apart; the
+ * split keeps each beat honest. The glide is distance-aware (same pace
+ * for every page size, clamped). */
+const FOLD_MS = 200;
+const ARRIVAL_SPEED_PX_MS = 3.1;
+const ARRIVAL_MIN_DURATION_MS = 520;
+const ARRIVAL_MAX_DURATION_MS = 880;
+const DROP_SPEED_PX_MS = 3.4;
+const DROP_MIN_DURATION_MS = 480;
+const DROP_MAX_DURATION_MS = 820;
+const REMOVAL_MARGIN_MS = 200;
 const arrivalDuration = (distancePx: number): number =>
   Math.round(
-    Math.min(MAX_DURATION_MS, Math.max(MIN_DURATION_MS, distancePx / SPEED_PX_MS)),
+    Math.min(
+      ARRIVAL_MAX_DURATION_MS,
+      Math.max(ARRIVAL_MIN_DURATION_MS, distancePx / ARRIVAL_SPEED_PX_MS),
+    ),
   );
-/** Same contract, the exit's profile. */
-const exitDuration = (distancePx: number): number =>
+const dropDuration = (distancePx: number): number =>
   Math.round(
     Math.min(
-      EXIT_MAX_DURATION_MS,
-      Math.max(EXIT_MIN_DURATION_MS, distancePx / EXIT_SPEED_PX_MS),
+      DROP_MAX_DURATION_MS,
+      Math.max(DROP_MIN_DURATION_MS, distancePx / DROP_SPEED_PX_MS),
     ),
   );
 /** Retired after the exit: fold and drop run in step (one motion). */
@@ -72,11 +71,11 @@ const START: Record<Direction | "parked", [string, string]> = {
   parked: ["0", "0"],
 };
 
-/** The per-transition durations: the arrival's and the exit's (the exit
- * is the drop AND its windows' fold - one in-step motion). */
+/** The per-transition durations: the arrival's, and the drop's (the fold
+ * beat is a constant - FOLD_MS - written straight into the variables). */
 interface SlideScale {
   arrivalMs: number;
-  exitMs: number;
+  dropMs: number;
 }
 
 const slide = (
@@ -89,9 +88,9 @@ const slide = (
   attributes: { [ATTRIBUTE]: name },
   variables: {
     "--ps-duration": `${scale.arrivalMs}ms`,
-    "--ps-minimize": `${scale.exitMs}ms`,
-    "--ps-drop-delay": "0ms",
-    "--ps-drop-dur": `${scale.exitMs}ms`,
+    "--ps-minimize": `${FOLD_MS}ms`,
+    "--ps-drop-delay": `${FOLD_MS}ms`,
+    "--ps-drop-dur": `${scale.dropMs}ms`,
     "--ps-in-x": inX,
     "--ps-in-y": inY,
   },
@@ -124,7 +123,7 @@ function leaveGhost(): SlideScale {
   root().style.removeProperty("--ps-drop-distance");
   const main = document.querySelector("main");
   if (!main) {
-    return { arrivalMs: MIN_DURATION_MS, exitMs: EXIT_MIN_DURATION_MS };
+    return { arrivalMs: ARRIVAL_MIN_DURATION_MS, dropMs: DROP_MIN_DURATION_MS };
   }
   // Measure the LIVE layout first - the detached clone reports zero-size
   // boxes, which is what used to blank the placeholders and collapse
@@ -144,15 +143,15 @@ function leaveGhost(): SlideScale {
     "--ps-drop-distance",
     `${Math.round(exitDistance)}px`,
   );
-  // The exit duration derives from the measured distance (one speed for
-  // every page size) and is set BEFORE the ghost attaches, so its
-  // animation starts at its final timing; applyDirection re-states the
-  // same values through the theme right after - a no-op on the running
-  // animation.
-  const exitMs = exitDuration(exitDistance);
-  root().style.setProperty("--ps-drop-dur", `${exitMs}ms`);
-  root().style.setProperty("--ps-minimize", `${exitMs}ms`);
-  const removalMs = exitMs + REMOVAL_MARGIN_MS;
+  // The exit's drop duration derives from the measured distance (one
+  // pace for every page size) and is set BEFORE the ghost attaches, so
+  // its animation starts at its final timing; applyDirection re-states
+  // the same values through the theme right after - a no-op on the
+  // running animation. The fold beat (FOLD_MS) is a constant.
+  const dropMs = dropDuration(exitDistance);
+  root().style.setProperty("--ps-drop-dur", `${dropMs}ms`);
+  root().style.setProperty("--ps-minimize", `${FOLD_MS}ms`);
+  const removalMs = FOLD_MS + dropMs + REMOVAL_MARGIN_MS;
   const ghost = main.cloneNode(true) as HTMLElement;
   ghost.classList.add("page-slide-ghost");
   Object.assign(ghost.style, {
@@ -251,10 +250,10 @@ function leaveGhost(): SlideScale {
   window.setTimeout(() => remove(), removalMs);
   // The arrival's distance uses the OLD page's height as the estimate of
   // the new page's (the route has not rendered yet); both durations
-  // derive from the same speed.
+  // derive from their own speeds.
   return {
     arrivalMs: arrivalDuration(rect.height + window.innerHeight),
-    exitMs,
+    dropMs,
   };
 }
 
@@ -384,7 +383,7 @@ export function enablePageSlide(): void {
       (bootMain?.getBoundingClientRect().height ?? window.innerHeight) +
         window.innerHeight,
     ),
-    exitMs: exitDuration(window.innerHeight * 1.1),
+    dropMs: dropDuration(window.innerHeight * 1.1),
   };
   applyDirection(linkedWindowTarget ? "parked" : "down", bootScale);
   if (linkedWindowTarget) {
