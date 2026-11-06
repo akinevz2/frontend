@@ -7,11 +7,13 @@
         "# Developing an operating system",
         {
           "heading": "herbstluftwm and herbstutil",
-          "embed": "/blog/hlwm_and_herbstutil.md"
+          "content": "the rabbit hole",
+          "link": "/blog/releases/hlwm_and_herbstutil"
         },
         {
           "heading": "dotfiles 1.0.0",
-          "embed": "/blog/dotfiles_1_0_0.md"
+          "content": "distribution ready! (content WIP)",
+          "link": "/blog/releases/dotfiles_1_0_0"
         }
       ]
     },

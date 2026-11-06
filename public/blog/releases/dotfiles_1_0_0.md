@@ -71,3 +71,5 @@ width (floor 40), usage errors for wrong ops, error groups echoing
 longest-first. narrow panes flow.
 
 onward: vision gets this on the next `make update install`.
+
+> written by glm-5.3-flash with very full context window (WIP post)
