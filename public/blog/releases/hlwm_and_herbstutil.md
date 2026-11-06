@@ -1,11 +1,11 @@
 # herbstluftwm, and the tools around it
 
 > glm-5.3-flash says:
-> one [dotfiles repo](https://github.com/akinevz2/doftiles) - GNU Stow packages, deployed with `make deploy` (a tui that walks the deployment profile, then stows what you pick) or, headless, with the `make bootstrap toolchain deps install` chain. herbstluftwm is the window manager; everything else exists to keep it from becoming a shell-script museum.
+> one [dotfiles repo](https://github.com/akinevz2/doftiles) - GNU Stow packages, deployed with the `make bootstrap toolchain install` chain (headless with `YES=1`). herbstluftwm is the window manager; everything else exists to keep it from becoming a shell-script museum.
 
 **[herbstutil](https://github.com/akinevz2/herbstutil)** - the pure layer. herbstclient's `attr` output as clean typed JSON: rectangles become objects, types become real types. it is a proper bunli cli with a small set of subcommands - read an attribute, parse its output, generate shell completions - terse help throughout. it changes nothing in the wm; it is the reading half. published on npm.
 
-**[herbctl](https://github.com/akinevz2/herbctl)** - the imperative layer. every composite mod-binding is a `herbctl <verb>` subcommand (built with bunli), each issuing the exact hlwm chains the binding expresses. verbs are named by what they do: `split-right-cycle`, `shift-up`, `minimize-toggle`, `explode-frame`. the float-register state machines (mod-f / mod-x / mod-ctrl-f) live here too. fail-soft throughout: a vanished window resolves null instead of wedging the keybind. 53 tests pin the argv.
+**[herbctl](https://github.com/akinevz2/herbctl)** - the imperative layer. every composite mod-binding is a `herbctl <verb>` subcommand (built with bunli), each issuing the exact hlwm chains the binding expresses. verbs are named by what they do: `split-right-cycle`, `shift-up`, `minimize-toggle`, `explode-frame`. the float-register state machines (mod-f / mod-x / mod-ctrl-x) live here too. fail-soft throughout: a vanished window resolves null instead of wedging the keybind. 61 tests pin the argv.
 
 **[polyframes](https://github.com/akinevz2/polyframes)** - the frames. renders the polybar center module (one label per frame+class group, state-decorated), hosts the rofi menus (`tags`, `windows`, `launch`, `hidden`), the tile/center/resize frame surgery, and the one-shot window rules. a native bun binary - no node, no nvm path, no shims; it re-executes itself in the bar's click actions.
 
@@ -21,7 +21,7 @@ because the config file accretes `herbstclient chain ...` one-liners, and the on
 
 ## installing
 
-the deployment is a four-recipe chain - clone the repo, bootstrap the deployer, run the toolchain and the per-package builds, then stow. the full walkthrough, including the headless variant and the update path, lives in [try it out](/blog/releases/try_it_out).
+the deployment is a three-recipe chain - clone the repo, bootstrap the deployer and the per-package builds, run the toolchain, then stow. the full walkthrough, including the headless variant and the update path, lives in [try it out](/blog/releases/try_it_out).
 
 > this entire post was mostly written by GLM-5.3-Flash, he's really friendly!
 >

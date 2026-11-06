@@ -7,10 +7,10 @@
 
 the deployment scope is defined in four manifests:
 
-- `stows.required` - the stow packages
-- `wm.required` - the required binaries and the deploy target
-- `system.required` - the submodule manifest: each line a stow package with its submodule paths
-- `services.required` - the systemd unit start order
+- `stows.depends` - the stow packages
+- `wm.depends` - the required binaries and the deploy target
+- `system.depends` - the submodule manifest: each line a stow package with its submodule paths
+- `services.depends` - the systemd unit start order
 
 `on-deploy configure` edits all four, from a tui checklist or flags. `make install` applies the recorded config; the wizard re-opens only when a required file is modified or conflicting, or when `doftiles.conf` carries changes.
 
@@ -28,13 +28,13 @@ the release set: [doftiles v1.0.0](https://github.com/akinevz2/doftiles), [on-de
 
 ## try it out
 
-cloning and deploying takes four recipes:
+cloning and deploying takes three recipes:
 
 ```sh
-git clone https://github.com/akinevz2/doftiles ~/dots && cd ~/dots
-make bootstrap    # the on-deploy binary, submodule checkouts, bun trust
-make toolchain    # the language toolchains the packages build with
-make deps         # build and install every submodule artifact
+git clone https://github.com/akinevz2/doftiles ~/dots
+cd ~/dots
+make bootstrap    # submodules, toolchains, artifact walk
+make toolchain    # the toolchains the packages build with
 make install      # stow the packages, apply the recorded config
 ```
 

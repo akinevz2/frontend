@@ -158,7 +158,7 @@
       {
         "heading": "xkill-or-close",
         "content": [
-          "[$ModCtrl-q] the xkill-or-close chain: a focused client exists → spawn xkill (targeted kill), else close_and_remove."
+          "[$ModCtrl-q] the xkill-or-close chain: a focused client exists -> spawn xkill (targeted kill), else close_and_remove."
         ]
       },
       {
@@ -183,7 +183,7 @@
       {
         "heading": "float-focus",
         "content": [
-          "[$Mod-f] the float-register machine: try focusing a float (un-float it into an empty focused frame; with children the float stays, no stacking) / no floats + max layout → the size-keeping lift (hc_center frame, vacated-frame removal, hc_fit_to frame, then the algorithm=max tail) / a focused float → direct un-float (no hc_tile). no script-level lock."
+          "[$Mod-f] the float-register machine: try focusing a float (un-float it into an empty focused frame; with children the float stays, no stacking) / no floats + max layout -> the size-keeping lift (hc_center frame, vacated-frame removal, hc_fit_to frame, then the algorithm=max tail) / a focused float -> direct un-float (no hc_tile). no script-level lock."
         ]
       },
       {
@@ -201,7 +201,7 @@
       {
         "heading": "zoom",
         "content": [
-          "[$ModCtrl-f] the three-state press machine (the hc_zoom port): tiled → float (flag reset + center + deco-flush frame fill + fit) / floating → maximize onto a <tag>-max tag (PF_MAX state owned by the delegated hc_maximize / hc_unmaximize helpers) / maximized → restore. the -max check runs before the floating check. exit 1 when no window is focused."
+          "[$ModCtrl-f] the three-state press machine (the hc_zoom port): tiled -> float (flag reset + center + deco-flush frame fill + fit) / floating -> maximize onto a <tag>-max tag (PF_MAX state owned by the delegated hc_maximize / hc_unmaximize helpers) / maximized -> restore. the -max check runs before the floating check. exit 1 when no window is focused."
         ]
       },
       {

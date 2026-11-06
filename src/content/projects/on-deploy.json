@@ -25,7 +25,7 @@
       {
         "heading": "the package, architecturally",
         "content": [
-          "a resolver, not a package list: the deploy script contract is `<target>.deploy <binary>` → the providing package, and `install <binary>` → the install command - one resolver script per distro, whatever the distro is.",
+          "a resolver, not a package list: the deploy script contract is `<target>.deploy <binary>` -> the providing package, and `install <binary>` -> the install command - one resolver script per distro, whatever the distro is.",
           "",
           "the requirement walk is resolve, confirm, run, re-verify: every missing binary is resolved per <target>.deploy, printed before it runs (sudo prompts stay visible - the tty is unlocked), and re-verified after.",
           "",
