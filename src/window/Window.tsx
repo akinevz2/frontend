@@ -153,15 +153,30 @@ export function Window({ node }: { node: WindowNode }) {
   const flags = flagsOf(node.id);
   const maximized = Boolean(flags.maximized);
   const windowRef = useRef<HTMLDivElement | null>(null);
-  // The experimental wobble plays ONCE per visit: the body pointer
-  // LEAVE arms data-wobbled on the root (the visit ended - the next
-  // entry does not re-fire), and MINIMIZING re-arms it
-  // (removeAttribute). Arm-on-enter was a dead loop: the attribute
-  // saturated the :not([data-wobbled]) guard in the very event that
-  // created the hover, and the rule never matched.
+  // The experimental wobble plays ONCE per visit: data-wobbled is armed
+  // on the ROOT when its own wobble ANIMATION ENDS, and MINIMIZING
+  // re-arms it (removeAttribute). Arm-on-leave was an abrupt cancel:
+  // the attribute stopped the :not([data-wobbled]) rule matching
+  // mid-flight, so an accidental swipe over the element snipped the
+  // animation short. Arming on animationend lets the bob ALWAYS finish
+  // - even when the pointer is long gone - and only then saturates the
+  // guard, so the next visit does not re-fire.
+  const experimental = hasTheme(node, "experimental");
   useEffect(() => {
     if (flags.minimized) windowRef.current?.removeAttribute("data-wobbled");
   }, [flags.minimized]);
+  useEffect(() => {
+    if (!experimental) return;
+    const root = windowRef.current;
+    if (!root) return;
+    const arm = (e: AnimationEvent) => {
+      // only the ROOT's own wobble arms the flag: a nested experimental
+      // child's animationend must not saturate its ancestor early
+      if (e.target === root) root.setAttribute("data-wobbled", "");
+    };
+    root.addEventListener("animationend", arm);
+    return () => root.removeEventListener("animationend", arm);
+  }, [experimental]);
   const maximizedCtl = useMaximizedController(
     node.id,
     patch,
@@ -372,11 +387,6 @@ export function Window({ node }: { node: WindowNode }) {
       ) : (
         <div
           className={`window-body${maximized ? " maximized-window-body" : ""}`}
-          onPointerLeave={
-            hasTheme(node, "experimental")
-              ? () => windowRef.current?.setAttribute("data-wobbled", "")
-              : undefined
-          }
         >
           <Body
             node={node}

@@ -123,10 +123,12 @@
   }
 }
 
-/* The WOBBLE identifies an experimental window, ONCE per visit: the
-   body pointer LEAVE arms data-wobbled on the root (Window.tsx) so the
-   next hover does not re-fire, and MINIMIZING re-arms it, so mouse
-   wiggles never restart the effect mid-visit.
+/* The WOBBLE identifies an experimental window, ONCE per visit:
+   data-wobbled is armed on the root when the window's own wobble
+   ANIMATION ENDS (Window.tsx) - an accidental swipe over the element
+   lets the bob FINISH instead of being snipped short, and the next
+   hover does not re-fire - and MINIMIZING re-arms it, so mouse wiggles
+   never restart the effect mid-visit.
 
    The bob targets the WINDOW ROOT - frame, background, title bar, body
    and the OK buttons together, one paint. NO paired counter-animation

@@ -21,11 +21,6 @@ const ATTRIBUTE = "data-page-slide";
  * compound through them). The glide is distance-aware (same pace for
  * every page size, clamped). */
 const FOLD_MS = 200;
-/** The pause between one main window FINISHING its fall and the next
- * BEGINNING: the clear beat the cascade reads by (zero-gap chaining was
- * invisible - the folds blurred into one motion). The step is the fold
- * plus this gap. */
-const CASCADE_GAP_MS = 150;
 const ARRIVAL_SPEED_PX_MS = 3.1;
 const ARRIVAL_MIN_DURATION_MS = 520;
 const ARRIVAL_MAX_DURATION_MS = 880;
@@ -229,20 +224,21 @@ function leaveGhost(): SlideScale {
   // translateY-to-the-taskbar-line fold teleported top-of-page windows
   // below the arriving page before sliding out). The whole-page drop
   // carries every window out from where it sits.
-  // THE CASCADE: the top-level windows fall ONE AT A TIME. Each main
-  // window squashes AND FALLS to the taskbar line (its own measured
-  // distance), raised above every not-yet-falling window while it does;
-  // the fall DURATION is distance-derived (a tall page's windows fall
-  // at the same pace as low ones instead of drop-kicking) and the next
-  // one begins CASCADE_GAP_MS after the previous has FINISHED. Nested
-  // windows carry no fall of their own (the custom property is reset on
-  // descendants in css) - they squash in the parent's stage and ride
-  // the parent's fall. The page's gentle glide waits for the whole
-  // cascade: the drop delay is the cascade tail.
+  // THE CASCADE: the top-level windows fall TOGETHER, each to the
+  // taskbar line over its own measured distance (the distance-derived
+  // duration makes windows fall at their own pace - tall windows take
+  // longer). NO stagger: no delays, no gap beats. The stacking makes
+  // the migration read: windows EARLIER in the DOM are raised OVER
+  // windows later in the DOM for the whole fall (descending z-index),
+  // so the first window sweeps over the rest regardless of original
+  // stacking. Nested windows carry no fall of their own (the custom
+  // property is reset on descendants in css) - they squash in the
+  // parent's stage and ride the parent's fall. The page's gentle glide
+  // waits for the SLOWEST fall: the drop delay is the longest fold.
   const taskbarLine = window.innerHeight;
   const topLevel = ".page > .window, .page > .maximized-shell > .window";
   const liveWins = [...main.querySelectorAll<HTMLElement>(topLevel)];
-  let delay = 0;
+  let longestFoldMs = 0;
   ghost.querySelectorAll<HTMLElement>(topLevel).forEach((win, i) => {
     const liveWin = liveWins[i];
     if (!liveWin) return;
@@ -252,18 +248,18 @@ function leaveGhost(): SlideScale {
       taskbarLine - liveWin.getBoundingClientRect().bottom,
     );
     const foldMs = fallDuration(fall);
+    longestFoldMs = Math.max(longestFoldMs, foldMs);
     win.style.setProperty("--page-fold-dy", `${Math.round(fall)}px`);
-    win.style.setProperty("--ps-fold-delay", `${Math.round(delay)}ms`);
+    win.style.setProperty("--ps-fold-delay", "0ms");
     // per-window fold duration: the inline custom property inherits
     // down the window's subtree, so its children fold in the same beat
     win.style.setProperty("--ps-minimize", `${foldMs}ms`);
     // the falling window rides OVER the rest while it falls
     win.style.position = "relative";
     win.style.zIndex = `${100 - i}`;
-    delay += foldMs + CASCADE_GAP_MS;
   });
-  // the drop begins as the LAST window finishes its fall
-  const tailMs = Math.max(0, delay - CASCADE_GAP_MS);
+  // the drop begins as the LAST (slowest) window's fall finishes
+  const tailMs = liveWins.length ? longestFoldMs : 0;
   root().style.setProperty("--ps-drop-delay", `${tailMs}ms`);
   const removalMs = tailMs + dropMs + REMOVAL_MARGIN_MS;
   document.body.appendChild(ghost);
