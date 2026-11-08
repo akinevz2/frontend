@@ -128,7 +128,11 @@ function leaveGhost(): SlideScale {
   root().style.removeProperty("--ps-drop-distance");
   const main = document.querySelector("main");
   if (!main) {
-    return { arrivalMs: ARRIVAL_MIN_DURATION_MS, dropMs: DROP_MIN_DURATION_MS, tailMs: 0 };
+    return {
+      arrivalMs: ARRIVAL_MIN_DURATION_MS,
+      dropMs: DROP_MIN_DURATION_MS,
+      tailMs: 0,
+    };
   }
   // Measure the LIVE layout first - the detached clone reports zero-size
   // boxes, which is what used to blank the placeholders and collapse
@@ -142,8 +146,7 @@ function leaveGhost(): SlideScale {
   // offset (rect.top goes negative as the page scrolls) - plus margin to
   // clear the folded sliver. A fixed 110vh left the ghost's tail on
   // screen whenever the old page was scrolled down.
-  const exitDistance =
-    window.innerHeight - rect.top + window.innerHeight * 0.1;
+  const exitDistance = window.innerHeight - rect.top + window.innerHeight * 0.1;
   root().style.setProperty(
     "--ps-drop-distance",
     `${Math.round(exitDistance)}px`,

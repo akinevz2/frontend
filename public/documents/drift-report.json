@@ -1,6 +1,6 @@
 {
   "baselineUrl": "https://akinevz.com/checksums.txt",
-  "generatedAt": "2026-11-06T10:09:43.840Z",
+  "generatedAt": "2026-11-08T19:10:26.462Z",
   "mutablePaths": [
     "blog/",
     "stories/",
@@ -72,16 +72,12 @@
     "projects/polyframes/index.html",
     "projects/rarebert.html",
     "projects/rarebert/index.html",
-    "projects/webuser.html",
-    "projects/webuser/index.html",
     "rarebert.html",
     "rarebert/index.html",
     "resume/index.html",
     "sitemap.html",
     "sitemap.xml",
     "sitemap/index.html",
-    "webuser.html",
-    "webuser/index.html",
     "wow.html",
     "wow/index.html"
   ],
