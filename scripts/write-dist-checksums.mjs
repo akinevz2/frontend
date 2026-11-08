@@ -49,6 +49,26 @@ const generatedManifestPath = resolve(distRoot, ".generated.json");
  */
 const driftReportPath = resolve(publicRoot, "documents", "drift-report.json");
 
+/**
+ * Soft-mutable policy: every artifact that originates from `public/`
+ * (Vite copies `public/*` verbatim into `dist/`) is BRANCH-mutable by
+ * convention — publishing new documents there is a legitimate content
+ * change, never STABLE-invariant drift.  These artifacts are LISTED in
+ * the drift report for observability but are never counted as
+ * violations (a NEW entry has no live counterpart, so verifying it
+ * against the baseline is impossible by definition).
+ */
+const softMutableViolations = [];
+const publicSourcedPaths = new Set();
+
+async function walkPublic() {
+  publicSourcedPaths.clear();
+  const publicFiles = await walk(publicRoot);
+  for (const filePath of publicFiles) {
+    publicSourcedPaths.add(relative(publicRoot, filePath).replace(/\\/g, "/"));
+  }
+}
+
 /** Where the previous deployment's manifest lives. */
 const REMOTE_CHECKSUMS_URL =
   process.env.CHECKSUMS_URL || "https://akinevz.com/checksums.txt";
@@ -234,6 +254,7 @@ async function run() {
   const files = await walk(distRoot);
   const existing = await readRemoteChecksums();
   const generatedPaths = await readGeneratedPaths();
+  await walkPublic();
   const rows = [];
   let index = 0;
   const driftViolations = [];
@@ -276,25 +297,33 @@ async function run() {
     // into every HTML entry page, and the baseline manifest can lag the
     // live site, so raw byte comparison alone reports false drift.
     if (!mutable && status !== "STABLE") {
-      const liveText = await fetchLiveCounterpart(relPath, liveCounterparts);
-      const drift = classifyDrift({ relPath, localText, liveText });
-
-      if (drift.drift) {
-        driftViolations.push({
-          relPath,
-          status,
-          prev: previous ?? null,
-          next: digest,
-          resolution: drift.resolution,
-          ...(drift.note ? { note: drift.note } : {}),
-        });
-      } else if (drift.resolution === "rehash-only") {
-        rehashOnly.push(relPath);
+      if (publicSourcedPaths.has(relPath)) {
+        // Soft-mutable: public/-sourced artifact is NEW/CHANGED.  List
+        // it, never gate on it — new public entries cannot be verified
+        // against the baseline because they don't exist there yet.
+        softMutableViolations.push({ relPath, status });
+        process.stdout.write(`     drift: soft-mutable (public/, listed)\n`);
       } else {
-        liveMatched.push(relPath);
-      }
+        const liveText = await fetchLiveCounterpart(relPath, liveCounterparts);
+        const drift = classifyDrift({ relPath, localText, liveText });
 
-      process.stdout.write(`     drift: ${drift.resolution}\n`);
+        if (drift.drift) {
+          driftViolations.push({
+            relPath,
+            status,
+            prev: previous ?? null,
+            next: digest,
+            resolution: drift.resolution,
+            ...(drift.note ? { note: drift.note } : {}),
+          });
+        } else if (drift.resolution === "rehash-only") {
+          rehashOnly.push(relPath);
+        } else {
+          liveMatched.push(relPath);
+        }
+
+        process.stdout.write(`     drift: ${drift.resolution}\n`);
+      }
     }
 
     rows.push(`${digest}  ${relPath}`);
@@ -316,6 +345,8 @@ async function run() {
       rehashOnly,
       liveMatchCount: liveMatched.length,
       liveMatched,
+      softMutableCount: softMutableViolations.length,
+      softMutable: softMutableViolations,
     },
     null,
     2,
@@ -332,6 +363,15 @@ async function run() {
     process.stdout.write(
       `Drift gate: ${liveMatched.length} artifact(s) match the live site but ` +
         `are missing from the baseline manifest (live-match, not drift)\n`,
+    );
+  }
+  if (softMutableViolations.length > 0) {
+    const lines = softMutableViolations.map(
+      (v) => `  ${v.relPath} (${v.status})`,
+    );
+    process.stdout.write(
+      `Drift gate: ${softMutableViolations.length} public/-sourced artifact(s) ` +
+        `are NEW/CHANGED (soft-mutable, listed not gated):\n${lines.join("\n")}\n`,
     );
   }
 

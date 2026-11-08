@@ -2,6 +2,15 @@
   "heading": "kine's blog posts",
   "content": [
     {
+      "heading": "World of Warcraft Forever",
+      "content": [
+        "kine exploring the world of Warcraft again!",
+        {
+          "content": "![rueg](/images/sneaky_rueg.png)"
+        }
+      ]
+    },
+    {
       "heading": "News",
       "content": [
         "# Developing an operating system",

@@ -90,3 +90,48 @@ test("evaluate treats unverifiable artifacts as drift", () => {
   assert.equal(evaluation.ok, false);
   assert.ok(evaluation.reasons[0].includes("unverifiable"));
 });
+
+test("decode tolerates a report without softMutable", () => {
+  assert.equal(
+    decodeReport({ ...validReport, softMutable: undefined }).ok,
+    true,
+  );
+});
+
+test("decode accepts a well-formed softMutable listing", () => {
+  const decoded = decodeReport({
+    ...validReport,
+    softMutable: [{ relPath: "documents/manual.pdf", status: "NEW" }],
+  });
+  assert.equal(decoded.ok, true);
+  assert.equal(decoded.ok && decoded.report.softMutable.length, 1);
+});
+
+test("decode fails closed on a malformed softMutable field", () => {
+  const notArray = decodeReport({ ...validReport, softMutable: "nope" });
+  assert.equal(notArray.ok, false);
+  assert.ok(
+    notArray.ok === false && notArray.issues[0].includes("softMutable"),
+  );
+
+  const noStatus = decodeReport({
+    ...validReport,
+    softMutable: [{ relPath: "documents/manual.pdf" }],
+  });
+  assert.equal(noStatus.ok, false);
+  assert.ok(noStatus.ok === false && noStatus.issues[0].includes("status"));
+});
+
+test("soft-mutable entries never become evaluate failures", () => {
+  const evaluation = evaluateReport({
+    ...validReport,
+    violationCount: 0,
+    violations: [],
+    softMutable: [
+      { relPath: "documents/manual.pdf", status: "NEW" },
+      { relPath: "configs.html", status: "CHANGED" },
+    ],
+  });
+  assert.equal(evaluation.ok, true);
+  assert.equal(evaluation.reasons.length, 0);
+});

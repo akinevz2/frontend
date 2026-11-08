@@ -55,6 +55,7 @@ export function decodeReport(value) {
 
   const issues = [];
   const { baselineUrl, generatedAt, violationCount, violations } = value;
+  const softMutable = value.softMutable ?? null;
 
   if (typeof baselineUrl !== "string" || baselineUrl.length === 0) {
     issues.push("baselineUrl is missing or not a non-empty string");
@@ -92,10 +93,30 @@ export function decodeReport(value) {
     );
   }
 
+  // `softMutable` is optional (pre-policy reports lack it), but a
+  // present-but-malformed field is a generator regression: fail closed.
+  if (softMutable !== null && !Array.isArray(softMutable)) {
+    issues.push("softMutable is present but not an array");
+  } else if (Array.isArray(softMutable)) {
+    for (const [index, entry] of softMutable.entries()) {
+      if (!isRecord(entry) || typeof entry.relPath !== "string") {
+        issues.push(`softMutable[${index}] has no relPath`);
+      } else if (typeof entry.status !== "string") {
+        issues.push(`softMutable[${index}] (${entry.relPath}) has no status`);
+      }
+    }
+  }
+
   return issues.length === 0
     ? {
         ok: true,
-        report: { baselineUrl, generatedAt, violationCount, violations },
+        report: {
+          baselineUrl,
+          generatedAt,
+          violationCount,
+          violations,
+          ...(Array.isArray(softMutable) ? { softMutable } : {}),
+        },
       }
     : { ok: false, issues };
 }
@@ -127,9 +148,20 @@ function observabilityLines(report) {
   const liveMatched = Array.isArray(report.liveMatched)
     ? report.liveMatched
     : [];
+  const softMutable = Array.isArray(report.softMutable)
+    ? report.softMutable
+    : [];
+  const softMutableLines =
+    softMutable.length === 0
+      ? []
+      : [
+          `public/-sourced (soft-mutable, listed not gated): ` +
+            softMutable.map((v) => `${v.relPath} [${v.status}]`).join(", "),
+        ];
   return [
     `rebuild noise reconciled against live: ${rehashOnly.length} rehash-only, ` +
       `${liveMatched.length} live-match (not drift)`,
+    ...softMutableLines,
   ];
 }
 

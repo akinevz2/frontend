@@ -1,6 +1,6 @@
 {
   "baselineUrl": "https://akinevz.com/checksums.txt",
-  "generatedAt": "2026-11-08T19:10:26.462Z",
+  "generatedAt": "2026-11-08T19:17:08.804Z",
   "mutablePaths": [
     "blog/",
     "stories/",
@@ -86,5 +86,12 @@
   "rehashOnlyCount": 0,
   "rehashOnly": [],
   "liveMatchCount": 0,
-  "liveMatched": []
+  "liveMatched": [],
+  "softMutableCount": 1,
+  "softMutable": [
+    {
+      "relPath": "images/sneaky_rueg.png",
+      "status": "NEW"
+    }
+  ]
 }
