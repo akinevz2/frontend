@@ -1,6 +1,6 @@
 {
   "baselineUrl": "https://akinevz.com/checksums.txt",
-  "generatedAt": "2026-11-09T02:31:59.584Z",
+  "generatedAt": "2026-11-09T20:24:02.461Z",
   "mutablePaths": [
     "blog/",
     "stories/",
@@ -91,30 +91,18 @@
   "rehashOnly": [],
   "liveMatchCount": 0,
   "liveMatched": [],
-  "softMutableCount": 6,
+  "softMutableCount": 3,
   "softMutable": [
     {
-      "relPath": "addons/rueg-plater-smol.txt",
-      "status": "CHANGED"
-    },
-    {
-      "relPath": "addons/rueg-wa-rueg.txt",
-      "status": "CHANGED"
-    },
-    {
-      "relPath": "addons/wowup-classic.txt",
+      "relPath": "classic.zip",
       "status": "NEW"
     },
     {
-      "relPath": "addons/wowup-forever.txt",
+      "relPath": "forever.zip",
       "status": "NEW"
     },
     {
-      "relPath": "addons/wowup-tbc.txt",
-      "status": "NEW"
-    },
-    {
-      "relPath": "characters.json",
+      "relPath": "tbc.zip",
       "status": "NEW"
     }
   ]

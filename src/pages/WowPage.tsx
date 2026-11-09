@@ -1,39 +1,45 @@
 import { useMemo, useState, type FormEvent } from "react";
 import { addons, type Section } from "@/content";
 import { useSignals } from "@/lib/signals";
-import { PageWindows } from "@/window";
+import { buildWindows, PageWindows, Window, type WindowNode } from "@/window";
 
 type Feedback = { kind: "error" | "success"; text: string } | null;
 
 const normalise = (value: string) => value.trim().toLowerCase();
 
 /** Top-level sections whose heading marks them form-gated: the
- * full-UI distribution packs render only once the download form has
- * been verified (unlocked), so a plain visit never exposes them. */
+ * full-UI distribution packs never render as page windows — they live
+ * INSIDE the download form, appearing only once it has been verified
+ * (unlocked), so a plain visit never exposes them. */
 const GATED_HEADING_PREFIX = "Full UI pack";
 
-function gatePackSections(items: Section[], unlocked: boolean): Section[] {
-  if (unlocked) return items;
-  return items.filter(
-    (item) => !item.heading?.startsWith(GATED_HEADING_PREFIX),
-  );
-}
+const sections = addons.content as unknown as Section[];
+
+const packSections = sections.filter((item) =>
+  item.heading?.startsWith(GATED_HEADING_PREFIX),
+);
+
+const content = sections.filter(
+  (item) => !item.heading?.startsWith(GATED_HEADING_PREFIX),
+);
+
+/** The pack sections as window nodes, wrapped in a synthetic anchor so
+ * their ids ("packs.0", ...) never collide with the page's top-level
+ * tree ("0", "1", ...). */
+const packNodes: WindowNode[] =
+  buildWindows([
+    { anchor: "packs", content: packSections },
+  ])[0]?.children.flatMap((child) =>
+    child.kind === "window" ? [child.node] : [],
+  ) ?? [];
+
 const localIsoDate = () => {
   const now = new Date();
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
 };
 
-function download(href: string, name: string) {
-  const link = document.createElement("a");
-  link.href = href;
-  link.download = name;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-}
-
-function DownloadForm({ onUnlock }: { onUnlock: () => void }) {
+function DownloadForm({ packs }: { packs: WindowNode[] }) {
   // Cancelling is a command, not a router call — the shell owns the one
   // router-aware "app:navigate" handler.
   const { dispatch } = useSignals();
@@ -55,7 +61,6 @@ function DownloadForm({ onUnlock }: { onUnlock: () => void }) {
       return fail("Incorrect date. Please enter today's date.");
 
     setVerified(true);
-    onUnlock();
     setFeedback({
       kind: "success",
       text: "Date verified! Full UI packs unlocked below.",
@@ -112,47 +117,24 @@ function DownloadForm({ onUnlock }: { onUnlock: () => void }) {
           )}
         </form>
         {verified && (
-          <div className="field-row-stacked">
-            <button
-              type="button"
-              onClick={() => download("/classic.zip", "classic.zip")}
-            >
-              WoW Classic (Era)
-            </button>
-            <button
-              type="button"
-              onClick={() => download("/tbc.zip", "tbc.zip")}
-            >
-              WoW TBC (Anniversary)
-            </button>
-            <button
-              type="button"
-              onClick={() => download("/forever.zip", "forever.zip")}
-            >
-              WoW Forever
-            </button>
-          </div>
+          <ul>
+            {packs.map((node) => (
+              <li key={node.id}>
+                <Window node={node} />
+              </li>
+            ))}
+          </ul>
         )}
       </div>
     </div>
   );
 }
 
-export const WowPage = () => {
-  // The full-UI pack sections exist only after the download form verifies.
-  const [unlocked, setUnlocked] = useState(false);
-  const content = useMemo(
-    () =>
-      gatePackSections(
-        addons.content as unknown as Section[],
-        unlocked,
-      ),
-    [unlocked],
-  );
-  return (
-    <>
-      <PageWindows content={content} />
-      <DownloadForm onUnlock={() => setUnlocked(true)} />
-    </>
-  );
-};
+export const WowPage = () => (
+  // The download form renders after the content windows as a
+  // PageWindows child, so the verified pack windows mount inside it
+  // with the window store in reach.
+  <PageWindows content={content}>
+    <DownloadForm packs={packNodes} />
+  </PageWindows>
+);
