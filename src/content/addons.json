@@ -79,6 +79,29 @@
       ]
     },
     {
+      "heading": "WoWUp addon lists",
+      "content": [
+        {
+          "heading": "Import WoWUp WoW Forever addons list",
+          "content": "WoWUp WoW Forever import string.",
+          "status": "available",
+          "link": "/addons/wowup-forever.txt"
+        },
+        {
+          "heading": "Import WoWUp WoW TBC addons list",
+          "content": "WoWUp WoW TBC import string.",
+          "status": "available",
+          "link": "/addons/wowup-tbc.txt"
+        },
+        {
+          "heading": "Import WoWUp WoW Classic addons list",
+          "content": "WoWUp WoW Classic import string.",
+          "status": "available",
+          "link": "/addons/wowup-classic.txt"
+        }
+      ]
+    },
+    {
       "heading": "Full UI & installation",
       "content": [
         {
