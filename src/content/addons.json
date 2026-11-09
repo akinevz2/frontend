@@ -96,6 +96,17 @@
       ]
     },
     {
+      "heading": "addons list",
+      "content": [
+        "![addons1](/images/addons11.png)",
+        "![addons1](/images/addons12.png)",
+        {
+          "include": "/characters.json"
+        }
+      ],
+      "status": "available"
+    },
+    {
       "heading": "Full UI pack - WoW Classic (Era)",
       "content": [
         {
@@ -127,17 +138,6 @@
           "link": "/forever.zip"
         }
       ]
-    },
-    {
-      "heading": "addons list",
-      "content": [
-        "![addons1](/images/addons11.png)",
-        "![addons1](/images/addons12.png)",
-        {
-          "include": "/characters.json"
-        }
-      ],
-      "status": "available"
     }
   ],
   "theme": "open"

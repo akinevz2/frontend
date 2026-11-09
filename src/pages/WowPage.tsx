@@ -1,11 +1,23 @@
 import { useMemo, useState, type FormEvent } from "react";
-import { addons } from "@/content";
+import { addons, type Section } from "@/content";
 import { useSignals } from "@/lib/signals";
 import { PageWindows } from "@/window";
 
 type Feedback = { kind: "error" | "success"; text: string } | null;
 
 const normalise = (value: string) => value.trim().toLowerCase();
+
+/** Top-level sections whose heading marks them form-gated: the
+ * full-UI distribution packs render only once the download form has
+ * been verified (unlocked), so a plain visit never exposes them. */
+const GATED_HEADING_PREFIX = "Full UI pack";
+
+function gatePackSections(items: Section[], unlocked: boolean): Section[] {
+  if (unlocked) return items;
+  return items.filter(
+    (item) => !item.heading?.startsWith(GATED_HEADING_PREFIX),
+  );
+}
 const localIsoDate = () => {
   const now = new Date();
   const pad = (n: number) => String(n).padStart(2, "0");
@@ -21,7 +33,7 @@ function download(href: string, name: string) {
   link.remove();
 }
 
-function DownloadForm() {
+function DownloadForm({ onUnlock }: { onUnlock: () => void }) {
   // Cancelling is a command, not a router call — the shell owns the one
   // router-aware "app:navigate" handler.
   const { dispatch } = useSignals();
@@ -42,14 +54,11 @@ function DownloadForm() {
     if (date !== today)
       return fail("Incorrect date. Please enter today's date.");
 
-    setFeedback({
-      kind: "success",
-      text: "Date verified! Starting download...",
-    });
     setVerified(true);
+    onUnlock();
     setFeedback({
       kind: "success",
-      text: "Date verified! Pick a client pack below.",
+      text: "Date verified! Full UI packs unlocked below.",
     });
   };
 
@@ -129,9 +138,21 @@ function DownloadForm() {
   );
 }
 
-export const WowPage = () => (
-  <>
-    <PageWindows content={addons} />
-    <DownloadForm />
-  </>
-);
+export const WowPage = () => {
+  // The full-UI pack sections exist only after the download form verifies.
+  const [unlocked, setUnlocked] = useState(false);
+  const content = useMemo(
+    () =>
+      gatePackSections(
+        addons.content as unknown as Section[],
+        unlocked,
+      ),
+    [unlocked],
+  );
+  return (
+    <>
+      <PageWindows content={content} />
+      <DownloadForm onUnlock={() => setUnlocked(true)} />
+    </>
+  );
+};
