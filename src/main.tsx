@@ -3,6 +3,12 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import "xp.css/dist/98.css";
 import "react-toastify/dist/ReactToastify.css";
+// Self-hosted Fira Code (400;700) — replaces the Google Fonts stylesheet
+// (which was a render-blocking third-party request and kept getting its
+// cookies rejected). Same family name, same unicode-range subsets, same
+// font-display: swap.
+import "@fontsource/fira-code/400.css";
+import "@fontsource/fira-code/700.css";
 import "./styles/index.css";
 import { App } from "./shell/App";
 import { SignalProvider } from "./lib/signals";
