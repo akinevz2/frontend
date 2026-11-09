@@ -50,6 +50,12 @@ export const MUTABLE_PATHS = Object.freeze([
   // at the dist ROOT, never in assets/, so they stay STABLE.
   "assets/*.js",
   "assets/*.css",
+  // Vite-emitted font files: npm-sourced webfonts (e.g. @fontsource)
+  // arrive as content-hashed woff/woff2 assets in assets/, same shape
+  // as the bundles above — new font files have no live counterpart at
+  // the baseline, so a NEW here is a legitimate content change.
+  "assets/*.woff2",
+  "assets/*.woff",
 ]);
 
 export const MUTABLE_PATH_SET = Object.freeze(new Set(MUTABLE_PATHS));

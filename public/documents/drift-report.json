@@ -1,6 +1,6 @@
 {
   "baselineUrl": "https://akinevz.com/checksums.txt",
-  "generatedAt": "2026-11-09T20:24:02.461Z",
+  "generatedAt": "2026-11-09T21:48:27.231Z",
   "mutablePaths": [
     "blog/",
     "stories/",
@@ -8,7 +8,9 @@
     "documents/drift-report.json",
     "checksums.txt",
     "assets/*.js",
-    "assets/*.css"
+    "assets/*.css",
+    "assets/*.woff2",
+    "assets/*.woff"
   ],
   "generatedPaths": [
     "404.html",
@@ -91,19 +93,6 @@
   "rehashOnly": [],
   "liveMatchCount": 0,
   "liveMatched": [],
-  "softMutableCount": 3,
-  "softMutable": [
-    {
-      "relPath": "classic.zip",
-      "status": "NEW"
-    },
-    {
-      "relPath": "forever.zip",
-      "status": "NEW"
-    },
-    {
-      "relPath": "tbc.zip",
-      "status": "NEW"
-    }
-  ]
+  "softMutableCount": 0,
+  "softMutable": []
 }
