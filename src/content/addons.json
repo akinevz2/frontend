@@ -96,25 +96,48 @@
       ]
     },
     {
-      "heading": "Full UI & installation",
+      "heading": "Full UI pack - WoW Classic (Era)",
       "content": [
         {
-          "heading": "Rueg Distributable Config (dist.7z)",
-          "content": "See bottom of this page.",
-          "status": "available"
-        },
-        {
-          "heading": "addons list",
-          "content": [
-            "![addons1](/images/addons11.png)",
-            "![addons1](/images/addons12.png)"
-          ],
-          "status": "available"
+          "heading": "Rueg UI Pack - Classic (classic.zip)",
+          "content": "Full Interface/AddOns and WTF configuration for WoW Classic (Era). Extract into the WoW Classic (Era) folder.",
+          "status": "available",
+          "link": "/classic.zip"
         }
       ]
     },
     {
-      "include": "/characters.json"
+      "heading": "Full UI pack - WoW TBC (Anniversary)",
+      "content": [
+        {
+          "heading": "Rueg UI Pack - TBC (tbc.zip)",
+          "content": "Full Interface/AddOns and WTF configuration for WoW TBC (Anniversary). Extract into the WoW Anniversary (TBC) folder.",
+          "status": "available",
+          "link": "/tbc.zip"
+        }
+      ]
+    },
+    {
+      "heading": "Full UI pack - WoW Forever",
+      "content": [
+        {
+          "heading": "Rueg UI Pack - Forever (forever.zip)",
+          "content": "Full Interface/AddOns and WTF configuration for WoW Forever. Extract into the WoW Forever folder.",
+          "status": "available",
+          "link": "/forever.zip"
+        }
+      ]
+    },
+    {
+      "heading": "addons list",
+      "content": [
+        "![addons1](/images/addons11.png)",
+        "![addons1](/images/addons12.png)",
+        {
+          "include": "/characters.json"
+        }
+      ],
+      "status": "available"
     }
   ],
   "theme": "open"

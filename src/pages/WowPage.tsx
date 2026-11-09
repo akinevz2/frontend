@@ -27,6 +27,7 @@ function DownloadForm() {
   const { dispatch } = useSignals();
   const [username, setUsername] = useState("");
   const [date, setDate] = useState("");
+  const [verified, setVerified] = useState(false);
   const [feedback, setFeedback] = useState<Feedback>(null);
   const today = useMemo(localIsoDate, []);
 
@@ -45,10 +46,11 @@ function DownloadForm() {
       kind: "success",
       text: "Date verified! Starting download...",
     });
-    window.setTimeout(() => {
-      download("/dist.7z", "dist.7z");
-      setFeedback({ kind: "success", text: "Download started successfully!" });
-    }, 500);
+    setVerified(true);
+    setFeedback({
+      kind: "success",
+      text: "Date verified! Pick a client pack below.",
+    });
   };
 
   return (
@@ -86,7 +88,7 @@ function DownloadForm() {
             />
           </div>
           <div className="form-actions">
-            <button type="submit">Verify &amp; Download</button>
+            <button type="submit">Verify</button>
             <button
               type="button"
               onClick={() => dispatch("app:navigate", { to: "/" })}
@@ -100,6 +102,28 @@ function DownloadForm() {
             </p>
           )}
         </form>
+        {verified && (
+          <div className="field-row-stacked">
+            <button
+              type="button"
+              onClick={() => download("/classic.zip", "classic.zip")}
+            >
+              WoW Classic (Era)
+            </button>
+            <button
+              type="button"
+              onClick={() => download("/tbc.zip", "tbc.zip")}
+            >
+              WoW TBC (Anniversary)
+            </button>
+            <button
+              type="button"
+              onClick={() => download("/forever.zip", "forever.zip")}
+            >
+              WoW Forever
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
