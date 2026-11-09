@@ -4,6 +4,7 @@ import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import rehypeRaw from "rehype-raw";
+import { rehypeHighlightSubset } from "../src/lib/rehypeHighlightSubset.ts";
 import rehypeSanitize from "rehype-sanitize";
 import { rehypeYoutubeEmbed } from "../src/lib/rehypeYoutubeEmbed.ts";
 // The exact schema the real pipeline uses (src/lib/markdown.tsx) — no
@@ -15,6 +16,7 @@ const processor = unified()
   .use(remarkRehype, { allowDangerousHtml: true })
   .use(rehypeRaw)
   .use(rehypeYoutubeEmbed)
+  .use(rehypeHighlightSubset)
   .use(rehypeSanitize, sanitizeSchema);
 
 function process(md) {

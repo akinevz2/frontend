@@ -1,5 +1,5 @@
 import { useMemo, useState, type FormEvent } from "react";
-import { addons, characters } from "@/content";
+import { addons } from "@/content";
 import { useSignals } from "@/lib/signals";
 import { PageWindows } from "@/window";
 
@@ -107,7 +107,7 @@ function DownloadForm() {
 
 export const WowPage = () => (
   <>
-    <PageWindows content={[addons, characters]} />
+    <PageWindows content={addons} />
     <DownloadForm />
   </>
 );

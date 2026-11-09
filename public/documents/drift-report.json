@@ -1,6 +1,6 @@
 {
   "baselineUrl": "https://akinevz.com/checksums.txt",
-  "generatedAt": "2026-11-08T19:17:08.804Z",
+  "generatedAt": "2026-11-09T02:31:59.584Z",
   "mutablePaths": [
     "blog/",
     "stories/",
@@ -27,6 +27,8 @@
     "doftiles/index.html",
     "frontend.html",
     "frontend/index.html",
+    "got-source.html",
+    "got-source/index.html",
     "graphbrowser.html",
     "graphbrowser/index.html",
     "herbctl.html",
@@ -53,6 +55,8 @@
     "projects/doftiles/index.html",
     "projects/frontend.html",
     "projects/frontend/index.html",
+    "projects/got-source.html",
+    "projects/got-source/index.html",
     "projects/graphbrowser.html",
     "projects/graphbrowser/index.html",
     "projects/herbctl.html",
@@ -87,10 +91,30 @@
   "rehashOnly": [],
   "liveMatchCount": 0,
   "liveMatched": [],
-  "softMutableCount": 1,
+  "softMutableCount": 6,
   "softMutable": [
     {
-      "relPath": "images/sneaky_rueg.png",
+      "relPath": "addons/rueg-plater-smol.txt",
+      "status": "CHANGED"
+    },
+    {
+      "relPath": "addons/rueg-wa-rueg.txt",
+      "status": "CHANGED"
+    },
+    {
+      "relPath": "addons/wowup-classic.txt",
+      "status": "NEW"
+    },
+    {
+      "relPath": "addons/wowup-forever.txt",
+      "status": "NEW"
+    },
+    {
+      "relPath": "addons/wowup-tbc.txt",
+      "status": "NEW"
+    },
+    {
+      "relPath": "characters.json",
       "status": "NEW"
     }
   ]

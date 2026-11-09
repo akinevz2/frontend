@@ -1,10 +1,11 @@
 import type { Project, Route, Section, SoundCloudData } from "./schema";
 import pagesJson from "./pages.json";
+import projectMtimes from "virtual:project-mtimes";
+import includesData from "virtual:content-includes";
 import sectionsJson from "./sections.json";
 import contactsJson from "./contacts.json";
 import addonsJson from "./addons.json";
 import configsJson from "./configs.json";
-import charactersJson from "./includes/characters.json";
 import blogJson from "./blog.json";
 import soundcloudJson from "./soundcloud.json";
 import musicExtJson from "./music-ext.json";
@@ -15,41 +16,40 @@ export * from "./schema";
  * A content file can embed another content file's window tree with an
  * include directive instead of duplicating it:
  *
- *   { "include": "make-recipes.md" } → the markdown file, wrapped as a Section
- *   { "include": "characters.json" }  →  the Section of includes/characters.json
+ *   { "include": "/characters.json" }  → the Section of
+ *                                        public/characters.json
+ *   { "include": "/blog/releases/get-traversal.md" }
+ *            → the markdown file at that public path, wrapped as a Section
  *
- * ANY file under src/content/includes/ is includable — no registration,
- * and the directive carries the FULL FILE NAME (extension included):
- *  - `.json`: must hold a Section (the window-tree shape of a content file).
- *  - `.md`: author-written markdown (literal newlines), imported raw and
- *    wrapped as `{ heading, anchor: <stem>, content: <md> }` (no theme:
- *    An optional leading `# Heading` line names the window; otherwise the
- *    humanized file stem does ("make-recipes" → "Make recipes").
+ * Include targets live under public/ and directives carry the PUBLIC PATH
+ * (leading slash, extension included) — the same address the file is served
+ * at, so an include target doubles as a standalone page. Resolution is
+ * build-time via the virtual:content-includes module (build/includesPlugin.ts),
+ * whose scanned directories ARE the registration: public/includes/ (.json
+ * and .md) and public/blog/releases/ (.md). Widening the scan would inline
+ * the files into the JS bundle — keep targets small, and do not scan all
+ * of public/ (that would inline every blog post).
+ *
+ *   - `.json`: must hold a Section (the window-tree shape of a content file).
+ *   - `.md`: author-written markdown (literal newlines), imported raw and
+ *     wrapped as `{ heading, anchor: <stem>, content: <md> }` (no theme:
+ *     An optional leading `# Heading` line names the window; otherwise the
+ *     humanized file stem does ("make-recipes" → "Make recipes").
  * Directives are expanded at load time, recursively (an included tree may
- * itself contain directives). Unknown or circular directives throw during
- * module load, failing the build loudly instead of rendering an opaque
- * object. Each file may be included multiple times across sibling items;
- * cycles are broken by the seen-set, which tracks one inclusion chain.
- * Target lookup goes through the vite glob maps — a directive never joins
- * paths itself, so a hostile name cannot escape the includes/ directory.
+ * itself contain directives). Unknown directives throw during module load,
+ * failing the build loudly instead of rendering an opaque object. Each file
+ * may be included multiple times across sibling items; cycles are broken by
+ * the seen-set, which tracks one inclusion chain.
  *
  * Everything here precedes its first use: exports below expand their
  * trees at module evaluation, so this scaffolding must be initialized
  * by then (const declarations do not hoist).
  */
 
-/** Every includable .json Section, keyed by file name ("characters.json"). */
-const sectionModules = import.meta.glob<Section>("./includes/*.json", {
-  eager: true,
-  import: "default",
-});
-
-/** Every includable .md document, keyed by file name — imported raw. */
-const mdModules = import.meta.glob<string>("./includes/*.md", {
-  eager: true,
-  import: "default",
-  query: "?raw",
-});
+/** Every includable file from virtual:content-includes (a live filesystem
+ * walk of public/includes/ and public/blog/releases/ — see
+ * build/includesPlugin.ts), keyed by public path. */
+const includeEntries = includesData;
 
 const stemOf = (path: string): string =>
   path
@@ -83,37 +83,39 @@ const mdSection = (stem: string, md: string): Section => {
   };
 };
 
-/** Includable Sections, keyed by FULL file name ("make-recipes.md"). */
-const includes: Record<string, Section> = {
-  ...Object.fromEntries(
-    Object.entries(sectionModules).map(([path, section]) => [
-      path.split("/").pop()!,
-      section,
-    ]),
-  ),
-  ...Object.fromEntries(
-    Object.entries(mdModules).map(([path, md]) => {
-      const stem = stemOf(path);
-      return [path.split("/").pop()!, mdSection(stem, md)];
-    }),
-  ),
-};
+/** Includable Sections, keyed by PUBLIC PATH ("/includes/characters.json").
+ * `.json` entries must hold a Section (the window-tree shape of a content
+ * file); `.md` entries are author-written markdown (literal newlines),
+ * wrapped by mdSection. */
+const includes: Record<string, Section> = Object.fromEntries(
+  Object.entries(includeEntries).map(([publicPath, entry]) => {
+    if (entry.kind === "json") {
+      return [publicPath, JSON.parse(entry.content) as Section];
+    }
+    const stem = stemOf(publicPath);
+    return [publicPath, mdSection(stem, entry.content)];
+  }),
+);
 
-/** The include target a directive file name resolves to. The name must
- * be a bare file name (no directories) with an includable extension;
- * unknown names throw — the same loud failure the renderer would
- * otherwise paper over. */
+/** The include target a directive public path resolves to. The path must
+ * be absolute, under public/ (no "..", extension included); unknown paths
+ * throw — the same loud failure the renderer would otherwise paper over. */
 const includeTarget = (name: string): Section => {
-  if (!/^[a-z0-9][a-z0-9._-]*\.(json|md)$/i.test(name) || name.includes("/")) {
+  if (
+    !name.startsWith("/") ||
+    name.includes("..") ||
+    !/^\/[a-z0-9][a-z0-9._/-]*\.(json|md)$/i.test(name)
+  ) {
     throw new Error(
       `Unknown include directive: ${name} ` +
-        "(targets are bare .json/.md file names under src/content/includes/)",
+        "(targets are public paths under public/, .json or .md)",
     );
   }
   const target = includes[name];
   if (!target) {
     throw new Error(
-      `Unknown include directive: ${name} (targets live in src/content/includes/)`,
+      `Unknown include directive: ${name} ` +
+        "(targets live at public/*.json or public/blog/releases/*.md)",
     );
   }
   return target;
@@ -164,20 +166,52 @@ const projectModules = import.meta.glob<Project>("./projects/*.json", {
 export const projectPath = (project: Project) =>
   project.path ?? `/projects/${project.slug}`;
 
-export const projects = Object.values(projectModules)
+/**
+ * Sort key for a project: [0] = 0 when the project has no `lastModified`
+ * (undated — lists first), 1 when it does; [1] = the sort timestamp
+ * (mtime for undated, epoch ms of the ISO date for dated). Undated
+ * projects sort among themselves by mtime, newest first; dated ones by
+ * their `lastModified` field.
+ */
+/**
+ * Sort key for a project: [0] = 0 when the project has no `lastModified`
+ * (undated — lists first), 1 when it does; [1] = the sort timestamp
+ * (mtime for undated, epoch ms of the ISO date for dated). Undated
+ * projects sort among themselves by file mtime (newest first); dated
+ * ones by their `lastModified` field. The title breaks ties within
+ * each group. Mtimes come from the virtual:project-mtimes module
+ * (build/projectMtimesPlugin.ts) — the projects directory walk,
+ * recomputed by the dev watcher; the map is keyed by the file name
+ * (the glob key, so the lookup is exact even when a file name differs
+ * from its slug).
+ */
+const keyOf = (project: Project, file: string): [number, number] =>
+  project.lastModified
+    ? [1, Date.parse(project.lastModified) || 0]
+    : [0, projectMtimes[file] ?? 0];
+
+export const projects = Object.entries(projectModules)
   // Project pages can embed shared content the same way page trees can:
   // expand include directives (e.g. the make-recipes table) at load time.
-  .map((project): Project => ({
-    ...project,
-    content: resolveIncludes(project.content),
+  .map(([file, project]) => ({
+    file,
+    project: {
+      ...project,
+      content: resolveIncludes(project.content),
+    },
   }))
-  // Most recently updated first; the title breaks ties (a fresh stamp
-  // on every page keeps the listing in its familiar alphabetical shape
-  // until the pages start drifting apart in update time).
+  // Undated projects list FIRST (they are the newest work), among
+  // themselves by file mtime (newest first); the dated ones follow by
+  // `lastModified` (most recently updated first). The title breaks
+  // ties within each group.
   .sort((a, b) => {
-    const byDate = (b.lastModified ?? "").localeCompare(a.lastModified ?? "");
-    return byDate !== 0 ? byDate : a.title.localeCompare(b.title);
-  });
+    const aKey = keyOf(a.project, a.file);
+    const bKey = keyOf(b.project, b.file);
+    if (aKey[0] !== bKey[0]) return aKey[0] - bKey[0]; // undated first
+    if (aKey[1] !== bKey[1]) return bKey[1] - aKey[1]; // newest first
+    return a.project.title.localeCompare(b.project.title);
+  })
+  .map((entry) => entry.project);
 
 /**
  * Short-hand URL for a project: /<slug>. Redirects to the canonical
@@ -234,7 +268,6 @@ export const sections = resolveIncludes(sectionsJson as Section);
 export const contacts = resolveIncludes(contactsJson as Section);
 export const addons = resolveIncludes(addonsJson as Section);
 export const configs = resolveIncludes(configsJson as Section);
-export const characters = resolveIncludes(charactersJson as Section);
 export const blog = resolveIncludes(blogJson as Section);
 export const soundcloud = soundcloudJson as SoundCloudData;
 export const musicExt = musicExtJson;

@@ -6,6 +6,8 @@ import { DEV_HOST, DEV_PORT, ROOT, SECURITY_HEADERS } from "./build/env.ts";
 import { blogDocumentsPlugin } from "./build/blogDocumentsPlugin.ts";
 import { blogDirsPlugin } from "./build/blogDirsPlugin.ts";
 import { routeSkeletonsPlugin } from "./build/routeSkeletonsPlugin.ts";
+import { projectMtimesPlugin } from "./build/projectMtimesPlugin.ts";
+import { contentIncludesPlugin } from "./build/includesPlugin.ts";
 
 const fromRoot = (p: string) => path.resolve(ROOT, p);
 
@@ -27,6 +29,8 @@ export default defineConfig({
     blogDocumentsPlugin(),
     blogDirsPlugin(),
     routeSkeletonsPlugin(),
+    projectMtimesPlugin(path.resolve(ROOT, "src/content/projects")),
+    contentIncludesPlugin(path.resolve(ROOT, "public")),
   ],
   build: {
     cssMinify: false,

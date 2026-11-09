@@ -11,13 +11,15 @@ export type Embed = {
 };
 
 /**
- * A content-file include directive: `{"include": "<file>"}` expands, at
- * load time (src/content/index.ts), into the referenced Section under
- * src/content/includes/ as a nested child — JSON cannot import, so this
- * is the "include" mechanism for reusing a section across pages.
- * <file> is the FULL file name: a `.json` holding a Section, or an
- * author-written `.md` file wrapped as one. Anything dropped into that
- * directory is includable — no registration needed.
+ * A content-file include directive: `{"include": "<path>"}` expands, at
+ * load time (src/content/index.ts), into the referenced Section as a
+ * nested child — JSON cannot import, so this is the "include" mechanism
+ * for reusing a section across pages.
+ * <path> is the PUBLIC path of the target (leading slash, extension
+ * included): a `.json` holding a Section, or an author-written `.md`
+ * file wrapped as one. Targets live at the public root (*.json) or
+ * public/blog/releases/ (*.md) — the include walk there is the
+ * registration (build/includesPlugin.ts).
  */
 export type IncludeRef = { include: string };
 

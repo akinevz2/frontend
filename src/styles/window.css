@@ -463,6 +463,21 @@ form#form > label {
   box-sizing: border-box;
 }
 
+/* Inline code (markdown backticks): 98.css gives code only a font, so the
+ * glyphs sit flush against the neighbouring words — zero gap on either
+ * side and no visual separation from the running text. Render it as a
+ * terminal-style chip — black background, green bold text, mono — to
+ * match the site's terminal aesthetic; `:not(pre) >` keeps fenced blocks
+ * (pre > code) untouched, and em units track the smaller window-body
+ * text size. */
+:not(pre) > code {
+  margin: 0 0.15em;
+  padding: 0.1em 0.3em;
+  background-color: #e8d8a0;
+  color: #000;
+  font-weight: 700;
+}
+
 /* 98.css pins window text to its Win98 chrome size: .window{font-size:11px}.
    Content windows read like documents — body text follows the root size,
    the same 1rem the pre blocks above (98.css) already render at. */

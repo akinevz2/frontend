@@ -1,0 +1,51 @@
+{
+  "slug": "got-source",
+  "title": "get",
+  "github": "https://github.com/akinevz2/got-source",
+  "description": "A traversal-first helper for the terminal: `get` makes the cd+ls workflow fast for folders, and additionally provides support for viewing files in bat, cat, vim, and supports reading links/PATH items.",
+  "content": {
+    "heading": "get - fast cd+ls workflow for folders, with file viewing and search",
+    "content": [
+      "`get` is a traversal-first helper for the terminal: most invocations are a single `get` away from where you are, and the `-` back-navigation keeps a history of the directories you've been in. The purpose of `get` is to make the cd+ls workflow fast for folders — and it additionally provides support for viewing files in bat, cat, and vim, and supports reading links/PATH items.",
+      "`get` is implemented as a bash function (for cd support), backed by `got` — the POSIX-sh script holding all the logic (listing, cat/bat display, grep, filename search + fzf picking, `$PATH` resolution).",
+      {
+        "heading": "Usage",
+        "content": [
+          "get                              ls -al the current directory",
+          "get @name [more...]              open <name> in $EDITOR; if not a local file, resolve it on $PATH and follow symlinks to the real file",
+          "get <dir> [names...]             ls the dir, then find each name beneath it",
+          "get <file...>                    cat/bat the files; symlinks print only their real path, so `get $(get <link>)` shows the contents",
+          "get <queries...> <file|dir>      grep each query (with file+line numbers); for a folder, find matching filenames and fzf-pick one",
+          "get <queries...> -- <file|dir>…  same, with an explicit queries/targets split",
+          "get -n <queries...> <dir>        filename search + fzf pick",
+          "get -                            cd to the previous directory first",
+          "get <dir> [names...]             cd into <dir>, then behave like `got .`",
+          "",
+          {
+            "include": "/blog/releases/get-traversal.md"
+          }
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "Split rule",
+        "content": [
+          "Without `--`: an argument that exists as a file/dir is a target, everything else is a query. If there are no queries at all, targets are displayed; if there are queries, targets are searched."
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "Implementation",
+        "content": [
+          "`get` is implemented as a bash function (for cd support), backed by `got` — the POSIX-sh script holding all the logic (listing, cat/bat display, grep, filename search + fzf picking, `$PATH` resolution)."
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "Install",
+        "content": ["make install"]
+      }
+    ]
+  },
+  "lastModified": "2026-11-09"
+}

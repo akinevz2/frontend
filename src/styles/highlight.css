@@ -1,0 +1,91 @@
+/* highlight.js token colors for rehype-highlight output (src/lib/markdown.tsx).
+ * Hand-rolled instead of a stock theme so the palette sits on the 98.css/xp.css
+ * light window backgrounds — pre/code render on the window body, not a dark panel.
+ * Only the classes rehype-highlight emits are styled; untagged text keeps the
+ * inherited body color.
+ *
+ * Every color is !important: window.css enforces `span { color:
+ * var(--text-color) !important }` site-wide, and at equal importance the
+ * higher-specificity token selectors here win the cascade. */
+
+.hljs-comment,
+.hljs-quote {
+  color: #007b00 !important;
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-doctag,
+.hljs-meta .hljs-keyword,
+.hljs-template-tag {
+  color: #a31515 !important;
+}
+
+.hljs-string,
+.hljs-regexp,
+.hljs-meta .hljs-string,
+.hljs-addition {
+  color: #0451a5 !important;
+}
+
+.hljs-number,
+.hljs-literal,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-attr,
+.hljs-attribute {
+  color: #b26700 !important;
+}
+
+.hljs-title,
+.hljs-title.function_,
+.hljs-section,
+.hljs-name {
+  color: #795e26 !important;
+}
+
+.hljs-type,
+.hljs-title.class_,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-selector-class,
+.hljs-selector-id {
+  color: #267f99 !important;
+}
+
+.hljs-meta,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-link {
+  color: #6f5ea8 !important;
+}
+
+.hljs-deletion {
+  color: #a31515 !important;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: bold;
+}
+
+/* shell-session ("console"/"shell") blocks: the prompt marker arrives as
+ * `hljs-meta prompt_`, and each session's input lines (prompt path +
+ * command) arrive as nested `bash` spans; command output stays plain.
+ * Prompts are muted purple, terminal input is green — so typing reads
+ * differently from the ls/cat output between commands. */
+.hljs-meta.prompt_,
+.hljs-meta .hljs-prompt_ {
+  color: #6f5ea8 !important;
+  user-select: none;
+}
+
+.language-console .bash,
+.language-shellsession .bash,
+.language-shell .bash {
+  color: #007b00 !important;
+}

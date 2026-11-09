@@ -5,6 +5,7 @@ import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import { Link } from "react-router-dom";
 import { rehypeYoutubeEmbed } from "@/lib/rehypeYoutubeEmbed";
+import { rehypeHighlightSubset } from "@/lib/rehypeHighlightSubset";
 import { sanitizeSchema } from "@/lib/sanitizeSchema";
 import { CLIPPY_LINK, onClippyTriggerClick } from "./clippy";
 
@@ -20,10 +21,15 @@ export function Md({ children }: Readonly<Props>) {
       // remarkGfm: CommonMark pipes tables (| Recipe | Effect |) so
       // content files need no raw <table> HTML; strikethrough and
       // task lists come along (unused today).
+      // rehypeHighlightSubset: fenced blocks (```ts) get highlight.js
+      // token spans (subset of grammars — see the plugin); the classes
+      // survive rehypeSanitize via sanitizeSchema. Must run BEFORE
+      // rehypeSanitize so the tokens it emits aren't stripped.
       remarkPlugins={[remarkBreaks, remarkGfm]}
       rehypePlugins={[
         rehypeRaw,
         rehypeYoutubeEmbed,
+        rehypeHighlightSubset,
         [rehypeSanitize, sanitizeSchema],
       ]}
       components={{

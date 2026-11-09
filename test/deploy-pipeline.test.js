@@ -24,16 +24,20 @@ test("build:gated is the full pipeline: build + checksums", () => {
   assert.equal(scripts["build:gated"], "npm run build && npm run checksums");
 });
 
-test("build:local refreshes soundcloud, then gated build, then the gate", () => {
-  const local = scripts["build:local"];
-  assert.match(local, /refresh:content/);
-  assert.match(local, /refresh:soundcloud/);
-  const refreshAt = local.indexOf("refresh:soundcloud");
-  const gatedAt = local.indexOf("build:gated");
-  const gateAt = local.indexOf("verify:policy");
+test("build:prep refreshes soundcloud, then gated build, then the gate", () => {
+  // build:local delegates to build:prep (the refresh chain lives there
+  // since the git-independent build:local split); the prep chain is
+  // what must order the refresh before the gate.
+  const prep = scripts["build:prep"];
+  assert.match(prep, /refresh:content/);
+  assert.match(prep, /refresh:soundcloud/);
+  const refreshAt = prep.indexOf("refresh:soundcloud");
+  const gatedAt = prep.indexOf("build:gated");
+  const gateAt = prep.indexOf("verify:policy");
   assert.ok(refreshAt !== -1 && gatedAt !== -1 && gateAt !== -1);
   assert.ok(refreshAt < gatedAt, "content refresh must precede the build");
   assert.ok(gatedAt < gateAt, "the gate must consume the fresh drift report");
+  assert.match(scripts["build:local"], /build:prep/);
 });
 
 test("check:ci mirrors the CI subset with the gated build", () => {

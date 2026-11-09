@@ -112,6 +112,9 @@
           "status": "available"
         }
       ]
+    },
+    {
+      "include": "/characters.json"
     }
   ],
   "theme": "open"

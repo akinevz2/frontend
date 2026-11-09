@@ -9,7 +9,9 @@ import { defaultSchema } from "rehype-sanitize";
  * - <iframe> (YouTube embeds via rehypeYoutubeEmbed, or hand-written raw
  *   HTML), including the attributes those embeds need — `style` for
  *   responsive sizing, `referrerPolicy` for YouTube's error-153 fix;
- * - `style` and `loading` on <img> (inline content images).
+ * - `style` and `loading` on <img> (inline content images);
+ * - `className` on <code> and <span> so rehype-highlight tokens
+ *   (`language-*`, `hljs-*`) survive rehype-sanitize.
  */
 export const sanitizeSchema = {
   ...defaultSchema,
@@ -17,6 +19,8 @@ export const sanitizeSchema = {
   attributes: {
     ...defaultSchema.attributes,
     img: [...(defaultSchema.attributes?.img ?? []), "style", "loading"],
+    code: ["className", ...(defaultSchema.attributes?.code ?? [])],
+    span: ["className", ...(defaultSchema.attributes?.span ?? [])],
     iframe: [
       "src",
       "width",
