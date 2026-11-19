@@ -43,6 +43,7 @@ export function projectMtimesPlugin(projectsDir: string): Plugin {
     name: "project-mtimes",
     resolveId(id) {
       if (id === VIRTUAL_ID) return RESOLVED_ID;
+      return null;
     },
     load(id) {
       if (id !== RESOLVED_ID) return;
