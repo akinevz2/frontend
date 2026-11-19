@@ -4,6 +4,26 @@
     "I sometimes change the blurb on the front page here,",
     "Enjoy your visit!",
     {
+      "heading": "what kine does",
+      "theme": "open",
+      "content": [
+        "web developer, open to remote & onsite roles:",
+        {
+          "heading": "gibraltar · costa del sol · brighton",
+          "content": [
+            "full-stack web: typescript, react, python, .NET admin panels",
+            "previously: salesforce at revolent group",
+            "bsc, university of sussex",
+            "[available](/resume) for contract & permanent"
+          ]
+        },
+        {
+          "heading": "also tutoring",
+          "content": "computer science, maths, sciences, english & russian — [get in touch](/contact)"
+        }
+      ]
+    },
+    {
       "heading": "for guru wisdom, there's tao of vim",
       "link": "https://mkaz.blog/working-with-vim/the-tao-of-vim/",
       "content": "for everything else, stay here:)"
@@ -28,7 +48,7 @@
         {
           "theme": "experimental",
           "heading": "current occupation",
-          "content": "[job search](/resume)! web dev! data hoarding? continued research!"
+          "content": "[open to web dev roles](/resume) — gibraltar, remote, costa del sol, brighton"
         },
         {
           "theme": "experimental",
@@ -47,9 +67,7 @@
       "content": [
         "recently:",
         {
-          "content": [
-            "graduated University of Sussex!"
-          ]
+          "content": ["graduated University of Sussex!"]
         },
         "currently:",
         {
@@ -62,7 +80,7 @@
         {
           "theme": "experimental",
           "content": [
-            "looking for a [job](/resume) in the IT sector",
+            "seeking [web dev roles](/resume) — gibraltar / remote / brighton",
             "planning to make a videogame"
           ]
         },
@@ -135,17 +153,13 @@
             {
               "heading": "music",
               "link": "https://soundcloud.com/akinevz",
-              "content": [
-                "where i post really heavy music"
-              ]
+              "content": ["where i post really heavy music"]
             },
             {
               "heading": "another music",
               "link": "https://soundcloud.com/akinevz2",
               "theme": "experimental",
-              "content": [
-                "where i post music for the sake of memes"
-              ]
+              "content": ["where i post music for the sake of memes"]
             },
             "and endlessly, deeply",
             {
