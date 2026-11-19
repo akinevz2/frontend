@@ -39,23 +39,6 @@ function Children({ items }: { items: WindowChild[] }) {
             );
           case "element":
             return <li key={index}>{child.element}</li>;
-          case "columns":
-            return (
-              <li key={index} className="columns-li">
-                <div
-                  className="columns"
-                  style={
-                    { "--columns": child.columns.length } as React.CSSProperties
-                  }
-                >
-                  {child.columns.map((group, column) => (
-                    <div className="columns-col" key={column}>
-                      <Children items={group} />
-                    </div>
-                  ))}
-                </div>
-              </li>
-            );
           case "window":
             return <Window key={child.node.id} node={child.node} />;
         }
