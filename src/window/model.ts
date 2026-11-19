@@ -137,7 +137,10 @@ function buildNode(section: Section, id: string, depth: number): WindowNode {
     embed: section.embed,
     status: section.status,
     copyText: section.text,
-    children,
+    // A column section's content lives ONLY in the grid (as the centre
+    // column) — keeping it in the normal flow too would render the
+    // content twice: once standalone, then again mid-grid.
+    children: columns ? [] : children,
     ...(columns ? { columns } : {}),
   };
 }
