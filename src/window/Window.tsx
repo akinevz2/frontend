@@ -96,6 +96,18 @@ function Body({
       {showContent && node.children.length > 0 && (
         <Children items={node.children} />
       )}
+      {showContent && node.columns && node.columns.length > 0 && (
+        <div
+          className="columns"
+          style={{ "--columns": node.columns.length } as React.CSSProperties}
+        >
+          {node.columns.map((group, column) => (
+            <div className="columns-col" key={column}>
+              <Children items={group} />
+            </div>
+          ))}
+        </div>
+      )}
       {expanded && node.embed && <ResourceEmbed src={node.embed} />}
     </>
   );
@@ -286,6 +298,9 @@ export function Window({ node }: { node: WindowNode }) {
     !node.embed &&
     !node.children.some(
       (child) => child.kind === "window" || child.kind === "embed",
+    ) &&
+    !(node.columns ?? []).some((group) =>
+      group.some((child) => child.kind === "window" || child.kind === "embed"),
     );
 
   // Maximizing expands the interior exactly like pressing OK — a maximized

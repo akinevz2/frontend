@@ -21,6 +21,13 @@ export type WindowNode = {
   status?: string | undefined;
   copyText?: string | undefined;
   children: WindowChild[];
+  /** Column layout ("left:"/"right:" content sections): extra child
+   * groups rendered BESIDE `children` in a CSS grid. A node-level field,
+   * not a child kind — every member stays a plain WindowChild, so the
+   * flatten/descendant walks (which seed store flags and landings) must
+   * traverse `columns` too: a mounted window the store cannot see is
+   * the failure mode this replaces. */
+  columns?: WindowChild[][];
 };
 
 function toThemes(theme: Section["theme"]): ThemeName[] {
@@ -64,6 +71,61 @@ function buildNode(section: Section, id: string, depth: number): WindowNode {
       });
     }
   }
+  // Column layout: content, left and right each form a grid group —
+  // content is the centre column. One tree-index counter across all
+  // three keeps the nested window ids unique and stable. A missing
+  // group is dropped (no blank grid track); a section with neither
+  // left nor right has no columns field at all (plain flow).
+  let columns: WindowChild[][] | undefined;
+  if (section.left !== undefined || section.right !== undefined) {
+    const left: WindowChild[] = [];
+    const right: WindowChild[] = [];
+    for (const item of toItems(section.left)) {
+      if (typeof item === "string") {
+        const last = left[left.length - 1];
+        if (last?.kind === "text") last.lines.push(item);
+        else left.push({ kind: "text", lines: [item] });
+      } else if (isValidElement(item)) {
+        left.push({ kind: "element", element: item });
+      } else if ("banner" in item) {
+        left.push({ kind: "banner", banner: item.banner });
+      } else if ("include" in item) {
+        throw new Error(
+          `Unresolved include directive: ${String(item.include)}`,
+        );
+      } else if (isEmbed(item)) {
+        left.push({ kind: "embed", embed: item });
+      } else {
+        left.push({
+          kind: "window",
+          node: buildNode(item, `${id}.${sectionCount++}`, depth + 1),
+        });
+      }
+    }
+    for (const item of toItems(section.right)) {
+      if (typeof item === "string") {
+        const last = right[right.length - 1];
+        if (last?.kind === "text") last.lines.push(item);
+        else right.push({ kind: "text", lines: [item] });
+      } else if (isValidElement(item)) {
+        right.push({ kind: "element", element: item });
+      } else if ("banner" in item) {
+        right.push({ kind: "banner", banner: item.banner });
+      } else if ("include" in item) {
+        throw new Error(
+          `Unresolved include directive: ${String(item.include)}`,
+        );
+      } else if (isEmbed(item)) {
+        right.push({ kind: "embed", embed: item });
+      } else {
+        right.push({
+          kind: "window",
+          node: buildNode(item, `${id}.${sectionCount++}`, depth + 1),
+        });
+      }
+    }
+    columns = [children, left, right].filter((group) => group.length > 0);
+  }
   return {
     id,
     depth,
@@ -76,6 +138,7 @@ function buildNode(section: Section, id: string, depth: number): WindowNode {
     status: section.status,
     copyText: section.text,
     children,
+    ...(columns ? { columns } : {}),
   };
 }
 
@@ -88,13 +151,20 @@ export function buildWindows(content: Section | Section[]): WindowNode[] {
   );
 }
 
+/** Every nested window child of a node, from BOTH the normal flow and
+ * the column groups — the single source the flatten/descendant walks
+ * use, so a mounted window can never be invisible to the store. */
+export function childWindows(node: WindowNode): WindowNode[] {
+  const windowsOf = (children: WindowChild[] | undefined): WindowNode[] =>
+    (children ?? []).flatMap((c) => (c.kind === "window" ? [c.node] : []));
+  return [
+    ...windowsOf(node.children),
+    ...(node.columns ?? []).flatMap(windowsOf),
+  ];
+}
+
 export function flatten(nodes: WindowNode[]): WindowNode[] {
-  return nodes.flatMap((node) => [
-    node,
-    ...flatten(
-      node.children.flatMap((c) => (c.kind === "window" ? [c.node] : [])),
-    ),
-  ]);
+  return nodes.flatMap((node) => [node, ...flatten(childWindows(node))]);
 }
 
 /** Every descendant window id beneath a node (the node itself excluded) —
@@ -103,11 +173,9 @@ export function descendantIds(windows: WindowNode[], rootId: string): string[] {
   const root = windows.find((w) => w.id === rootId);
   const acc: string[] = [];
   const walk = (node: WindowNode) => {
-    for (const child of node.children) {
-      if (child.kind === "window") {
-        acc.push(child.node.id);
-        walk(child.node);
-      }
+    for (const child of childWindows(node)) {
+      acc.push(child.id);
+      walk(child);
     }
   };
   if (root) walk(root);
@@ -133,4 +201,6 @@ export function hasTheme(node: WindowNode, theme: ThemeName): boolean {
  * reader already has inline — so only the content-free ones lift the
  * maximized view instead (see OkButton's middleware). */
 export const hasContent = (node: WindowNode): boolean =>
-  node.children.length > 0 || Boolean(node.embed);
+  node.children.length > 0 ||
+  Boolean(node.columns?.length) ||
+  Boolean(node.embed);

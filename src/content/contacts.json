@@ -1,24 +1,31 @@
 {
   "heading": "Contacts",
   "content": [
-    "",
-    "[akinevz.com/resume](/resume)",
-    "[pagerts](/pagerts) - my CLI project",
-    "",
-    "[github.com/akinevz2](https://github.com/akinevz2)",
-    "[github.com/akinevz (archive)](https://github.com/akinevz)",
-    "[youtube.com/@akinevz](https://www.youtube.com/@akinevz)",
-    "[soundcloud.com/akinevz](https://soundcloud.com/akinevz)",
-    "[linkedin.com/in/akinevz](https://www.linkedin.com/in/akinevz/)",
-    "[instagram.com/akinevz2](https://www.instagram.com/akinevz2/)",
-    "[twitch.tv/akinevz](https://www.twitch.tv/akinevz)",
-    "[x.com/akinevz](https://x.com/akinevz)",
-    "",
-    "[akinevz@gmail.com](mailto:akinevz@gmail.com)",
-    "[akinevz@outlook.com](mailto:akinevz@outlook.com)",
-    "[+44 7808 235886](tel:+447808235886)",
-    "",
-    "",
+    {
+      "heading": "",
+      "left": [
+        "professional:",
+        "[akinevz.com/resume](/resume)",
+        "[pagerts](/pagerts) - my CLI project",
+        "[github.com/akinevz2](https://github.com/akinevz2)",
+        "[github.com/akinevz (archive)](https://github.com/akinevz)"
+      ],
+      "content": [
+        "direct:",
+        "[+44 7808 235886](tel:+447808235886)",
+        "[akinevz@gmail.com](mailto:akinevz@gmail.com)",
+        "[akinevz@outlook.com](mailto:akinevz@outlook.com)"
+      ],
+      "right": [
+        "social:",
+        "[youtube.com/@akinevz](https://www.youtube.com/@akinevz)",
+        "[soundcloud.com/akinevz](https://soundcloud.com/akinevz)",
+        "[linkedin.com/in/akinevz](https://www.linkedin.com/in/akinevz/)",
+        "[instagram.com/akinevz2](https://www.instagram.com/akinevz2/)",
+        "[twitch.tv/akinevz](https://www.twitch.tv/akinevz)",
+        "[x.com/akinevz](https://x.com/akinevz)"
+      ]
+    },
     {
       "heading": "funny within",
       "theme": "funny",

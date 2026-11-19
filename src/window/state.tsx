@@ -6,7 +6,13 @@ import {
   useReducer,
   type ReactNode,
 } from "react";
-import { descendantIds, flatten, lineage, type WindowNode } from "./model";
+import {
+  childWindows,
+  descendantIds,
+  flatten,
+  lineage,
+  type WindowNode,
+} from "./model";
 import { freshArrival, windowBookmark } from "@/lib/history";
 import { CLIPPY_LINK } from "@/lib/clippy";
 import {
@@ -348,9 +354,7 @@ export function useReveal() {
         ? []
         : descendants === "all"
           ? descendantIds(windows, id)
-          : node.children.flatMap((c) =>
-              c.kind === "window" ? [c.node.id] : [],
-            );
+          : childWindows(node).map((w) => w.id);
     for (const child of revealed)
       patch(child, { expanded: true, minimized: false });
   });
