@@ -6,7 +6,10 @@ export type WindowChild =
   | { kind: "window"; node: WindowNode }
   | { kind: "embed"; embed: Embed }
   | { kind: "banner"; banner: Banner["banner"] }
-  | { kind: "element"; element: ReactElement };
+  | { kind: "element"; element: ReactElement }
+  /** Column layout ("left:"/"right:" sections): one child group per
+   * grid column, side by side on desktop, stacked above/below on mobile. */
+  | { kind: "columns"; columns: WindowChild[][] };
 
 export type WindowNode = {
   /** Dotted tree index ("0", "0.1.2"); doubles as the DOM id and URL hash. */
@@ -38,10 +41,14 @@ function isEmbed(item: Section | Embed): item is Embed {
   return "url" in item && !("heading" in item);
 }
 
-function buildNode(section: Section, id: string, depth: number): WindowNode {
-  const children: WindowChild[] = [];
-  let sectionCount = 0;
-  for (const item of toItems(section.content)) {
+function pushChildren(
+  items: Item[],
+  id: string,
+  depth: number,
+  children: WindowChild[],
+  counter: { n: number },
+): void {
+  for (const item of items) {
     if (typeof item === "string") {
       const last = children[children.length - 1];
       if (last?.kind === "text") last.lines.push(item);
@@ -60,9 +67,33 @@ function buildNode(section: Section, id: string, depth: number): WindowNode {
     } else {
       children.push({
         kind: "window",
-        node: buildNode(item, `${id}.${sectionCount++}`, depth + 1),
+        node: buildNode(item, `${id}.${counter.n++}`, depth + 1),
       });
     }
+  }
+}
+
+function buildNode(section: Section, id: string, depth: number): WindowNode {
+  const children: WindowChild[] = [];
+  // One tree-index counter across content, left and right — the nested
+  // window ids stay stable and unique regardless of which list they
+  // were authored in.
+  const counter = { n: 0 };
+  pushChildren(toItems(section.content), id, depth, children, counter);
+  if (section.left !== undefined || section.right !== undefined) {
+    // A column layout gathers what `content:` would have rendered into
+    // the grid too: content+left+right → three columns, left+right →
+    // two, one alone → one. Empty groups are dropped so a missing
+    // `content:` never leaves a blank grid track.
+    const groups: WindowChild[][] = [children, [], []];
+    const left = groups[1] as WindowChild[];
+    const right = groups[2] as WindowChild[];
+    pushChildren(toItems(section.left), id, depth, left, counter);
+    pushChildren(toItems(section.right), id, depth, right, counter);
+    children.push({
+      kind: "columns",
+      columns: groups.filter((group) => group.length > 0),
+    });
   }
   return {
     id,

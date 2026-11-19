@@ -368,6 +368,33 @@ form#form > label {
   word-break: break-word;
 }
 
+/* Column layout: sections may carry "left:"/"right:" lists alongside
+   "content:" — each non-empty group becomes a grid column, count set
+   inline via --columns (1–3). Narrow screens collapse to a single
+   stacked column (content above, left, right below). */
+.columns-li {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+.columns {
+  display: grid;
+  grid-template-columns: repeat(var(--columns, 1), minmax(0, 1fr));
+  gap: 0 1.5em;
+  align-items: start;
+}
+.columns-col {
+  min-width: 0;
+}
+.columns-col > ul > li:first-child {
+  padding-top: 0;
+}
+@media screen and (max-width: 768px) {
+  .columns {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
 .maximized-window-body {
   display: flex;
   flex-direction: column;
