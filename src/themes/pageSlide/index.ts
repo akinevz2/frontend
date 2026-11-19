@@ -307,6 +307,15 @@ function leaveGhost(): SlideScale {
 let current = "";
 let originalPushState: History["pushState"] | null = null;
 let originalReplaceState: History["replaceState"] | null = null;
+/** The transition whose destination page has NOT committed yet: the
+ * pushState/popstate wrappers announce the transition BEFORE the router
+ * re-renders, so the arrival animation and the landing scroll must wait
+ * for the commit — the App shell's route effect performs both through
+ * pageArrived(). Running them at transition time animated the OLD page
+ * out of its start offset and snapped it to top mid-exit (the
+ * wrong-page flash on heavy destinations like Projects). */
+let pendingPath = "";
+let pendingLanding: { hash: string; bookmark: string } | null = null;
 /** Mutes the next transition's fold click: the navigating window X
  * (close) declares its own Click.ogg through the bus (closeSounds) - no
  * second click on top of the navigation fold. */
@@ -333,11 +342,30 @@ function transition(to: string, hash: string): void {
     : resolveDirection(current, to, menuOrder());
   const scale = leaveGhost();
   applyDirection(direction, scale);
-  restartArrival();
   current = to;
-  // A new page starts at the top - unless the url carries a hash, whose
-  // element the navigation scrolls itself to (scrollToHash).
-  if (!hash) window.scrollTo({ top: 0 });
+  // The ARRIVAL (restart + landing scroll) waits for the ROUTE COMMIT:
+  // the router's re-render happens after this pushState/popstate call
+  // returns, so touching main here would animate and scroll the OLD
+  // page (the wrong-page flash). pageArrived() performs both once the
+  // App shell's route effect confirms the destination is mounted.
+  pendingPath = to;
+  pendingLanding = { hash, bookmark: hash ? "" : (windowBookmark() ?? "") };
+}
+
+/** The destination page COMMITTED (App's route effect). Restarts the
+ * arrival animation on the now-current content and performs the
+ * landing scroll — hash target, off-site bookmark, or a plain top
+ * reset for hash-free destinations. No-op when the commit does not
+ * belong to a pending transition (boot, same-path re-addresses). */
+export function pageArrived(pathname: string): void {
+  if (pendingPath !== pathname) return;
+  pendingPath = "";
+  const landing = pendingLanding;
+  pendingLanding = null;
+  restartArrival();
+  if (landing?.hash) scrollToHash(landing.hash);
+  else if (landing?.bookmark) scrollToId(landing.bookmark);
+  else window.scrollTo({ top: 0 });
 }
 
 /** Restart the just-applied destination slide so it runs in step with the
@@ -380,14 +408,9 @@ const onPopState = () => {
     return;
   }
   transition(location.pathname, location.hash);
-  if (location.hash) scrollToHash(location.hash);
-  // A hash-free bookmarked return (the window departures' form - the
-  // entry names its section in STATE alone): land on it like any hash
-  // target. The reveal is the store's; the landing scroll is ours.
-  else scrollToId(windowBookmark() ?? "");
-  // History traversal onto another page keeps the same rule: a hashed
-  // window target lands on its element (the reveal is the store's),
-  // and the traversal is announced as a return.
+  // The landing scroll rides the COMMIT now (pageArrived, App's route
+  // effect) — a hash or off-site bookmark was recorded into the pending
+  // landing by transition(); scrolling here would aim the OLD page.
   dispatchSignal("page:returned", arrival);
 };
 
@@ -454,7 +477,7 @@ export function enablePageSlide(): void {
       const target = new URL(url, location.href);
       if (target.pathname !== current) {
         transition(target.pathname, target.hash);
-        if (target.hash) scrollToHash(target.hash);
+        // The hash landing waits for the commit (pageArrived).
       } else if (
         (data as { window?: unknown } | null)?.window == null &&
         (target.search !== location.search || target.hash !== location.hash)
@@ -491,7 +514,11 @@ export function enablePageSlide(): void {
   // and take over `current` so later pushes compare against the true
   // destination path. Same-path replaceStates (the window system's
   // bookmark writes) stay silent.
-  const originalReplaceState = history.replaceState.bind(history);
+  // Assigned to the MODULE variable (not a local const): disablePageSlide
+  // restores the binding from there — a local const shadowed it and the
+  // wrapper could never be uninstalled.
+  originalReplaceState = history.replaceState.bind(history);
+  const boundReplaceState = originalReplaceState as History["replaceState"];
   history.replaceState = (data, unused, url) => {
     if (url != null) {
       const target = new URL(url, location.href);
@@ -501,7 +528,7 @@ export function enablePageSlide(): void {
         else scrollToId(windowBookmark() ?? "");
       }
     }
-    originalReplaceState(data, unused, url);
+    boundReplaceState(data, unused, url);
   };
   // Same-page hyperlinks to hash elements change the hash natively.
   window.addEventListener("hashchange", (event) =>
