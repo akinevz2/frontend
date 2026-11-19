@@ -82,9 +82,9 @@ function buildNode(section: Section, id: string, depth: number): WindowNode {
   pushChildren(toItems(section.content), id, depth, children, counter);
   if (section.left !== undefined || section.right !== undefined) {
     // A column layout gathers what `content:` would have rendered into
-    // the grid too: content+left+right → three columns, left+right →
-    // two, one alone → one. Empty groups are dropped so a missing
-    // `content:` never leaves a blank grid track.
+    // the grid too: content+left+right → three columns (content is the
+    // centre), left+right → two, one alone → one. Empty groups are
+    // dropped so a missing `content:` never leaves a blank grid track.
     const groups: WindowChild[][] = [children, [], []];
     const left = groups[1] as WindowChild[];
     const right = groups[2] as WindowChild[];
