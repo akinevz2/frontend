@@ -19,7 +19,10 @@ const packSections = sections.filter((item) =>
   item.heading?.startsWith(GATED_HEADING_PREFIX),
 );
 
-const content = sections.filter(
+/** The non-gated page sections, exported for the build-time SEO
+ * snapshot: the "Full UI pack*" sections render only after the download
+ * form verifies, so the snapshot (src/seo) renders exactly these. */
+export const wowContent = sections.filter(
   (item) => !item.heading?.startsWith(GATED_HEADING_PREFIX),
 );
 
@@ -134,7 +137,7 @@ export const WowPage = () => (
   // The download form renders after the content windows as a
   // PageWindows child, so the verified pack windows mount inside it
   // with the window store in reach.
-  <PageWindows content={content}>
+  <PageWindows content={wowContent}>
     <DownloadForm packs={packNodes} />
   </PageWindows>
 );

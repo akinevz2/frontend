@@ -48,7 +48,7 @@ const routeGroup = (group: (typeof GROUPS)[number]): Section => ({
   ],
 });
 
-const SITEMAP: Section[] = [
+export const SITEMAP: Section[] = [
   {
     className: "sitemap-intro",
     heading: "Sitemap",

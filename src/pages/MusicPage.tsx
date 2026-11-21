@@ -84,7 +84,10 @@ const tracksTotal = (total: number) => (
     {total} tracks as of last website rebuild
   </h3>
 );
-const buildMusic = (): Section[] => {
+/** Builds the music page's content tree from the content data —
+ * exported pure so the build-time SEO snapshot (src/seo) renders the
+ * exact same tree the interactive page renders (no drift). */
+export const buildMusic = (): Section[] => {
   const total = soundcloud.asOfUploadingTrackCount ?? soundcloud.trackCount;
   const favourites = (musicExt as unknown[]).map(favouriteWindow);
   return [
