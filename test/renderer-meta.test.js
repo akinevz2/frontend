@@ -8,7 +8,7 @@ import {
   softwareJsonLd,
   truncateDescription,
   PERSON_SAME_AS,
-} from "../src/lib/seo.ts";
+} from "../src/renderer/index.ts";
 import { withRouteMeta } from "../build/meta.ts";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");

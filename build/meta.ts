@@ -1,12 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import { PUBLIC, SITE_ORIGIN } from "./env.ts";
+import { escapeHtml, normalizeRoute, type RouteConfig } from "./routes.ts";
 import {
   personJsonLd,
   softwareJsonLd,
   truncateDescription,
-} from "../src/lib/seo.ts";
-import { escapeHtml, normalizeRoute, type RouteConfig } from "./routes.ts";
+} from "../src/renderer/index.ts";
 
 const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 

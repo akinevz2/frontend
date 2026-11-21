@@ -1,7 +1,11 @@
 import { useEffect } from "react";
 import type { Route } from "@/content";
 import { projectPath, projects } from "@/content";
-import { personJsonLd, softwareJsonLd, truncateDescription } from "@/lib/seo";
+import {
+  personJsonLd,
+  softwareJsonLd,
+  truncateDescription,
+} from "@/renderer/index.ts";
 
 const ORIGIN = "https://akinevz.com";
 

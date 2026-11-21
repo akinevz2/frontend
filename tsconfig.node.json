@@ -1,9 +1,8 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "types": ["node"],
-    "noUnusedLocals": true,
-    "paths": {}
+    "types": ["node", "vite/client"],
+    "noUnusedLocals": true
   },
-  "include": ["vite.config.ts", "build"]
+  "include": ["vite.config.ts", "build", "test", "src/virtual.d.ts"]
 }
