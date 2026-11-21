@@ -1,28 +1,3 @@
-/**
- * The build-time SEO snapshot renderer.
- *
- * A second, build-time-only render path over the SAME Section tree the
- * interactive app walks (src/window/model.ts buildWindows): it produces
- * one static, fully expanded, semantic HTML fragment per page that gets
- * injected inside <div id="root"> of that route's emitted html. The
- * interactive app replaces the whole subtree on mount (src/main.tsx uses
- * createRoot, not hydrateRoot), so there is no hydration to mismatch.
- *
- * Rules (see docs/seo-findings.md):
- *  - exactly one <h1> per page: the page's top (first root) heading;
- *    nested window headings become h2..h6 by depth, capped at h6;
- *  - text children go through the SAME markdown pipeline as the app
- *    (markdownPlugins from src/lib/markdown.tsx);
- *  - links are real <a href>, internal ones root-relative, external ones
- *    with rel="noopener";
- *  - images keep alt text; lists stay lists;
- *  - embeds become plain links (title + url) — NEVER iframes, so a
- *    raw-HTML embed in markdown (Spotify/YouTube) also degrades to a
- *    link via the iframe component override below;
- *  - no hooks, no signals, no router, no window store, no browser
- *    globals: renderToStaticMarkup only, executed by the build
- *    (ssrLoadModule) — never imported by the client bundle.
- */
 import { renderToStaticMarkup } from "react-dom/server";
 import type {
   AnchorHTMLAttributes,
@@ -65,6 +40,14 @@ const snapshotMarkdownComponents = {
     if (href === CLIPPY_LINK) return <a href={CLIPPY_LINK}>{children}</a>;
     return <a {...snapLinkProps(href)}>{children}</a>;
   },
+  iframe({
+    src,
+    title,
+  }: ClassAttributes<HTMLIFrameElement> &
+    IframeHTMLAttributes<HTMLIFrameElement> &
+    ExtraProps) {
+    return src ? <a {...snapLinkProps(src)}>{title || src}</a> : null;
+  },
   h1({
     children,
   }: ClassAttributes<HTMLHeadingElement> &
@@ -75,14 +58,6 @@ const snapshotMarkdownComponents = {
     // markdown line (same text, one level down — the interactive page
     // shows the same words).
     return <h2>{children}</h2>;
-  },
-  iframe({
-    src,
-    title,
-  }: ClassAttributes<HTMLIFrameElement> &
-    IframeHTMLAttributes<HTMLIFrameElement> &
-    ExtraProps) {
-    return src ? <a {...snapLinkProps(src)}>{title || src}</a> : null;
   },
 } satisfies Components;
 
@@ -185,6 +160,16 @@ function Child({ child }: { child: WindowChild }) {
   return null;
 }
 
+function ChildList({ items }: { items: WindowChild[] }) {
+  return (
+    <ul>
+      {items.map((child, index) => (
+        <Child key={index} child={child} />
+      ))}
+    </ul>
+  );
+}
+
 function SnapshotWindow({
   node,
   isFirstRoot,
@@ -192,6 +177,9 @@ function SnapshotWindow({
   node: WindowNode;
   isFirstRoot: boolean;
 }) {
+  // Column layout sections keep their content ONLY in the column groups
+  // (model.ts empties `children` for them) — the snapshot renders every
+  // group, centre column first, exactly the data the app grids.
   return (
     <>
       {node.heading && (
@@ -202,13 +190,10 @@ function SnapshotWindow({
           status: <em>{node.status}</em>
         </p>
       )}
-      {node.children.length > 0 && (
-        <ul>
-          {node.children.map((child, index) => (
-            <Child key={index} child={child} />
-          ))}
-        </ul>
-      )}
+      {node.children.length > 0 && <ChildList items={node.children} />}
+      {(node.columns ?? []).map((group, column) => (
+        <ChildList key={column} items={group} />
+      ))}
       {node.embed && (
         // A Section.embed is a build-known public path the interactive
         // app fetches at runtime (ResourceEmbed); the snapshot links it.

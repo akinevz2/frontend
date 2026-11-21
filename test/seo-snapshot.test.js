@@ -35,6 +35,9 @@ const hasMarkdownMarkers = (s) => /[*_`~#\[\]>]|!?\[[^\]]*\]\([^)]*\)/.test(s);
 
 const stripMarkdown = (s) =>
   s
+    // the shared sanitize schema strips tel: hrefs (like the interactive
+    // page); only the link label text survives — mirror that here
+    .replace(/\[([^\]]*)\]\(tel:[^)]*\)/g, "$1")
     .replace(/!\[([^\]]*)\]\(([^)]*)\)/g, "$1 $2")
     .replace(/\[([^\]]*)\]\(([^)]*)\)/g, "$1 $2")
     .replace(/[*_`~#>|]+/g, " ");
