@@ -66,6 +66,7 @@ export function discoverTargets(
         throw new Error(
           `Unresolvable include directive: ${name} ` +
             `(from ${origin}): ${cause instanceof Error ? cause.message : String(cause)}`,
+          { cause },
         );
       }
       entries[name] = entry;
