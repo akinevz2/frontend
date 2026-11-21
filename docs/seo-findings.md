@@ -296,3 +296,6 @@ no hydration to fight. Only judgment calls surfaced (to review):
   with "…" in meta/og/twitter ONLY; JSON-LD keeps full text):
   on-deploy 295, opencode-screencast 310, polyframes 240, herbctl 208,
   got-source 200, doftiles 192, herbstutil 190.
+- robots.txt: `Disallow: /*?*` was REMOVED (user decision) — query URLs
+  (the `?post=…` section permalinks) are now crawlable and meant to be
+  hyperlinked; canonical tags consolidate the duplicates for indexing.
