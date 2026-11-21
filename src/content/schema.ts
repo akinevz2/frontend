@@ -35,6 +35,14 @@ export type Item =
 export type Section = {
   heading?: string;
   content?: string | Item[] | Section;
+  /** Column layout: `content:`, `left:` and `right:` each become a grid
+   * column (1–3 columns; `content:` is the centre). Side by side on
+   * desktop, stacked above/below on narrow screens. Empty groups are
+   * dropped. Nested sub-sections inside the groups render as ordinary
+   * windows — keep them OUT of the groups until the window-in-column
+   * stall (see git history) is root-caused. */
+  left?: Section["content"];
+  right?: Section["content"];
   link?: string;
   theme?: ThemeName | ThemeName[];
   embed?: string;

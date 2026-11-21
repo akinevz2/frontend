@@ -368,6 +368,26 @@ form#form > label {
   word-break: break-word;
 }
 
+/* Column layout: a section may carry "left:"/"right:" lists — each
+   non-empty group becomes a grid column whose count is set inline via
+   --columns (1–3; `content:` is the centre). Narrow screens collapse
+   to a single stacked column. */
+.columns {
+  display: grid;
+  grid-template-columns: repeat(var(--columns, 1), minmax(0, 1fr));
+  gap: 0 1.5em;
+  align-items: start;
+}
+.columns-col {
+  min-width: 0;
+}
+@media screen and (max-width: 768px) {
+  .columns {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
 .maximized-window-body {
   display: flex;
   flex-direction: column;

@@ -10,6 +10,7 @@ import { Clippy } from "./Clippy";
 import { MenuBar } from "./MenuBar";
 import { resolveRoute } from "./resolveRoute";
 import { useRouteMeta } from "./useRouteMeta";
+import { pageArrived } from "@/themes/pageSlide";
 
 /** Hidden page: / with this hash is an empty yellow screen. */
 const FEEF69_HASH = "#feef69";
@@ -29,6 +30,14 @@ export function App() {
   const blank = pathname === "/" && hash.toLowerCase() === FEEF69_HASH;
 
   useRouteMeta(route);
+  // The pageSlide theme's landing (arrival animation restart + scroll to
+  // the destination's hash/bookmark/top) rides THE COMMIT: this effect
+  // runs after the destination page mounted, so the theme can no longer
+  // animate or scroll the outgoing page. No-op on boot and same-path
+  // re-addresses (the theme keeps its own pending-transition gate).
+  useEffect(() => {
+    pageArrived(pathname);
+  }, [pathname]);
   useEffect(() => {
     document.body.classList.toggle("feef69-page", blank);
     return () => document.body.classList.remove("feef69-page");
