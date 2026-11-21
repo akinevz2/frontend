@@ -43,9 +43,10 @@ export function projectMtimesPlugin(projectsDir: string): Plugin {
     name: "project-mtimes",
     resolveId(id) {
       if (id === VIRTUAL_ID) return RESOLVED_ID;
+      return undefined;
     },
     load(id) {
-      if (id !== RESOLVED_ID) return;
+      if (id !== RESOLVED_ID) return undefined;
       const mtimes = listProjectMtimes(projectsDir);
       // dev watcher: watch each json file (file paths only — a
       // directory addWatchFile would be resolved as an import and fail)

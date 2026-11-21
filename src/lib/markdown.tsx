@@ -1,4 +1,4 @@
-import Markdown from "react-markdown";
+import Markdown, { type Components, type Options } from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
 import remarkBreaks from "remark-breaks";
@@ -11,9 +11,39 @@ import { CLIPPY_LINK, onClippyTriggerClick } from "./clippy";
 
 type Props = { children: string; inline?: boolean };
 
+/** The pipeline every Markdown render shares (the app's Md below, and the
+ * build-time SEO snapshot in src/seo): one plugin list so the two callers
+ * cannot drift apart. Exported for src/seo only — no behaviour change. */
+export const markdownPlugins: Pick<Options, "remarkPlugins" | "rehypePlugins"> =
+  {
+    remarkPlugins: [remarkBreaks, remarkGfm],
+    rehypePlugins: [
+      rehypeRaw,
+      rehypeYoutubeEmbed,
+      rehypeHighlightSubset,
+      [rehypeSanitize, sanitizeSchema],
+    ],
+  };
+
+/** The shared Markdown renderer with caller-supplied components. `Md`
+ * passes its interactive link component; the SEO snapshot passes a
+ * static, router-free one (see src/seo/snapshot.tsx). */
+export function MdBase({
+  children,
+  components,
+}: Readonly<Props> & {
+  components?: Components;
+}) {
+  return (
+    <Markdown {...markdownPlugins} components={components}>
+      {children}
+    </Markdown>
+  );
+}
+
 export function Md({ children }: Readonly<Props>) {
   return (
-    <Markdown
+    <MdBase
       // remarkBreaks: a single newline prints as a line break, not a
       // soft-break space — line-oriented writing (transcripts, rants,
       // verse) keeps its authored line shape instead of flowing into
@@ -25,13 +55,7 @@ export function Md({ children }: Readonly<Props>) {
       // token spans (subset of grammars — see the plugin); the classes
       // survive rehypeSanitize via sanitizeSchema. Must run BEFORE
       // rehypeSanitize so the tokens it emits aren't stripped.
-      remarkPlugins={[remarkBreaks, remarkGfm]}
-      rehypePlugins={[
-        rehypeRaw,
-        rehypeYoutubeEmbed,
-        rehypeHighlightSubset,
-        [rehypeSanitize, sanitizeSchema],
-      ]}
+      // The plugin lists live in markdownPlugins above.
       components={{
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         a({ href, children: label, node: _node, ...rest }) {
@@ -65,6 +89,6 @@ export function Md({ children }: Readonly<Props>) {
       }}
     >
       {children}
-    </Markdown>
+    </MdBase>
   );
 }
