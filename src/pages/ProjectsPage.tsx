@@ -12,7 +12,7 @@ const projectWindow = (project: (typeof projects)[number]): Section => ({
 });
 
 /** The page's content tree builder, exported for the build-time SEO
- * snapshot (src/seo) — the same data the component renders. */
+ * snapshot (src/renderer/snapshot) — the same data the component renders. */
 export const buildProjects = (): Section => ({
   heading: "Projects",
   theme: "open",

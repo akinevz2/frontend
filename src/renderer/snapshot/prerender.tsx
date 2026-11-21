@@ -2,7 +2,7 @@
  * Build-time content assembly for the SEO snapshots.
  *
  * Loaded ONLY through Vite's ssrLoadModule (from build/prerender.ts and
- * test/seo-snapshot.test.js): the imports below (src/content, the bespoke
+ * test/renderer-snapshot.test.js): the imports below (src/content, the bespoke
  * page builders) resolve virtual: modules that only exist inside Vite,
  * and the functions here must never be imported by the client bundle.
  *
@@ -29,6 +29,12 @@ import { buildProjects } from "@/pages/ProjectsPage";
 import { SITEMAP } from "@/pages/SitemapPage";
 import { wowContent } from "@/pages/WowPage";
 import { renderSnapshotHtml } from "./snapshot";
+import { mdSection, stemOf } from "../includes/mdSection";
+import {
+  expandSection,
+  makeResolver,
+  type IncludeEntry,
+} from "../includes/resolve";
 
 export type SnapshotPage = {
   /** The canonical URL path the page serves at (root-relative). */
@@ -118,7 +124,7 @@ export function routeSnapshotPages(): SnapshotPage[] {
  * /blog/** pages are indexable like every route (user decision): every
  * post file and every listed directory gets a real emitted html page.
  * The build (build/prerender.ts) walks public/blog/ and passes the raw
- * file contents in — src/seo never touches fs.
+ * file contents in — the renderer never touches fs.
  */
 
 export type BlogDirEntry = {
@@ -130,103 +136,28 @@ export type BlogDirEntry = {
 /** A raw blog file: the PUBLIC path ("/blog/x.md") plus its text. */
 export type BlogSource = { publicPath: string; text: string };
 
-/** An include target from build/includesPlugin's walk (same shape). */
-export type IncludeEntry = { kind: "json" | "md"; content: string };
+/* The include expansion is the SHARED resolver (src/renderer/includes/
+ * resolve.ts) — the copy that used to mirror src/content/index.ts here is
+ * deleted; the drift-guard test renders include-carrying routes through
+ * BOTH loaders and still asserts they agree. */
 
 export type BlogEnv = {
   dirs: BlogDirEntry[];
   sources: BlogSource[];
+  /** Include targets discovered from the directives themselves
+   * (reference-driven — see src/renderer/includes/resolve.ts). */
   includes: Record<string, IncludeEntry>;
 };
 
-/* Mirrors src/content/index.ts's include expansion (mdSection +
- * expandContent/expandSection) — src/content/** cannot be edited, so the
- * logic is restated here; the route snapshot text test (which renders
- * include-carrying routes through BOTH loaders) doubles as the drift
- * guard. */
-
-const stemOf = (publicPath: string): string =>
-  publicPath
-    .split("/")
-    .pop()!
-    .replace(/\.json$|\.md$/, "");
-
-const humanize = (stem: string): string =>
-  stem.replace(/-/g, " ").replace(/^./, (c) => c.toUpperCase());
-
-const mdSection = (stem: string, md: string): Section => {
-  const lines = md.replace(/\r\n/g, "\n").split("\n");
-  let heading: string | undefined;
-  while (heading === undefined && lines.length > 0) {
-    const line = lines[0] ?? "";
-    if (line.trim() === "") lines.shift();
-    else if (line.startsWith("# ")) {
-      heading = line.slice(2).trim();
-      lines.shift();
-    } else break;
-  }
-  return {
-    heading: heading ?? humanize(stem),
-    anchor: stem,
-    content: lines.join("\n"),
-  };
-};
-
-function expandContent(
-  content: NonNullable<Section["content"]>,
-  ancestors: Set<string>,
-  env: BlogEnv,
-): NonNullable<Section["content"]> {
-  if (typeof content === "string") return content;
-  const items = Array.isArray(content) ? content : [content];
-  return items.map((item) => {
-    if (typeof item !== "object" || item === null) return item;
-    if ("include" in item) {
-      const name = item.include;
-      if (typeof name !== "string") {
-        throw new Error(`Unknown include directive: ${String(name)}`);
-      }
-      if (ancestors.has(name)) {
-        throw new Error(`Circular include directive: ${name}`);
-      }
-      return targetSection(name, env, ancestors);
-    }
-    if ("banner" in item || "url" in item) return item;
-    return expandSection(item as Section, ancestors, env);
-  });
-}
-
-function expandSection(
-  section: Section,
-  ancestors: Set<string>,
-  env: BlogEnv,
-): Section {
-  if (!section.content) return section;
-  return {
-    ...section,
-    content: expandContent(section.content, ancestors, env),
-  };
-}
-
-/** An include target resolved to its expanded Section — the same
- * resolution src/content/index.ts performs (drift-guarded by
- * test/seo-snapshot.test.js against the real loader's output). */
+/** An include target resolved to its expanded Section through the shared
+ * resolver — the same resolution the app performs. */
 export function targetSection(
   name: string,
   env: BlogEnv,
   ancestors: Set<string>,
 ): Section {
-  const target = env.includes[name];
-  if (!target) {
-    throw new Error(`Unknown include directive: ${name}`);
-  }
-  const chain = new Set(ancestors);
-  chain.add(name);
-  const section =
-    target.kind === "json"
-      ? (JSON.parse(target.content) as Section)
-      : mdSection(stemOf(name), target.content);
-  return expandSection(section, chain, env);
+  const resolveTarget = makeResolver(env.includes);
+  return expandSection(resolveTarget(name), resolveTarget, ancestors);
 }
 
 /** The post page's window tree for one blog file: .md files wrap as an
@@ -237,7 +168,7 @@ export function targetSection(
 function postSection(source: BlogSource, env: BlogEnv): Section | null {
   if (source.publicPath.endsWith(".json")) {
     const section = JSON.parse(source.text) as Section;
-    return expandSection(section, new Set(), env);
+    return expandSection(section, makeResolver(env.includes));
   }
   if (!source.publicPath.endsWith(".md")) return null;
   return mdSection(stemOf(source.publicPath), source.text);

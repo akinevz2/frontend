@@ -21,7 +21,7 @@ export function injectSnapshot(html: string, snapshotHtml: string): string {
   return html.replace(ROOT_DIV, `<div id="root">${snapshotHtml}</div>`);
 }
 
-/** Snapshot page paths (from src/seo/prerender), keyed by normalized
+/** Snapshot page paths (from src/renderer/snapshot/prerender), keyed by normalized
  * route path. */
 export type SnapshotPages = Array<{
   path: string;

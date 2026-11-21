@@ -9,7 +9,7 @@ const fromRoot = (p: string) => path.resolve(ROOT, p);
 
 /**
  * A temporary, in-memory Vite server used ONLY to load the content
- * loader (src/content) and the SEO snapshot modules (src/seo) outside
+ * loader (src/content) and the SEO snapshot modules (src/renderer/snapshot) outside
  * the browser build: the virtual modules those import
  * (virtual:blog-dirs, virtual:content-includes, virtual:project-mtimes)
  * resolve through the same plugins vite.config.ts wires for the real

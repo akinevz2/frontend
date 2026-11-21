@@ -12,8 +12,9 @@ import { CLIPPY_LINK, onClippyTriggerClick } from "./clippy";
 type Props = { children: string; inline?: boolean };
 
 /** The pipeline every Markdown render shares (the app's Md below, and the
- * build-time SEO snapshot in src/seo): one plugin list so the two callers
- * cannot drift apart. Exported for src/seo only — no behaviour change. */
+ * build-time SEO snapshot in src/renderer/snapshot): one plugin list so
+ * the two callers cannot drift apart. Exported for the snapshot only —
+ * no behaviour change. */
 export const markdownPlugins: Pick<Options, "remarkPlugins" | "rehypePlugins"> =
   {
     remarkPlugins: [remarkBreaks, remarkGfm],
@@ -26,8 +27,8 @@ export const markdownPlugins: Pick<Options, "remarkPlugins" | "rehypePlugins"> =
   };
 
 /** The shared Markdown renderer with caller-supplied components. `Md`
- * passes its interactive link component; the SEO snapshot passes a
- * static, router-free one (see src/seo/snapshot.tsx). */
+ * passes its interactive link component; the snapshot passes a
+ * static, router-free one (see src/renderer/snapshot/snapshot.tsx). */
 export function MdBase({
   children,
   components,

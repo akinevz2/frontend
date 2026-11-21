@@ -141,7 +141,7 @@ function assertSnapshotShape(html, label) {
 test("every route renders a snapshot covering its content tree", async () => {
   const server = await createSeoServer();
   try {
-    const prerender = await server.ssrLoadModule("/src/seo/prerender.tsx");
+    const prerender = await server.ssrLoadModule("/src/renderer/snapshot/prerender.tsx");
     const { routes } = await server.ssrLoadModule("/src/content/index.ts");
     const pages = prerender.routeSnapshotPages();
     const byPath = new Map(pages.map((p) => [p.path, p]));
@@ -175,7 +175,7 @@ test("every route renders a snapshot covering its content tree", async () => {
 test("every blog post and listed directory renders a snapshot page", async () => {
   const server = await createSeoServer();
   try {
-    const prerender = await server.ssrLoadModule("/src/seo/prerender.tsx");
+    const prerender = await server.ssrLoadModule("/src/renderer/snapshot/prerender.tsx");
     const blog = await server.ssrLoadModule("/src/content/blogDirs.ts");
     const env = collectBlogEnv();
     const pages = prerender.blogSnapshotPages(env);
@@ -213,7 +213,7 @@ test("every blog post and listed directory renders a snapshot page", async () =>
 test("blog post snapshots carry their own file's text", async () => {
   const server = await createSeoServer();
   try {
-    const prerender = await server.ssrLoadModule("/src/seo/prerender.tsx");
+    const prerender = await server.ssrLoadModule("/src/renderer/snapshot/prerender.tsx");
     const env = collectBlogEnv();
     const pages = prerender.blogSnapshotPages(env);
     for (const source of env.sources) {
@@ -241,7 +241,7 @@ test("blog post snapshots carry their own file's text", async () => {
 test("include expansion mirrors the content loader (drift guard)", async () => {
   const server = await createSeoServer();
   try {
-    const prerender = await server.ssrLoadModule("/src/seo/prerender.tsx");
+    const prerender = await server.ssrLoadModule("/src/renderer/snapshot/prerender.tsx");
     const content = await server.ssrLoadModule("/src/content/index.ts");
     // got-source.json embeds {"include": "/blog/releases/get-traversal.md"};
     // the real loader expanded it inside its project tree — the mirror

@@ -21,7 +21,7 @@ const packSections = sections.filter((item) =>
 
 /** The non-gated page sections, exported for the build-time SEO
  * snapshot: the "Full UI pack*" sections render only after the download
- * form verifies, so the snapshot (src/seo) renders exactly these. */
+ * form verifies, so the snapshot (src/renderer/snapshot) renders exactly these. */
 export const wowContent = sections.filter(
   (item) => !item.heading?.startsWith(GATED_HEADING_PREFIX),
 );

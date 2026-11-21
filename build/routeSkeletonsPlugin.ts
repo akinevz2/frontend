@@ -49,7 +49,7 @@ export function generatedPathsForRoutes(
  * and REPLACES the snapshot (createRoot, not hydrateRoot).
  *
  * The snapshots render through a temporary in-memory Vite server
- * (createSeoServer) so src/seo's content imports resolve their virtual
+ * (createSeoServer) so the snapshot's content imports resolve their virtual
  * modules; the server is closed before this hook returns. No extra
  * build step, no installs, no network.
  *
@@ -72,14 +72,16 @@ export function routeSkeletonsPlugin(): Plugin {
       const publicSiblingExists = (slug: string) =>
         fs.existsSync(path.join(PUBLIC, `${slug}.html`));
 
-      // Build-time render of the static snapshots. src/seo modules touch
+      // Build-time render of the static snapshots. The snapshot modules touch
       // no window/document; the interactive app is untouched. Alias
       // routes render none (their interactive page is a redirect).
       const server = await createSeoServer();
       let snapshots: SnapshotPages;
       let blogPages: SnapshotPages;
       try {
-        const prerender = await server.ssrLoadModule("/src/seo/prerender.tsx");
+        const prerender = await server.ssrLoadModule(
+          "/src/renderer/snapshot/prerender.tsx",
+        );
         snapshots = prerender.routeSnapshotPages() as SnapshotPages;
         blogPages = prerender.blogSnapshotPages(
           collectBlogEnv(),

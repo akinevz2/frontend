@@ -85,7 +85,7 @@ const tracksTotal = (total: number) => (
   </h3>
 );
 /** Builds the music page's content tree from the content data —
- * exported pure so the build-time SEO snapshot (src/seo) renders the
+ * exported pure so the build-time SEO snapshot (src/renderer/snapshot) renders the
  * exact same tree the interactive page renders (no drift). */
 export const buildMusic = (): Section[] => {
   const total = soundcloud.asOfUploadingTrackCount ?? soundcloud.trackCount;
