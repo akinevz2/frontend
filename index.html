@@ -17,6 +17,7 @@
       data-route-meta="canonical"
     />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="akinevz.com" />
     <meta
       property="og:title"
       content="home of kine"
@@ -37,6 +38,36 @@
       content="https://akinevz.com/avatar.png"
       data-route-meta="og:image"
     />
+    <!-- og:image intrinsic size, read from the real public/avatar.png at
+         build (build/meta.ts); the placeholder carries the same values. -->
+    <meta
+      property="og:image:width"
+      content="123"
+      data-route-meta="og:image:width"
+    />
+    <meta
+      property="og:image:height"
+      content="121"
+      data-route-meta="og:image:height"
+    />
+    <script type="application/ld+json" data-route-meta="jsonld">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Kirill Nevzorov",
+        "url": "https://akinevz.com/",
+        "sameAs": [
+          "https://github.com/akinevz",
+          "https://github.com/akinevz2",
+          "https://soundcloud.com/akinevz",
+          "https://soundcloud.com/akinevz2",
+          "https://www.instagram.com/akinevz2/",
+          "https://www.linkedin.com/in/akinevz/",
+          "https://www.twitch.tv/akinevz",
+          "https://x.com/akinevz"
+        ]
+      }
+    </script>
     <meta
       name="twitter:card"
       content="summary"

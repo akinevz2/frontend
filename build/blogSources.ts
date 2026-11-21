@@ -57,3 +57,18 @@ export function collectBlogEnv() {
     includes: listIncludes(PUBLIC),
   };
 }
+
+/** The content date for a blog page's sitemap <lastmod>: the source
+ * file's mtime (posts: <path>.md or <path>.json; listings: the
+ * directory itself), as an ISO date. Undefined when nothing stats. */
+export function blogPathDate(publicPath: string): string | undefined {
+  const base = path.join(PUBLIC, publicPath.replace(/^\/+/, ""));
+  for (const candidate of [`${base}.md`, `${base}.json`, base]) {
+    try {
+      return fs.statSync(candidate).mtime.toISOString().slice(0, 10);
+    } catch {
+      /* try the next form */
+    }
+  }
+  return undefined;
+}

@@ -7,6 +7,10 @@ export type RouteConfig = {
   title: string;
   description: string;
   hidden?: boolean;
+  /** Project routes only: json fields the head JSON-LD and sitemap
+   * <lastmod> read. Alias routes carry none. */
+  github?: string;
+  lastModified?: string;
 };
 
 export function normalizeRoute(routePath: string): string {
@@ -28,6 +32,8 @@ type ProjectDoc = {
   path?: string;
   title: string;
   description: string;
+  github?: string;
+  lastModified?: string;
 };
 
 const readJson = <T>(file: string): T =>
@@ -52,7 +58,12 @@ function projectRouteConfigs(dir: string, pages: RouteConfig[]): RouteConfig[] {
       title: project.title,
       description: project.description,
     };
-    const base: RouteConfig = { path: canonical(project), ...common };
+    const base: RouteConfig = {
+      path: canonical(project),
+      ...common,
+      ...(project.github ? { github: project.github } : {}),
+      ...(project.lastModified ? { lastModified: project.lastModified } : {}),
+    };
     return taken
       ? [base]
       : [base, { path: short(project), ...common, hidden: true }];

@@ -13,6 +13,15 @@ import { useWindowStore } from "./state";
 export function OkButton({ node }: { node: WindowNode }) {
   const { flagsOf, expand, remember } = useWindowStore();
   const { dispatch } = useSignals();
+  // The store's flags arrive through context, so this component re-renders
+  // on every flag change and the aria state stays live.
+  const expanded = Boolean(flagsOf(node.id).expanded);
+  // Expanding a link-less window reveals its content: announce the state
+  // and point at the window (its DOM id is the model id — the same anchor
+  // permalinks address). Linked windows navigate instead — no toggle.
+  const ariaProps = node.link
+    ? {}
+    : { "aria-expanded": expanded, "aria-controls": node.id };
 
   const onClick = () => {
     const maximized = flagsOf(node.id).maximized;
@@ -64,7 +73,7 @@ export function OkButton({ node }: { node: WindowNode }) {
   };
 
   return (
-    <button data-window-id={node.id} onClick={onClick}>
+    <button data-window-id={node.id} onClick={onClick} {...ariaProps}>
       OK
     </button>
   );

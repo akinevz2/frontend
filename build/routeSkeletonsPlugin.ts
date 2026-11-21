@@ -12,7 +12,7 @@ import {
   snapshotFor,
   type SnapshotPages,
 } from "./prerender.ts";
-import { collectBlogEnv } from "./blogSources.ts";
+import { collectBlogEnv, blogPathDate } from "./blogSources.ts";
 import { createSeoServer } from "./prerenderServer.ts";
 
 /**
@@ -135,7 +135,13 @@ export function routeSkeletonsPlugin(): Plugin {
 
       fs.writeFileSync(
         path.join(DIST, "sitemap.xml"),
-        generateSitemap(routes),
+        generateSitemap(
+          routes,
+          blogPages.map((page) => ({
+            path: page.path,
+            lastmod: blogPathDate(page.path),
+          })),
+        ),
         "utf-8",
       );
 
