@@ -1,9 +1,10 @@
 # Crawl directives for akinevz.com.
 # Full syntax: https://developers.google.com/search/docs/advanced/robots/create-robots-txt
 
-# Keep the canonical site indexable while reducing duplicate query-string URLs.
+# Everything is crawlable, query strings included: ?post=… permalinks
+# address a particular section of a page and are meant to be hyperlinked.
+# Canonical tags keep duplicate query URLs consolidated for indexing.
 User-agent: *
 Allow: /
-Disallow: /*?*
 
 Sitemap: https://akinevz.com/sitemap.xml

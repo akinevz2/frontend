@@ -1,6 +1,6 @@
 {
   "baselineUrl": "https://akinevz.com/checksums.txt",
-  "generatedAt": "2026-11-21T12:08:50.023Z",
+  "generatedAt": "2026-11-21T12:11:35.005Z",
   "mutablePaths": [
     "blog/",
     "stories/",
@@ -157,6 +157,11 @@
   "rehashOnly": [],
   "liveMatchCount": 0,
   "liveMatched": [],
-  "softMutableCount": 0,
-  "softMutable": []
+  "softMutableCount": 1,
+  "softMutable": [
+    {
+      "relPath": "robots.txt",
+      "status": "CHANGED"
+    }
+  ]
 }
