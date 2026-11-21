@@ -12,7 +12,7 @@ import {
   snapshotFor,
   type SnapshotPages,
 } from "./prerender.ts";
-import { collectBlogEnv, blogPathDate } from "./blogSources.ts";
+import { collectBlogEnv, blogPathDate } from "../src/renderer/node.ts";
 import { createSeoServer } from "./prerenderServer.ts";
 
 /**
@@ -84,7 +84,7 @@ export function routeSkeletonsPlugin(): Plugin {
         );
         snapshots = prerender.routeSnapshotPages() as SnapshotPages;
         blogPages = prerender.blogSnapshotPages(
-          collectBlogEnv(),
+          collectBlogEnv(PUBLIC),
         ) as SnapshotPages;
       } finally {
         await server.close();
@@ -141,7 +141,7 @@ export function routeSkeletonsPlugin(): Plugin {
           routes,
           blogPages.map((page) => ({
             path: page.path,
-            lastmod: blogPathDate(page.path),
+            lastmod: blogPathDate(PUBLIC, page.path),
           })),
         ),
         "utf-8",

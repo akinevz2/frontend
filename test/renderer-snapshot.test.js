@@ -1,7 +1,12 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createSeoServer } from "../build/prerenderServer.ts";
-import { collectBlogEnv } from "../build/blogSources.ts";
+import { collectBlogEnv } from "../src/renderer/node.ts";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const PUBLIC = path.join(root, "public");
 
 /* The drift guard: for every route and every blog page, every text
  * string in the content tree must appear in the snapshot html.
@@ -141,7 +146,9 @@ function assertSnapshotShape(html, label) {
 test("every route renders a snapshot covering its content tree", async () => {
   const server = await createSeoServer();
   try {
-    const prerender = await server.ssrLoadModule("/src/renderer/snapshot/prerender.tsx");
+    const prerender = await server.ssrLoadModule(
+      "/src/renderer/snapshot/prerender.tsx",
+    );
     const { routes } = await server.ssrLoadModule("/src/content/index.ts");
     const pages = prerender.routeSnapshotPages();
     const byPath = new Map(pages.map((p) => [p.path, p]));
@@ -175,9 +182,11 @@ test("every route renders a snapshot covering its content tree", async () => {
 test("every blog post and listed directory renders a snapshot page", async () => {
   const server = await createSeoServer();
   try {
-    const prerender = await server.ssrLoadModule("/src/renderer/snapshot/prerender.tsx");
+    const prerender = await server.ssrLoadModule(
+      "/src/renderer/snapshot/prerender.tsx",
+    );
     const blog = await server.ssrLoadModule("/src/content/blogDirs.ts");
-    const env = collectBlogEnv();
+    const env = collectBlogEnv(PUBLIC);
     const pages = prerender.blogSnapshotPages(env);
     const byPath = new Map(pages.map((p) => [p.path, p]));
 
@@ -213,8 +222,10 @@ test("every blog post and listed directory renders a snapshot page", async () =>
 test("blog post snapshots carry their own file's text", async () => {
   const server = await createSeoServer();
   try {
-    const prerender = await server.ssrLoadModule("/src/renderer/snapshot/prerender.tsx");
-    const env = collectBlogEnv();
+    const prerender = await server.ssrLoadModule(
+      "/src/renderer/snapshot/prerender.tsx",
+    );
+    const env = collectBlogEnv(PUBLIC);
     const pages = prerender.blogSnapshotPages(env);
     for (const source of env.sources) {
       if (!/\.(md|json)$/i.test(source.publicPath)) continue;
@@ -241,16 +252,23 @@ test("blog post snapshots carry their own file's text", async () => {
 test("include expansion mirrors the content loader (drift guard)", async () => {
   const server = await createSeoServer();
   try {
-    const prerender = await server.ssrLoadModule("/src/renderer/snapshot/prerender.tsx");
+    const prerender = await server.ssrLoadModule(
+      "/src/renderer/snapshot/prerender.tsx",
+    );
     const content = await server.ssrLoadModule("/src/content/index.ts");
     // got-source.json embeds {"include": "/blog/releases/get-traversal.md"};
-    // the real loader expanded it inside its project tree — the mirror
-    // must expand the SAME target to the SAME section.
+    // the real loader expanded it inside its project tree — the snapshot
+    // side must expand the SAME target to the SAME section. The targets
+    // are the loader's own reference-derived map (the prerender's blog
+    // env carries only the targets the blog sources reference).
     const project = content.projects.find((p) => p.slug === "got-source");
     assert.ok(project, "got-source project");
     const real = findSectionByHeading(project.content, "get Usage");
     assert.ok(real, "loader-expanded get-traversal section");
-    const env = collectBlogEnv();
+    const env = {
+      ...collectBlogEnv(PUBLIC),
+      includes: content.includeTargets,
+    };
     const mine = prerender.targetSection(
       "/blog/releases/get-traversal.md",
       env,

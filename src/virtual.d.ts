@@ -23,16 +23,17 @@ declare module "virtual:project-mtimes" {
   export default projectMtimes;
 }
 
-/** The content-file include targets are served by
- * build/includesPlugin.ts as a virtual module: a live walk of
- * public/includes/ and public/blog/releases/ keyed by public path.
- * There is no snapshot file — the filesystem is the only source
- * (recomputed on dev-server watch changes and at every build). */
-declare module "virtual:content-includes" {
+/** The include targets are served by build/contentTargetsPlugin.ts as a
+ * virtual module: the reference-driven closure of the directive strings
+ * found in the content files (the .json files under src/content), keyed
+ * by public path. There is no directory list and no snapshot file — the
+ * directives are the only registration; a dangling path fails the
+ * build. */
+declare module "virtual:content-targets" {
   /** public path → raw file text */
-  const contentIncludes: Record<
+  const contentTargets: Record<
     string,
     { kind: "json" | "md"; content: string }
   >;
-  export default contentIncludes;
+  export default contentTargets;
 }

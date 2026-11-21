@@ -1,7 +1,7 @@
-import fs from "node:fs";
 import path from "node:path";
 import type { Plugin } from "vite";
 import { PUBLIC } from "./env.ts";
+import { listBlogDirs } from "../src/renderer/node.ts";
 
 /**
  * The blog directory listing, read straight from the filesystem.
@@ -15,64 +15,16 @@ import { PUBLIC } from "./env.ts";
  * public/blog/ changes, so the served listing is always exactly the
  * filesystem. The blog ROOT's entry powers post-address resolution
  * (/blog/<file>), but the root itself never lists (the curated blog.json
- * page lives there). Dotfiles are skipped.
+ * page lives there). Dotfiles are skipped. The walk itself lives in
+ * src/renderer/sources/collect.ts (exported through the node
+ * entrypoint).
  */
-
-export type BlogDirEntry = {
-  path: string;
-  files: string[];
-  /** Child directories, as their served paths (e.g. /blog/archive/tech). */
-  dirs: string[];
-};
 
 const BLOG_ROOT = path.join(PUBLIC, "blog");
 
-/** Walks public/blog/ into [{ path, files, dirs }] — depth-first, names
- * sorted case-insensitively for a stable module identity. Exported pure
- * so tests can assert the shape without touching fs. */
-export function listBlogDirs(
-  dir: string = BLOG_ROOT,
-  rel = "",
-): BlogDirEntry[] {
-  let entries: fs.Dirent[];
-  try {
-    entries = fs.readdirSync(dir, { withFileTypes: true });
-  } catch {
-    // No public/blog at all: no directories list.
-    return [];
-  }
-  const files: string[] = [];
-  const childDirs: string[] = [];
-  const subdirs: BlogDirEntry[] = [];
-  for (const entry of entries) {
-    if (entry.name.startsWith(".")) continue;
-    if (entry.isDirectory()) {
-      childDirs.push(`/blog${rel}/${entry.name}`);
-      subdirs.push(
-        ...listBlogDirs(path.join(dir, entry.name), `${rel}/${entry.name}`),
-      );
-    } else {
-      files.push(entry.name);
-    }
-  }
-  const mine: BlogDirEntry[] = [
-    {
-      path: `/blog${rel}`,
-      files: files.sort((a, b) =>
-        a.toLowerCase().localeCompare(b.toLowerCase()),
-      ),
-      dirs: childDirs.sort((a, b) =>
-        a.toLowerCase().localeCompare(b.toLowerCase()),
-      ),
-    },
-    ...subdirs,
-  ];
-  return mine;
-}
-
 export function blogDirsPlugin(): Plugin {
   const moduleFor = () =>
-    `export default ${JSON.stringify({ directories: listBlogDirs() })};`;
+    `export default ${JSON.stringify({ directories: listBlogDirs(PUBLIC) })};`;
   return {
     name: "blog-dirs-virtual",
     resolveId(id) {

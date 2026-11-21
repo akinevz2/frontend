@@ -15,11 +15,11 @@ export type Embed = {
  * load time (src/content/index.ts), into the referenced Section as a
  * nested child — JSON cannot import, so this is the "include" mechanism
  * for reusing a section across pages.
- * <path> is the PUBLIC path of the target (leading slash, extension
+ * is the PUBLIC path of the target (leading slash, extension
  * included): a `.json` holding a Section, or an author-written `.md`
- * file wrapped as one. Targets live at the public root (*.json) or
- * public/blog/releases/ (*.md) — the include walk there is the
- * registration (build/includesPlugin.ts).
+ * file wrapped as one. Targets are discovered from the directives
+ * themselves (reference-driven — build/contentTargetsPlugin.ts); a
+ * dangling path fails the build.
  */
 export type IncludeRef = { include: string };
 

@@ -1,7 +1,12 @@
 import type { Project, Route, Section, SoundCloudData } from "./schema";
 import pagesJson from "./pages.json";
 import projectMtimes from "virtual:project-mtimes";
-import includesData from "virtual:content-includes";
+import contentTargets from "virtual:content-targets";
+import {
+  expandSection,
+  makeResolver,
+  type IncludeEntry,
+} from "@/renderer/index.ts";
 import sectionsJson from "./sections.json";
 import contactsJson from "./contacts.json";
 import addonsJson from "./addons.json";
@@ -24,11 +29,10 @@ export * from "./schema";
  * Include targets live under public/ and directives carry the PUBLIC PATH
  * (leading slash, extension included) — the same address the file is served
  * at, so an include target doubles as a standalone page. Resolution is
- * build-time via the virtual:content-includes module (build/includesPlugin.ts),
- * whose scanned directories ARE the registration: public/includes/ (.json
- * and .md) and public/blog/releases/ (.md). Widening the scan would inline
- * the files into the JS bundle — keep targets small, and do not scan all
- * of public/ (that would inline every blog post).
+ * reference-driven (build/contentTargetsPlugin.ts): the build scans the
+ * content files' directive strings and inlines exactly the targets they
+ * name — no directory list, no scan registry. A dangling path fails the
+ * build.
  *
  *   - `.json`: must hold a Section (the window-tree shape of a content file).
  *   - `.md`: author-written markdown (literal newlines), imported raw and
@@ -36,127 +40,29 @@ export * from "./schema";
  *     An optional leading `# Heading` line names the window; otherwise the
  *     humanized file stem does ("make-recipes" → "Make recipes").
  * Directives are expanded at load time, recursively (an included tree may
- * itself contain directives). Unknown directives throw during module load,
- * failing the build loudly instead of rendering an opaque object. Each file
- * may be included multiple times across sibling items; cycles are broken by
- * the seen-set, which tracks one inclusion chain.
+ * itself contain directives), through the SHARED resolver
+ * (src/renderer/includes/resolve.ts) — the same implementation the
+ * prerender uses. Unknown directives throw during module load, failing the
+ * build loudly instead of rendering an opaque object. Each file may be
+ * included multiple times across sibling items; cycles are broken by the
+ * seen-set, which tracks one inclusion chain.
  *
  * Everything here precedes its first use: exports below expand their
  * trees at module evaluation, so this scaffolding must be initialized
  * by then (const declarations do not hoist).
  */
 
-/** Every includable file from virtual:content-includes (a live filesystem
- * walk of public/includes/ and public/blog/releases/ — see
- * build/includesPlugin.ts), keyed by public path. */
-const includeEntries = includesData;
+/** The discovered include targets (public path → raw text), as the build
+ * inlined them. Exported for the snapshot drift guard
+ * (test/renderer-snapshot.test.js): the prerender expands the SAME
+ * targets through the SAME resolver. */
+export const includeTargets: Record<string, IncludeEntry> = contentTargets;
 
-const stemOf = (path: string): string =>
-  path
-    .split("/")
-    .pop()!
-    .replace(/\.json$|\.md$/, "");
-
-/** "make-recipes" → "Make recipes". */
-const humanize = (stem: string): string =>
-  stem.replace(/-/g, " ").replace(/^./, (c) => c.toUpperCase());
-
-/**
- * Wrap an include/ markdown file as a Section: `# Heading` first line
- * names the window (default: humanized stem); the rest is the content.
- */
-const mdSection = (stem: string, md: string): Section => {
-  const lines = md.replace(/\r\n/g, "\n").split("\n");
-  let heading: string | undefined;
-  while (heading === undefined && lines.length > 0) {
-    const line = lines[0] ?? "";
-    if (line.trim() === "") lines.shift();
-    else if (line.startsWith("# ")) {
-      heading = line.slice(2).trim();
-      lines.shift();
-    } else break;
-  }
-  return {
-    heading: heading ?? humanize(stem),
-    anchor: stem,
-    content: lines.join("\n"),
-  };
-};
-
-/** Includable Sections, keyed by PUBLIC PATH ("/includes/characters.json").
- * `.json` entries must hold a Section (the window-tree shape of a content
- * file); `.md` entries are author-written markdown (literal newlines),
- * wrapped by mdSection. */
-const includes: Record<string, Section> = Object.fromEntries(
-  Object.entries(includeEntries).map(([publicPath, entry]) => {
-    if (entry.kind === "json") {
-      return [publicPath, JSON.parse(entry.content) as Section];
-    }
-    const stem = stemOf(publicPath);
-    return [publicPath, mdSection(stem, entry.content)];
-  }),
-);
-
-/** The include target a directive public path resolves to. The path must
- * be absolute, under public/ (no "..", extension included); unknown paths
- * throw — the same loud failure the renderer would otherwise paper over. */
-const includeTarget = (name: string): Section => {
-  if (
-    !name.startsWith("/") ||
-    name.includes("..") ||
-    !/^\/[a-z0-9][a-z0-9._/-]*\.(json|md)$/i.test(name)
-  ) {
-    throw new Error(
-      `Unknown include directive: ${name} ` +
-        "(targets are public paths under public/, .json or .md)",
-    );
-  }
-  const target = includes[name];
-  if (!target) {
-    throw new Error(
-      `Unknown include directive: ${name} ` +
-        "(targets live at public/*.json or public/blog/releases/*.md)",
-    );
-  }
-  return target;
-};
-
-function expandContent(
-  content: NonNullable<Section["content"]>,
-  ancestors: Set<string>,
-): NonNullable<Section["content"]> {
-  if (typeof content === "string") return content;
-  const items = Array.isArray(content) ? content : [content];
-  return items.map((item) => {
-    if (typeof item !== "object" || item === null) return item;
-    if ("include" in item) {
-      const name = item.include;
-      if (typeof name !== "string") {
-        throw new Error(`Unknown include directive: ${String(name)}`);
-      }
-      if (ancestors.has(name)) {
-        throw new Error(`Circular include directive: ${name}`);
-      }
-      const chain = new Set(ancestors);
-      chain.add(name);
-      return expandSection(includeTarget(name), chain);
-    }
-    if ("banner" in item || "url" in item) return item;
-    return expandSection(item as Section, ancestors);
-  });
-}
-
-/** Expands a nested section, preserving the absence of content exactly. */
-function expandSection(section: Section, ancestors: Set<string>): Section {
-  if (!section.content) return section;
-  return { ...section, content: expandContent(section.content, ancestors) };
-}
+const resolveTarget = makeResolver(contentTargets);
 
 /** Expands every include directive in the tree rooted at `section`. */
-function resolveIncludes(section: Section): Section {
-  if (!section.content) return section;
-  return { ...section, content: expandContent(section.content, new Set()) };
-}
+const resolveIncludes = (section: Section): Section =>
+  expandSection(section, resolveTarget);
 
 const projectModules = import.meta.glob<Project>("./projects/*.json", {
   eager: true,
