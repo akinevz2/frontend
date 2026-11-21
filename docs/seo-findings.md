@@ -271,3 +271,28 @@ no hydration to fight. Only judgment calls surfaced (to review):
    `renderToStaticMarkup` (it is a plain `<h3>`; no store access), with
    a hard rule that bespoke pages must not embed store-dependent
    elements.
+
+## 9. Addendum — decisions taken after phase 0 (user-approved direction)
+
+- The /wow exclusion was confirmed ("could render protected intellectual
+  property"): the "Full UI pack*" sections render in neither the
+  snapshot nor the form, exactly as the unverified interactive view.
+- /blog/** became FULLY indexable (user decision): every .md/.json post
+  and every listed directory now emits a real `<path>/index.html` +
+  `<path>.html` page with snapshot + route meta, and is listed in
+  sitemap.xml (priority 0.6, monthly). URL scheme unchanged
+  (extension-less addresses; raw .md files untouched).
+- Alias routes (pages.json `alias`, hidden project short-hands) carry NO
+  snapshot: their interactive page is an immediate redirect; a full
+  snapshot there would be cloaking. Their head meta is unchanged.
+- Snapshot markdown demotes authored `# ...` lines to `<h2>` (same text,
+  one level down) so the page's single `<h1>` is always the top window
+  heading; md iframes (YouTube/Spotify embeds) degrade to plain links
+  (title + url) — zero iframes in any snapshot.
+- The include-expansion mirror (src/seo/prerender.tsx) is drift-guarded
+  by test/seo-snapshot.test.js against the real loader's expansion
+  (got-source × get-traversal differential).
+- Over-long descriptions (truncated to ≤160 chars at a word boundary
+  with "…" in meta/og/twitter ONLY; JSON-LD keeps full text):
+  on-deploy 295, opencode-screencast 310, polyframes 240, herbctl 208,
+  got-source 200, doftiles 192, herbstutil 190.
