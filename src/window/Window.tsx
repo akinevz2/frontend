@@ -11,6 +11,7 @@ import { ResourceEmbed } from "./ResourceEmbed";
 import { TitleBar } from "./TitleBar";
 import type { WindowChild, WindowNode } from "./model";
 import { permalinkFor, useWindowStore } from "./state";
+import { refocusTrigger } from "./summonFocus";
 import { closeSound, dataTheme, forcesExpanded } from "./themes";
 import { hasTheme } from "./model";
 
@@ -164,6 +165,10 @@ export function Window({ node }: { node: WindowNode }) {
   const leaves = node.depth === 0 && onLeave;
   const flags = flagsOf(node.id);
   const maximized = Boolean(flags.maximized);
+  // The summoned presentation (§7.2): separate from `expanded` — normal
+  // windows' inline OK-button reveal is unchanged everywhere else.
+  const summoned = Boolean(flags.summoned);
+  const position = flags.position;
   const windowRef = useRef<HTMLDivElement | null>(null);
   // The experimental wobble plays ONCE per visit. Three attributes on
   // the root drive it (see the Experimental block in window.css):
@@ -283,6 +288,33 @@ export function Window({ node }: { node: WindowNode }) {
     return () => document.removeEventListener("keydown", onKey, true);
   }, [maximized, node.id, dispatch, maximizedCtl]);
 
+  // A summoned hint's Escape (§7.2): closes the summon and returns
+  // focus to the trigger link. Document-level capture like the
+  // maximized view's, so it works wherever focus sits inside the
+  // window. No history entries, nothing in the address bar.
+  useEffect(() => {
+    if (!summoned) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      event.stopPropagation();
+      patch(node.id, { summoned: false, silentSummon: false });
+      refocusTrigger(node.id);
+    };
+    document.addEventListener("keydown", onKey, true);
+    return () => document.removeEventListener("keydown", onKey, true);
+  }, [summoned, node.id, patch]);
+
+  // Focus moves into a summoned window on summon (§7.2); restored
+  // hints re-summon silently and steal NO focus. Summoning an
+  // already-summoned hint re-runs this (a fresh silentSummon:false
+  // patch) — it focuses rather than duplicates.
+  useEffect(() => {
+    if (!summoned || flags.silentSummon) return;
+    const id = requestAnimationFrame(() => windowRef.current?.focus());
+    return () => cancelAnimationFrame(id);
+  }, [summoned, flags.silentSummon]);
+
   if (flags.closed) return null;
 
   // Windows without a heading are plain groups of content, not windows.
@@ -304,9 +336,14 @@ export function Window({ node }: { node: WindowNode }) {
     );
 
   // Maximizing expands the interior exactly like pressing OK — a maximized
-  // window always shows its full content in the backdrop.
+  // window always shows its full content in the backdrop. A summoned hint
+  // shows its content directly too (it IS the reveal — the reader asked
+  // for it), without touching the OK machinery.
   const expanded =
-    forcesExpanded(node) || Boolean(flags.expanded || node.embed) || maximized;
+    forcesExpanded(node) ||
+    Boolean(flags.expanded || node.embed) ||
+    maximized ||
+    summoned;
 
   // Sounds stay pinned to the moments in the COMMAND handlers above:
   // the minimize click belongs to window:minimize (the title-bar
@@ -335,6 +372,15 @@ export function Window({ node }: { node: WindowNode }) {
   };
 
   const close = () => {
+    // A summoned hint's ✕ DISMISSES the summon (§7.2): the hint returns
+    // to its in-place rendering and focus goes back to the trigger
+    // link. It never parks, never plays the close sounds, and never
+    // touches the Clippy easter egg's park flow.
+    if (summoned) {
+      patch(node.id, { summoned: false, silentSummon: false });
+      refocusTrigger(node.id);
+      return;
+    }
     if (maximized) {
       // ✕ on a maximized window restores it into the page flow — the
       // press STAYS on the page (no navigation), so its sound is the
@@ -389,12 +435,32 @@ export function Window({ node }: { node: WindowNode }) {
         "window",
         maximized && "maximized",
         maximized && leafWindow && "content-size",
+        summoned && "summoned",
+        flags.silentSummon && "summon-restore",
         node.className,
       ]
         .filter(Boolean)
         .join(" ")}
       data-theme={dataTheme(node)}
       {...(node.kind ? { "data-kind": node.kind } : {})}
+      {...(summoned
+        ? {
+            // The summoned presentation (§7.2): a non-modal dialog with
+            // its title as the accessible name, focused on summon, at
+            // its container-space offsets via --dx/--dy (Phase 4's
+            // dragging rewrites exactly these two).
+            role: "dialog",
+            "aria-labelledby": `${node.id}-title`,
+            tabIndex: -1,
+            style: position
+              ? ({
+                  "--dx": `${position.x}px`,
+                  "--dy": `${position.y}px`,
+                  zIndex: position.z,
+                } as React.CSSProperties)
+              : undefined,
+          }
+        : {})}
       onPointerEnter={
         hasTheme(node, "experimental")
           ? () => {
@@ -421,6 +487,7 @@ export function Window({ node }: { node: WindowNode }) {
       <TitleBar
         node={node}
         maximized={maximized}
+        summoned={summoned}
         onMinimize={minimizeButton}
         onMaximize={() => {
           if (!maximized) {

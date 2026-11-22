@@ -29,6 +29,18 @@ export type WindowFlags = {
   minimized?: boolean;
   closed?: boolean;
   maximized?: boolean;
+  /** Lesson hint summon (§7.2): a presentation SEPARATE from `expanded`
+   * — the inline OK-button reveal of normal windows is unchanged
+   * everywhere else. A summoned window floats in the lesson container
+   * (its `position`, px offsets) instead of the page flow. */
+  summoned?: boolean;
+  /** The summoned window's px offsets in the lesson container's space,
+   * applied as --dx/--dy custom properties (no re-render per move once
+   * Phase 4's dragging lands) plus its z-order. */
+  position?: { x: number; y: number; z: number };
+  /** A summon restored from persistence mounts WITHOUT the slide-in
+   * animation (§7.3: persisted hints re-summon without animation). */
+  silentSummon?: boolean;
 };
 
 type State = Record<string, WindowFlags>;

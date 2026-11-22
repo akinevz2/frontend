@@ -12,9 +12,10 @@ import {
   stemOf,
   type IncludeEntry,
 } from "@/renderer/index.ts";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { PageWindows } from "@/window";
+import { LessonSummon } from "@/window/LessonSummon";
 
 /** A lesson page at /learning/<slug> (docs/LEARNING_PLAN.md §8 Phase 2).
  *
@@ -31,6 +32,7 @@ import { PageWindows } from "@/window";
 export const LessonPage = () => {
   const { pathname } = useLocation();
   const ext = learningLessonExtension(decodeURI(pathname));
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const [section, setSection] = useState<Section | null>(null);
 
   useEffect(() => {
@@ -98,8 +100,14 @@ export const LessonPage = () => {
     ? section
     : { ...section, theme: [...themes, "open"] as ThemeName[] };
   return (
-    <div {...(lesson.flow === "diagonal" ? { "data-flow": "diagonal" } : {})}>
-      <PageWindows content={lesson} />
+    <div
+      ref={containerRef}
+      className="lesson"
+      {...(lesson.flow === "diagonal" ? { "data-flow": "diagonal" } : {})}
+    >
+      <PageWindows content={lesson}>
+        <LessonSummon containerRef={containerRef} />
+      </PageWindows>
     </div>
   );
 };

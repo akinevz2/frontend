@@ -72,7 +72,16 @@ function buildNode(section: Section, id: string, depth: number): WindowNode {
     } else {
       children.push({
         kind: "window",
-        node: buildNode(item, `${id}.${sectionCount++}`, depth + 1),
+        // A nested section's own anchor wins: the lesson convention's
+        // hint windows name themselves ("## Hint: include by path" →
+        // #include-by-path), and a trigger link's fragment addresses
+        // the SAME id the window system renders (§5). Everything else
+        // keeps the stable dotted tree index.
+        node: buildNode(
+          item,
+          item.anchor ?? `${id}.${sectionCount++}`,
+          depth + 1,
+        ),
       });
     }
   }
@@ -103,7 +112,12 @@ function buildNode(section: Section, id: string, depth: number): WindowNode {
       } else {
         left.push({
           kind: "window",
-          node: buildNode(item, `${id}.${sectionCount++}`, depth + 1),
+          // The section's own anchor wins (see the main-flow branch).
+          node: buildNode(
+            item,
+            item.anchor ?? `${id}.${sectionCount++}`,
+            depth + 1,
+          ),
         });
       }
     }
@@ -125,7 +139,12 @@ function buildNode(section: Section, id: string, depth: number): WindowNode {
       } else {
         right.push({
           kind: "window",
-          node: buildNode(item, `${id}.${sectionCount++}`, depth + 1),
+          // The section's own anchor wins (see the main-flow branch).
+          node: buildNode(
+            item,
+            item.anchor ?? `${id}.${sectionCount++}`,
+            depth + 1,
+          ),
         });
       }
     }

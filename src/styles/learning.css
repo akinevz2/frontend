@@ -21,3 +21,115 @@
     margin-top: 0;
   }
 }
+
+/* The summoned hint (docs/LEARNING_PLAN.md §7.2): an existing window in
+   a summoned presentation — absolutely positioned INSIDE the lesson
+   container at its --dx/--dy offsets (px in the container's coordinate
+   space), sliding in with a transform transition. It enters from the
+   side opposite the trigger's column (the summon code sets --dx/--dy),
+   continuing the zig-zag. */
+
+.lesson {
+  position: relative;
+}
+
+.window.summoned {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(var(--dx, 0), var(--dy, 0));
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.35);
+  animation: summon-slide 180ms ease-out;
+}
+
+@keyframes summon-slide {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+/* A restored hint re-summons WITHOUT animation (§7.3); under
+   prefers-reduced-motion there is no slide either (§7.2). */
+.window.summon-restore {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .window.summoned {
+    animation: none;
+  }
+}
+
+/* Stacked (mobile) layout: positions are ignored — the hint flows in
+   place like any other window (§7.3). */
+@media screen and (max-width: 768px) {
+  .window.summoned {
+    position: static;
+    transform: none;
+  }
+}
+
+/* The title bar's small Clippy icon (§7.2). */
+.title-bar-clippy {
+  height: 1em;
+  width: auto;
+  margin: 0 0.35em 0 0.4em;
+  align-self: center;
+}
+
+/* The Clippy prompt: a native <dialog> skinned as an XP message box
+   (§7.1) — Clippy.png beside the text, OK and Cancel. */
+.clippy-prompt {
+  border: 1px solid #000;
+  border-radius: 7px;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.35);
+  background: #ece9d8;
+  color: #000;
+  font:
+    0.95rem/1.4 system-ui,
+    sans-serif;
+  padding: 1rem;
+  max-width: 24rem;
+}
+
+.clippy-prompt::backdrop {
+  background: transparent;
+}
+
+.clippy-prompt img {
+  float: left;
+  width: 48px;
+  height: 48px;
+  image-rendering: pixelated;
+  margin: 0 0.75rem 0.25rem 0;
+}
+
+.clippy-prompt p {
+  margin: 0 0 0.75rem;
+  overflow-wrap: anywhere;
+}
+
+.clippy-prompt-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.clippy-prompt-row button {
+  min-width: 4.5rem;
+  padding: 0.2rem 0.75rem;
+  background: #ece9d8;
+  border: 1px solid #7f7f7f;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.clippy-prompt-row button:hover,
+.clippy-prompt-row button:focus-visible {
+  outline: 1px dotted #000;
+}
