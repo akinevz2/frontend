@@ -1,0 +1,89 @@
+# learning — verification log
+
+Commands actually run on the `learning` branch, with their literal
+output, plus the UI-string list §7.1 requires. The static architecture
+constraints are lint rules (eslint.config.js — Phase 3.5); behavioural
+coverage is in `test/`.
+
+## Gates
+
+### `npm run typecheck`
+
+    > website-xp-phone@2.7.0 typecheck
+    > tsc --noEmit && tsc -p tsconfig.node.json --noEmit
+
+(no output — clean)
+
+### `npm run lint`
+
+prettier reformat list (all `unchanged`) and **0 errors, 0 warnings**
+with the Phase 3.5 rules active: renderer boundary, node-builtin
+confinement, learningStorage purity, history-write confinement.
+
+### `npm test`
+
+    # tests 127
+    # pass 127
+    # fail 0
+
+Coverage by area:
+
+- renderer includes: discovery, dangling paths, transitive json,
+  STRICT path containment (symlink file/dir escape, raw traversal,
+  validator shapes)
+- renderer boundary: the transitive browser-closure walk (the
+  per-file boundary scan is a lint rule now)
+- renderer meta: Person/software/TechArticle JSON-LD, sameAs present
+  in content
+- md lesson convention: prefixes (case-insensitive, ref: → reference),
+  plain headings stay prose, fenced code never scanned, deeper hints
+  nest, same/shallower ends a hint, anchors, base mdSection untouched
+- learning storage: fake Storage round-trip, throwing storage,
+  corrupt/malformed payloads, per-route keys, withoutEntry, raised,
+  summonPosition (side opposite, clamp, z-stack), clampEntry,
+  keyStep (16/64px), keyboardMove
+- lesson summon DOM flow (jsdom): trigger click → prompt (heading
+  named) → OK summons the SAME window node (no duplicate), persisted;
+  Escape dismisses + persisted; arrow keys move 16px through the
+  store, persisted; non-movement keys inert
+
+### `npm run build`
+
+    ✓ built in ~0.8s
+
+lesson page emitted at `dist/learning/lesson-template/index.html` with
+TechArticle JSON-LD and `data-kind="hint"` in the raw HTML; non-study
+routes byte-identical vs the seo-prerender baseline (verified after
+Phase 2; the only diffs were the intentional instagram-handle pages).
+
+### `node scripts/learning-summon.manual.mjs`
+
+    ok - reduced-motion: the summon slide is disabled under prefers-reduced-motion
+    ok - stacked layout: summoned positions are ignored at the mobile breakpoint
+    ok - no slide for restored hints (.summon-restore)
+    all CSS checks passed
+
+(the source-level guarantees are lint rules; the pointer-drag items and
+the full 19-point interactive checklist print with the script.)
+
+## UI strings (§7.1: every string, for author review)
+
+| String                                                                                          | Where                                                       |
+| ----------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| `it looks like you're reading about {hint heading}. would you like a hint?`                     | Clippy prompt body (§7.1 default copy)                      |
+| `OK` / `Cancel`                                                                                 | Clippy prompt buttons                                       |
+| `Close`                                                                                         | summoned window's ✕ (aria-label)                            |
+| `arrow keys move this window 16 pixels, or 64 pixels with Shift held; press Escape to close it` | title bar aria-describedby movement instructions (§7.4)     |
+| `lesson unavailable` / `Failed to load the lesson at {path}: {message}`                         | runtime lesson-fetch failure window                         |
+| `no lessons yet — the route is a stub`                                                          | /learning landing with zero lessons                         |
+| `learning of kine` / `{name} \| learning of kine`                                               | route + lesson titles (pages.json, resolveRoute, prerender) |
+| `{name} — a lesson from the learning of kine.`                                                  | lesson meta description                                     |
+
+## Copy that looks unverifiable (listed only, never edited)
+
+- the prompt copy is the plan's default ("final copy is the author's
+  call" — §7.1); flagging it for a read-through.
+- `learning of kine` mirrors the blog's `blog of kine` convention —
+  invented by analogy, not specified verbatim anywhere.
+- the drag-hint instructions text is new (§7.4 requires the text to
+  exist but does not write it).
