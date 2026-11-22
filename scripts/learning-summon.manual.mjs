@@ -2,12 +2,14 @@
  * Phase 3): everything jsdom cannot exercise — real layout, focus
  * choreography, reduced-motion, no console errors/warnings.
  *
- *   node scripts/learning-summon.manual.mjs            # static checks
- *   node scripts/learning-summon.manual.mjs --serve    # + dev server
+ *   node scripts/learning-summon.manual.mjs            # CSS checks
  *
- * Static checks (automated): CSS guards, storage-shape helpers wired,
- * interception exclusions present in the built bundle. Interactive
- * checklist (human): printed at the end. */
+ * The SOURCE-level guarantees (renderer boundary, node-builtin
+ * confinement, sessionStorage purity, no-history-writes) are LINT
+ * rules now (eslint.config.js — Phase 3.5): run `npm run lint`. What
+ * remains here is the CSS-shape checking (eslint does not parse CSS)
+ * and the interactive checklist. Behavioural coverage (storage
+ * round-trips, the dialogue flow) lives in test/. */
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -39,65 +41,8 @@ check(
   /\.window\.summon-restore \{\s*animation: none/.test(learningCss),
 );
 
-const summonSource = read("src/window/LessonSummon.tsx");
-check(
-  "modified clicks are not intercepted (ctrl/meta/shift/alt checked)",
-  ["event.metaKey", "event.ctrlKey", "event.shiftKey", "event.altKey"].every(
-    (k) => summonSource.includes(k),
-  ),
-);
-check(
-  "interception is preventDefault-only (no history entry)",
-  summonSource.includes("event.preventDefault()") &&
-    !summonSource.includes("history.pushState"),
-);
-check(
-  "persistence writes go through learningStorage (guarded access only)",
-  summonSource.includes("writeSummoned") &&
-    summonSource.includes("readSummoned"),
-);
-
-const windowSource = read("src/window/Window.tsx");
-check(
-  "summoned Escape dismisses and refocuses the trigger",
-  windowSource.includes("refocusTrigger(node.id)"),
-);
-check(
-  "summoned windows are non-modal dialogs labelled by their title",
-  windowSource.includes('role: "dialog"') &&
-    windowSource.includes('"aria-labelledby"'),
-);
-
-const storageSource = read("src/lib/learningStorage.ts");
-const storageCode = storageSource
-  .replace(/\/\*[\s\S]*?\*\//g, "")
-  .replace(/\/\/.*/g, "");
-check(
-  "every storage access is in try/catch",
-  (storageCode.match(/catch/g) ?? []).length >= 2,
-);
-check(
-  "sessionStorage only — no cookies, no localStorage, no network",
-  !storageCode.includes("localStorage") &&
-    !storageCode.includes("document.cookie") &&
-    !storageCode.includes("fetch"),
-);
-
-const promptSource = summonSource + read("src/window/LessonSummon.tsx");
-check(
-  "one native <dialog>, showModal, OK and Cancel",
-  promptSource.includes("<dialog") &&
-    promptSource.includes("showModal") &&
-    promptSource.includes(">Cancel<") &&
-    promptSource.includes(">OK<"),
-);
-check(
-  'Clippy.png reused directly, decorative (alt="")',
-  promptSource.includes('src="/Clippy.png"') && promptSource.includes('alt=""'),
-);
-
 console.log(
-  `\n${failures === 0 ? "all static checks passed" : `${failures} FAILURES`}`,
+  `\n${failures === 0 ? "all CSS checks passed" : `${failures} FAILURES`}`,
 );
 
 /* ------------------------------------------------ interactive checklist */

@@ -6,45 +6,19 @@ import { fileURLToPath } from "node:url";
 
 /* The package boundary (docs/LEARNING_PLAN.md §3, docs/renderer.md):
  *
- *  - exactly TWO import targets from outside src/renderer: the
- *    browser-safe `src/renderer/index.ts` and the node-only
- *    `src/renderer/node.ts` — any deeper import fails;
- *  - the import closure of src/main.tsx (the browser bundle) never
- *    reaches src/renderer/sources, src/renderer/node.ts, or any
- *    `node:*` module.
- *
- * Both checks are specifier scans over the import/export statements of
- * every .ts/.tsx/.js/.mjs outside src/renderer (plus build/, scripts/,
- * test/). A specifier scan is enough per §3. */
+ *  - the specifier half — "nothing outside src/renderer deep-imports
+ *    the package (only index.ts / node.ts)" — lives in LINT now
+ *    (eslint.config.js, no-restricted-imports; Phase 3.5): it runs on
+ *    every save and every lint pass, so it is not duplicated here.
+ *  - THIS FILE keeps the one check lint cannot do: the transitive
+ *    import-closure walk of src/main.tsx — reachability through
+ *    re-exports and dynamic imports is a graph property, not a
+ *    per-file pattern.
+ */
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-const SOURCE_DIRS = ["src", "build", "scripts", "test"];
 const EXTS = ["", ".ts", ".tsx", ".js", ".mjs", ".cjs", ".json", "/index.ts"];
-
-function* filesUnder(dir) {
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      if (entry.name === "node_modules" || entry.name === ".git") continue;
-      yield* filesUnder(full);
-    } else if (/\.(ts|tsx|js|mjs|cjs)$/.test(entry.name)) {
-      yield full;
-    }
-  }
-}
-
-function sourceFiles() {
-  const out = [];
-  for (const dir of SOURCE_DIRS) {
-    for (const file of filesUnder(path.join(root, dir))) {
-      const rel = path.relative(root, file);
-      if (rel.startsWith("src/renderer")) continue; // inside the package
-      out.push(rel);
-    }
-  }
-  return out;
-}
 
 const SPEC_RE = /(?:\bfrom\s*|\bimport\s*\(?\s*)["']([^"']+)["']/g;
 
@@ -53,50 +27,6 @@ function specifiersOf(text) {
   for (const match of text.matchAll(SPEC_RE)) specs.push(match[1]);
   return specs;
 }
-
-/** The renderer file a specifier names, or null when it names none. */
-function rendererFileOf(specifier) {
-  if (!specifier.includes("renderer")) return null;
-  let rel;
-  if (specifier.startsWith("@/")) {
-    rel = path.join("src", specifier.slice(2));
-  } else {
-    const index = specifier.indexOf("src/renderer");
-    if (index === -1) return null;
-    rel = specifier.slice(index);
-  }
-  for (const ext of EXTS) {
-    const candidate = rel + ext;
-    if (
-      candidate === "src/renderer/index.ts" ||
-      candidate === "src/renderer/node.ts"
-    ) {
-      return candidate;
-    }
-  }
-  // a renderer specifier that is NOT one of the two entrypoints
-  return "src/renderer/<deep-import>";
-}
-
-test("nothing outside src/renderer deep-imports the package", () => {
-  const violations = [];
-  for (const file of sourceFiles()) {
-    const text = fs.readFileSync(path.join(root, file), "utf8");
-    for (const spec of specifiersOf(text)) {
-      const target = rendererFileOf(spec);
-      if (!target) continue;
-      if (
-        target !== "src/renderer/index.ts" &&
-        target !== "src/renderer/node.ts"
-      ) {
-        violations.push(`${file}: ${spec}`);
-      }
-    }
-  }
-  assert.deepEqual(violations, []);
-});
-
-/* ---- the browser bundle's import closure ---- */
 
 /** Resolves a specifier to a repo-relative source file, or null for
  * virtual modules, styles and bare packages. */
