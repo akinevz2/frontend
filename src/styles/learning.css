@@ -1,0 +1,23 @@
+/* The diagonal lesson layout (docs/LEARNING_PLAN.md §6): a lesson root
+   opts in with flow:"diagonal" (the lesson page container carries
+   data-flow="diagonal"). Built on the existing columns machinery —
+   sections alternate columns by sibling index with a stepped offset, so
+   the reading path runs diagonally down the page. Pure CSS, no JS, no
+   inline styles; stacks to one column at the same 768px breakpoint the
+   column layout collapses at. Non-study pages never set data-flow, so
+   nothing else moves. */
+
+[data-flow="diagonal"] .columns-col:nth-child(2) {
+  margin-top: 3em;
+}
+
+[data-flow="diagonal"] .columns-col:nth-child(3) {
+  margin-top: 6em;
+}
+
+@media screen and (max-width: 768px) {
+  [data-flow="diagonal"] .columns-col:nth-child(2),
+  [data-flow="diagonal"] .columns-col:nth-child(3) {
+    margin-top: 0;
+  }
+}

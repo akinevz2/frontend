@@ -15,4 +15,4 @@ export {
   blogPathDate,
   type BlogDirEntry,
   type BlogSourceFile,
-} from "./sources/collect";
+} from "./sources/collect.ts";

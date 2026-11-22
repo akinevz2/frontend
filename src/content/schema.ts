@@ -53,6 +53,13 @@ export type Section = {
   text?: string;
   externalLink?: boolean;
   className?: string;
+  /** Learning window kind (docs/LEARNING_PLAN.md §5): rendered as
+   * `data-kind` on the window element. A Section field — never raw html
+   * in markdown — so the sanitizer is untouched. */
+  kind?: "hint" | "advice" | "reference";
+  /** Lesson root opt-in (docs/LEARNING_PLAN.md §6): pure-CSS diagonal
+   * reading path. Non-study pages must never set this. */
+  flow?: "diagonal";
 };
 
 /** A document in src/content/projects/; every project becomes its own route. */

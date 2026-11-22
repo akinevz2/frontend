@@ -21,6 +21,7 @@ import {
   projects,
   routes,
   sections,
+  learningLandingSection,
   type Route,
   type Section,
 } from "@/content";
@@ -28,13 +29,16 @@ import { buildMusic } from "@/pages/MusicPage";
 import { buildProjects } from "@/pages/ProjectsPage";
 import { SITEMAP } from "@/pages/SitemapPage";
 import { wowContent } from "@/pages/WowPage";
-import { renderSnapshotHtml } from "./snapshot";
-import { mdSection, stemOf } from "../includes/mdSection";
+import { renderSnapshotHtml } from "./snapshot.tsx";
+import { mdSection, mdLessonSection, stemOf } from "../includes/mdSection.ts";
+import { techArticleJsonLd } from "../meta/seo.ts";
 import {
   expandSection,
   makeResolver,
   type IncludeEntry,
-} from "../includes/resolve";
+} from "../includes/resolve.ts";
+
+const SITE_ORIGIN = "https://akinevz.com";
 
 export type SnapshotPage = {
   /** The canonical URL path the page serves at (root-relative). */
@@ -43,6 +47,8 @@ export type SnapshotPage = {
   description: string;
   /** The html fragment to inject inside <div id="root">. */
   html: string;
+  /** Optional per-page JSON-LD (lessons carry a TechArticle). */
+  jsonld?: object;
 };
 
 /** Bespoke /resume page: the snapshot carries the page's own affordances
@@ -97,6 +103,8 @@ export function routeContent(
       return projects.find((p) => projectPath(p) === route.path)?.content;
     case "ResumePage":
       return RESUME_SNAPSHOT;
+    case "LearningPage":
+      return learningLandingSection();
     case "NotFoundPage":
       return NOT_FOUND_SNAPSHOT;
     default:
@@ -227,5 +235,61 @@ export function blogSnapshotPages(env: BlogEnv): SnapshotPage[] {
     });
   }
 
+  return pages;
+}
+
+/* ------------------------------------------------------------- learning
+ * /learning/** lesson pages (docs/LEARNING_PLAN.md §8 Phase 2): lessons
+ * are the .md/.json files at the ROOT of public/learning/ (deeper
+ * directories — resources/ — are include targets, never pages). Every
+ * lesson gets a real emitted html page: .md files wrap through the §5
+ * lesson convention (hint:/advice:/ref: → nested windows, hints
+ * rendered in place); .json lessons are their authored Section, includes
+ * expanded. Meta conventions match the blog's ("«name» | learning of
+ * kine"); each page carries a TechArticle JSON-LD built ONLY from
+ * fields present in the file (the lesson heading).
+ */
+
+const LEARNING_ROOT = "/learning";
+
+/** The lesson meta conventions (mirroring the blog's, above). */
+const lessonTitle = (name: string) => `${name} | learning of kine`;
+const lessonDescription = (name: string) =>
+  `${name} — a lesson from the learning of kine.`;
+
+/** The lesson a learning source addresses, or undefined: only root
+ * files are lessons (resources/ and any deeper dir are include
+ * targets), and non-md/json files are assets. */
+function lessonSection(source: BlogSource, env: BlogEnv): Section | null {
+  const name = source.publicPath.slice(LEARNING_ROOT.length + 1);
+  if (name.includes("/")) return null; // deeper than the root: a resource
+  if (source.publicPath.endsWith(".json")) {
+    const section = JSON.parse(source.text) as Section;
+    return expandSection(section, makeResolver(env.includes));
+  }
+  if (!source.publicPath.endsWith(".md")) return null;
+  return mdLessonSection(stemOf(source.publicPath), source.text);
+}
+
+/** One snapshot page per lesson (with its TechArticle JSON-LD). */
+export function learningSnapshotPages(env: BlogEnv): SnapshotPage[] {
+  const pages: SnapshotPage[] = [];
+  for (const source of env.sources) {
+    if (!source.publicPath.startsWith(`${LEARNING_ROOT}/`)) continue;
+    const section = lessonSection(source, env);
+    if (!section) continue;
+    const path = source.publicPath.replace(/\.md$|\.json$/i, "");
+    const name = path.split("/").filter(Boolean).pop() ?? path;
+    pages.push({
+      path,
+      title: lessonTitle(name),
+      description: lessonDescription(name),
+      html: renderSnapshotHtml(section),
+      jsonld: techArticleJsonLd({
+        heading: section.heading ?? name,
+        url: new URL(path, SITE_ORIGIN).toString(),
+      }),
+    });
+  }
   return pages;
 }

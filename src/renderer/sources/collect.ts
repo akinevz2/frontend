@@ -4,7 +4,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { discoverTargets, type IncludeEntry } from "../includes/resolve";
+import { discoverTargets, type IncludeEntry } from "../includes/resolve.ts";
 
 export type BlogDirEntry = {
   path: string;

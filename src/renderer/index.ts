@@ -3,8 +3,14 @@
  * `src/renderer/node.ts`). See README.md for the boundary rules; the
  * boundary test fails on any deeper import. */
 
-export { validateIncludePath } from "./includes/paths";
-export { mdSection, stemOf, humanize } from "./includes/mdSection";
+export { validateIncludePath } from "./includes/paths.ts";
+export { mdSection, stemOf, humanize } from "./includes/mdSection.ts";
+export {
+  mdLessonSection,
+  lessonBlocks,
+  lessonAnchor,
+  stripKindPrefix,
+} from "./includes/mdSection.ts";
 export {
   directivePaths,
   parseTarget,
@@ -14,11 +20,12 @@ export {
   expandSection,
   resolveSections,
   type IncludeEntry,
-} from "./includes/resolve";
+} from "./includes/resolve.ts";
 export {
   META_DESCRIPTION_MAX,
   truncateDescription,
   PERSON_SAME_AS,
   personJsonLd,
   softwareJsonLd,
-} from "./meta/seo";
+  techArticleJsonLd,
+} from "./meta/seo.ts";

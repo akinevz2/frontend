@@ -16,6 +16,7 @@ import soundcloudJson from "./soundcloud.json";
 import musicExtJson from "./music-ext.json";
 
 export * from "./schema";
+export * from "./learningTree";
 
 /* ------------------------------------------------------------------ includes
  * A content file can embed another content file's window tree with an

@@ -60,6 +60,13 @@
     "page": "MusicPage"
   },
   {
+    "path": "/learning",
+    "menuLabel": "learning",
+    "title": "learning of kine",
+    "description": "lessons and study notes from kine — a stub landing for now",
+    "page": "LearningPage"
+  },
+  {
     "path": "/blog",
     "menuLabel": "blog",
     "title": "blog of kine",

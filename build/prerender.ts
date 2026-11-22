@@ -29,6 +29,8 @@ export type SnapshotPages = Array<{
   title: string;
   description: string;
   html: string;
+  /** Optional per-page JSON-LD (lessons carry a TechArticle). */
+  jsonld?: object;
 }>;
 
 /** The snapshot fragment for one route, or undefined (aliases and

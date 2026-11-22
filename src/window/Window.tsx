@@ -394,6 +394,7 @@ export function Window({ node }: { node: WindowNode }) {
         .filter(Boolean)
         .join(" ")}
       data-theme={dataTheme(node)}
+      {...(node.kind ? { "data-kind": node.kind } : {})}
       onPointerEnter={
         hasTheme(node, "experimental")
           ? () => {

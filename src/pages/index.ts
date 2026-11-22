@@ -7,6 +7,8 @@ import { ContactPage } from "./ContactPage";
 import { ConfigsPage } from "./ConfigsPage";
 import { HomePage } from "./HomePage";
 import { MusicPage } from "./MusicPage";
+import { LearningPage } from "./LearningPage";
+import { LessonPage } from "./LessonPage";
 import { NotFoundPage } from "./NotFoundPage";
 import { ProjectPage } from "./ProjectPage";
 import { ProjectsPage } from "./ProjectsPage";
@@ -23,6 +25,8 @@ export const pageRegistry: Record<string, ComponentType> = {
   ConfigsPage,
   ContactPage,
   HomePage,
+  LearningPage,
+  LessonPage,
   MusicPage,
   NotFoundPage,
   ProjectPage,

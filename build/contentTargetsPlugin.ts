@@ -40,7 +40,8 @@ function readContentRoots(contentDir: string): Array<{
       }
       if (!entry.name.endsWith(".json")) continue;
       roots.push({
-        path: `src/content${rel}/${entry.name}`,
+        // Relative to contentDir — the same base every join below uses.
+        path: `${rel}/${entry.name}`,
         text: fs.readFileSync(path.join(dir, entry.name), "utf8"),
       });
     }

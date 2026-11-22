@@ -1,7 +1,7 @@
 import path from "node:path";
 import type { Plugin } from "vite";
 import { PUBLIC } from "./env.ts";
-import { listBlogDirs } from "../src/renderer/node.ts";
+import { listBlogDirs, listTreeDirs } from "../src/renderer/node.ts";
 
 /**
  * The blog directory listing, read straight from the filesystem.
@@ -21,32 +21,45 @@ import { listBlogDirs } from "../src/renderer/node.ts";
  */
 
 const BLOG_ROOT = path.join(PUBLIC, "blog");
+const LEARNING_ROOT = path.join(PUBLIC, "learning");
 
 export function blogDirsPlugin(): Plugin {
   const moduleFor = () =>
     `export default ${JSON.stringify({ directories: listBlogDirs(PUBLIC) })};`;
+  const learningModuleFor = () =>
+    `export default ${JSON.stringify({ directories: listTreeDirs(PUBLIC, "learning") })};`;
   return {
     name: "blog-dirs-virtual",
     resolveId(id) {
       if (id === "virtual:blog-dirs") return "\0virtual:blog-dirs";
+      if (id === "virtual:learning-tree") return "\0virtual:learning-tree";
       return null;
     },
     load(id) {
       if (id === "\0virtual:blog-dirs") return moduleFor();
+      if (id === "\0virtual:learning-tree") return learningModuleFor();
       return null;
     },
     configureServer(server) {
-      // Recompute and reload when the blog tree changes: new files list
+      // Recompute and reload when either tree changes: new files list
       // themselves, removed ones vanish, no manual refresh step.
       server.watcher.add(BLOG_ROOT);
-      const changed = (file: string) => {
-        if (!file.startsWith(BLOG_ROOT)) return;
-        const mod = server.moduleGraph.getModuleById("\0virtual:blog-dirs");
+      server.watcher.add(LEARNING_ROOT);
+      const changed = (root: string, id: string) => (file: string) => {
+        if (!file.startsWith(root)) return;
+        const mod = server.moduleGraph.getModuleById(id);
         if (mod) server.moduleGraph.invalidateModule(mod);
         server.ws.send({ type: "full-reload" });
       };
-      for (const event of ["add", "unlink", "addDir", "unlinkDir"] as const)
-        server.watcher.on(event, changed);
+      const onBlogChange = changed(BLOG_ROOT, "\0virtual:blog-dirs");
+      const onLearningChange = changed(
+        LEARNING_ROOT,
+        "\0virtual:learning-tree",
+      );
+      for (const event of ["add", "unlink", "addDir", "unlinkDir"] as const) {
+        server.watcher.on(event, onBlogChange);
+        server.watcher.on(event, onLearningChange);
+      }
     },
   };
 }

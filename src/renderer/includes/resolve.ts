@@ -11,8 +11,8 @@
  */
 
 import type { Section } from "@/content/schema";
-import { mdSection, stemOf } from "./mdSection";
-import { validateIncludePath } from "./paths";
+import { mdSection, stemOf } from "./mdSection.ts";
+import { validateIncludePath } from "./paths.ts";
 
 /** A discovered include target: its kind and raw text. */
 export type IncludeEntry = { kind: "json" | "md"; content: string };

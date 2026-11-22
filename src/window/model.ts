@@ -1,5 +1,7 @@
 import { isValidElement, type ReactElement } from "react";
-import type { Banner, Embed, Item, Section, ThemeName } from "@/content";
+import type { Banner, Embed, Item, Section, ThemeName } from "@/content/schema";
+
+type LessonKind = NonNullable<Section["kind"]>;
 
 export type WindowChild =
   | { kind: "text"; lines: string[] }
@@ -17,6 +19,9 @@ export type WindowNode = {
   externalLink: boolean;
   themes: ThemeName[];
   className?: string | undefined;
+  /** Learning kind ("hint"/"advice"/"reference") — rendered as data-kind
+   * on the window element (docs/LEARNING_PLAN.md §5). */
+  kind?: LessonKind | undefined;
   embed?: string | undefined;
   status?: string | undefined;
   copyText?: string | undefined;
@@ -134,6 +139,7 @@ function buildNode(section: Section, id: string, depth: number): WindowNode {
     externalLink: Boolean(section.externalLink),
     themes: toThemes(section.theme),
     className: section.className,
+    kind: section.kind,
     embed: section.embed,
     status: section.status,
     copyText: section.text,

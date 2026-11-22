@@ -59,8 +59,12 @@ function routeJsonLd(route: RouteConfig): object | null {
 /** Rewrites the data-route-meta tags in index.html for one route.
  * Descriptions longer than META_DESCRIPTION_MAX truncate (word
  * boundary + ellipsis) in the meta/og/twitter tags only — copy is never
- * rewritten. */
-export function withRouteMeta(html: string, route: RouteConfig): string {
+ * rewritten. Generated snapshot pages (lessons) may carry their own
+ * jsonld entity, which wins over routeJsonLd's route-based one. */
+export function withRouteMeta(
+  html: string,
+  route: RouteConfig & { jsonld?: object | null },
+): string {
   const title = escapeHtml(route.title);
   // truncated for the head tags only; JSON-LD keeps the full text
   const description = escapeHtml(truncateDescription(route.description));
@@ -70,7 +74,7 @@ export function withRouteMeta(html: string, route: RouteConfig): string {
   const image = escapeHtml(new URL("/avatar.png", SITE_ORIGIN).toString());
   const { width, height } = avatarDimensions();
 
-  const jsonLd = routeJsonLd(route);
+  const jsonLd = routeJsonLd(route) ?? route.jsonld ?? null;
   const jsonLdTag = jsonLd
     ? `<script type="application/ld+json" data-route-meta="jsonld">${JSON.stringify(jsonLd)}</script>`
     : "";

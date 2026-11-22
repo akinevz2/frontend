@@ -2,6 +2,7 @@ import {
   blogDirFiles,
   blogDirListed,
   findBlogDir,
+  learningLessonExists,
   routes,
   type Route,
 } from "@/content";
@@ -80,6 +81,21 @@ export function resolveRoute(pathname: string): Route {
     return blogDocumentRoute(pathname);
   }
   const path = normalizePath(pathname);
+  // /learning/<slug> addresses a lesson the same way the blog addresses
+  // a post: the file must exist at the learning ROOT (the generated
+  // walk answers; resources/ never holds lessons) — otherwise 404,
+  // never a blind ".md" fetch (see the blog branch above).
+  if (path.startsWith("/learning/")) {
+    if (!learningLessonExists(path)) return NOT_FOUND;
+    const name = decodeURI(pathname).split("/").pop() ?? pathname;
+    return {
+      path: pathname,
+      title: `${name} | learning of kine`,
+      description: `${name} — a lesson from the learning of kine.`,
+      page: "LessonPage",
+      hidden: true,
+    };
+  }
   const route = routes.find((r) => r.path === path);
   return route ?? NOT_FOUND;
 }

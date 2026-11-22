@@ -13,6 +13,20 @@ declare module "virtual:blog-dirs" {
   export default blogDirs;
 }
 
+/** The learning tree listing is served by build/blogDirsPlugin.ts (the
+ * same plugin) as a virtual module: a live walk of public/learning/'s
+ * directories. No snapshot file — the filesystem is the only source. */
+declare module "virtual:learning-tree" {
+  const learningTree: {
+    directories: Array<{
+      path: string;
+      files: string[];
+      dirs: string[];
+    }>;
+  };
+  export default learningTree;
+}
+
 /** The project-file mtimes are served by build/projectMtimesPlugin.ts as
  * a virtual module: a live walk of src/content/projects/*.json's mtimes.
  * There is no snapshot file — the filesystem is the only source

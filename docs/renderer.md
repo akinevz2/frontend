@@ -67,3 +67,29 @@ Rules for edits:
   builds.
 - The historical SEO docs (`docs/deprecated/seo-findings.md`,
   `docs/deprecated/seo-verification.md`) are left as written.
+
+## The lesson markdown convention (Phase 2)
+
+Lesson files are the `.md`/`.json` files at the ROOT of
+`public/learning/` (deeper directories — `resources/` — are reusable
+include targets, never pages). A `.md` lesson wraps through
+`mdLessonSection` (`includes/mdSection.ts`), which extends the single
+`mdSection` with the `hint:` / `advice:` / `ref:` heading convention:
+
+- a heading at depth ≥ 2 whose text starts with `hint:`, `advice:` or
+  `ref:` (case-insensitive) opens a nested Section of that kind,
+  containing everything up to the next heading of the same or shallower
+  depth; the prefix is stripped from the displayed heading;
+- the kind is rendered as `data-kind` on the window element (a Section
+  field, never raw html in markdown — the sanitizer is untouched);
+- fenced code blocks are never scanned for headings;
+- the nested window's anchor is the kebab-cased remainder
+  (`## Hint: include by path` → `#include-by-path`), so trigger links —
+  ordinary hyperlinks like `[need a hint?](#include-by-path)` — are real
+  fragment URLs that jump to the in-place hint in the static snapshot
+  and without JS;
+- the root opts into the diagonal layout (`flow: "diagonal"`, pure CSS
+  on `[data-flow="diagonal"]` in `src/styles/learning.css`).
+
+The BASE `mdSection` is untouched: non-lesson markdown (blog posts)
+renders byte-identically. Unit tests: `test/md-lesson.test.js`.

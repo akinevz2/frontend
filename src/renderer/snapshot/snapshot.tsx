@@ -86,19 +86,42 @@ function WindowHeading({ node, level }: { node: WindowNode; level: number }) {
   // The window's tree id doubles as the anchor id: the same id the
   // interactive app's permalinks address (#tree-index / ?post=slug).
   const id = { id: node.id };
+  // The learning kind rides along as data-kind (the interactive window
+  // element carries the same attribute — one source, two renderers).
+  const kindAttr = node.kind ? { "data-kind": node.kind } : {};
   switch (level) {
     case 1:
       return <h1 {...id}>{heading}</h1>;
     case 2:
-      return <h2 {...id}>{heading}</h2>;
+      return (
+        <h2 {...id} {...kindAttr}>
+          {heading}
+        </h2>
+      );
     case 3:
-      return <h3 {...id}>{heading}</h3>;
+      return (
+        <h3 {...id} {...kindAttr}>
+          {heading}
+        </h3>
+      );
     case 4:
-      return <h4 {...id}>{heading}</h4>;
+      return (
+        <h4 {...id} {...kindAttr}>
+          {heading}
+        </h4>
+      );
     case 5:
-      return <h5 {...id}>{heading}</h5>;
+      return (
+        <h5 {...id} {...kindAttr}>
+          {heading}
+        </h5>
+      );
     default:
-      return <h6 {...id}>{heading}</h6>;
+      return (
+        <h6 {...id} {...kindAttr}>
+          {heading}
+        </h6>
+      );
   }
 }
 

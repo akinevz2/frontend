@@ -12,7 +12,7 @@ import {
   snapshotFor,
   type SnapshotPages,
 } from "./prerender.ts";
-import { collectBlogEnv, blogPathDate } from "../src/renderer/node.ts";
+import { collectTreeEnv, blogPathDate } from "../src/renderer/node.ts";
 import { createSeoServer } from "./prerenderServer.ts";
 
 /**
@@ -78,14 +78,19 @@ export function routeSkeletonsPlugin(): Plugin {
       const server = await createSeoServer();
       let snapshots: SnapshotPages;
       let blogPages: SnapshotPages;
+      let learningPages: SnapshotPages;
       try {
         const prerender = await server.ssrLoadModule(
           "/src/renderer/snapshot/prerender.tsx",
         );
         snapshots = prerender.routeSnapshotPages() as SnapshotPages;
-        blogPages = prerender.blogSnapshotPages(
-          collectBlogEnv(PUBLIC),
-        ) as SnapshotPages;
+        // ONE env walk for both served trees: the blog pages and the
+        // learning lessons resolve the same include-discovery closure,
+        // so a lesson's resources and a blog post's includes cannot
+        // drift apart.
+        const env = collectTreeEnv(PUBLIC, ["blog", "learning"]);
+        blogPages = prerender.blogSnapshotPages(env) as SnapshotPages;
+        learningPages = prerender.learningSnapshotPages(env) as SnapshotPages;
       } finally {
         await server.close();
       }
@@ -112,17 +117,19 @@ export function routeSkeletonsPlugin(): Plugin {
         }
       }
 
-      // Blog pages: same shell, same meta mechanism, blog meta, snapshot
-      // inside #root. Written at <path>/index.html plus a <path>.html
-      // sibling for static hosts (the raw <path>.md source files keep
-      // their direct URLs untouched).
-      for (const page of blogPages) {
+      // Blog and learning pages: same shell, same meta mechanism (lessons
+      // also carry their TechArticle JSON-LD), snapshot inside #root.
+      // Written at <path>/index.html plus a <path>.html sibling for
+      // static hosts (the raw <path>.md source files keep their direct
+      // URLs untouched).
+      for (const page of [...blogPages, ...learningPages]) {
         const normalized = normalizeRoute(page.path);
         const html = injectSnapshot(
           withRouteMeta(indexHtml, {
             path: normalized,
             title: page.title,
             description: page.description,
+            jsonld: page.jsonld ?? null,
           }),
           page.html,
         );
@@ -139,7 +146,7 @@ export function routeSkeletonsPlugin(): Plugin {
         path.join(DIST, "sitemap.xml"),
         generateSitemap(
           routes,
-          blogPages.map((page) => ({
+          [...blogPages, ...learningPages].map((page) => ({
             path: page.path,
             lastmod: blogPathDate(PUBLIC, page.path),
           })),
@@ -154,6 +161,9 @@ export function routeSkeletonsPlugin(): Plugin {
             generated: mergeGeneratedPaths(
               generatedPathsForRoutes(routes, publicSiblingExists),
               generatedBlogPaths(blogPages, (pagePath) =>
+                fs.existsSync(path.join(PUBLIC, `${pagePath}.html`)),
+              ),
+              generatedBlogPaths(learningPages, (pagePath) =>
                 fs.existsSync(path.join(PUBLIC, `${pagePath}.html`)),
               ),
             ),
