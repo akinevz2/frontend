@@ -22,19 +22,20 @@
   }
 }
 
-/* The summoned hint (docs/LEARNING_PLAN.md §7.2): an existing window in
-   a summoned presentation — absolutely positioned INSIDE the lesson
-   container at its --dx/--dy offsets (px in the container's coordinate
-   space), sliding in with a transform transition. It enters from the
-   side opposite the trigger's column (the summon code sets --dx/--dy),
-   continuing the zig-zag. */
+/* The summoned hint (docs/LEARNING_PLAN.md §7.2, revised per the
+   author): an existing window in a summoned presentation — position
+   FIXED at its --dx/--dy offsets (px in the VIEWPORT's space; the
+   roaming area is the viewport, not the small lesson container), so it
+   stays put while the page scrolls. It enters from the side opposite
+   the trigger's column (the summon code sets --dx/--dy), continuing
+   the zig-zag. */
 
 .lesson {
   position: relative;
 }
 
 .window.summoned {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   transform: translate(var(--dx, 0), var(--dy, 0));

@@ -145,7 +145,7 @@ export function LessonSummon({
   }, [hints, flagsOf]);
 
   // Restore (§7.3): read once per mount, unknown ids dropped, positions
-  // clamped into the container, re-summoned WITHOUT animation.
+  // clamped into the viewport, re-summoned WITHOUT animation.
   useEffect(() => {
     const container = containerRef.current;
     if (!container || hints.length === 0) return;
@@ -153,12 +153,11 @@ export function LessonSummon({
       hintIds.has(entry.id),
     );
     if (persisted.length === 0) return;
-    const bounds = container.getBoundingClientRect();
     for (const entry of persisted) {
       const { width, height } = fallbackRect(document.getElementById(entry.id));
       const clamped = clampEntry(entry, {
-        maxX: bounds.width - width,
-        maxY: bounds.height - height,
+        maxX: window.innerWidth - width,
+        maxY: window.innerHeight - height,
       });
       patch(entry.id, {
         summoned: true,
@@ -252,14 +251,22 @@ export function LessonSummon({
       width: 0,
       height: 0,
     };
+    // The zig-zag (§6) reads the lesson layout: a trigger in the left
+    // half of the container sends the hint to the right edge. The
+    // position itself is VIEWPORT-space (position: fixed — the roaming
+    // space is the viewport, revised per the author), clamped inside
+    // the viewport by summonPosition.
+    const goesRight =
+      trigger.left - bounds.left + trigger.width / 2 < bounds.width / 2;
     const position = summonPosition(
       {
-        left: trigger.left - bounds.left,
-        top: trigger.top - bounds.top,
+        left: trigger.left,
+        top: trigger.top,
         width: trigger.width,
         height: trigger.height,
       },
-      { width: bounds.width, height: bounds.height },
+      goesRight,
+      { width: window.innerWidth, height: window.innerHeight },
       hint,
       summonedNow,
     );

@@ -87,3 +87,17 @@ the full 19-point interactive checklist print with the script.)
   invented by analogy, not specified verbatim anywhere.
 - the drag-hint instructions text is new (§7.4 requires the text to
   exist but does not write it).
+
+## Post-review revisions (author feedback, post-Phase 4)
+
+- **Roaming space = the viewport, not the lesson container** (revises
+  §7.3/§7.4): the container clamp made the popups nearly immovable.
+  Summoned windows are now `position: fixed`, clamped to the viewport
+  alone, and stay put while the page scrolls. The zig-zag side decision
+  still reads the lesson layout; persistence stays the same key/shape,
+  restores clamp against the viewport.
+- **✕ fix**: the drag controller used to capture the pointer on ANY
+  title-bar pointerdown — including the close button's press — so the
+  button never received its click. A pointerdown on a control
+  (`button, a, input, select, textarea`) is now never a drag start
+  (regression-tested).

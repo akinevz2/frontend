@@ -18,7 +18,6 @@ import {
   isStackedLayout,
   keyStep,
   keyboardMove,
-  summonContainer,
 } from "./summonDrag";
 import { raised } from "@/lib/learningStorage";
 import { closeSound, dataTheme, forcesExpanded } from "./themes";
@@ -475,13 +474,9 @@ export function Window({ node }: { node: WindowNode }) {
     event.preventDefault();
     event.stopPropagation();
     const p = flagsOf(node.id).position ?? { x: 0, y: 0, z: 1 };
-    const container = summonContainer();
     let next = keyboardMove(p, step);
-    if (container && windowRef.current)
-      next = {
-        ...next,
-        ...clampToBounds(next.x, next.y, windowRef.current, container),
-      };
+    if (windowRef.current)
+      next = { ...next, ...clampToBounds(next.x, next.y, windowRef.current) };
     patch(node.id, { position: next });
   };
 
@@ -505,8 +500,10 @@ export function Window({ node }: { node: WindowNode }) {
         ? {
             // The summoned presentation (§7.2): a non-modal dialog with
             // its title as the accessible name, focused on summon, at
-            // its container-space offsets via --dx/--dy (Phase 4's
-            // dragging rewrites exactly these two).
+            // its viewport-space offsets via --dx/--dy (Phase 4's
+            // dragging rewrites exactly these two; position is FIXED —
+            // the roaming space is the viewport, revised per the
+            // author from the plan's lesson-container space).
             role: "dialog",
             "aria-labelledby": `${node.id}-title`,
             tabIndex: -1,

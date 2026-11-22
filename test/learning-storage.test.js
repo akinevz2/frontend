@@ -111,12 +111,13 @@ test("raised stacks the raised entry above all others", () => {
 });
 
 test("summonPosition enters from the side OPPOSITE the trigger's column", () => {
-  const container = { width: 1000, height: 800 };
+  const viewport = { width: 1000, height: 800 };
   const hint = { width: 300, height: 200 };
   // trigger on the LEFT half → hint enters from the RIGHT edge
   const fromRight = summonPosition(
     { left: 10, top: 100, width: 50, height: 20 },
-    container,
+    true,
+    viewport,
     hint,
     [],
   );
@@ -124,16 +125,18 @@ test("summonPosition enters from the side OPPOSITE the trigger's column", () => 
   // trigger on the RIGHT half → hint enters from the LEFT margin
   const fromLeft = summonPosition(
     { left: 900, top: 100, width: 50, height: 20 },
-    container,
+    false,
+    viewport,
     hint,
     [],
   );
   assert.equal(fromLeft.x, 16);
-  // vertically beside the trigger, clamped inside the container
+  // vertically beside the trigger, clamped inside the viewport
   assert.equal(fromRight.y, 100 + 10 - 100);
   const low = summonPosition(
     { left: 10, top: 790, width: 50, height: 20 },
-    container,
+    true,
+    viewport,
     hint,
     [],
   );
@@ -143,6 +146,7 @@ test("summonPosition enters from the side OPPOSITE the trigger's column", () => 
 test("summonPosition z-stacks above the existing summons", () => {
   const position = summonPosition(
     { left: 0, top: 0, width: 10, height: 10 },
+    true,
     { width: 1000, height: 800 },
     { width: 300, height: 200 },
     [{ id: "a", x: 0, y: 0, z: 4 }],

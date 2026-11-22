@@ -69,8 +69,9 @@ export function registerLessonContainer(
   };
 }
 
-/** The registered lesson container, or undefined (keyboard movement
- * clamps against it). */
+/** The registered lesson container, or undefined — the SUMMON side
+ * decision (the zig-zag, §6) reads the lesson layout; dragging and
+ * clamping are viewport-space and need nothing. */
 export const summonContainer = (): HTMLElement | undefined =>
   containerEl ?? undefined;
 
@@ -80,25 +81,22 @@ export const DRAG_HINT =
   "arrow keys move this window 16 pixels, or 64 pixels with Shift " +
   "held; press Escape to close it";
 
-/** Clamps a container-space position so the window stays inside the
- * lesson container AND inside the viewport (§7.4). Pure in its inputs;
- * the DOM reads happen at the call sites. */
+/** Clamps a position so the window stays inside the VIEWPORT (§7.4,
+ * revised per the author: the roaming space is the viewport, not the
+ * lesson container). Pure in its inputs; the DOM reads happen at the
+ * call sites. */
 export function clampToBounds(
   x: number,
   y: number,
   element: HTMLElement,
-  container: HTMLElement,
 ): { x: number; y: number } {
   const rect = element.getBoundingClientRect();
-  const bounds = container.getBoundingClientRect();
-  const maxX = Math.min(
-    bounds.width - rect.width,
-    window.innerWidth - bounds.left - rect.width,
-  );
-  const maxY = bounds.height - rect.height;
   const clamped = clampEntry(
     { id: "", x, y, z: 1 },
-    { maxX: Math.max(0, maxX), maxY: Math.max(0, maxY) },
+    {
+      maxX: Math.max(0, window.innerWidth - rect.width),
+      maxY: Math.max(0, window.innerHeight - rect.height),
+    },
   );
   return { x: clamped.x, y: clamped.y };
 }
@@ -121,6 +119,7 @@ type BeginArgs = {
     pointerId: number;
     isPrimary: boolean;
     button: number;
+    target: EventTarget | null;
     currentTarget: HTMLElement;
   };
   /** The summoned WINDOW element (receives --dx/--dy). */
@@ -134,7 +133,7 @@ type BeginArgs = {
 /** The title bar's pointerdown → drag controller. Attaches move/up
  * listeners to the CAPTURING title bar; every move writes --dx/--dy
  * straight onto the window element (no re-render), clamped to the
- * container and the viewport; the drop commits through the store. */
+ * viewport; the drop commits through the store. */
 export function beginSummonDrag({
   event,
   element,
@@ -142,9 +141,14 @@ export function beginSummonDrag({
   onDrop,
 }: BeginArgs): void {
   if (event.button !== 0 || !event.isPrimary) return;
+  // A press on a control (✕) is a BUTTON press, not a drag start —
+  // capturing the pointer here would swallow the button's click.
+  if (
+    event.target instanceof Element &&
+    event.target.closest("button, a, input, select, textarea")
+  )
+    return;
   if (isStackedLayout()) return; // stacked: dragging disabled (§7.4)
-  const container = containerEl;
-  if (!container) return;
 
   const titleBar = event.currentTarget;
   const startX = event.clientX;
@@ -167,7 +171,6 @@ export function beginSummonDrag({
       base.x + (e.clientX - startX),
       base.y + (e.clientY - startY),
       element,
-      container,
     );
     // DIRECT style writes — no React re-render per move (§7.4).
     element.style.setProperty("--dx", `${next.x}px`);
@@ -186,7 +189,7 @@ export function beginSummonDrag({
     // Persist on drop: one store mutation with the final clamped
     // position; React re-renders the same values it already shows.
     const final = draggedPositionOf(element);
-    onDrop(clampToBounds(final.x, final.y, element, container));
+    onDrop(clampToBounds(final.x, final.y, element));
   };
 
   titleBar.addEventListener("pointermove", onMove);

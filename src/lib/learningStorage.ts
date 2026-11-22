@@ -99,33 +99,35 @@ export type Rect = { left: number; top: number; width: number; height: number };
 
 const SUMMON_MARGIN = 16;
 
-/** The summoned hint's position (docs/LEARNING_PLAN.md §6/§7.3): px
- * offsets in the LESSON CONTAINER's coordinate space. It enters from
- * the side OPPOSITE the column that holds the trigger link (the
- * reading path zig-zags): a trigger in the left half sends the hint to
+/** The summoned hint's position (docs/LEARNING_PLAN.md §6/§7.3,
+ * revised per the author: the roaming space is the VIEWPORT, not the
+ * lesson container — popups are position:fixed and stay put while the
+ * page scrolls, clamped to the viewport alone). The zig-zag (§6) still
+ * reads the LESSON layout: `goesRight` is the caller's decision — a
+ * trigger in the left half of the lesson container sends the hint to
  * the right edge, and vice versa. Vertically it lands beside the
- * trigger, clamped inside the container. */
+ * trigger (viewport-space rects), clamped inside the viewport. */
 export function summonPosition(
   trigger: Rect,
-  container: { width: number; height: number },
+  goesRight: boolean,
+  viewport: { width: number; height: number },
   hint: { width: number; height: number },
   existing: SummonedEntry[],
 ): SummonedEntry {
-  const goesRight = trigger.left + trigger.width / 2 < container.width / 2;
   const x = goesRight
-    ? Math.max(0, container.width - hint.width - SUMMON_MARGIN)
+    ? Math.max(0, viewport.width - hint.width - SUMMON_MARGIN)
     : SUMMON_MARGIN;
   const y = Math.min(
     Math.max(0, trigger.top + trigger.height / 2 - hint.height / 2),
-    Math.max(0, container.height - hint.height),
+    Math.max(0, viewport.height - hint.height),
   );
   const z = existing.reduce((max, entry) => Math.max(max, entry.z), 0) + 1;
   return { id: "", x, y, z };
 }
 
-/** Clamps an entry back inside the container (a restore of positions
- * the container no longer has room for — a resized viewport between
- * sessions). Plain-number bounds: pure and testable. */
+/** Clamps an entry back inside the viewport (a restore of positions a
+ * resized viewport no longer has room for). Plain-number bounds: pure
+ * and testable. */
 export function clampEntry(
   entry: SummonedEntry,
   bounds: { maxX: number; maxY: number },

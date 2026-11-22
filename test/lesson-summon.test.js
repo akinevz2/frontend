@@ -10,6 +10,7 @@ import { JSDOM } from "jsdom";
 import React, { useRef, createElement as h } from "react";
 import { createRoot } from "react-dom/client";
 import { summonTargetOf, LessonSummon } from "../src/window/LessonSummon.tsx";
+import { beginSummonDrag } from "../src/window/summonDrag.ts";
 import { PageWindows } from "../src/window/index.ts";
 import { WindowProvider } from "../src/window/state.tsx";
 import { SignalProvider } from "../src/lib/signals.tsx";
@@ -300,4 +301,31 @@ test("arrow keys on the focused title bar move the summoned window through the s
   assert.equal(hintWindow.style.getPropertyValue("--dy"), yBefore);
 
   root.unmount();
+});
+
+test("a pointerdown on a title-bar CONTROL is a button press, never a drag start", () => {
+  const titleBar = document.createElement("div");
+  const button = document.createElement("button");
+  titleBar.appendChild(button);
+  let raised = false;
+  const args = (target) => ({
+    event: {
+      clientX: 0,
+      clientY: 0,
+      pointerId: 1,
+      isPrimary: true,
+      button: 0,
+      target,
+      currentTarget: titleBar,
+    },
+    element: document.createElement("div"),
+    onRaise: () => {
+      raised = true;
+    },
+    onDrop: () => {},
+  });
+  beginSummonDrag(args(button));
+  assert.equal(raised, false, "the ✕ press never starts a drag");
+  beginSummonDrag(args(titleBar));
+  assert.equal(raised, true, "a press on the bar itself drags");
 });
