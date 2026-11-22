@@ -66,9 +66,26 @@ INTERACTIVE CHECKLIST (run: npm run dev, then visit /learning/lesson-template):
    slide animation
 10. sessionStorage key learning:/learning/<route> holds
     {"v":1,"summoned":[{id,x,y,z}]}; nothing in localStorage/cookies
-11. shrink to mobile width: the hint renders in place, positions ignored
+11. shrink to mobile width: the hint renders in place, positions
+    ignored, AND dragging is disabled (pointer and keyboard)
 12. normal windows elsewhere on the site: unchanged OK-reveal behaviour
     (spot-check /contact and a blog post)
 13. the Clippy easter egg (type "fuckingclippy") still behaves as before
     — the lesson flow never touched it
+
+DRAGGING (§7.4):
+14. pointer down on a summoned title bar raises it above any other
+    summoned hint (z-order), persisted on drop
+15. dragging moves the window smoothly (CSS vars, no jank/lag), clamped
+    to the lesson container AND the viewport; releasing persists —
+    reload restores the dropped spot
+16. only the title bar drags: content, close button and edges do not;
+    other summoned hints can be dragged independently
+17. touch: the title bar scrolls nothing (touch-action: none) and the
+    drag follows the finger; page scroll still works on the body
+18. keyboard: Tab into the title bar, arrow keys move 16px, Shift+
+    arrows 64px; the move instructions are announced (aria-describedby)
+    and persisted; Escape still closes while the bar is focused
+19. reduced-motion: no slide on summon/restore (dragging itself is
+    pointer-driven and unaffected)
 `);

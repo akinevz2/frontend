@@ -12,6 +12,15 @@ import { TitleBar } from "./TitleBar";
 import type { WindowChild, WindowNode } from "./model";
 import { permalinkFor, useWindowStore } from "./state";
 import { refocusTrigger } from "./summonFocus";
+import {
+  beginSummonDrag,
+  clampToBounds,
+  isStackedLayout,
+  keyStep,
+  keyboardMove,
+  summonContainer,
+} from "./summonDrag";
+import { raised } from "@/lib/learningStorage";
 import { closeSound, dataTheme, forcesExpanded } from "./themes";
 import { hasTheme } from "./model";
 
@@ -160,7 +169,7 @@ function Body({
 }
 
 export function Window({ node }: { node: WindowNode }) {
-  const { flagsOf, patch, onLeave } = useWindowStore();
+  const { windows, flagsOf, patch, onLeave } = useWindowStore();
   const { dispatch } = useSignals();
   const leaves = node.depth === 0 && onLeave;
   const flags = flagsOf(node.id);
@@ -427,6 +436,55 @@ export function Window({ node }: { node: WindowNode }) {
     return;
   };
 
+  // The summoned hint's drag + keyboard movement (§7.4). The title bar
+  // is the only drag surface; pointermove writes --dx/--dy directly
+  // (no re-render), the store sees raise-on-pointerdown and the final
+  // position on drop. Keyboard moves go through the store; both are
+  // disabled in the stacked layout.
+  const raiseSummoned = () => {
+    const existing = windows
+      .filter((w) => flagsOf(w.id).summoned)
+      .map((w) => {
+        const p = flagsOf(w.id).position;
+        return { id: w.id, x: p?.x ?? 0, y: p?.y ?? 0, z: p?.z ?? 1 };
+      });
+    const { top } = raised(existing, node.id);
+    const p = flagsOf(node.id).position;
+    patch(node.id, { position: { x: p?.x ?? 0, y: p?.y ?? 0, z: top } });
+  };
+
+  const dragPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    const element = windowRef.current;
+    if (!summoned || !element) return;
+    beginSummonDrag({
+      event,
+      element,
+      onRaise: raiseSummoned,
+      onDrop: ({ x, y }) => {
+        const p = flagsOf(node.id).position;
+        patch(node.id, { position: { x, y, z: p?.z ?? 1 } });
+      },
+    });
+  };
+
+  const dragKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!summoned) return;
+    const step = keyStep(event.key, event.shiftKey);
+    if (step === undefined) return; // Escape and the rest: not ours
+    if (isStackedLayout()) return; // stacked: movement disabled (§7.4)
+    event.preventDefault();
+    event.stopPropagation();
+    const p = flagsOf(node.id).position ?? { x: 0, y: 0, z: 1 };
+    const container = summonContainer();
+    let next = keyboardMove(p, step);
+    if (container && windowRef.current)
+      next = {
+        ...next,
+        ...clampToBounds(next.x, next.y, windowRef.current, container),
+      };
+    patch(node.id, { position: next });
+  };
+
   const window_ = (
     <div
       ref={windowRef}
@@ -488,6 +546,8 @@ export function Window({ node }: { node: WindowNode }) {
         node={node}
         maximized={maximized}
         summoned={summoned}
+        onDragPointerDown={dragPointerDown}
+        onDragKeyDown={dragKeyDown}
         onMinimize={minimizeButton}
         onMaximize={() => {
           if (!maximized) {

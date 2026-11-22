@@ -12,6 +12,7 @@ import {
   withoutEntry,
   writeSummoned,
 } from "../src/lib/learningStorage.ts";
+import { keyStep, keyboardMove } from "../src/window/summonDrag.ts";
 
 /** A Map-backed fake Storage. */
 const fakeStorage = () => {
@@ -158,5 +159,27 @@ test("clampEntry pulls restores back inside the container", () => {
   assert.deepEqual(
     clampEntry({ id: "a", x: 50, y: 50, z: 1 }, { maxX: 0, maxY: 0 }),
     { id: "a", x: 0, y: 0, z: 1 },
+  );
+});
+
+/* ------------------------------------------------- dragging (§7.4) */
+
+test("keyStep maps the four arrows, 16px or 64px with Shift", () => {
+  assert.deepEqual(keyStep("ArrowLeft", false), { dx: -16, dy: 0 });
+  assert.deepEqual(keyStep("ArrowRight", false), { dx: 16, dy: 0 });
+  assert.deepEqual(keyStep("ArrowUp", false), { dx: 0, dy: -16 });
+  assert.deepEqual(keyStep("ArrowDown", false), { dx: 0, dy: 16 });
+  // Shift: 64px steps
+  assert.deepEqual(keyStep("ArrowRight", true), { dx: 64, dy: 0 });
+  assert.deepEqual(keyStep("ArrowUp", true), { dx: 0, dy: -64 });
+  // everything else is not a movement key
+  assert.equal(keyStep("Escape", false), undefined);
+  assert.equal(keyStep("Enter", true), undefined);
+});
+
+test("keyboardMove shifts x/y, keeps z", () => {
+  assert.deepEqual(
+    keyboardMove({ id: "a", x: 100, y: 50, z: 3 }, { dx: -16, dy: 64 }),
+    { x: 84, y: 114, z: 3 },
   );
 });

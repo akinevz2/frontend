@@ -9,6 +9,7 @@ import {
 import { CLIPPY_LINK } from "@/lib/clippy";
 import { useWindowStore } from "./state";
 import { setTrigger, refocusTrigger } from "./summonFocus";
+import { registerLessonContainer } from "./summonDrag";
 
 /**
  * The lesson summon machinery (docs/LEARNING_PLAN.md §7.1–§7.3).
@@ -121,6 +122,12 @@ export function LessonSummon({
     heading: string;
     trigger: HTMLElement;
   } | null>(null);
+
+  // The drag controller's clamp surface (§7.4): the lesson container.
+  useEffect(
+    () => registerLessonContainer(containerRef.current ?? null),
+    [containerRef],
+  );
 
   const summonedNow = useMemo<SummonedEntry[]>(() => {
     const entries: SummonedEntry[] = [];

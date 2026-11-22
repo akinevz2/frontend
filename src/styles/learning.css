@@ -82,6 +82,29 @@
   align-self: center;
 }
 
+/* Dragging (§7.4): touch-action: none on the summoned title bar ONLY —
+   the drag surface; the bar is also the keyboard surface, so it gets
+   a move cursor. */
+.window.summoned .title-bar {
+  touch-action: none;
+  cursor: move;
+}
+
+.window.summoned .title-bar:focus-visible {
+  outline: 1px dotted #000;
+}
+
+/* The aria-describedby movement instructions: visually hidden, read by
+   assistive tech. */
+.drag-hint {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 /* The Clippy prompt: a native <dialog> skinned as an XP message box
    (§7.1) — Clippy.png beside the text, OK and Cancel. */
 .clippy-prompt {

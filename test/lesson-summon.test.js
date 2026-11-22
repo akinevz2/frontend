@@ -81,6 +81,27 @@ const LESSON = {
   ],
 };
 
+// jsdom implements no layout (every rect is 0×0), which would clamp
+// every drag/keyboard position to nothing: give the geometry real
+// numbers — windows are 200×100, everything else (the lesson
+// container, trigger links) 800×600.
+dom.window.Element.prototype.getBoundingClientRect = function () {
+  const isWindow = this.classList?.contains("window");
+  const width = isWindow ? 200 : 800;
+  const height = isWindow ? 100 : 600;
+  return {
+    x: 0,
+    y: 0,
+    top: 0,
+    left: 0,
+    right: width,
+    bottom: height,
+    width,
+    height,
+    toJSON() {},
+  };
+};
+
 function Harness() {
   const ref = useRef(null);
   return h(
@@ -186,6 +207,97 @@ test("trigger click opens the prompt; OK summons; Escape dismisses", async () =>
       return false;
     }
   });
+
+  root.unmount();
+});
+
+test("arrow keys on the focused title bar move the summoned window through the store", async () => {
+  sessionStorage.clear();
+  const container = dom.window.document.getElementById("root");
+  const root = createRoot(container);
+  const waitFor = async (what, probe) => {
+    for (let i = 0; i < 100; i++) {
+      const value = probe();
+      if (value) return value;
+      await new Promise((resolve) => setTimeout(resolve, 10));
+    }
+    assert.ok(false, `timed out waiting for ${what}`);
+  };
+  root.render(h(SignalProvider, null, h(Harness)));
+  const hintWindow = await waitFor("the hint window", () =>
+    container.querySelector('.window[data-kind="hint"]'),
+  );
+  const trigger = await waitFor("the trigger link", () =>
+    container.querySelector('a[href="#my-hint"]'),
+  );
+  const click = () =>
+    trigger.dispatchEvent(
+      new dom.window.MouseEvent("click", {
+        bubbles: true,
+        cancelable: true,
+        button: 0,
+      }),
+    );
+  click();
+  let dialog = container.querySelector("dialog.clippy-prompt");
+  for (let i = 0; !dialog && i < 10; i++) {
+    await new Promise((r) => setTimeout(r, 50));
+    click();
+    dialog = container.querySelector("dialog.clippy-prompt");
+  }
+  assert.ok(dialog, "the Clippy <dialog> opened");
+  const ok = [...dialog.querySelectorAll("button")].find(
+    (b) => b.textContent === "OK",
+  );
+  ok.dispatchEvent(new dom.window.MouseEvent("click", { bubbles: true }));
+  await waitFor("the summon", () => hintWindow.classList.contains("summoned"));
+
+  const titleBar = hintWindow.querySelector(".title-bar");
+  assert.ok(titleBar, "the summoned title bar");
+  assert.equal(titleBar.getAttribute("tabindex"), "0", "focusable");
+  assert.ok(
+    titleBar.getAttribute("aria-describedby")?.endsWith("-drag-hint"),
+    "movement instructions referenced",
+  );
+  assert.ok(
+    titleBar.querySelector(".drag-hint")?.textContent.includes("16 pixels"),
+    "the instructions text is present",
+  );
+
+  const before = Number.parseFloat(hintWindow.style.getPropertyValue("--dx"));
+  titleBar.dispatchEvent(
+    new dom.window.KeyboardEvent("keydown", {
+      key: "ArrowRight",
+      bubbles: true,
+      cancelable: true,
+    }),
+  );
+  await waitFor("the keyboard move", () => {
+    const now = Number.parseFloat(hintWindow.style.getPropertyValue("--dx"));
+    return Number.isFinite(now) && now === before + 16;
+  });
+  await waitFor("the move persisted", () => {
+    try {
+      const stored = JSON.parse(
+        sessionStorage.getItem("learning:/learning/lesson-template") ?? "{}",
+      );
+      return stored.summoned?.[0]?.x === before + 16;
+    } catch {
+      return false;
+    }
+  });
+
+  // a non-movement key does nothing
+  const yBefore = hintWindow.style.getPropertyValue("--dy");
+  titleBar.dispatchEvent(
+    new dom.window.KeyboardEvent("keydown", {
+      key: "Enter",
+      bubbles: true,
+      cancelable: true,
+    }),
+  );
+  await new Promise((r) => setTimeout(r, 30));
+  assert.equal(hintWindow.style.getPropertyValue("--dy"), yBefore);
 
   root.unmount();
 });
