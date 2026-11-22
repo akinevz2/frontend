@@ -25,7 +25,7 @@ export const PERSON_SAME_AS = [
   "https://github.com/akinevz2",
   "https://soundcloud.com/akinevz",
   "https://soundcloud.com/akinevz2",
-  "https://www.instagram.com/akinevz2/",
+  "https://www.instagram.com/akinevz_/",
   "https://www.linkedin.com/in/akinevz/",
   "https://www.twitch.tv/akinevz",
   "https://x.com/akinevz",
@@ -58,5 +58,21 @@ export function softwareJsonLd(project: {
     description: project.description,
     ...(project.github ? { codeRepository: project.github } : {}),
     ...(project.lastModified ? { dateModified: project.lastModified } : {}),
+  };
+}
+
+/** A lesson page's TechArticle entity (docs/LEARNING_PLAN.md §8 Phase 2)
+ * — ONLY fields present in the file: the lesson heading becomes
+ * headline; the author is the site's Person (no invented bio fields). */
+export function techArticleJsonLd(lesson: {
+  heading: string;
+  url: string;
+}): object {
+  return {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    headline: lesson.heading,
+    author: { "@type": "Person", name: "Kirill Nevzorov" },
+    url: lesson.url,
   };
 }
