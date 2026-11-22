@@ -12,6 +12,7 @@ import {
   stemOf,
   type IncludeEntry,
 } from "@/renderer/index.ts";
+import { useSignals } from "@/lib/signals";
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { PageWindows } from "@/window";
@@ -31,6 +32,7 @@ import { LessonSummon } from "@/window/LessonSummon";
  * can never ship (failures are loud at build time). */
 export const LessonPage = () => {
   const { pathname } = useLocation();
+  const { dispatch } = useSignals();
   const ext = learningLessonExtension(decodeURI(pathname));
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [section, setSection] = useState<Section | null>(null);
@@ -105,7 +107,15 @@ export const LessonPage = () => {
       className="lesson"
       {...(lesson.flow === "diagonal" ? { "data-flow": "diagonal" } : {})}
     >
-      <PageWindows content={lesson}>
+      {/* The leave-on-close fold (§7.4-adjacent, author request): ✕ and
+          minimize on a lesson's top-level windows navigate to /learning
+          — the same behaviour a blog post's fold-up and the projects
+          page's leave-on-close already have (the store's `onLeave`
+          mechanism, not a special case). */}
+      <PageWindows
+        content={lesson}
+        onLeave={() => dispatch("app:navigate", { to: "/learning" })}
+      >
         <LessonSummon containerRef={containerRef} />
       </PageWindows>
     </div>

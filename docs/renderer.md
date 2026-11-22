@@ -1,5 +1,14 @@
 # `src/renderer` — the content-to-rendered-output package
 
+> The live copy of these docs is the repository's [`docs/` directory on
+> GitHub](https://github.com/akinevz2/frontend/tree/main/docs) —
+> [`docs/renderer.md`](https://github.com/akinevz2/frontend/blob/main/docs/renderer.md)
+> there is this file; the other learning docs
+> ([`LEARNING_PLAN.md`](https://github.com/akinevz2/frontend/blob/main/docs/LEARNING_PLAN.md),
+> [`learning-findings.md`](https://github.com/akinevz2/frontend/blob/main/docs/learning-findings.md),
+> [`learning-verification.md`](https://github.com/akinevz2/frontend/blob/main/docs/learning-verification.md))
+> live beside it.
+
 One package under one name owns everything about turning content into
 rendered output: include resolution, the static snapshot and the prerender
 (`docs/LEARNING_PLAN.md` §3). The sources were relocated with `git mv`, one

@@ -503,17 +503,27 @@ export function Window({ node }: { node: WindowNode }) {
             // its viewport-space offsets via --dx/--dy (Phase 4's
             // dragging rewrites exactly these two; position is FIXED —
             // the roaming space is the viewport, revised per the
-            // author from the plan's lesson-container space).
+            // author from the plan's lesson-container space). The
+            // entrance path rides --sx/--sy (offscreen below, crossing
+            // the bottom edge — mouse-offset when a mouse is present).
             role: "dialog",
             "aria-labelledby": `${node.id}-title`,
             tabIndex: -1,
-            style: position
-              ? ({
-                  "--dx": `${position.x}px`,
-                  "--dy": `${position.y}px`,
-                  zIndex: position.z,
-                } as React.CSSProperties)
-              : undefined,
+            style: {
+              ...(position
+                ? {
+                    "--dx": `${position.x}px`,
+                    "--dy": `${position.y}px`,
+                    zIndex: position.z,
+                  }
+                : {}),
+              ...(flags.summonStart
+                ? {
+                    "--sx": `${flags.summonStart.sx}px`,
+                    "--sy": `${flags.summonStart.sy}px`,
+                  }
+                : {}),
+            } as React.CSSProperties,
           }
         : {})}
       onPointerEnter={

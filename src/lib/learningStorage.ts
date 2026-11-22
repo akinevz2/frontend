@@ -97,32 +97,45 @@ export function raised(
  * DOM needed for tests). */
 export type Rect = { left: number; top: number; width: number; height: number };
 
-const SUMMON_MARGIN = 16;
-
-/** The summoned hint's position (docs/LEARNING_PLAN.md §6/§7.3,
- * revised per the author: the roaming space is the VIEWPORT, not the
- * lesson container — popups are position:fixed and stay put while the
- * page scrolls, clamped to the viewport alone). The zig-zag (§6) still
- * reads the LESSON layout: `goesRight` is the caller's decision — a
- * trigger in the left half of the lesson container sends the hint to
- * the right edge, and vice versa. Vertically it lands beside the
- * trigger (viewport-space rects), clamped inside the viewport. */
-export function summonPosition(
-  trigger: Rect,
-  goesRight: boolean,
+/** The summoned hint's deterministic rest position (docs/
+ * LEARNING_PLAN.md §7.2, revised per the author): the CENTRE of the
+ * page — a fresh summon always lands here, so dismiss → re-summon
+ * cannot wander. Pure. */
+export function summonResting(
   viewport: { width: number; height: number },
   hint: { width: number; height: number },
-  existing: SummonedEntry[],
-): SummonedEntry {
-  const x = goesRight
-    ? Math.max(0, viewport.width - hint.width - SUMMON_MARGIN)
-    : SUMMON_MARGIN;
-  const y = Math.min(
-    Math.max(0, trigger.top + trigger.height / 2 - hint.height / 2),
-    Math.max(0, viewport.height - hint.height),
-  );
-  const z = existing.reduce((max, entry) => Math.max(max, entry.z), 0) + 1;
-  return { id: "", x, y, z };
+): { x: number; y: number } {
+  return {
+    x: Math.max(0, (viewport.width - hint.width) / 2),
+    y: Math.max(0, (viewport.height - hint.height) / 2),
+  };
+}
+
+/** The summon ENTRANCE offset (docs/LEARNING_PLAN.md §7.2, revised per
+ * the author): the hint starts OFFSCREEN below the viewport and
+ * crosses the BOTTOM edge, gliding to its rest position. With a mouse
+ * position known, the crossing point is offset to the mouse's x — a
+ * non-orthogonal (diagonal) path; without one (keyboard summon), it
+ * rises straight up (orthogonal). `sx`/`sy` are the CSS-var start
+ * offsets the entrance animation animates away; pure — unit-tested.
+ * Position is viewport-space (position: fixed). */
+export function summonEntrance(
+  rest: { x: number; y: number },
+  viewport: { width: number; height: number },
+  hint: { width: number; height: number },
+  mouseX: number | undefined,
+): { sx: number; sy: number } {
+  const crossX =
+    mouseX === undefined
+      ? rest.x
+      : Math.min(
+          Math.max(0, mouseX - hint.width / 2),
+          Math.max(0, viewport.width - hint.width),
+        );
+  return {
+    sx: crossX - rest.x,
+    sy: viewport.height - rest.y,
+  };
 }
 
 /** Clamps an entry back inside the viewport (a restore of positions a

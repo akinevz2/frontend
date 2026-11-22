@@ -96,8 +96,20 @@ the full 19-point interactive checklist print with the script.)
   alone, and stay put while the page scrolls. The zig-zag side decision
   still reads the lesson layout; persistence stays the same key/shape,
   restores clamp against the viewport.
+- **Deterministic entrance** (revises §7.2's "enters from the side
+  opposite the column"): fresh summons rest at the page CENTRE and
+  enter from offscreen below, crossing the bottom edge — the crossing
+  point offset to the mouse's x when a mouse is present (a
+  non-orthogonal path), straight up otherwise. Dismiss → re-summon can
+  no longer wander.
 - **✕ fix**: the drag controller used to capture the pointer on ANY
   title-bar pointerdown — including the close button's press — so the
   button never received its click. A pointerdown on a control
   (`button, a, input, select, textarea`) is now never a drag start
   (regression-tested).
+- **Focus-return fix**: the recorded trigger element goes stale across
+  summon/dismiss cycles (React re-creates the anchor's DOM node);
+  `refocusTrigger` now falls back to the fragment-convention query.
+- **Lesson fold**: ✕/minimize on a lesson's top-level windows
+  navigates to /learning (the store's onLeave mechanism, like blog
+  posts and projects) — author request.

@@ -38,19 +38,28 @@
   position: fixed;
   top: 0;
   left: 0;
-  transform: translate(var(--dx, 0), var(--dy, 0));
+  transform: translate(var(--dx, 0px), var(--dy, 0px));
   box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.35);
-  animation: summon-slide 180ms ease-out;
 }
 
-@keyframes summon-slide {
+/* The entrance (§7.2, revised per the author): the window STARTS
+   offscreen below (--sy = the viewport height) at the crossing point
+   (--sx, offset to the mouse's x when a mouse is present — a
+   non-orthogonal path) and glides to its rest (--dx/--dy, the centre
+   of the page). Deterministic: the same path every summon. */
+.window.summoned:not(.summon-restore) {
+  animation: summon-entrance 360ms ease-out;
+}
+
+@keyframes summon-entrance {
   from {
-    opacity: 0;
-    translate: 0 8px;
+    transform: translate(
+      calc(var(--dx, 0px) + var(--sx, 0px)),
+      calc(var(--dy, 0px) + var(--sy, 0px))
+    );
   }
   to {
-    opacity: 1;
-    translate: 0 0;
+    transform: translate(var(--dx, 0px), var(--dy, 0px));
   }
 }
 

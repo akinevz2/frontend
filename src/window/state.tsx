@@ -41,6 +41,10 @@ export type WindowFlags = {
   /** A summon restored from persistence mounts WITHOUT the slide-in
    * animation (§7.3: persisted hints re-summon without animation). */
   silentSummon?: boolean;
+  /** The entrance path (§7.2, revised per the author): the start
+   * offsets --sx/--sy the slide-in animates away — offscreen below,
+   * crossing the bottom edge (mouse-offset when a mouse is present). */
+  summonStart?: { sx: number; sy: number };
 };
 
 type State = Record<string, WindowFlags>;

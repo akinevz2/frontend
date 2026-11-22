@@ -56,24 +56,24 @@ export function keyboardMove(
   };
 }
 
-/** The lesson container the summoned windows float in — registered by
- * the summon layer (the same module-level pattern as summonFocus). */
-let containerEl: HTMLElement | null = null;
+/* The last mouse x (§7.2, revised per the author): the summon entrance
+ * crosses the bottom edge offset to the mouse's x — a non-orthogonal
+ * path. Module-level, read at summon time; passive listener, nothing
+ * persisted, nothing rendered from it. */
 
-export function registerLessonContainer(
-  element: HTMLElement | null,
-): () => void {
-  containerEl = element;
-  return () => {
-    if (containerEl === element) containerEl = null;
+let lastMouseX: number | undefined;
+
+export const mouseX = (): number | undefined => lastMouseX;
+
+/** Attaches the mouse tracker; returns the detach function. */
+export function startMouseTracking(): () => void {
+  if (typeof document === "undefined") return () => {};
+  const onMove = (event: MouseEvent) => {
+    lastMouseX = event.clientX;
   };
+  document.addEventListener("mousemove", onMove, { passive: true });
+  return () => document.removeEventListener("mousemove", onMove);
 }
-
-/** The registered lesson container, or undefined — the SUMMON side
- * decision (the zig-zag, §6) reads the lesson layout; dragging and
- * clamping are viewport-space and need nothing. */
-export const summonContainer = (): HTMLElement | undefined =>
-  containerEl ?? undefined;
 
 /** The title bar's aria-describedby instructions (§7.4: "State the
  * instructions in the title bar's aria-describedby text"). */

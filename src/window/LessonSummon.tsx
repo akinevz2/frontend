@@ -2,14 +2,15 @@ import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import {
   clampEntry,
   readSummoned,
-  summonPosition,
+  summonEntrance,
+  summonResting,
   writeSummoned,
   type SummonedEntry,
 } from "@/lib/learningStorage";
 import { CLIPPY_LINK } from "@/lib/clippy";
 import { useWindowStore } from "./state";
 import { setTrigger, refocusTrigger } from "./summonFocus";
-import { registerLessonContainer } from "./summonDrag";
+import { mouseX, startMouseTracking } from "./summonDrag";
 
 /**
  * The lesson summon machinery (docs/LEARNING_PLAN.md §7.1–§7.3).
@@ -123,11 +124,9 @@ export function LessonSummon({
     trigger: HTMLElement;
   } | null>(null);
 
-  // The drag controller's clamp surface (§7.4): the lesson container.
-  useEffect(
-    () => registerLessonContainer(containerRef.current ?? null),
-    [containerRef],
-  );
+  // The mouse tracker (§7.2, revised per the author): the summon
+  // entrance crosses the bottom edge offset to the mouse's x.
+  useEffect(() => startMouseTracking(), []);
 
   const summonedNow = useMemo<SummonedEntry[]>(() => {
     const entries: SummonedEntry[] = [];
@@ -244,33 +243,24 @@ export function LessonSummon({
     }
     const element = document.getElementById(id);
     const hint = fallbackRect(element);
-    const bounds = container.getBoundingClientRect();
-    const trigger = prompt?.trigger.getBoundingClientRect() ?? {
-      left: 0,
-      top: 0,
-      width: 0,
-      height: 0,
-    };
-    // The zig-zag (§6) reads the lesson layout: a trigger in the left
-    // half of the container sends the hint to the right edge. The
-    // position itself is VIEWPORT-space (position: fixed — the roaming
-    // space is the viewport, revised per the author), clamped inside
-    // the viewport by summonPosition.
-    const goesRight =
-      trigger.left - bounds.left + trigger.width / 2 < bounds.width / 2;
-    const position = summonPosition(
-      {
-        left: trigger.left,
-        top: trigger.top,
-        width: trigger.width,
-        height: trigger.height,
-      },
-      goesRight,
-      { width: window.innerWidth, height: window.innerHeight },
-      hint,
-      summonedNow,
-    );
-    patch(id, { summoned: true, silentSummon: false, position });
+    // Deterministic rest (§7.2, revised per the author): the centre of
+    // the page — dismiss → re-summon always lands here, never wherever
+    // the hint last wandered.
+    const viewport = { width: window.innerWidth, height: window.innerHeight };
+    const rest = summonResting(viewport, hint);
+    // The entrance: offscreen below, crossing the BOTTOM edge; with a
+    // mouse position known the crossing point is offset to the mouse's
+    // x (a non-orthogonal path), otherwise straight up.
+    const entrance = summonEntrance(rest, viewport, hint, mouseX());
+    // Raise above the other summons; the position carries the rest.
+    const existing = summonedNow;
+    const top = existing.reduce((max, e) => Math.max(max, e.z), 0) + 1;
+    patch(id, {
+      summoned: true,
+      silentSummon: false,
+      position: { x: rest.x, y: rest.y, z: top },
+      summonStart: entrance,
+    });
     // Focus moves into it on summon (the Window's own effect also
     // runs; the rAF here covers the mount frame).
     requestAnimationFrame(() => document.getElementById(id)?.focus());

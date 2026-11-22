@@ -184,6 +184,30 @@ test("trigger click opens the prompt; OK summons; Escape dismisses", async () =>
     hintWindow.getAttribute("aria-labelledby"),
     "labelled by its title",
   );
+  // Deterministic entrance (§7.2 revised): the rest is the page
+  // CENTRE, the start is offscreen BELOW (orthogonal — no mouse in
+  // jsdom), and the same on every re-summon.
+  const center = (inner, size) => (inner - size) / 2;
+  assert.equal(
+    Number.parseFloat(hintWindow.style.getPropertyValue("--dx")),
+    center(1024, 200),
+    "rest x = centre of the page",
+  );
+  assert.equal(
+    Number.parseFloat(hintWindow.style.getPropertyValue("--dy")),
+    center(768, 100),
+    "rest y = centre of the page",
+  );
+  assert.equal(
+    Number.parseFloat(hintWindow.style.getPropertyValue("--sx")),
+    0,
+    "orthogonal crossing without a mouse",
+  );
+  assert.equal(
+    Number.parseFloat(hintWindow.style.getPropertyValue("--sy")),
+    768 - center(768, 100),
+    "starts offscreen below the viewport",
+  );
   await waitFor("the persisted summon", () =>
     sessionStorage
       .getItem("learning:/learning/lesson-template")
@@ -208,6 +232,33 @@ test("trigger click opens the prompt; OK summons; Escape dismisses", async () =>
       return false;
     }
   });
+
+  // Dismiss → re-summon lands at the SAME deterministic centre — the
+  // unpleasant wander is gone. (React re-creates the trigger anchor's
+  // node across the cycle — re-query it.)
+  const trigger2 = container.querySelector('a[href="#my-hint"]');
+  trigger2.dispatchEvent(
+    new dom.window.MouseEvent("click", {
+      bubbles: true,
+      cancelable: true,
+      button: 0,
+    }),
+  );
+  const dialog2 = await waitFor("the re-opened prompt", () =>
+    container.querySelector("dialog.clippy-prompt"),
+  );
+  const ok2 = [...dialog2.querySelectorAll("button")].find(
+    (b) => b.textContent === "OK",
+  );
+  ok2.dispatchEvent(new dom.window.MouseEvent("click", { bubbles: true }));
+  await waitFor("the re-summon", () =>
+    hintWindow.classList.contains("summoned"),
+  );
+  assert.equal(
+    Number.parseFloat(hintWindow.style.getPropertyValue("--dx")),
+    center(1024, 200),
+    "re-summon rests centred again",
+  );
 
   root.unmount();
 });

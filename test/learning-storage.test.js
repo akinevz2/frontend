@@ -8,7 +8,8 @@ import {
   learningKey,
   raised,
   readSummoned,
-  summonPosition,
+  summonEntrance,
+  summonResting,
   withoutEntry,
   writeSummoned,
 } from "../src/lib/learningStorage.ts";
@@ -110,48 +111,43 @@ test("raised stacks the raised entry above all others", () => {
   assert.deepEqual(next.find((e) => e.id === "b")?.z, 7);
 });
 
-test("summonPosition enters from the side OPPOSITE the trigger's column", () => {
-  const viewport = { width: 1000, height: 800 };
-  const hint = { width: 300, height: 200 };
-  // trigger on the LEFT half → hint enters from the RIGHT edge
-  const fromRight = summonPosition(
-    { left: 10, top: 100, width: 50, height: 20 },
-    true,
-    viewport,
-    hint,
-    [],
+test("the rest position is the deterministic CENTRE of the page", () => {
+  assert.deepEqual(
+    summonResting({ width: 1000, height: 800 }, { width: 300, height: 200 }),
+    { x: 350, y: 300 },
   );
-  assert.equal(fromRight.x, 1000 - 300 - 16);
-  // trigger on the RIGHT half → hint enters from the LEFT margin
-  const fromLeft = summonPosition(
-    { left: 900, top: 100, width: 50, height: 20 },
-    false,
-    viewport,
-    hint,
-    [],
+  // hint bigger than the viewport: pinned to the origin, never negative
+  assert.deepEqual(
+    summonResting({ width: 200, height: 100 }, { width: 300, height: 200 }),
+    { x: 0, y: 0 },
   );
-  assert.equal(fromLeft.x, 16);
-  // vertically beside the trigger, clamped inside the viewport
-  assert.equal(fromRight.y, 100 + 10 - 100);
-  const low = summonPosition(
-    { left: 10, top: 790, width: 50, height: 20 },
-    true,
-    viewport,
-    hint,
-    [],
-  );
-  assert.equal(low.y, 800 - 200);
 });
 
-test("summonPosition z-stacks above the existing summons", () => {
-  const position = summonPosition(
-    { left: 0, top: 0, width: 10, height: 10 },
-    true,
-    { width: 1000, height: 800 },
-    { width: 300, height: 200 },
-    [{ id: "a", x: 0, y: 0, z: 4 }],
-  );
-  assert.equal(position.z, 5);
+test("the entrance starts offscreen BELOW, crossing the bottom edge", () => {
+  const viewport = { width: 1000, height: 800 };
+  const hint = { width: 300, height: 200 };
+  const rest = { x: 350, y: 300 };
+  // no mouse: orthogonal — the crossing point IS the rest x (straight
+  // rise from the bottom)
+  assert.deepEqual(summonEntrance(rest, viewport, hint, undefined), {
+    sx: 0,
+    sy: 800 - 300,
+  });
+  // mouse present: the crossing point offsets to the mouse's x — a
+  // non-orthogonal (diagonal) path
+  assert.deepEqual(summonEntrance(rest, viewport, hint, 900), {
+    sx: 700 - 350,
+    sy: 500,
+  });
+  // the mouse-x crossing clamps inside the viewport
+  assert.deepEqual(summonEntrance(rest, viewport, hint, 10_000), {
+    sx: 700 - 350,
+    sy: 500,
+  });
+  assert.deepEqual(summonEntrance(rest, viewport, hint, -5), {
+    sx: -350,
+    sy: 500,
+  });
 });
 
 test("clampEntry pulls restores back inside the container", () => {

@@ -28,7 +28,17 @@ export function triggerOf(id: string): HTMLElement | undefined {
   return triggers.get(trigger) === id ? trigger : undefined;
 }
 
-/** Returns focus to a hint's trigger link, when it still exists. */
+/** Returns focus to a hint's trigger link, when it still exists. The
+ * recorded element can go STALE across summon/dismiss cycles (React
+ * re-creates the anchor's DOM node) — when it is detached, fall back to
+ * the fragment convention: the hint's id IS its trigger's href
+ * fragment (docs/LEARNING_PLAN.md §5). */
 export function refocusTrigger(id: string): void {
-  triggerOf(id)?.focus();
+  const recorded = triggerOf(id);
+  if (recorded?.isConnected) {
+    recorded.focus();
+    return;
+  }
+  const fresh = document.querySelector(`a[href="#${CSS.escape(id)}"]`);
+  if (fresh instanceof HTMLElement) fresh.focus();
 }
