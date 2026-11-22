@@ -16,4 +16,4 @@ the shared resolver.
 
 ## Ref: further reading
 
-- [the renderer docs](https://akinevz.com/)
+- [the renderer docs](https://github.com/akinevz2/frontend/tree/main/docs)
