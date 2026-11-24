@@ -1,7 +1,7 @@
 {
   "slug": "depot",
   "title": "depot",
-  "description": "The system/ multi-project workspace (checked out at ~/development/system).",
+  "description": "The project is striving to grow into a fully-fledged operating system with modular architecture.",
   "github": "https://github.com/akinevz2/depot",
   "lastModified": "2026-11-24",
   "content": {
