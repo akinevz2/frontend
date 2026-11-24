@@ -99,5 +99,6 @@
         "theme": "open"
       }
     ]
-  }
+  },
+  "group": "web"
 }

@@ -73,6 +73,11 @@ export type Project = {
   /** ISO date (YYYY-MM-DD) the page's content was last updated — the
    * projects listing sorts on it, most recently updated first. */
   lastModified?: string;
+  /** the grouping fact on the projects page: "core" = the operating
+   * system repos (listed first), "system" = the submodules they
+   * depend on, "web" = the older web-based projects. Defaults to
+   * "web" — the group order is declared in GROUP_ORDER (index.ts). */
+  group?: "core" | "system" | "web";
   content: Section;
 };
 

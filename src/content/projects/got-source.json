@@ -43,9 +43,12 @@
       },
       {
         "heading": "Install",
-        "content": ["make install"]
+        "content": [
+          "make install"
+        ]
       }
     ]
   },
-  "lastModified": "2026-11-09"
+  "lastModified": "2026-11-09",
+  "group": "web"
 }

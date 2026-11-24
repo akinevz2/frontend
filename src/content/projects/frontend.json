@@ -18,5 +18,6 @@
         "theme": "open"
       }
     ]
-  }
+  },
+  "group": "web"
 }

@@ -23,5 +23,6 @@
       }
     ],
     "theme": "open"
-  }
+  },
+  "group": "system"
 }

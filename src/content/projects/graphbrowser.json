@@ -45,5 +45,6 @@
         "theme": "open"
       }
     ]
-  }
+  },
+  "group": "web"
 }
