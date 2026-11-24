@@ -91,9 +91,9 @@
             "heading": "node with attributes: herbstclient attr clients.focus.",
             "content": [
               "raw (excerpt):",
-              "```text\n$ herbstclient attr clients.focus.\na managed window\n\n1 child:\n  parent_frame.\n24 attributes:\n .---- type\n | .-- writable\n | | .-- hookable\n V V V\n s - - class = \"Alacritty\"\n R - h content_geometry = 1255x662+13+34\n b w h decorated = true\n i - h pid = 403112\n s - - tag = \"work\"\n s - h title = \"OC | herbstutil tag 0.1.1b discrepancy\"\n b - h visible = true\n s - h winid = \"0x280003\"\n```",
+              "```text\n$ herbstclient attr clients.focus.\na managed window\n\n1 child:\n  parent_frame.\n24 attributes:\n .---- type\n | .-- writable\n | | .-- hookable\n V V V\n s - - class = \"Alacritty\"\n R - h content_geometry = 1255x662+13+34\n b w h decorated = true\n i - h pid = 403112\n s - - tag = \"work\"\n s - h title = \"OpenCode\"\n b - h visible = true\n s - h winid = \"0x280003\"\n```",
               "through herbstutil (excerpt - all 24 attributes arrive in the JSON):",
-              "```json\n{\n    \"value\": \"a managed window\",\n    \"children\": [\n        \"parent_frame.\"\n    ],\n    \"attributes\": {\n        \"class\": \"Alacritty\",\n        \"content_geometry\": {\n            \"x\": 13,\n            \"y\": 34,\n            \"width\": 1255,\n            \"height\": 662\n        },\n        \"decorated\": true,\n        \"pid\": 403112,\n        \"tag\": \"work\",\n        \"title\": \"OC | herbstutil tag 0.1.1b discrepancy\",\n        \"visible\": true,\n        \"winid\": \"0x280003\"\n    }\n}\n```"
+              "```json\n{\n    \"value\": \"a managed window\",\n    \"children\": [\n        \"parent_frame.\"\n    ],\n    \"attributes\": {\n        \"class\": \"Alacritty\",\n        \"content_geometry\": {\n            \"x\": 13,\n            \"y\": 34,\n            \"width\": 1255,\n            \"height\": 662\n        },\n        \"decorated\": true,\n        \"pid\": 403112,\n        \"tag\": \"work\",\n        \"title\": \"OpenCode\",\n        \"visible\": true,\n        \"winid\": \"0x280003\"\n    }\n}\n```"
             ],
             "theme": "open"
           },
