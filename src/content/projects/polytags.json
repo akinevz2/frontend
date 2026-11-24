@@ -1,7 +1,7 @@
 {
   "slug": "polytags",
   "title": "polytags",
-  "description": "kine's polybar workspace labels for herbstluftwm — a native binary via",
+  "description": "kine's polybar workspace labels for herbstluftwm — a native binary via bunli, and a drop-in replacement for the polybar package's ewmh_labels bash script. It renders the workspace label line for",
   "github": "https://github.com/akinevz2/polytags",
   "lastModified": "2026-11-24",
   "content": {
