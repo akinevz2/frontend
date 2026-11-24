@@ -66,7 +66,7 @@
       },
       {
         "heading": "stable in v2.x",
-        "status": "v2.2.0",
+        "status": "{{registry:polyframes}}",
         "content": [
           "the releases page ships a standalone linux-x64 (glibc) binary - no toolchain, no runtime deps:",
           "```sh\nu=https://github.com/akinevz2/polyframes/releases/latest/download\ncurl -fL $u/polyframes-linux-x64 -o ~/.local/bin/polyframes\nchmod +x ~/.local/bin/polyframes\n```",
@@ -80,12 +80,12 @@
         "content": [
           {
             "heading": "github repository",
-            "content": "v2.4.0",
+            "content": "{{registry:polyframes}}",
             "link": "https://github.com/akinevz2/polyframes"
           },
           {
             "heading": "doftiles - the dotfiles it ships from",
-            "content": "v1.0.0",
+            "content": "{{registry:doftiles}}",
             "link": "/projects/doftiles"
           },
           {

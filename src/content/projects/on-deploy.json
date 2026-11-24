@@ -87,7 +87,7 @@
       },
       {
         "heading": "stable in v1.4.x",
-        "status": "v1.4.2",
+        "status": "{{registry:on-deploy}}",
         "content": [
           "version probing reads the package manager (dpkg-query, pacman) instead of spawning the binary - GUI programs no longer initialize a display backend on the walk and flash a window mid-deploy.",
           "",
@@ -102,22 +102,22 @@
         "content": [
           {
             "heading": "github repository",
-            "content": "v1.6.1",
+            "content": "{{registry:on-deploy}}",
             "link": "https://github.com/akinevz2/on-deploy"
           },
           {
             "heading": "doftiles - what it deploys",
-            "content": "v1.0.0",
+            "content": "{{registry:doftiles}}",
             "link": "/projects/doftiles"
           },
           {
             "heading": "herbctl - the binary the toolchain step builds",
-            "content": "v1.17.1",
+            "content": "{{registry:herbctl}}",
             "link": "/projects/herbctl"
           },
           {
             "heading": "polyframes - the artifact the deps step deploys",
-            "content": "v2.4.0",
+            "content": "{{registry:polyframes}}",
             "link": "/projects/polyframes"
           }
         ],

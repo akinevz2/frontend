@@ -119,27 +119,27 @@
         "content": [
           {
             "heading": "github repository",
-            "content": "v1.0.0",
+            "content": "{{registry:doftiles}}",
             "link": "https://github.com/akinevz2/doftiles"
           },
           {
             "heading": "on-deploy - the orchestrator",
-            "content": "v1.6.1",
+            "content": "{{registry:on-deploy}}",
             "link": "/projects/on-deploy"
           },
           {
             "heading": "herbctl - the keybind verbs",
-            "content": "v1.17.1",
+            "content": "{{registry:herbctl}}",
             "link": "/projects/herbctl"
           },
           {
             "heading": "polyframes - the bar module + rofi menus",
-            "content": "v2.4.0",
+            "content": "{{registry:polyframes}}",
             "link": "/projects/polyframes"
           },
           {
             "heading": "herbstutil - the parse/attr layer underneath",
-            "content": "v1.1.0",
+            "content": "{{registry:herbstutil}}",
             "link": "/projects/herbstutil"
           }
         ]

@@ -14,6 +14,40 @@ import type { Section } from "@/content/schema";
 import { mdSection, stemOf } from "./mdSection.ts";
 import { validateIncludePath } from "./paths.ts";
 
+/* ---------------------------------------------------------- registry
+ * The project-registry tokens (docs/DEPOT.md-adjacent; the mechanical
+ * sync between the projects pages and the implementations): a content
+ * string may carry {{registry:<slug>}}, expanded to that project's
+ * version from the GENERATED registry (src/content/projects/
+ * _registry.json — scripts/refresh-projects.mjs). The registry is set
+ * by the loaders (src/content for the app, the snapshot prerender for
+ * the static pages) — both import THIS module, so the app and the
+ * static pages can never expand differently. A token naming a slug
+ * the registry does not know stays VISIBLE — loud, never silently
+ * blank. Prose never carries numbers the registry owns.
+ */
+
+export type RegistryEntry = { version?: string | null };
+let registry: Record<string, RegistryEntry> = {};
+
+/** Installs the generated registry (both loaders call this at init). */
+export function setProjectRegistry(
+  map: Record<string, RegistryEntry> | undefined,
+): void {
+  registry = map ?? {};
+}
+
+const REGISTRY_TOKEN = /\{\{registry:([a-z0-9-]+)\}\}/g;
+
+/** Expands {{registry:<slug>}} tokens in one string; unknown slugs
+ * keep their token (loud). */
+export function expandRegistryTokens(text: string): string {
+  return text.replace(REGISTRY_TOKEN, (token, slug: string) => {
+    const version = registry[slug]?.version;
+    return typeof version === "string" && version !== "" ? version : token;
+  });
+}
+
 /** A discovered include target: its kind and raw text. */
 export type IncludeEntry = { kind: "json" | "md"; content: string };
 
@@ -116,9 +150,10 @@ function expandContent(
   resolveTarget: (name: string) => Section,
   ancestors: Set<string>,
 ): NonNullable<Section["content"]> {
-  if (typeof content === "string") return content;
+  if (typeof content === "string") return expandRegistryTokens(content);
   const items = Array.isArray(content) ? content : [content];
   return items.map((item) => {
+    if (typeof item === "string") return expandRegistryTokens(item);
     if (typeof item !== "object" || item === null) return item;
     if ("include" in item) {
       const name = item.include;
@@ -137,17 +172,24 @@ function expandContent(
   });
 }
 
-/** Expands a nested section, preserving the absence of content exactly. */
+/** Expands a nested section, preserving the absence of content exactly.
+ * The status line participates in the registry expansion too — it is
+ * the page's own "stable in vX" number, registry-owned like the links
+ * windows. */
 export function expandSection(
   section: Section,
   resolveTarget: (name: string) => Section,
   ancestors: Set<string> = new Set(),
 ): Section {
-  if (!section.content) return section;
-  return {
-    ...section,
-    content: expandContent(section.content, resolveTarget, ancestors),
-  };
+  const next = section.content
+    ? {
+        ...section,
+        content: expandContent(section.content, resolveTarget, ancestors),
+      }
+    : section;
+  return typeof next.status === "string"
+    ? { ...next, status: expandRegistryTokens(next.status) }
+    : next;
 }
 
 /** Expands every include directive in the tree rooted at `section`. */

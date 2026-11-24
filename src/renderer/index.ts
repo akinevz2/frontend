@@ -19,6 +19,8 @@ export {
   makeResolver,
   expandSection,
   resolveSections,
+  setProjectRegistry,
+  expandRegistryTokens,
   type IncludeEntry,
 } from "./includes/resolve.ts";
 export {

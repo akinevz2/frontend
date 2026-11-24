@@ -74,7 +74,7 @@
           },
           {
             "heading": "doftiles - the agents package that ships it",
-            "content": "v1.0.0",
+            "content": "{{registry:doftiles}}",
             "link": "/projects/doftiles"
           }
         ],

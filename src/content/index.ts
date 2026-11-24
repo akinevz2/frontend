@@ -2,9 +2,11 @@ import type { Project, Route, Section, SoundCloudData } from "./schema";
 import pagesJson from "./pages.json";
 import projectMtimes from "virtual:project-mtimes";
 import contentTargets from "virtual:content-targets";
+import projectRegistry from "./projects/_registry.json";
 import {
   expandSection,
   makeResolver,
+  setProjectRegistry,
   type IncludeEntry,
 } from "@/renderer/index.ts";
 import sectionsJson from "./sections.json";
@@ -65,10 +67,17 @@ const resolveTarget = makeResolver(contentTargets);
 const resolveIncludes = (section: Section): Section =>
   expandSection(section, resolveTarget);
 
-const projectModules = import.meta.glob<Project>("./projects/*.json", {
-  eager: true,
-  import: "default",
-});
+const projectModules = import.meta.glob<Project>(
+  ["./projects/*.json", "!./projects/_*.json"],
+  { eager: true, import: "default" },
+);
+
+// The generated registry (scripts/refresh-projects.mjs) backs the
+// {{registry:<slug>}} tokens the projects pages carry — installed
+// BEFORE the project trees expand below, so both loaders (this module
+// for the app, the snapshot prerender for the static pages) expand
+// identically.
+setProjectRegistry(projectRegistry.projects);
 
 export const projectPath = (project: Project) =>
   project.path ?? `/projects/${project.slug}`;

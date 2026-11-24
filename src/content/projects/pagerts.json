@@ -58,7 +58,7 @@
       },
       {
         "heading": "stable in v2.x",
-        "status": "v2.0.5",
+        "status": "{{registry:pagerts}}",
         "content": [
           "`--timeout <ms>` aborts each network fetch after the given number of milliseconds.",
           "",
@@ -82,17 +82,17 @@
         "content": [
           {
             "heading": "npm package",
-            "content": "2.0.5",
+            "content": "{{registry:pagerts}}",
             "link": "https://www.npmjs.com/package/pagerts"
           },
           {
             "heading": "github repository",
-            "content": "v2.0.5",
+            "content": "{{registry:pagerts}}",
             "link": "https://github.com/akinevz2/pagerts"
           },
           {
             "heading": "changelog",
-            "content": "through v2.0.5",
+            "content": "through {{registry:pagerts}}",
             "link": "https://github.com/akinevz2/pagerts/blob/main/CHANGELOG.md"
           }
         ],

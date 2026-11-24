@@ -37,7 +37,7 @@
       },
       {
         "heading": "stable in v1.x",
-        "status": "v1.1.1",
+        "status": "{{registry:lightdni-jssas-toggle}}",
         "content": [
           "the one-call `setTheme` API is the stable surface; the persisted-theme reader is back with tests.",
           "",
@@ -50,12 +50,12 @@
         "content": [
           {
             "heading": "github repository",
-            "content": "v1.1.1",
+            "content": "{{registry:lightdni-jssas-toggle}}",
             "link": "https://github.com/akinevz2/lightdni-jssas-toggle"
           },
           {
             "heading": "npm package",
-            "content": "1.1.1",
+            "content": "{{registry:lightdni-jssas-toggle}}",
             "link": "https://www.npmjs.com/package/lightdni-jssas-toggle"
           }
         ],

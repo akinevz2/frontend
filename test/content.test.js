@@ -72,9 +72,9 @@ test("include directives target a file under public/", async () => {
 
 test("every project document is complete and routable", async () => {
   const { readdirSync } = await import("node:fs");
-  const files = readdirSync("src/content/projects").filter((f) =>
-    f.endsWith(".json"),
-  );
+  const files = readdirSync("src/content/projects").filter(
+      (f) => f.endsWith(".json") && !f.startsWith("_"),
+    );
   assert.ok(files.length > 0);
   for (const file of files) {
     const project = JSON.parse(
@@ -109,9 +109,9 @@ test("every project document is complete and routable", async () => {
 
 test("every project carries a lastModified stamp (the listing sorts on it)", async () => {
   const { readdirSync } = await import("node:fs");
-  const files = readdirSync("src/content/projects").filter((f) =>
-    f.endsWith(".json"),
-  );
+  const files = readdirSync("src/content/projects").filter(
+      (f) => f.endsWith(".json") && !f.startsWith("_"),
+    );
   for (const file of files) {
     const project = JSON.parse(
       readFileSync(`src/content/projects/${file}`, "utf8"),

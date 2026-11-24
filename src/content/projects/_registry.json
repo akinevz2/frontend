@@ -1,0 +1,114 @@
+{
+  "source": "github.com/akinevz2 (tags/releases) + raw package.json + registry.npmjs.org",
+  "generatedAt": "2026-11-24T22:48:41.598Z",
+  "mode": "registry",
+  "projects": {
+    "doftiles": {
+      "repo": "akinevz2/doftiles",
+      "tag": "v1.0.0",
+      "tagAt": null,
+      "manifestVersion": null,
+      "npm": null,
+      "version": "v1.0.0"
+    },
+    "on-deploy": {
+      "repo": "akinevz2/on-deploy",
+      "tag": "v1.4.3",
+      "tagAt": null,
+      "manifestVersion": "1.6.1",
+      "npm": null,
+      "version": "v1.6.1",
+      "drift": "the tag (v1.4.3) lags the manifest (v1.6.1) — tag the release"
+    },
+    "herbctl": {
+      "repo": "akinevz2/herbctl",
+      "tag": "v1.6.1",
+      "tagAt": null,
+      "manifestVersion": "1.18.0",
+      "npm": "1.7.0",
+      "version": "v1.18.0",
+      "drift": "the tag (v1.6.1) lags the manifest (v1.18.0) — tag the release"
+    },
+    "herbstutil": {
+      "repo": "akinevz2/herbstutil",
+      "tag": "v1.1.0",
+      "tagAt": null,
+      "manifestVersion": "1.1.0",
+      "npm": "1.1.0",
+      "version": "v1.1.0"
+    },
+    "polyframes": {
+      "repo": "akinevz2/polyframes",
+      "tag": "v2.3.1",
+      "tagAt": null,
+      "manifestVersion": "2.4.0",
+      "npm": "2.2.0",
+      "version": "v2.4.0",
+      "drift": "the tag (v2.3.1) lags the manifest (v2.4.0) — tag the release"
+    },
+    "got-source": {
+      "repo": "akinevz2/got-source",
+      "tag": null,
+      "tagAt": null,
+      "manifestVersion": null,
+      "npm": null,
+      "version": null
+    },
+    "pagerts": {
+      "repo": "akinevz2/pagerts",
+      "tag": "v2.0.5",
+      "tagAt": null,
+      "manifestVersion": "2.0.5",
+      "npm": "2.0.5",
+      "version": "v2.0.5"
+    },
+    "graphbrowser": {
+      "repo": "akinevz2/graphbrowser",
+      "tag": null,
+      "tagAt": null,
+      "manifestVersion": null,
+      "npm": null,
+      "version": null
+    },
+    "lightdni-jssas-toggle": {
+      "repo": "akinevz2/lightdni-jssas-toggle",
+      "tag": "v1.1.1",
+      "tagAt": null,
+      "manifestVersion": "1.1.1",
+      "npm": "1.1.1",
+      "version": "v1.1.1"
+    },
+    "rarebert": {
+      "repo": "akinevz2/rarebert",
+      "tag": null,
+      "tagAt": null,
+      "manifestVersion": "1.0.0",
+      "npm": null,
+      "version": "v1.0.0"
+    },
+    "opencode-screencast": {
+      "repo": "akinevz2/opencode-screencast",
+      "tag": null,
+      "tagAt": null,
+      "manifestVersion": "0.1.0",
+      "npm": null,
+      "version": "v0.1.0"
+    },
+    "frontend": {
+      "repo": "akinevz2/frontend",
+      "tag": "v2.7.0",
+      "tagAt": null,
+      "manifestVersion": "2.7.0",
+      "npm": null,
+      "version": "v2.7.0"
+    },
+    "development": {
+      "repo": "akinevz2/development",
+      "tag": null,
+      "tagAt": null,
+      "manifestVersion": null,
+      "npm": null,
+      "version": null
+    }
+  }
+}

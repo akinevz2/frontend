@@ -35,7 +35,7 @@
       },
       {
         "heading": "usage - the verbs",
-        "status": "v1.6.1",
+        "status": "{{registry:herbctl}}",
         "content": [
           "the dots keybinds spawn the compiled standalone binary at ~/.local/bin/herbctl; **on-deploy**'s toolchain step builds and installs it on deploy. each verb gets its own section below."
         ],
@@ -202,7 +202,7 @@
       },
       {
         "heading": "stable in v1.6.x",
-        "status": "v1.6.1",
+        "status": "{{registry:herbctl}}",
         "content": [
           "the verb names are the shipped surface: plain, functional names - split-right-cycle, shift-up, minimize-toggle - one per keybind, all 26 covered by the mocked-herbstclient suite.",
           "the binary is standalone: built with bunli, spawned by the dots keybinds at ~/.local/bin/herbctl, built and installed by on-deploy's toolchain step.",
@@ -215,7 +215,7 @@
         "content": [
           {
             "heading": "github repository",
-            "content": "v1.17.1",
+            "content": "{{registry:herbctl}}",
             "link": "https://github.com/akinevz2/herbctl"
           },
           {
@@ -225,12 +225,12 @@
           },
           {
             "heading": "doftiles - the keybinds that spawn it",
-            "content": "v1.0.0",
+            "content": "{{registry:doftiles}}",
             "link": "/projects/doftiles"
           },
           {
             "heading": "polyframes - the sibling binary",
-            "content": "v2.4.0",
+            "content": "{{registry:polyframes}}",
             "link": "/projects/polyframes"
           }
         ],

@@ -41,7 +41,9 @@ const readJson = <T>(file: string): T =>
 
 /** Route per project mirror of src/content/index.ts: canonical + alias. */
 function projectRouteConfigs(dir: string, pages: RouteConfig[]): RouteConfig[] {
-  const slugs = fs.readdirSync(dir).filter((name) => name.endsWith(".json"));
+  const slugs = fs
+    .readdirSync(dir)
+    .filter((name) => name.endsWith(".json") && !name.startsWith("_"));
   const projects = slugs.map((name) =>
     readJson<ProjectDoc>(path.join(dir, name)),
   );
