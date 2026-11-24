@@ -90,20 +90,22 @@
   color: #007b00 !important;
 }
 
-/* The code panel is self-contained DARK: the plain (unclassified) text —
- * the JSON braces, commas, colons — inherits this light gray instead of
- * the window's text color, which vanished on the black-backgrounded
- * contexts. The token palette above stays (all readable on the panel). */
+/* The code panel is self-contained PURE BLACK, and the code element
+ * itself sets the font colour WHITE: the plain (unclassified) text —
+ * the JSON braces, commas, colons — inherited the window body's BLACK
+ * font colour and vanished on the black background. The elements that
+ * set font-colour black are the window-body text rules; scoping the
+ * white to the panel wins the inheritance for everything inside. */
 pre code.hljs,
 pre .hljs {
   display: block;
-  background: #1e1e1e !important;
-  color: #d4d4d4 !important;
+  background: #000 !important;
+  color: #fff !important;
   padding: 10px 12px;
   border-radius: 6px;
 }
 
-/* the tokens tuned for the dark panel */
+/* the tokens tuned for the black panel */
 .hljs-string,
 .hljs-number,
 .hljs-literal,
