@@ -1,128 +1,27 @@
 {
   "slug": "on-deploy",
   "title": "on-deploy",
-  "description": "the doftiles deployment orchestrator: verifies the WM-stack binaries, installs the missing ones through per-distro deploy scripts, runs the make install assurances (bun, postinstall trust, the herbctl binary), deploys the dependencies, and provisions the session stack from declarative profiles.",
+  "description": "```mermaid",
   "github": "https://github.com/akinevz2/on-deploy",
-  "lastModified": "2026-11-05",
+  "lastModified": "2026-11-24",
   "content": {
-    "heading": "on-deploy - the deployment orchestrator",
+    "heading": "on-deploy — the architecture",
     "content": [
-      "**on-deploy** turns the **doftiles** repo into a one-command deployment. it runs inside the doftiles checkout, reads the deployment manifests, and provisions the session stack from them - all four manifests are configurable through configure (tui or flags).",
-      "",
-      "[https://github.com/akinevz2/on-deploy](https://github.com/akinevz2/on-deploy)",
       {
-        "heading": "the repo it walks",
+        "heading": "structural",
         "content": [
-          "the doftiles checkout is a structured deployment scope, declared in four manifests:",
-          "**wm.required** - required binaries, the deployment model and the deploy target",
-          "",
-          "**stows.required** - the stow packages",
-          "",
-          "**system.required** - each submodule with its dots-relative paths - the scope of the depends walk",
-          "",
-          "**services.required** - the unit order",
-          "",
-          "each stow package owns its own dots/<pkg>/.local/state/depends/<pkg>.makefile (toolchain/build/link/install), and the session runs as systemd user units - on-deploy provisions both."
+          "![structural](https://mermaid.ink/img/Z3JhcGggVEQKICAgIE1BS0VbZG90cyBNYWtlZmlsZSB2ZXJic10gLS0-IE9EW29uLWRlcGxveSBiaW5hcnkg4oCUIGJ1bmxpIENMSV0KICAgIE9EIC0tPiBDTURTW2luc3RhbGwgZGVwZW5kcyBzdG93IHBhY2thZ2VzIHNlcnZpY2VzIGNvbmZpZ3VyZSBjb250cmlidXRlIHRvb2xjaGFpbiAuLi5dCiAgICBDTURTIC0tPiBBUkdTW2xpYi9hcmdzICsgY29tbWl0VUkg4oCUIHRoZSBkZWNsYXJhdGl2ZSBhcmd1bWVudCBsYXllcjogcm9maSBpbnB1dCwgZmFpbCBzaGFwZV0KICAgIENNRFMgLS0-IERPVFNbbGliL2RvdHMg4oCUIHRoZSByZXBvIGNvbnRyYWN0OiBtYW5pZmVzdHMsIG9yaWdpbiwgZ2l0bGlua3NdCiAgICBDTURTIC0tPiBHSVRbZ2l0OiBmZXRjaCByZWJhc2UgY29tbWl0IHB1c2gg4oCUIHRoZSBjb250cmlidXRlL3N5bmMgZmxvd10KICAgIERPVFNbdGhlIGRvdHMgcmVwb10gLS0-fGdpdGxpbmtzfCBTVUJbaGVyYmN0bCBoZXJic3R1dGlsIHBvbHlmcmFtZXMgcG9seXRhZ3Mgb24tZGVwbG95XQo?type=svg)"
         ],
         "theme": "open"
       },
       {
-        "heading": "the package, architecturally",
+        "heading": "logical",
         "content": [
-          "a resolver, not a package list: the deploy script contract is `<target>.deploy <binary>` -> the providing package, and `install <binary>` -> the install command - one resolver script per distro, whatever the distro is.",
-          "",
-          "the requirement walk is resolve, confirm, run, re-verify: every missing binary is resolved per <target>.deploy, printed before it runs (sudo prompts stay visible - the tty is unlocked), and re-verified after.",
-          "",
-          "the prompts ride a raw line reader (bun's readline wedges), and the menu works scripted or interactive."
-        ],
-        "theme": "open"
-      },
-      {
-        "heading": "usage - the verbs",
-        "content": [
-          "`install` / `check` - the requirement walk; check reports and exits 1 on missing (--json).",
-          "",
-          "`deploy` - install every missing binary: resolve the package, show the command, confirm (Enter = yes), run it, then re-verify - a binary still missing after its command fails the run. `--yes` for non-interactive runs, `--dry-run` to preview.",
-          "",
-          "`services` - the service.order (services.required) runner: check/start/stop/restart/status over the systemd user units, --no-block, stow-safe disable.",
-          "",
-          "`detect-server` - the reachable-X probe (localhost:0.0 style): `--persist-to-systemd` writes DISPLAY into the manager env, `--persist-to-env` writes an rc.d-includable file.",
-          "",
-          "`toolchain` - the make install assurances: bun through npm when missing, trust of the global bun packages' postinstall scripts, the **herbctl** binary built from the submodule checkout when missing.",
-          "",
-          "`depends` - the per-package walk over system.required: every listed package runs its depends makefile; `--only` narrows, `--build` for sync+build.",
-          "",
-          "`snapshot` - collect a machine's pre-existing config into doftiles' defaults/ (a stow-shaped package) before the first deploy overwrites it - the machine's prior state, versioned in git, restorable with one make target.",
-          "",
-          "`configure` - edit the deploy target and the required-package list from an interactive menu (or `--target`/`--add`/`--remove` flags)."
-        ],
-        "theme": "open"
-      },
-      {
-        "heading": "usage - the profiles",
-        "content": [
-          "four session models, co-installable where it makes sense:",
-          "**wsl-systemd** - no display manager: hlwm runs as the systemd user unit herbst.service, waiting for the Windows-side X server (VcXsrv) to be reachable; provision even checks the Windows partition for VcXsrv and offers a silent install from the SourceForge feed",
-          "",
-          "**nested** - hlwm inside an Xvfb framebuffer, shared over VNC (:5900) and browser noVNC (:6080), with an RDP surface layered on top (xrdp's Xvnc module attaches to the same framebuffer; 3389 stays free for the Windows side)",
-          "",
-          "**xinit** - startx runs ~/.xinitrc; no display manager",
-          "",
-          "**greetd** - greetd + tuigreet own the console (the bare-OS target)",
-          "",
-          "a profile declares units (systemd user units) and env overrides (written to ~/.config/doftiles/env, read by the units via EnvironmentFile). the make deploy tui selects the session model, the features, the units and the env - and writes deploy.profile before stowing anything."
-        ],
-        "theme": "open"
-      },
-      {
-        "heading": "quirks",
-        "content": [
-          "non-interactive runs abort cleanly demanding --yes instead of blocking on prompts; a failed install fails the run.",
-          "",
-          "the only true external requirement is passwordless sudo (or an interactive prompt) for platform package installation.",
-          "",
-          "profiles enable additively: activating a second profile never disables the first's units."
-        ],
-        "theme": "open"
-      },
-      {
-        "heading": "stable in v1.4.x",
-        "status": "{{registry:on-deploy}}",
-        "content": [
-          "version probing reads the package manager (dpkg-query, pacman) instead of spawning the binary - GUI programs no longer initialize a display backend on the walk and flash a window mid-deploy.",
-          "",
-          "the managed status reports `installed <version>`, read from the same package-manager query.",
-          "",
-          "the four manifests, configure and the profile walk are the stable surface since 1.4.0."
-        ],
-        "theme": "open"
-      },
-      {
-        "heading": "links",
-        "content": [
-          {
-            "heading": "github repository",
-            "content": "{{registry:on-deploy}}",
-            "link": "https://github.com/akinevz2/on-deploy"
-          },
-          {
-            "heading": "doftiles - what it deploys",
-            "content": "{{registry:doftiles}}",
-            "link": "/projects/doftiles"
-          },
-          {
-            "heading": "herbctl - the binary the toolchain step builds",
-            "content": "{{registry:herbctl}}",
-            "link": "/projects/herbctl"
-          },
-          {
-            "heading": "polyframes - the artifact the deps step deploys",
-            "content": "{{registry:polyframes}}",
-            "link": "/projects/polyframes"
-          }
+          "![logical](https://mermaid.ink/img/Zmxvd2NoYXJ0IExSCiAgICBBW21ha2UgdXBkYXRlOiBjb250cmlidXRlIC0teWVzIHN5bmNzIHdpdGggb3JpZ2luXSAtLT4gQltkZXBlbmRzOiBzdWJtb2R1bGUgc3luYyArIHRoZSBwZXItcGFja2FnZSBidWlsZHNdCiAgICBCIC0tPiBDW2luc3RhbGw6IHN0b3cgKyBwcmVzZXJ2ZSArIHRoZSByZXF1aXJlbWVudCB3YWxrXQogICAgQyAtLT4gRFt0aGUgV00vdG9vbHMgcnVuIHRoZSBkZXBsb3llZCBiaW5hcmllc10K?type=svg)"
         ],
         "theme": "open"
       }
-    ]
+    ],
+    "theme": "open"
   }
 }

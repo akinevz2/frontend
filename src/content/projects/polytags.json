@@ -1,0 +1,27 @@
+{
+  "slug": "polytags",
+  "title": "polytags",
+  "description": "```mermaid",
+  "github": "https://github.com/akinevz2/polytags",
+  "lastModified": "2026-11-24",
+  "content": {
+    "heading": "polytags — the architecture",
+    "content": [
+      {
+        "heading": "structural",
+        "content": [
+          "![structural](https://mermaid.ink/img/Z3JhcGggVEQKICAgIFBPTFlCQVJbcG9seWJhciBleGVjXSAtLT4gREFFTU9OW2RhZW1vbjogb25lIHJlbmRlciArIHJlLXJlbmRlciBwZXIgaGx3bSBob29rXQogICAgREFFTU9OIC0tPiBSRU5ERVJbcmVuZGVyLnRzOiBwYXJzZVRhZ1N0YXR1cyArIGVtaXRMYWJlbF0KICAgIFJFTkRFUiAtLT4gTEJMW2NsaWNrYWJsZSBsYWJlbHM6IEExIGZvY3VzLCBBMyB0aGUgdGFnIG1lbnUsIEE0L0E1IHNjcm9sbF0KICAgIEEzW21lbnUgdmVyYl0gLS0-IFJPRklbdGhlbWVkIHJvZmk6IGZvY3VzIC8gYWRkIC8gY2xvc2UgLyBhcHAgbGF1bmNoZXJdCiAgICBST0ZJIC0tPiBIQ1toZXJic3RjbGllbnQgYWRkL3VzZS9tZXJnZV90YWddCiAgICBST0ZJIC0tPiBMQVVOQ0hbaGVyYmN0bCBsYXVuY2gg4oCUIHRoZSBhcHAgbGF1bmNoZXJdCg?type=svg)"
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "logical",
+        "content": [
+          "![logical](https://mermaid.ink/img/Zmxvd2NoYXJ0IExSCiAgICBVW3RoZSB1c2VyIGNsaWNrcyBhIGxhYmVsXSAtLT4gRltsZWZ0OiBmb2N1cyB0aGUgdGFnc3BhY2VdCiAgICBVIC0tPiBSW3JpZ2h0OiB0aGUgdGFnIG1lbnVdCiAgICBSIC0tPiBBW2FkZCAvIGNsb3NlIC8gbGF1bmNoZXIg4oCUIGVhY2ggcmVzb2x2ZXMgdGhyb3VnaCBoZXJic3RjbGllbnQgb3IgaGVyYmN0bF0KICAgIFUgLS0-IFNbc2Nyb2xsOiBjeWNsZSB0YWdzcGFjZXNdCg?type=svg)"
+        ],
+        "theme": "open"
+      }
+    ],
+    "theme": "open"
+  }
+}
