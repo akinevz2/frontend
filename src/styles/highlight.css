@@ -89,3 +89,34 @@
 .language-shell .bash {
   color: #007b00 !important;
 }
+
+/* The code panel is self-contained DARK: the plain (unclassified) text —
+ * the JSON braces, commas, colons — inherits this light gray instead of
+ * the window's text color, which vanished on the black-backgrounded
+ * contexts. The token palette above stays (all readable on the panel). */
+pre code.hljs,
+pre .hljs {
+  display: block;
+  background: #1e1e1e !important;
+  color: #d4d4d4 !important;
+  padding: 10px 12px;
+  border-radius: 6px;
+}
+
+/* the tokens tuned for the dark panel */
+.hljs-string,
+.hljs-number,
+.hljs-literal,
+.hljs-attr,
+.hljs-attribute {
+  color: #9cdcfe !important;
+}
+
+.hljs-string {
+  color: #ce9178 !important;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: #6a9955 !important;
+}
