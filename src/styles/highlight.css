@@ -122,3 +122,16 @@ pre .hljs {
 .hljs-quote {
   color: #6a9955 !important;
 }
+
+/* The UNCLASSIFIED spans: the JSON structural characters (braces, commas,
+ * colons) arrive as bare or punctuation spans — the site-wide
+ * `span { color: var(--text-color) !important }` rule (the window body's
+ * black font) was winning the inheritance and painting them black on the
+ * black panel. Everything unclassified inside the panel renders white;
+ * the token classes keep their tuned colors (higher specificity). */
+pre code.hljs span:not([class]),
+pre .hljs span:not([class]),
+pre code.hljs .hljs-punctuation,
+pre .hljs .hljs-punctuation {
+  color: #fff !important;
+}
