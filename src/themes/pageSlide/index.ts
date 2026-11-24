@@ -349,7 +349,14 @@ function transition(to: string, hash: string): void {
   // page (the wrong-page flash). pageArrived() performs both once the
   // App shell's route effect confirms the destination is mounted.
   pendingPath = to;
-  pendingLanding = { hash, bookmark: hash ? "" : (windowBookmark() ?? "") };
+  // A hash-free navigation lands at the TOP (pageArrived resets the
+  // window + the main container): the departing entry's window bookmark
+  // must NOT steer the new page's landing — its section id does not
+  // exist on the destination, the scroll silently no-ops, and the page
+  // keeps the departing offset. The bookmark landing stays where it
+  // belongs: the history TRAVERSALS (popstate reads the entry's own
+  // state — the maximized-permalink returns).
+  pendingLanding = { hash, bookmark: "" };
 }
 
 /** The destination page COMMITTED (App's route effect). Restarts the
