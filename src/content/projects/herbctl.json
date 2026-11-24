@@ -163,15 +163,11 @@
       },
       {
         "heading": "fullscreen-toggle",
-        "content": [
-          "[$ModShift-f] fullscreen toggle on the focused client."
-        ]
+        "content": ["[$ModShift-f] fullscreen toggle on the focused client."]
       },
       {
         "heading": "minimize-toggle",
-        "content": [
-          "[$ModShift-z] minimized toggle on the focused client."
-        ]
+        "content": ["[$ModShift-z] minimized toggle on the focused client."]
       },
       {
         "heading": "the float-register state machines",
@@ -219,13 +215,13 @@
         "content": [
           {
             "heading": "github repository",
-            "content": "v1.6.1",
+            "content": "v1.17.1",
             "link": "https://github.com/akinevz2/herbctl"
           },
           {
             "heading": "herbstutil - the primitives underneath",
-            "content": "targets herbstutil ^0.3.0",
-            "link": "https://github.com/akinevz2/herbstutil"
+            "content": "targets herbstutil (github main, unpinned)",
+            "link": "/projects/herbstutil"
           },
           {
             "heading": "doftiles - the keybinds that spawn it",
@@ -234,7 +230,7 @@
           },
           {
             "heading": "polyframes - the sibling binary",
-            "content": "v2.2.0",
+            "content": "v2.4.0",
             "link": "/projects/polyframes"
           }
         ],

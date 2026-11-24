@@ -80,13 +80,13 @@
         "content": [
           {
             "heading": "github repository",
-            "content": "v2.2.0",
+            "content": "v2.4.0",
             "link": "https://github.com/akinevz2/polyframes"
           },
           {
             "heading": "doftiles - the dotfiles it ships from",
             "content": "v1.0.0",
-            "link": "https://github.com/akinevz2/doftiles"
+            "link": "/projects/doftiles"
           },
           {
             "heading": "herbctl - the keybind imperatives",
@@ -95,7 +95,7 @@
           },
           {
             "heading": "herbstutil - the JSON bridge",
-            "content": "targets herbstutil ^0.3.1",
+            "content": "targets herbstutil (github main, unpinned)",
             "link": "/projects/herbstutil"
           }
         ],
