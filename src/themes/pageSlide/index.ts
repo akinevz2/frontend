@@ -365,7 +365,14 @@ export function pageArrived(pathname: string): void {
   restartArrival();
   if (landing?.hash) scrollToHash(landing.hash);
   else if (landing?.bookmark) scrollToId(landing.bookmark);
-  else window.scrollTo({ top: 0 });
+  else {
+    // The scroll container is main ITSELF (main.page carries the
+    // scrolling): the window reset alone is a no-op since the layout
+    // moved the scrolling into main — both get reset, the regression
+    // (a new page landing at the departing page's offset) is gone.
+    window.scrollTo({ top: 0 });
+    document.querySelector("main")?.scrollTo({ top: 0 });
+  }
 }
 
 /** Restart the just-applied destination slide so it runs in step with the
