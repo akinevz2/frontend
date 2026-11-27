@@ -5,7 +5,7 @@
   "github": "https://github.com/akinevz2/polyframes",
   "lastModified": "2026-11-03",
   "content": {
-    "heading": "polyframes - the polybar window-list renderer, as a native binary",
+    "heading": "polyframes - the polybar window-list renderer binary",
     "content": [
       "**polyframes** renders **herbstluftwm**'s window state as the **polybar** center module: one label per (frame, window-class) group, decorated by state (focused gold underline, floating, minimized dimmed), with click/scroll actions that re-exec the binary itself.",
       "",

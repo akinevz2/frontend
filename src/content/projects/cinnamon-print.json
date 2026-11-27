@@ -5,7 +5,7 @@
   "github": "https://github.com/akinevz2/cinnamon-print",
   "lastModified": "2026-11-27",
   "content": {
-    "heading": "cinnamon-print - describe it, an agent places it, your browser renders it",
+    "heading": "cinnamon-print - describe a graphic, the browser renders it",
     "content": [
       "**cinnamon-print** is a self-contained composition package: you describe a graphic — canvas, placed images, text, procedural shaders — and it renders the finished artifact as png or pdf. built for flyers, cover art, zines and social cards.",
       "",

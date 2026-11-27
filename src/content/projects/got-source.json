@@ -4,7 +4,7 @@
   "github": "https://github.com/akinevz2/got-source",
   "description": "One command for the terminal's common reflexes: what you hand `get` decides what it does — a directory gets listed, a file gets displayed, a word gets grepped, a loose query over a folder becomes a filename search with an fzf pick, `+` watches a file live, `@` opens the editor, and `-` forces a plain stdout view. The `get` function also owns the cd flow, so cd+ls is one step.",
   "content": {
-    "heading": "get - fast cd+ls workflow for folders, with file viewing and search",
+    "heading": "get - fast cd+ls for folders, with file viewing and search",
     "content": [
       "`get` is a traversal-first helper for the terminal: most invocations are a single `get` away from where you are, and the `-` back-navigation keeps a history of the directories you've been in. The purpose of `get` is to make the cd+ls workflow fast for folders — and it additionally provides support for viewing files in bat, cat, and vim, and supports reading links/PATH items.",
       "`get` is implemented as a bash function (for cd support), backed by `got` — the POSIX-sh script holding all the logic (listing, cat/bat display, grep, filename search + fzf picking, `$PATH` resolution).",
