@@ -260,9 +260,26 @@ function leaveGhost(): SlideScale {
       // the exit) - the window folds up into its title bar faster than
       // the page slides down, the minimise beat completing while the
       // page is still part-way through its fall, at every page size
-      // and scroll offset.
-      const foldMs = Math.round((fall * dropMs) / (exitDistance * 2));
-      win.style.setProperty("--page-fold-dy", `${Math.round(fall)}px`);
+      // and scroll offset. FLOOR the duration: a window near the
+      // viewport's bottom has a tiny fall, and the raw proportion
+      // would degenerate towards 0ms (an instant, jarring flash) -
+      // never fold faster than FOLD_FLOOR_MS.
+      const FOLD_FLOOR_MS = 120;
+      const foldMs = Math.max(
+        FOLD_FLOOR_MS,
+        Math.round((fall * dropMs) / (exitDistance * 2)),
+      );
+      // The title bar's own journey accounts for the glide's carry: at
+      // the fold's completion the page has already slid
+      // exitDistance * foldMs / dropMs px (the glide is linear and both
+      // beats start together), so the fold's translate is the measured
+      // fall MINUS that carried distance - landing the title bar exactly
+      // on the taskbar line at fold end instead of overshooting past it
+      // (translate + glide both moving the window reads as a teleport
+      // below the taskbar).
+      const carry = (exitDistance * foldMs) / dropMs;
+      const foldDy = Math.max(0, Math.round(fall - carry));
+      win.style.setProperty("--page-fold-dy", `${foldDy}px`);
       win.style.setProperty("--ps-fold-delay", "0ms");
       // the fold duration inherits down the window's subtree, so its
       // children squash in the same beat
