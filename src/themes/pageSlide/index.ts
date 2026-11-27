@@ -40,12 +40,26 @@ const FOLD_MS = 200;
 const ARRIVAL_SPEED_PX_MS = 6.2;
 const ARRIVAL_MIN_DURATION_MS = 260;
 const ARRIVAL_MAX_DURATION_MS = 440;
+/* The EXIT glide keeps the OLD, gentler pace (3.4px/ms, 480-820ms):
+ * the doubled arrival pace read right, but the exit on the same scale
+ * was over before it was perceivable - a squash-and-slide that fast
+ * reads as a blink, not a minimise. */
+const DROP_SPEED_PX_MS = 3.4;
+const DROP_MIN_DURATION_MS = 480;
+const DROP_MAX_DURATION_MS = 820;
 const REMOVAL_MARGIN_MS = 200;
 const arrivalDuration = (distancePx: number): number =>
   Math.round(
     Math.min(
       ARRIVAL_MAX_DURATION_MS,
       Math.max(ARRIVAL_MIN_DURATION_MS, distancePx / ARRIVAL_SPEED_PX_MS),
+    ),
+  );
+const dropDuration = (distancePx: number): number =>
+  Math.round(
+    Math.min(
+      DROP_MAX_DURATION_MS,
+      Math.max(DROP_MIN_DURATION_MS, distancePx / DROP_SPEED_PX_MS),
     ),
   );
 const VARIABLES = [
@@ -166,7 +180,7 @@ function leaveGhost(): SlideScale {
   // starts at its final timing; applyDirection re-states the same
   // values through the theme right after - a no-op on the running
   // animation. The fold beat (FOLD_MS) is a constant.
-  const dropMs = arrivalDuration(exitDistance);
+  const dropMs = dropDuration(exitDistance);
   root().style.setProperty("--ps-drop-dur", `${dropMs}ms`);
   root().style.setProperty("--ps-minimize", `${FOLD_MS}ms`);
   const ghost = main.cloneNode(true) as HTMLElement;
@@ -328,12 +342,14 @@ function leaveGhost(): SlideScale {
   window.setTimeout(() => remove(), removalMs);
   // The arrival's distance uses the OLD page's height as the estimate of
   // the new page's (the route has not rendered yet); both durations
-  // derive from their own speeds. The ENTRANCE is held back until the
-  // departing page's top has crossed fully off-screen - the delay is
-  // the exit's whole glide (the fold plays inside it, zero tail).
+  // derive from their own speeds. The ENTRANCE is held back until most
+  // of the exit has played, but NOT the exit's whole glide - at the
+  // old, gentler drop pace a full-glide wait reads as dead air between
+  // the pages; 60% of it keeps the sequential read while the arrival
+  // is already under way as the exit's tail clears the viewport.
   return {
     arrivalMs: arrivalDuration(rect.height + window.innerHeight),
-    arrivalDelayMs: tailMs + dropMs,
+    arrivalDelayMs: Math.round((tailMs + dropMs) * 0.6),
     dropMs,
     tailMs,
   };
