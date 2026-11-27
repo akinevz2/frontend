@@ -14,7 +14,6 @@ import { ProjectPage } from "./ProjectPage";
 import { ProjectsPage } from "./ProjectsPage";
 import { ResumePage } from "./ResumePage";
 import { SitemapPage } from "./SitemapPage";
-import { StancePage } from "./StancePage";
 import { WowPage } from "./WowPage";
 
 /** Maps the `page` names in content/pages.json to components. */
@@ -34,6 +33,5 @@ export const pageRegistry: Record<string, ComponentType> = {
   ProjectsPage,
   ResumePage,
   SitemapPage,
-  StancePage,
   WowPage,
 };

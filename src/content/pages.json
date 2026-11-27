@@ -15,15 +15,6 @@
     "menu": "admin"
   },
   {
-    "path": "/stance",
-    "menuLabel": "stance",
-    "title": "how kine works",
-    "description": "a keepsake describing kine's business attitude: full-time foss, tools outside the browser",
-    "page": "StancePage",
-    "menu": false,
-    "hidden": true
-  },
-  {
     "path": "/contact",
     "menuLabel": "contact",
     "title": "contact page of kine",

@@ -21,7 +21,6 @@ import {
   projects,
   routes,
   sections,
-  stance,
   learningLandingSection,
   type Route,
   type Section,
@@ -83,8 +82,6 @@ export function routeContent(
       return sections;
     case "ContactPage":
       return contacts;
-    case "StancePage":
-      return stance;
     case "AddonsPage":
       return addons;
     case "ConfigsPage":
