@@ -245,10 +245,10 @@ function leaveGhost(): SlideScale {
     if (win) {
       const liveWin = liveWins[0];
       // XP minimise, origin at the TITLE BAR: the body squashes UPWARDS
-      // into it while the title bar falls LINEARLY to the taskbar line.
-      // The fall distance is the title bar's own journey (taskbar line
-      // minus the window's TOP edge) - measured, so a bottom-scrolled
-      // page still gets a real fall (the old bottom-anchored fall had
+      // into it, IN PLACE - the page's glide does all the falling.
+      // The fall measurement (taskbar line minus the window's TOP
+      // edge) still drives the fold's PACE below, so a bottom-scrolled
+      // page folds at a real pace (the old bottom-anchored fall had
       // none there: its anchor already sat on the viewport's edge).
       const fall = Math.max(
         0,
@@ -269,17 +269,14 @@ function leaveGhost(): SlideScale {
         FOLD_FLOOR_MS,
         Math.round((fall * dropMs) / (exitDistance * 2)),
       );
-      // The title bar's own journey accounts for the glide's carry: at
-      // the fold's completion the page has already slid
-      // exitDistance * foldMs / dropMs px (the glide is linear and both
-      // beats start together), so the fold's translate is the measured
-      // fall MINUS that carried distance - landing the title bar exactly
-      // on the taskbar line at fold end instead of overshooting past it
-      // (translate + glide both moving the window reads as a teleport
-      // below the taskbar).
-      const carry = (exitDistance * foldMs) / dropMs;
-      const foldDy = Math.max(0, Math.round(fall - carry));
-      win.style.setProperty("--page-fold-dy", `${foldDy}px`);
+      // NO PER-WINDOW TRANSLATE: the squash happens IN PLACE (origin
+      // top - the body rises into the title bar) and the page's glide
+      // does ALL the falling. Translating the title bar its full
+      // measured distance to the taskbar line inside the fold beat
+      // (even glide-carry-corrected) reads as the window vanishing and
+      // teleporting half a page down - the fold's scaleY collapse is
+      // the motion; the translate is a jump. --page-fold-dy stays 0.
+      win.style.setProperty("--page-fold-dy", "0px");
       win.style.setProperty("--ps-fold-delay", "0ms");
       // the fold duration inherits down the window's subtree, so its
       // children squash in the same beat

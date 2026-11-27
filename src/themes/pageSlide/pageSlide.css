@@ -119,20 +119,17 @@ html.theme-page-slide .page-slide-ghost .page-slide-placeholder-frame {
 
 @keyframes page-slide-fold {
   to {
-    /* The fold is a squash AND A FALL: the TITLE BAR travels its
-       measured distance to the taskbar line (--page-fold-dy, set per
-       main window in JS) - linear, one pace with the page's glide -
-       while the outline collapses UPWARDS into it, origin top: the
-       bottom edge rises to meet the descending title bar, one XP
-       minimise. */
+    /* The fold is a squash, IN PLACE: the outline collapses UPWARDS
+       into the title bar (origin top) while the page's glide does all
+       the falling - no translate of the window's own (a translate here
+       reads as a teleport; see index.ts). */
     transform: translateY(var(--page-fold-dy, 0px)) scaleY(0.06);
   }
 }
 
 /* The fall distance belongs to the top-level window alone: nested
-   windows reset it, so they squash UPWARDS into their own title bars
-   (origin top, no translate of their own) and RIDE the parent's fall
-   and the page's glide instead of compounding them. */
+   windows reset it, so they squash IN PLACE (origin top, no translate
+   of their own) and RIDE the page's glide instead of compounding it. */
 html.theme-page-slide .page-slide-ghost .window .window {
   --page-fold-dy: 0px;
 }
