@@ -1,0 +1,27 @@
+{
+  "heading": "stance",
+  "theme": "open",
+  "content": [
+    "a keepsake: three messages sent to a web host's support chat, as a statement of refusal of service. kept verbatim, as a description of how i do business.",
+    {
+      "heading": "message 1 · 14:09",
+      "anchor": "message-1",
+      "content": "> About the feedback - I'm a Unix developer, and I rely on my tools to be fully available outside of the browser for security and verifiability purposes. I was told that I will be able to integrate my workflows of that kind into the IONOS GPT feature, which was misleading, as the page does not offer any configuration, forwarding, programmatic access, or otherwise ownership of the interface - it wholely limits the session to maintaining a web page at all times open to the IONOS Website, with zero integration. Zero accessibility. No ownership possible over the intellectual property written via the feature. This is harmful to my projects, which rely on maintaining public access with no restriction from any person with access to the internet, as a principle, to extend their credibility, as I am not a trusted and/or industry-backed business, but rather a freelance individual. I was sold on the promise that purchasing additional IONOS features would increase my projects' public adoption, meanwhile every feature that i have explored prohibitively bars me from offering any manual maintenance to the software that would then be representing my identity on the internet."
+    },
+    {
+      "heading": "message 2 · 14:12",
+      "anchor": "message-2",
+      "content": "> As an individual, I have been doing my utmost best, for the past 9 years, to maintain free and opensource software by spreading public awareness of its existence, educating on its use, and offering tuition and help with operating countless public projects."
+    },
+    {
+      "heading": "message 3 · 14:13",
+      "anchor": "message-3",
+      "content": "> I now write FOSS full time, as a self-employed freelancer, and having to perform a paradigm shift to move all my trust in its entirety to a web platform that I am not able to visualise or debug, is a business-cessation case scenario"
+    },
+    {
+      "heading": "back to the front page",
+      "link": "/",
+      "content": "the short version lives under *how kine works*"
+    }
+  ]
+}

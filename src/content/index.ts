@@ -14,6 +14,7 @@ import contactsJson from "./contacts.json";
 import addonsJson from "./addons.json";
 import configsJson from "./configs.json";
 import blogJson from "./blog.json";
+import stanceJson from "./stance.json";
 import soundcloudJson from "./soundcloud.json";
 import musicExtJson from "./music-ext.json";
 
@@ -198,6 +199,7 @@ export const contacts = resolveIncludes(contactsJson as Section);
 export const addons = resolveIncludes(addonsJson as Section);
 export const configs = resolveIncludes(configsJson as Section);
 export const blog = resolveIncludes(blogJson as Section);
+export const stance = resolveIncludes(stanceJson as Section);
 export const soundcloud = soundcloudJson as SoundCloudData;
 export const musicExt = musicExtJson;
 export * from "./blogDirs";
