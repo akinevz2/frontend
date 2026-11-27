@@ -6,12 +6,14 @@
       "content": [
         {
           "theme": "open",
+          "heading": "IT IS TIME",
           "content": [
             {
               "content": "![IT IS TIME. YOU KNOW WHAT TIME.](/images/cheese-cover-hec.png)"
             },
             {
-              "right": "## War of the Ancients"
+              "theme": "open",
+              "right": [">- kine was here", "## - War of the Ancients"]
             }
           ]
         },
