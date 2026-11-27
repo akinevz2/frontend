@@ -1,6 +1,6 @@
 {
   "baselineUrl": "https://akinevz.com/checksums.txt",
-  "generatedAt": "2026-11-27T20:44:12.398Z",
+  "generatedAt": "2026-11-27T21:04:17.956Z",
   "mutablePaths": [
     "blog/",
     "stories/",
@@ -17,6 +17,8 @@
     "404/index.html",
     "addons.html",
     "addons/index.html",
+    "blitch.html",
+    "blitch/index.html",
     "blog.html",
     "blog/1st.html",
     "blog/1st/index.html",
@@ -129,6 +131,8 @@
     "polytags.html",
     "polytags/index.html",
     "projects.html",
+    "projects/blitch.html",
+    "projects/blitch/index.html",
     "projects/cinnamon-print.html",
     "projects/cinnamon-print/index.html",
     "projects/depot.html",

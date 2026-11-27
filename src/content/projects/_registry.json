@@ -46,6 +46,14 @@
       "version": "v2.4.0",
       "drift": "the tag (v2.3.1) lags the manifest (v2.4.0) — tag the release"
     },
+    "blitch": {
+      "repo": "akinevz2/blitch",
+      "tag": null,
+      "tagAt": null,
+      "manifestVersion": "1.0.1",
+      "npm": null,
+      "version": "v1.0.1"
+    },
     "got-source": {
       "repo": "akinevz2/got-source",
       "tag": null,

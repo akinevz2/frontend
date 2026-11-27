@@ -1,0 +1,42 @@
+{
+  "slug": "blitch",
+  "title": "blitch",
+  "github": "https://github.com/akinevz2/blitch",
+  "description": "another pager, with a fresh lemon scent! a live terminal pager: the file is watched with inotify and redrawn as it changes on disk, with the modified areas coloured like a temporal diff — no polling, no margins, no line numbers, just cat with a memory.",
+  "content": {
+    "heading": "blitch - a diff for each stitch",
+    "content": [
+      "**blitch** performs the pager's familiar function — a file held live in the terminal — with one added trick: the watched file is livereloaded via inotify the moment it changes on disk, and the areas touched by each change are visualised with ASCII colour. It is kind of like a diff, but instead of a single before/after blob it displays temporal markers of what was touched when — a diff for each stitch.",
+      "The output is otherwise cat-identical: no margins, no line numbers — colour is the only transformation applied. Bytes **added** render green; token-level prefix/suffix of **pure deletions** (including whole deleted lines, which linger as red ghost rows clustered at the deletion site) render red; rope-level **replaced** text renders yellow — deleted half and added half, both yellow.",
+      "",
+      {
+        "heading": "Keys",
+        "content": [
+          "Esc / Ctrl-C / Ctrl-D exit · hjkl + arrows scroll · Ctrl-E/Y vertical",
+          "gg / G motions (count-prefixed: 5j, 42gg, 10G) · / ? search · n/N repeat"
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "Implementation",
+        "content": [
+          "The original pure-bash proof of concept was ported to Bun + bunli: `bun build --compile` produces the standalone `./blitch` binary. The design is event-driven — effectful code is confined to the runtime (the interpreter), which publishes plain input events on an in-process bus; the core folds them through a **monoidal transformer**, accumulating published output events under the free-monoid concat, and the filesystem event-bus filter matches reported file updates to on-screen state changes.",
+          "A procedural-style lint (`bun run src/lint.ts`) forbids untyped functions, `any`/`unknown`, classes, and IO tokens outside the runtime allowlist — the architecture is enforced, not just intended.",
+          "Watching owns no polling: the inotify watcher observes the file's parent directory filtered by basename, so editor-style atomic saves (temp file + rename over the original) cannot kill the watch, with a 40 ms trailing-edge debounce coalescing one save's event burst into a single redraw. The watch is wired into `got` as well: `get +<name>` execs into `blitch view`."
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "Status",
+        "content": [
+          "Work in progress — the repo is public for curious eyes while the design settles (event-driven core, monoidal bar consumers, status modal package); history is tracked one-commit-per-feature and the known-issue catalog lives in [FAILURE-MODES.md](https://github.com/akinevz2/blitch/blob/main/FAILURE-MODES.md). Expect churn.",
+          "",
+          "[https://github.com/akinevz2/blitch](https://github.com/akinevz2/blitch)"
+        ],
+        "theme": "open"
+      }
+    ]
+  },
+  "lastModified": "2026-11-27",
+  "group": "latest"
+}
