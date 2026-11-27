@@ -24,6 +24,19 @@
       ]
     },
     {
+      "heading": "how kine works",
+      "theme": "open",
+      "content": [
+        "unix developer: my tools stay fully available outside the browser, for security & verifiability",
+        "full-time foss, self-employed: nine years of keeping free software public by spreading awareness, teaching its use & helping with public projects",
+        {
+          "heading": "the principle",
+          "content": "public access with no restriction from anyone on the internet, as a principle, to extend credibility. what represents my identity online is software i can visualise, debug & maintain by hand",
+          "link": "/stance"
+        }
+      ]
+    },
+    {
       "heading": "for guru wisdom, there's tao of vim",
       "link": "https://mkaz.blog/working-with-vim/the-tao-of-vim/",
       "content": "for everything else, stay here:)"
