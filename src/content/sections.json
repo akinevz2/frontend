@@ -27,12 +27,12 @@
       "heading": "how kine works",
       "theme": "open",
       "content": [
-        "unix developer: my tools stay fully available outside the browser, for security & verifiability",
-        "full-time foss, self-employed: nine years of keeping free software public by spreading awareness, teaching its use & helping with public projects",
+        "the terms under which kine takes any work: tools fully available outside the browser, for security & verifiability",
+        "whatever represents an identity online is software its owner can visualise, debug & maintain by hand — public access, no restriction on who can reach it",
         {
-          "heading": "the principle",
-          "content": "public access with no restriction from anyone on the internet, as a principle, to extend credibility. what represents my identity online is software i can visualise, debug & maintain by hand",
-          "link": "/stance"
+          "heading": "good will, value, aims",
+          "content": "the clause that expands these terms into the ideology under which i produce my best work",
+          "link": "/blog/random/good-will-value-aims"
         }
       ]
     },
