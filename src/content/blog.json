@@ -2,11 +2,25 @@
   "heading": "kine's blog posts",
   "content": [
     {
-      "heading": "World of Warcraft Forever",
+      "heading": "The Braindump",
       "content": [
-        "kine exploring the world of Warcraft again!",
         {
-          "content": "![rueg](/images/sneaky_rueg.png)"
+          "heading": "Guide for Accents",
+          "content": [
+            "To speak with a Transatlantic accent, blend crisp British consonants with open American vowels and keep your voice forward in your mouth - an intentionally learned, theatrical hybrid designed for maximum clarity on old microphones.",
+            {
+              "content": "![Transatlantic accent guide](/images/transatlantic.png)"
+            }
+          ]
+        },
+        {
+          "heading": "World of Warcraft Forever",
+          "content": [
+            "kine exploring the world of Warcraft again!",
+            {
+              "content": "![rueg](/images/sneaky_rueg.png)"
+            }
+          ]
         }
       ]
     },
