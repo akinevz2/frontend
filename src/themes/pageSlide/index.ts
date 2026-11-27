@@ -388,6 +388,14 @@ function transition(to: string, hash: string): void {
   dispatchSignal("page:navigated", { from: current, to });
   if (clickSuppressed) clickSuppressed = false;
   else playMinimizeClick();
+  // Scroll the DEPARTURE to the top of the page BEFORE the ghost is
+  // captured: the exit choreography then plays with the departing
+  // window's title bar in sight, the ghost pins to the container's
+  // stable top (never a scroll-offset-derived negative top), and the
+  // arriving page lands already at the top of the canvas. The reset is
+  // instant - it is part of the departure, not an animation.
+  window.scrollTo({ top: 0, behavior: "instant" });
+  document.querySelector("main")?.scrollTo({ top: 0, behavior: "instant" });
   const direction = isMobileLayout()
     ? "down"
     : resolveDirection(current, to, menuOrder());
