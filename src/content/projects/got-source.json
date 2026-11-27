@@ -2,23 +2,26 @@
   "slug": "got-source",
   "title": "get",
   "github": "https://github.com/akinevz2/got-source",
-  "description": "One command for the terminal's common reflexes: what you hand `get` decides what it does — a directory gets listed, a file gets displayed, a word gets grepped, a loose query over a folder becomes a filename search with an fzf pick. The `get` function also owns the cd flow, so cd+ls is one step.",
+  "description": "One command for the terminal's common reflexes: what you hand `get` decides what it does — a directory gets listed, a file gets displayed, a word gets grepped, a loose query over a folder becomes a filename search with an fzf pick, `+` watches a file live, `@` opens the editor, and `-` forces a plain stdout view. The `get` function also owns the cd flow, so cd+ls is one step.",
   "content": {
     "heading": "get - fast cd+ls workflow for folders, with file viewing and search",
     "content": [
       "`get` is a traversal-first helper for the terminal: most invocations are a single `get` away from where you are, and the `-` back-navigation keeps a history of the directories you've been in. The purpose of `get` is to make the cd+ls workflow fast for folders — and it additionally provides support for viewing files in bat, cat, and vim, and supports reading links/PATH items.",
       "`get` is implemented as a bash function (for cd support), backed by `got` — the POSIX-sh script holding all the logic (listing, cat/bat display, grep, filename search + fzf picking, `$PATH` resolution).",
-      "`@<name>` is interactive-first: it opens the file in `$EDITOR`. When the session is not a tty (stdin or stdout is piped, as in `cat \"$(get @x)\"`), `get` skips the editor hijack and prints the canonical resolved path instead — so the caller's own command decides what to do with it.",
+      "`@<name>` is interactive-first: it opens the file in `$EDITOR`, resolving `$PATH` commands and symlinks to the real file; when the session is not a tty (stdin or stdout is piped, as in `cat \"$(get @x)\"`), it prints the canonical resolved path instead. `+<name>` is the watcher: it execs into `blitch view` — the inotify-based, colour-coded live pager — and `got` is gone; no polling happens in `got` at all. Without blitch on PATH — or when the target is a folder, or extra arguments are present — it degrades to exactly the editor action. `-<name>` forces a plain stdout view of that one argument, wherever it appears (before `--`), winning over the editor, the watch, and the query split.",
       {
         "heading": "Usage",
         "content": [
           "get                              ls -al the current directory",
-          "get @name [more...]              open <name> in $EDITOR; if not a local file, resolve it on $PATH and follow symlinks to the real file; non-interactive callers get the resolved path printed instead",
-          "get <dir> [names...]             ls the dir, then find each name beneath it",
-          "get <file...>                    cat/bat the files",
-          "get <queries...> <file|dir>      grep each query (with file+line numbers); for a folder, find matching filenames and fzf-pick one",
-          "get <queries...> -- <file|dir>…  same, with an explicit queries/targets split",
-          "get -n <queries...> <dir>        filename search + fzf pick",
+          "get +<name> [more...]            watch <name> live via blitch view (the colour-coded inotify pager); without blitch — or for a folder or extra args — degrade to the editor action",
+          "get @<name> [more...]            open <name> in $EDITOR; if not a local file, resolve it on $PATH and follow symlinks to the real file; non-interactive callers get the resolved path(s) printed",
+          "get @                            ls the current directory, then find extra names beneath it",
+          "get -<name> [more...]            force a plain stdout view of each -prefixed argument (any position before \"--\"; wins over +, @, grep)",
+          "got <dir> [names...]             ls the dir, then find each name beneath it",
+          "got <file...>                    cat/bat the files",
+          "got <queries...> <file|dir>      grep each query (with file+line numbers); for a folder, find matching filenames and fzf-pick one",
+          "got <queries...> -- <file|dir>…  same, with an explicit queries/targets split",
+          "got -n <queries...> <dir>        filename search + fzf pick",
           "get -                            cd to the previous directory first",
           "get <dir> [names...]             cd into <dir>, then behave like `got .`",
           "",
@@ -38,29 +41,31 @@
       {
         "heading": "Implementation",
         "content": [
-          "`get` is implemented as a bash function (for cd support), backed by `got` — the POSIX-sh script holding all the logic (listing, cat/bat display, grep, filename search + fzf picking, `$PATH` resolution)."
+          "`get` is implemented as a bash function (for cd support), backed by `got` — the POSIX-sh script holding all the logic (listing, cat/bat display, grep, filename search + fzf picking, `$PATH` resolution, the `+`/`-`/`@` prefixes).",
+          "Watching owns no polling in `got`: `+<name>` execs into `blitch view` — a live pager whose inotify watcher observes the file's parent directory filtered by basename, so editor-style atomic saves (temp file + rename over the original) cannot kill the watch, with a 40 ms trailing-edge debounce coalescing one save's event burst into a single redraw. Without blitch on PATH — or for folder targets and extra arguments — the watch degrades to the editor action."
         ],
         "theme": "open"
       },
       {
         "heading": "Why two names",
         "content": [
-          "`got` is a POSIX-sh script, `get` is a thin bash/zsh function wrapping it — a subprocess can't `cd` for you, so the function owns the cd-then-list flow while `got` holds all the viewing/searching logic. The `@<name>` opener degrades gracefully: interactive, it opens `$EDITOR`; piped (scripts, agents, `cat \"$(get @x)\"`), it prints the canonical resolved path instead."
+          "`got` is a POSIX-sh script, `get` is a thin bash/zsh function wrapping it — a subprocess can't `cd` for you, so the function owns the cd-then-list flow while `got` holds all the viewing/searching logic. The `@<name>` opener degrades gracefully: interactive, it opens `$EDITOR`; piped (scripts, agents, `cat \"$(get @x)\"`), it prints the canonical resolved path instead — and bare `get -` still cds to the previous directory before anything else runs."
         ],
         "theme": "open"
       },
       {
         "heading": "Requirements",
         "content": [
-          "bat — richer file display; without it, plain cat is used. fzf — the pick UI for folder filename search; without it the search still prints matches."
+          "blitch — the inotify-based colour-coded live pager behind `+` watching; without it the watch degrades to the editor action. bat — richer file display; without it, plain cat is used. fzf — the pick UI for folder filename search; without it the search still prints matches."
         ],
         "theme": "open"
       },
       {
         "heading": "Install",
         "content": [
-          "make install          # ~/.local prefix, hooks ~/.bashrc + ~/.zshrc",
-          "Knobs: PREFIX=..., DESTDIR=... (staging), SKIP_RC=1 (files only), RC_FILES=\"...\" (explicit rc list). make uninstall removes the files and strips the rc hooks; make check smoke-tests the tree."
+          "make install          # ~/.local prefix — distributes files only, never edits rc files",
+          "The shell extension is wired by sourcing the deployed hook ONCE from your rc file (add the line yourself; dots machines wire it via ~/.shellx.rc): [ -f \"$HOME/.local/share/got/hook.sh\" ] && . \"$HOME/.local/share/got/hook.sh\"",
+          "An existing hook.sh is preserved on install (theirs wins); make install FORCE=1 clobbers it with the shipped default (the upgrade path). The repo's hook.sh is a gitignored path, force-add tracked and skip-worktree'd, so per-machine content and local tweaks stay out of git status. Knobs: PREFIX=..., DESTDIR=... (staging), SKIP_RC=1 (skip the wiring report), RC_FILES=\"...\" (wiring-report scope). make uninstall removes the owned files — the rc line goes inert automatically; make uninstall-rc strips LEGACY marker blocks from old installs; make check smoke-tests the tree."
         ]
       }
     ]

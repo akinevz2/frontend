@@ -1,6 +1,6 @@
 {
   "baselineUrl": "https://akinevz.com/checksums.txt",
-  "generatedAt": "2026-11-27T15:25:53.476Z",
+  "generatedAt": "2026-11-27T20:44:12.398Z",
   "mutablePaths": [
     "blog/",
     "stories/",
@@ -177,15 +177,6 @@
   "rehashOnly": [],
   "liveMatchCount": 0,
   "liveMatched": [],
-  "softMutableCount": 2,
-  "softMutable": [
-    {
-      "relPath": "images/cheese-cover-hec.png",
-      "status": "NEW"
-    },
-    {
-      "relPath": "images/transatlantic.png",
-      "status": "NEW"
-    }
-  ]
+  "softMutableCount": 0,
+  "softMutable": []
 }

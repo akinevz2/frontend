@@ -68,4 +68,33 @@ We can then open out `$EDITOR` via the `@` argument prefix
 kine @ WS-VISION :: (git branch main) /home/kine/development/src/lib
 > get @./nested-deep.js 
 # file opens in vim or your $EDITOR
+
+The `+` prefix turns the file into a live watch instead of a one-shot
+edit: `got` execs into `blitch view` — the inotify-based, colour-coded
+pager — so saves to the file appear as they happen. Without `blitch`
+on PATH, or for a folder target, it degrades to the `@` editor action
+
+```console
+kine @ WS-VISION :: (~/demo)
+> get +draft.md
+# execs into `blitch view`; edits to draft.md redraw in place,
+# colour-coded (green added bytes, red deleted tokens, yellow replaced)
+```
+
+The prefixes degrade for scripts and pipes: `@` piped prints the
+canonical resolved path, and `-` forces a plain stdout view of that one
+argument wherever it appears — winning over the editor, the watch, and
+the query split
+
+```console
+kine @ WS-VISION :: (~/demo)
+> get @draft.md
+/home/kine/demo/draft.md
+> cat "$(get @draft.md)"
+hello world
+line two
+> get -draft.md
+hello world
+line two
+```
 ```
