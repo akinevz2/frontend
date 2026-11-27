@@ -498,6 +498,22 @@ form#form > label {
   font-weight: 700;
 }
 
+/* Verbatim quotations (markdown blockquotes — the good will, value, aims
+ * record): 98.css styles blockquote not at all, so a quote reads as plain
+ * body text. Give the quoted voice an inset look — an etched left rule
+ * and a hanging indent — so the messages are visibly NOT the site's own
+ * prose. The text keeps the window's black: the record is evidence,
+ * readable, not decoration. */
+.window-body blockquote {
+  margin: var(--gap-size) 0;
+  padding: 0.1em 0 0.1em 0.9em;
+  border-left: 3px solid var(--button-shadow);
+}
+
+.window-body blockquote p {
+  margin: 0;
+}
+
 /* 98.css pins window text to its Win98 chrome size: .window{font-size:11px}.
    Content windows read like documents — body text follows the root size,
    the same 1rem the pre blocks above (98.css) already render at. */
