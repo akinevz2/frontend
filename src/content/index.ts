@@ -84,11 +84,12 @@ setProjectRegistry(projectRegistry.projects);
  *  submodules they depend on, then the older web-based projects); the
  *  per-group ordering stays the lastModified sort. A project without a
  *  group fact lands in "web" (the oldest surface). */
-export const GROUP_ORDER = ["core", "system", "web"] as const;
+export const GROUP_ORDER = ["latest", "core", "system", "web"] as const;
 export const GROUP_LABELS: Record<string, string> = {
-    core: "the operating system",
-    system: "the system submodules",
-    web: "the web-based projects",
+  latest: "the latest projects",
+  core: "the operating system",
+  system: "the system submodules",
+  web: "the web-based projects",
 };
 
 export const projectPath = (project: Project) =>

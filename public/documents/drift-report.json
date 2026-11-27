@@ -1,6 +1,6 @@
 {
   "baselineUrl": "https://akinevz.com/checksums.txt",
-  "generatedAt": "2026-11-22T03:48:58.324Z",
+  "generatedAt": "2026-11-27T02:10:44.550Z",
   "mutablePaths": [
     "blog/",
     "stories/",
@@ -83,10 +83,14 @@
     "blog/writing/hot-action-under-a-cold-moon.html",
     "blog/writing/hot-action-under-a-cold-moon/index.html",
     "blog/writing/index.html",
+    "cinnamon-print.html",
+    "cinnamon-print/index.html",
     "configs.html",
     "configs/index.html",
     "contact.html",
     "contact/index.html",
+    "depot.html",
+    "depot/index.html",
     "development.html",
     "development/index.html",
     "doftiles.html",
@@ -102,6 +106,12 @@
     "herbstutil.html",
     "herbstutil/index.html",
     "index.html",
+    "learning.html",
+    "learning/index.html",
+    "learning/lesson-template.html",
+    "learning/lesson-template/index.html",
+    "learning/resources/appendix.html",
+    "learning/resources/appendix/index.html",
     "lightdni-jssas-toggle.html",
     "lightdni-jssas-toggle/index.html",
     "music.html",
@@ -114,7 +124,13 @@
     "pagerts/index.html",
     "polyframes.html",
     "polyframes/index.html",
+    "polytags.html",
+    "polytags/index.html",
     "projects.html",
+    "projects/cinnamon-print.html",
+    "projects/cinnamon-print/index.html",
+    "projects/depot.html",
+    "projects/depot/index.html",
     "projects/development.html",
     "projects/development/index.html",
     "projects/doftiles.html",
@@ -140,6 +156,8 @@
     "projects/pagerts/index.html",
     "projects/polyframes.html",
     "projects/polyframes/index.html",
+    "projects/polytags.html",
+    "projects/polytags/index.html",
     "projects/rarebert.html",
     "projects/rarebert/index.html",
     "rarebert.html",
@@ -157,6 +175,15 @@
   "rehashOnly": [],
   "liveMatchCount": 0,
   "liveMatched": [],
-  "softMutableCount": 0,
-  "softMutable": []
+  "softMutableCount": 2,
+  "softMutable": [
+    {
+      "relPath": "learning/lesson-template.md",
+      "status": "NEW"
+    },
+    {
+      "relPath": "learning/resources/appendix.md",
+      "status": "NEW"
+    }
+  ]
 }

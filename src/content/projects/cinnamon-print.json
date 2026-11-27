@@ -1,0 +1,63 @@
+{
+  "slug": "cinnamon-print",
+  "title": "cinnamon-print",
+  "description": "describe it, an agent places it, your browser renders it — a docker-in-a-folder composition package that turns fragment images, text and shaders into finished pngs and pdfs, reproducibly.",
+  "github": "https://github.com/akinevz2/cinnamon-print",
+  "lastModified": "2026-11-27",
+  "content": {
+    "heading": "cinnamon-print - describe it, an agent places it, your browser renders it",
+    "content": [
+      "**cinnamon-print** is a self-contained composition package: you describe a graphic — canvas, placed images, text, procedural shaders — and it renders the finished artifact as png or pdf. built for flyers, cover art, zines and social cards.",
+      "",
+      "[https://github.com/akinevz2/cinnamon-print](https://github.com/akinevz2/cinnamon-print)",
+      {
+        "heading": "the pitch",
+        "content": [
+          "**describe it** in one json file: `project/layout.json` names the canvas, the `fragment*.png` placements, custom text and fonts. it is the single source of truth.",
+          "",
+          "**an agent places it**: in an interactive session (`make repl`), the opencode agent scans your fragments, lints the layout for overlaps and overflow, and proposes placements with you.",
+          "",
+          "**your browser renders it**: the compose script generates the html, applies a pandoc template, and renders through your browser in headless mode — one pipeline, both png and pdf.",
+          "",
+          "**reproducibly**: the whole environment (pandoc, node, your browser, fonts, opencode) is built with nix inside docker — the only prerequisite is docker itself, no unix knowledge required."
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "the frag bench — live shader synthesis",
+        "status": "work in progress",
+        "content": [
+          "the distinctive bit: custom abstract textures and raster elements without heavy GPU dependencies in the container. your running browser (`make serve`) becomes the client-side WebGL worker.",
+          "",
+          "an agent authors GLSL fragment shaders into `resources/shaders/`; the frag bench tab detects new and updated `.frag` files and compiles them live into high-resolution `<img>` swatches. curate the outputs in the browser and drag them straight into `resources/fragments/` as `fragment*.png` assets — from there the standard lint-and-compose pipeline places them in the layout.",
+          "",
+          "shader authoring has its own conventions doc (`resources/shaders/SHADER-NOTES.md`), a font-to-GLSL bitmap rasterizer (`scripts/font-to-glsl.py`), and example shaders that render text — including one set in a real ttf rasterized to bitmaps."
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "current state",
+        "content": [
+          "the compose pipeline is working end to end: layout linting (`make check-layout`), algorithmic re-stacking (`make arrange`), single-shot renders to png and pdf (`make png` / `make pdf`), and a livereload preview server on port 8899.",
+          "",
+          "the frag bench is the active work-in-progress: live shader indexing and the drag-to-compose flow exist; the surface is being sanded as it gets used.",
+          "",
+          "agent-assisted interactive mode runs on opencode with a mounted skill (`imagework-compose`) that drives the scan / lint / place / rebuild loop."
+        ],
+        "theme": "open"
+      },
+      {
+        "heading": "links",
+        "content": [
+          {
+            "heading": "github repository",
+            "content": "windows support is a work in progress; the Linux REPL is experimental",
+            "link": "https://github.com/akinevz2/cinnamon-print"
+          }
+        ],
+        "theme": "open"
+      }
+    ]
+  },
+  "group": "latest"
+}

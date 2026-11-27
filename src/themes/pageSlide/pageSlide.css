@@ -3,19 +3,22 @@
  * sets --ps-* variables and data-page-slide on it.
  *
  * Exit choreography: the page drops straight out of the bottom while the
- * windows fold - the top-level windows squash down onto the taskbar line
- * (XP-style outline squash, linear over --ps-minimize) IN STEP with the
- * whole-page drop over --ps-drop-dur: squeeze while moving down, fully
- * off screen, no stationary beat first.
+ * windows fold - each window's TITLE BAR falls linearly onto the taskbar
+ * line (XP-style outline squash upwards into it, over --ps-minimize) IN
+ * STEP with the whole-page drop over --ps-drop-dur: squeeze while moving
+ * down, fully off screen, no stationary beat first.
  */
 html.theme-page-slide {
   overflow-x: clip;
 }
 
 /* No fill-forward: a lingering `translate` would trap fixed descendants.
-   `backwards` fill parks the incoming page at its off-viewport start. */
+   `backwards` fill parks the incoming page at its off-viewport start.
+   The DELAY holds the entrance back until the departing page's top has
+   crossed fully off-screen (the exit's whole glide). */
 html.theme-page-slide[data-page-slide] main:not(.page-slide-ghost) {
-  animation: page-slide-in var(--ps-duration) ease-in-out backwards;
+  animation: page-slide-in var(--ps-duration) ease-in-out
+    var(--ps-arrival-delay, 0ms) backwards;
 }
 
 html.theme-page-slide .page-slide-ghost {
@@ -24,11 +27,13 @@ html.theme-page-slide .page-slide-ghost {
   margin: 0;
   overflow: hidden;
   pointer-events: none;
-  /* Two beats: the rapid fold snaps first (--ps-drop-delay == the fold
-     beat), THEN the collapsed page glides off gently - ease in and out,
-     not a slam. */
-  animation: page-slide-drop var(--ps-drop-dur) ease-in-out
-    var(--ps-drop-delay) forwards;
+  /* One continuous motion: the fold plays DURING the glide (zero
+     delay - the squish happens while the page moves downwards), the
+     glide itself is LINEAR - one constant pace on every page (the
+     composing linear fall + linear slide read as a single uniform
+     descent, never a slam or a stall). */
+  animation: page-slide-drop var(--ps-drop-dur) linear var(--ps-drop-delay)
+    forwards;
 }
 
 /* The live <main> has an indefinite height, so its page sizes to content
@@ -42,11 +47,12 @@ html.theme-page-slide .page-slide-ghost.page {
 }
 
 /* Fixed footer bars of the old page exit on their own beat: the slide
-   starts immediately (no fold-delay) and fades as it goes, so the bar
-   visibly rides out instead of blinking away at the route commit. */
+   starts immediately (no fold-delay) and fades as it goes, at the
+   glide's own linear pace, so the bar visibly rides out instead of
+   blinking away at the route commit. */
 html.theme-page-slide .page-slide-bar {
   pointer-events: none;
-  animation: page-slide-bar-exit var(--ps-drop-dur, 280ms) ease-in-out
+  animation: page-slide-bar-exit var(--ps-drop-dur, 280ms) linear
     var(--ps-drop-delay, 0ms) forwards;
 }
 
@@ -68,31 +74,22 @@ html.theme-page-slide .page-slide-bar-hide {
    themes/pageSlide applies the theme only after the exit, so this starts
    right as the destination page begins its slide-in.) */
 html.theme-page-slide[data-page-slide] main:not(.page-slide-ghost) > .page {
-  animation: page-slide-pad var(--ps-duration) ease-in-out backwards;
+  animation: page-slide-pad var(--ps-duration) ease-in-out
+    var(--ps-arrival-delay, 0ms) backwards;
 }
 
-/* XP minimise: EVERY window in the ghost squashes IN PLACE - top-level
-   or not. The old selectors matched only direct children of the page,
-   and any window wrapped one node deeper (or nested inside another
-   window) escaped the fold entirely: it rode the page drop at full
-   height beside fully-squashing siblings - the child read as falling
-   slower than the main window, the whole exit as the window
-   disassembling. One rule, every window. No translation: the window
-   slides out FROM ITS CURRENT POSITION, carried by the whole-page drop
-   (the old fold translated each window down to the taskbar line, which
-   read as a teleport below the arriving page's windows). Contents ride
-   the squash, as in XP itself.
-
-   Timing split: the BASE fold is LINEAR - nested children ride flat, so
-   the parent's acceleration does not compound through them - while the
-   MAIN windows (the top-level rule below) carry the gravity: their
-   squash is the one EASE-IN beat, accelerating shut. The stagger comes
-   from --ps-fold-delay, set per main window in JS and INHERITED: a
-   nested window folds in its parent's stage, not against it.
+/* XP minimise, ORIGIN AT THE TITLE BAR: every window in the ghost
+   squashes UPWARDS into its own title bar (the old bottom-anchored
+   origin squashed downwards - and on a bottom-scrolled page the anchor
+   already sat on the viewport's bottom edge, so the fold had no travel
+   at all: the page squashed in place instead of sliding through the
+   edge). The title bar's own journey down to the taskbar line is the
+   fold's translate (--page-fold-dy, set per main window in JS). The
+   whole window is carried down by the page's glide besides that.
    !important holds the base fold against the window stylesheets inside
    the inert ghost - the exit stays exactly one motion. */
 html.theme-page-slide .page-slide-ghost .window {
-  transform-origin: bottom center;
+  transform-origin: top center;
   animation: page-slide-fold var(--ps-minimize, 98ms) linear forwards !important;
   animation-delay: var(--ps-fold-delay, 0ms);
 }
@@ -105,26 +102,9 @@ html.theme-page-slide .page-slide-ghost .window {
    per-window motion whatsoever, only the page's drop. Single-window
    pages keep the shrink (the base + gravity rules above). */
 html.theme-page-slide .page-slide-ghost.page-slide-ghost-flat .window,
-html.theme-page-slide
-  .page-slide-ghost.page-slide-ghost-flat
-  .window
-  .window {
+html.theme-page-slide .page-slide-ghost.page-slide-ghost-flat .window .window {
   animation: none !important;
   transform: none !important;
-}
-
-/* MAIN windows: the top-level folds are the gravity beat (ease-in).
-   The same maximized-shell/backdrop pair as the JS cascade: the
-   maximized wrapper swaps its class to .maximized-backdrop while the
-   window is lifted, and missing it there keeps maximized windows on
-   the flat base beat while everything else falls with gravity. */
-html.theme-page-slide .page-slide-ghost > .window,
-html.theme-page-slide .page-slide-ghost > .maximized-shell > .window,
-html.theme-page-slide .page-slide-ghost > .maximized-backdrop > .window,
-html.theme-page-slide .page-slide-ghost .page > .window,
-html.theme-page-slide .page-slide-ghost .page > .maximized-shell > .window,
-html.theme-page-slide .page-slide-ghost .page > .maximized-backdrop > .window {
-  animation-timing-function: ease-in !important;
 }
 
 /* Fallback look for the swapped-out iframes (music embeds etc.) - the
@@ -139,17 +119,20 @@ html.theme-page-slide .page-slide-ghost .page-slide-placeholder-frame {
 
 @keyframes page-slide-fold {
   to {
-    /* The fold is a squash AND A FALL: the window's bottom edge travels
-       its measured distance to the taskbar line (--page-fold-dy, set per
-       main window in JS) while the outline collapses - gravity, ease-in,
-       oneXP minimize. */
+    /* The fold is a squash AND A FALL: the TITLE BAR travels its
+       measured distance to the taskbar line (--page-fold-dy, set per
+       main window in JS) - linear, one pace with the page's glide -
+       while the outline collapses UPWARDS into it, origin top: the
+       bottom edge rises to meet the descending title bar, one XP
+       minimise. */
     transform: translateY(var(--page-fold-dy, 0px)) scaleY(0.06);
   }
 }
 
 /* The fall distance belongs to the top-level window alone: nested
-   windows reset it, so they squash in the parent's stage and RIDE the
-   parent's fall instead of compounding it. */
+   windows reset it, so they squash UPWARDS into their own title bars
+   (origin top, no translate of their own) and RIDE the parent's fall
+   and the page's glide instead of compounding them. */
 html.theme-page-slide .page-slide-ghost .window .window {
   --page-fold-dy: 0px;
 }

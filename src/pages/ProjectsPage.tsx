@@ -1,4 +1,10 @@
-import { projectPath, projects, GROUP_ORDER, GROUP_LABELS, type Section } from "@/content";
+import {
+  projectPath,
+  projects,
+  GROUP_ORDER,
+  GROUP_LABELS,
+  type Section,
+} from "@/content";
 import { PageWindows } from "@/window";
 
 const projectWindow = (project: (typeof projects)[number]): Section => ({

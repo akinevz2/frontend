@@ -13,13 +13,25 @@ import "./pageSlide.css";
 
 const CLASS = "theme-page-slide";
 const ATTRIBUTE = "data-page-slide";
-/** Two-part, one motion: the fold plays DURING the fall (zero delay -
- * the squish happens while the page moves downwards), the glide itself
- * stays gentle (ease-in-out off-screen). The gravity read lives in the
- * MAIN windows' fold curve (see the css: top-level folds ease-in,
- * nested children fold linearly so the parent's acceleration doesn't
- * compound through them). The glide is distance-aware (same pace for
- * every page size, clamped). */
+/** Two-part, ONE motion: the fold plays DURING the glide (zero delay -
+ * the squish happens while the page moves downwards). XP minimise,
+ * corrected: the fold's ORIGIN is the title bar - the body squashes
+ * UPWARDS into it - while the title bar itself travels LINEARLY down to
+ * the taskbar line; the old bottom-anchored fold squashed downwards
+ * and, on a bottom-scrolled page, had no travel at all (its anchor
+ * already sat on the viewport's bottom edge).
+ *
+ * The two beats hold INDEPENDENT paces by design:
+ * - the squish normalises long and short pages: whatever the page's
+ *   length, its body collapses into the title bar over a fall whose
+ *   duration is fall-distance / (2x the glide's pace) - the page's
+ *   LENGTH never enters the timing - and the squish runs FASTER than
+ *   the glide: the window folds up into its title bar while the page
+ *   is still part-way through its slide;
+ * - the glide runs on the SAME duration scale as the entrance
+ *   (arrivalDuration): exit and arrival take the same time on every
+ *   page, so the choreography reads as one symmetric beat instead of
+ *   a jarring near-instant vanish. */
 const FOLD_MS = 200;
 /* TWICE the old pace: the speed doubled (3.1 -> 6.2px/ms) and the
  * clamps halved with it (520-880 -> 260-440ms), so the distance-aware
@@ -28,9 +40,6 @@ const FOLD_MS = 200;
 const ARRIVAL_SPEED_PX_MS = 6.2;
 const ARRIVAL_MIN_DURATION_MS = 260;
 const ARRIVAL_MAX_DURATION_MS = 440;
-const DROP_SPEED_PX_MS = 3.4;
-const DROP_MIN_DURATION_MS = 480;
-const DROP_MAX_DURATION_MS = 820;
 const REMOVAL_MARGIN_MS = 200;
 const arrivalDuration = (distancePx: number): number =>
   Math.round(
@@ -39,15 +48,9 @@ const arrivalDuration = (distancePx: number): number =>
       Math.max(ARRIVAL_MIN_DURATION_MS, distancePx / ARRIVAL_SPEED_PX_MS),
     ),
   );
-const dropDuration = (distancePx: number): number =>
-  Math.round(
-    Math.min(
-      DROP_MAX_DURATION_MS,
-      Math.max(DROP_MIN_DURATION_MS, distancePx / DROP_SPEED_PX_MS),
-    ),
-  );
 const VARIABLES = [
   "--ps-duration",
+  "--ps-arrival-delay",
   "--ps-minimize",
   "--ps-drop-delay",
   "--ps-drop-dur",
@@ -74,11 +77,15 @@ const START: Record<Direction | "parked", [string, string]> = {
   parked: ["0", "0"],
 };
 
-/** The per-transition durations: the arrival's, the drop's, and the
- * cascade tail (the drop may not begin until the last window's fold has
- * finished - the tail is that wait). */
+/** The per-transition durations: the arrival's, its delay (the
+ * entrance may not begin until the departing page's top has crossed
+ * fully off-screen - the delay is the exit's whole glide), the drop's,
+ * and the cascade tail (the drop may not begin until the last window's
+ * fold has finished - the tail is that wait; zero: the squish plays
+ * WHILE the page slides). */
 interface SlideScale {
   arrivalMs: number;
+  arrivalDelayMs: number;
   dropMs: number;
   tailMs: number;
 }
@@ -93,6 +100,7 @@ const slide = (
   attributes: { [ATTRIBUTE]: name },
   variables: {
     "--ps-duration": `${scale.arrivalMs}ms`,
+    "--ps-arrival-delay": `${scale.arrivalDelayMs}ms`,
     "--ps-minimize": `${FOLD_MS}ms`,
     "--ps-drop-delay": `${scale.tailMs}ms`,
     "--ps-drop-dur": `${scale.dropMs}ms`,
@@ -130,7 +138,8 @@ function leaveGhost(): SlideScale {
   if (!main) {
     return {
       arrivalMs: ARRIVAL_MIN_DURATION_MS,
-      dropMs: DROP_MIN_DURATION_MS,
+      arrivalDelayMs: 0,
+      dropMs: 0,
       tailMs: 0,
     };
   }
@@ -151,12 +160,13 @@ function leaveGhost(): SlideScale {
     "--ps-drop-distance",
     `${Math.round(exitDistance)}px`,
   );
-  // The exit's drop duration derives from the measured distance (one
-  // pace for every page size) and is set BEFORE the ghost attaches, so
-  // its animation starts at its final timing; applyDirection re-states
-  // the same values through the theme right after - a no-op on the
-  // running animation. The fold beat (FOLD_MS) is a constant.
-  const dropMs = dropDuration(exitDistance);
+  // The exit's drop duration runs on the SAME duration scale as the
+  // entrance (arrivalDuration): exit and arrival take the same time on
+  // every page. It is set BEFORE the ghost attaches, so its animation
+  // starts at its final timing; applyDirection re-states the same
+  // values through the theme right after - a no-op on the running
+  // animation. The fold beat (FOLD_MS) is a constant.
+  const dropMs = arrivalDuration(exitDistance);
   root().style.setProperty("--ps-drop-dur", `${dropMs}ms`);
   root().style.setProperty("--ps-minimize", `${FOLD_MS}ms`);
   const ghost = main.cloneNode(true) as HTMLElement;
@@ -234,23 +244,31 @@ function leaveGhost(): SlideScale {
     const win = ghost.querySelector<HTMLElement>(topLevel);
     if (win) {
       const liveWin = liveWins[0];
-      // the fall: the window's bottom edge to the taskbar line
+      // XP minimise, origin at the TITLE BAR: the body squashes UPWARDS
+      // into it while the title bar falls LINEARLY to the taskbar line.
+      // The fall distance is the title bar's own journey (taskbar line
+      // minus the window's TOP edge) - measured, so a bottom-scrolled
+      // page still gets a real fall (the old bottom-anchored fall had
+      // none there: its anchor already sat on the viewport's edge).
       const fall = Math.max(
         0,
-        taskbarLine - (liveWin?.getBoundingClientRect().bottom ?? 0),
+        taskbarLine - (liveWin?.getBoundingClientRect().top ?? 0),
       );
-      // TWICE as fast as the page's own slide-down: the shrink's
-      // duration is HALF the drop's (0.5x), while the page's own
-      // slide-down keeps its distance-derived pace - the two motions
-      // hold their relative pace at every page size and scroll offset.
-      const foldMs = Math.round(dropMs * 0.5);
+      // The squish runs TWICE the glide's pace: the glide covers
+      // exitDistance over dropMs, so twice its pace clears the fall in
+      // half the glide's time (proportionally to the fall's share of
+      // the exit) - the window folds up into its title bar faster than
+      // the page slides down, the minimise beat completing while the
+      // page is still part-way through its fall, at every page size
+      // and scroll offset.
+      const foldMs = Math.round((fall * dropMs) / (exitDistance * 2));
       win.style.setProperty("--page-fold-dy", `${Math.round(fall)}px`);
       win.style.setProperty("--ps-fold-delay", "0ms");
       // the fold duration inherits down the window's subtree, so its
       // children squash in the same beat
       win.style.setProperty("--ps-minimize", `${foldMs}ms`);
-      // the drop begins as the one window's fall finishes
-      tailMs = foldMs;
+      // the fold plays DURING the glide - no tail wait
+      tailMs = 0;
     }
   }
   root().style.setProperty("--ps-drop-delay", `${tailMs}ms`);
@@ -296,9 +314,12 @@ function leaveGhost(): SlideScale {
   window.setTimeout(() => remove(), removalMs);
   // The arrival's distance uses the OLD page's height as the estimate of
   // the new page's (the route has not rendered yet); both durations
-  // derive from their own speeds.
+  // derive from their own speeds. The ENTRANCE is held back until the
+  // departing page's top has crossed fully off-screen - the delay is
+  // the exit's whole glide (the fold plays inside it, zero tail).
   return {
     arrivalMs: arrivalDuration(rect.height + window.innerHeight),
+    arrivalDelayMs: tailMs + dropMs,
     dropMs,
     tailMs,
   };
@@ -466,7 +487,8 @@ export function enablePageSlide(): void {
       (bootMain?.getBoundingClientRect().height ?? window.innerHeight) +
         window.innerHeight,
     ),
-    dropMs: dropDuration(window.innerHeight * 1.1),
+    arrivalDelayMs: 0,
+    dropMs: arrivalDuration(window.innerHeight * 1.1),
     tailMs: 0,
   };
   applyDirection(linkedWindowTarget ? "parked" : "down", bootScale);
