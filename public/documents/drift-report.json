@@ -1,6 +1,6 @@
 {
   "baselineUrl": "https://akinevz.com/checksums.txt",
-  "generatedAt": "2026-11-27T02:10:44.550Z",
+  "generatedAt": "2026-11-27T15:05:30.612Z",
   "mutablePaths": [
     "blog/",
     "stories/",
@@ -64,6 +64,8 @@
     "blog/random/cpus/index.html",
     "blog/random/gdiff.html",
     "blog/random/gdiff/index.html",
+    "blog/random/good-will-value-aims.html",
+    "blog/random/good-will-value-aims/index.html",
     "blog/random/google.html",
     "blog/random/google/index.html",
     "blog/random/hlwm.html",
@@ -178,11 +180,11 @@
   "softMutableCount": 2,
   "softMutable": [
     {
-      "relPath": "learning/lesson-template.md",
+      "relPath": "images/cheese-cover-hec.png",
       "status": "NEW"
     },
     {
-      "relPath": "learning/resources/appendix.md",
+      "relPath": "images/transatlantic.png",
       "status": "NEW"
     }
   ]
