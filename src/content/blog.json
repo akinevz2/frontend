@@ -5,12 +5,14 @@
       "heading": "The Braindump",
       "content": [
         {
-          "heading": "IT IS TIME.",
+          "theme": "open",
           "content": [
             {
               "content": "![IT IS TIME. YOU KNOW WHAT TIME.](/images/cheese-cover-hec.png)"
             },
-            "# War of the Ancients"
+            {
+              "right": "## War of the Ancients"
+            }
           ]
         },
         {
