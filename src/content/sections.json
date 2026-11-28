@@ -5,16 +5,25 @@
     "Enjoy your visit!",
     {
       "heading": "what kine does",
-      "theme": "open",
+      "theme": "experimental",
       "content": [
         "web developer, open to remote & onsite roles:",
         {
           "heading": "gibraltar · costa del sol · brighton",
           "content": [
             "full-stack web: typescript, react, python, .NET admin panels",
-            "previously: salesforce at revolent group",
+            "previously: Salesforce Database Administrator at Revolent Group",
             "bsc, university of sussex",
-            "[available](/resume) for contract & permanent"
+            "[available](/resume) for contract & permanent",
+            {
+              "heading": "for work in the past",
+              "content": [
+                "at Revolent Group (Salesforce Database Administrator)",
+                "as Peer Assisted Learning coordinator at PAL Sussex, University of Sussex",
+                "in the wild (freelance)",
+                "at CMS (during merger w/ Nabarro+Olswang)"
+              ]
+            }
           ]
         },
         {
@@ -189,14 +198,6 @@
         {
           "heading": "for lifestyle full of relaxing and cozy",
           "content": "in a little apartment in Hove"
-        },
-        {
-          "heading": "for work in the past",
-          "content": [
-            "at Revolent Group (Salesforce)",
-            "in the wild (freelance)",
-            "at CMS (during merger w/ Nabarro+Olswang)"
-          ]
         },
         {
           "heading": "for studies completed well",
